@@ -1,0 +1,40 @@
+<?php
+
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\FormController;
+use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
+use App\Http\Controllers\OrganizationApplicationController;
+
+Route::get('/','App\Http\Controllers\FrontendController@index')->name('myhome');
+Route::get('/about','App\Http\Controllers\FrontendController@about')->name('aboutUs');
+Route::inertia('/contact','Frontend/Contact')->name('contactUs');
+
+Route::get('/pdf-forms', [App\Http\Controllers\PdfFormController::class, 'create'])->name('pdf-forms.create');
+Route::post('/pdf-forms/generate', [App\Http\Controllers\PdfFormController::class, 'generate'])->name('pdf-forms.generate');
+
+
+
+
+Route::get('/applications', [OrganizationApplicationController::class, 'index'])->name('applications.index');
+Route::get('/applications/create', [OrganizationApplicationController::class, 'create'])->name('applications.create');
+Route::post('/applications', [OrganizationApplicationController::class, 'store'])->name('applications.store');
+Route::get('/applications/{application}/edit', [OrganizationApplicationController::class, 'edit'])->name('applications.edit');
+Route::put('/applications/{application}', [OrganizationApplicationController::class, 'update'])->name('applications.update');
+Route::delete('/applications/{application}', [OrganizationApplicationController::class, 'destroy'])->name('applications.destroy');
+
+Route::get('/applications/{application}/pdf', [OrganizationApplicationController::class, 'exportPdf'])->name('applications.pdf');
+
+
+Route::get('/dashboard', function () {
+    return Inertia::render('Dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+require __DIR__.'/auth.php';
