@@ -11,10 +11,6 @@ Route::get('/','App\Http\Controllers\FrontendController@index')->name('myhome');
 Route::get('/about','App\Http\Controllers\FrontendController@about')->name('aboutUs');
 Route::inertia('/contact','Frontend/Contact')->name('contactUs');
 
-Route::get('/pdf-forms', [App\Http\Controllers\PdfFormController::class, 'create'])->name('pdf-forms.create');
-Route::post('/pdf-forms/generate', [App\Http\Controllers\PdfFormController::class, 'generate'])->name('pdf-forms.generate');
-
-
 
 
 Route::get('/applications', [OrganizationApplicationController::class, 'index'])->name('applications.index');
