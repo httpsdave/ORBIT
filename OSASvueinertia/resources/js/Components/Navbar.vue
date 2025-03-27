@@ -15,7 +15,7 @@
                     <Link class= "text-dark" :href="route('contactUs')">Contact</Link>
                 </li>
                 <li class ="nav-item">
-                    <Link class= "text-dark" :href="route('pdf-forms.create')">Forms</Link>
+                    <Link class= "text-dark" :href="route('applications.index')">Forms</Link>
                 </li>
                 
             </ul>
