@@ -16,7 +16,7 @@
 
 body {
     font-family: 'Times New Roman', serif;
-    font-size: 10pt;
+    font-size: 11pt;
     line-height: 1.1;
     margin: 0;
     padding: 0;
@@ -93,11 +93,12 @@ p {
 }
 
 
+
 .logo {
     position: absolute;
-    top: 0.5cm; /* Adjust as needed */
-    left: 2.54cm; /* Aligns with margin */
-    width: 70px; /* Adjust size */
+    top: -0.5cm; /* Adjust as needed */
+    left: -2cm; /* Aligns with margin */
+    width: 250px; /* Adjust size */
     height: auto;
 }
 
@@ -108,12 +109,14 @@ p {
             height: 20px; /* Fixed height to ensure alignment */
             line-height: 20px; /* Vertically center text */
             font-size: 10pt;
+            
         }
 
         .footer-left {
             position: absolute;
-            left: 2.54cm;
+            left: -1.0cm;
             bottom: 0;
+            
         }
 
         .footer-center {
@@ -125,18 +128,18 @@ p {
 
         .footer-right {
             position: absolute;
-            right: 2.54cm;
+            right: -1.0cm;
             bottom: 0;
+            
         }
-
-
 
     </style>
 </head>
 <body>
 
     <div class="header">
-    <img src="{{ url('images/lspu-logo.png') }}" alt="LSPU Logo" class="logo">
+  
+    <img src="{{ public_path('images/lspu-logo.png') }}" alt="LSPU Logo" class="logo">
 
 
         Republic of the Philippines<br>
