@@ -23,23 +23,47 @@ class OrganizationApplicationController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $request->validate([
-            'form_type' => 'required|string',
-            'organization_name' => 'required|string|max:255',
-            'president_name' => 'required|string|max:255',
+{
+    // Common fields validation
+    $validationRules = [
+        'form_type' => 'required|string',
+        'organization_name' => 'required|string|max:255',
+        'president_name' => 'required|string|max:255',
+        'adviser_name' => 'required|string|max:255',
+        'dean_name' => 'required|string|max:255',
+        'coordinator_name' => 'required|string|max:255',
+        'status' => 'string|in:Pending,Approved,Disapproved',
+    ];
+    
+    // Add form-specific validation rules
+    if ($request->form_type === 'LSPU-OSAS-SF-001') {
+        $validationRules = array_merge($validationRules, [
             'application_date' => 'required|date',
-            'adviser_name' => 'required|string|max:255',
-            'dean_name' => 'required|string|max:255',
-            'coordinator_name' => 'required|string|max:255',
-            'director_name' => 'required|string|max:255', // Ensure this is validated
-            'status' => 'string|in:Pending,Approved,Disapproved',
+            'director_name' => 'required|string|max:255',
         ]);
-
-        OrganizationApplication::create($request->all());
-
-        return redirect()->route('applications.index');
+    } elseif ($request->form_type === 'LSPU-OSAS-SF-002') {
+        $validationRules = array_merge($validationRules, [
+            'college' => 'required|string|max:255',
+            'academic_year_start' => 'required|string|max:10',
+            'academic_year_end' => 'required|string|max:10',
+            'chairperson_name' => 'required|string|max:255',
+        ]);
     }
+    
+    $request->validate($validationRules);
+    
+    $data = $request->all();
+    
+    // Set default values for missing fields based on form type
+    if ($request->form_type === 'LSPU-OSAS-SF-002') {
+        $data['application_date'] = now(); // Use current date for renewal forms
+        $data['director_name'] = $data['chairperson_name']; // Use chairperson name for director
+    }
+    
+    OrganizationApplication::create($data);
+
+    return redirect()->route('applications.index');
+}
 
     public function edit(OrganizationApplication $application)
     {
@@ -72,5 +96,13 @@ class OrganizationApplicationController extends Controller
 
         return $pdf->download('Application_' . $application->organization_name . '.pdf');
     }
+    public function exportRenewalPdf(OrganizationApplication $application)
+{
+    $pdf = Pdf::loadView('pdfs.organization_renewal', compact('application'))
+            ->setPaper('A4', 'portrait');
+
+    return $pdf->download('Renewal_' . $application->organization_name . '.pdf');
+}
+
 
 }

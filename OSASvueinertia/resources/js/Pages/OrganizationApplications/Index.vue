@@ -1,3 +1,5 @@
+
+
 <script setup>
 import { defineProps, ref } from 'vue';
 import { Link, router } from '@inertiajs/vue3';
@@ -16,6 +18,20 @@ const deleteApplication = (id) => {
                 message.value = "Failed to delete application.";
             }
         });
+    }
+};
+
+// Updated function to determine the correct PDF download route
+const getPdfRoute = (app) => {
+    // Check the form type directly
+    if (app.form_type === 'LSPU-OSAS-SF-002') {
+        return `/applications/${app.id}/export-renewal`;
+    } else if (app.form_type === 'LSPU-OSAS-SF-001') {
+        return `/applications/${app.id}/pdf`;
+    } else {
+        // Default case
+        console.warn('Unknown form type:', app.form_type);
+        return `/applications/${app.id}/pdf`;
     }
 };
 </script>
@@ -58,7 +74,9 @@ const deleteApplication = (id) => {
                     <td class="border px-4 py-2">{{ app.status }}</td>
                     <td class="border px-4 py-2 flex space-x-2">
                         <Link :href="`/applications/${app.id}/edit`" class="bg-yellow-500 text-white px-4 py-1 rounded">Edit</Link>
-                        <a :href="`/applications/${app.id}/pdf`" class="bg-red-500 text-white px-4 py-1 rounded">Download PDF</a>
+                        <a :href="getPdfRoute(app)" class="bg-red-500 text-white px-4 py-1 rounded">
+                            Download PDF
+                        </a>
                         <button @click="deleteApplication(app.id)" class="bg-gray-500 text-white px-4 py-1 rounded hover:bg-gray-700">
                             Delete
                         </button>

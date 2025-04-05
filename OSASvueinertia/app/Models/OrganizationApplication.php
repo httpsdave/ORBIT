@@ -10,16 +10,19 @@ class OrganizationApplication extends Model
     use HasFactory;
 
     protected $fillable = [
+        'form_type',
         'organization_name',
         'president_name',
-        'application_date',
-        'requirements',
         'adviser_name',
         'dean_name',
         'coordinator_name',
-        'director_name',
         'status',
-        'form_type',
+        'college',
+        'academic_year_start',
+        'academic_year_end',
+        'chairperson_name',
+        'application_date',
+        'director_name'
     ];
 }
 

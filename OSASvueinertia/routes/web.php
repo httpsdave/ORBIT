@@ -21,6 +21,8 @@ Route::put('/applications/{application}', [OrganizationApplicationController::cl
 Route::delete('/applications/{application}', [OrganizationApplicationController::class, 'destroy'])->name('applications.destroy');
 
 Route::get('/applications/{application}/pdf', [OrganizationApplicationController::class, 'exportPdf'])->name('applications.pdf');
+Route::get('/applications/{application}/export-renewal', [OrganizationApplicationController::class, 'exportRenewalPdf'])->name('applications.export-renewal');
+Route::get('/applications/{id}/export-renewal', [ApplicationController::class, 'exportRenewal']);
 
 
 Route::get('/dashboard', function () {

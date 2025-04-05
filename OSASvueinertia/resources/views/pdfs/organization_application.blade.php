@@ -28,11 +28,12 @@ body {
 
 .header {
     text-align: center;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: bold;
-    margin: 0 0 2px 0; /* Reduced bottom margin */
+    margin: 0 0 0.5cm 0; /* Reduced bottom margin */
     padding-top: 0.5cm; /* Added padding to keep it from the edge */
 }
+
 
 .section { 
     margin-bottom: 5px; /* Minimized space between sections */
@@ -43,7 +44,7 @@ body {
 }
 
 .signature { 
-    margin-top: 15px; /* Reduced space before signatures */
+    margin-top: 10px; /* Reduced space before signatures */
 }
 .signature p u {
     display: inline-block;
@@ -145,6 +146,7 @@ p {
         Republic of the Philippines<br>
         Laguna State Polytechnic University<br>
         Province of Laguna<br>
+        <br>
         OFFICE OF STUDENT AFFAIRS AND SERVICES<br>
         <br>
         <span class="sub-header">APPLICATION FOR RECOGNITION/RENEWAL OF ACCREDITED STUDENT ORGANIZATION</span>
