@@ -22,8 +22,7 @@ Route::delete('/applications/{application}', [OrganizationApplicationController:
 
 Route::get('/applications/{application}/pdf', [OrganizationApplicationController::class, 'exportPdf'])->name('applications.pdf');
 Route::get('/applications/{application}/export-renewal', [OrganizationApplicationController::class, 'exportRenewalPdf'])->name('applications.export-renewal');
-Route::get('/applications/{id}/export-renewal', [ApplicationController::class, 'exportRenewal']);
-
+Route::get('/applications/{application}/export-commitment', [OrganizationApplicationController::class, 'exportCommitmentPdf'])->name('applications.export-commitment');
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');

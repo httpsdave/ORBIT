@@ -22,7 +22,15 @@ class OrganizationApplication extends Model
         'academic_year_end',
         'chairperson_name',
         'application_date',
-        'director_name'
+        'director_name',
+
+        // New fields from the commitment form
+        'adviser_signature',
+        'adviser_college',
+        'adviser_rank',
+        'adviser_address',
+        'adviser_contact',
+        'form_date'
     ];
 }
 

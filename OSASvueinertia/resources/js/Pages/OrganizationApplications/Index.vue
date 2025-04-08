@@ -21,19 +21,22 @@ const deleteApplication = (id) => {
     }
 };
 
-// Updated function to determine the correct PDF download route
 const getPdfRoute = (app) => {
     // Check the form type directly
     if (app.form_type === 'LSPU-OSAS-SF-002') {
         return `/applications/${app.id}/export-renewal`;
     } else if (app.form_type === 'LSPU-OSAS-SF-001') {
         return `/applications/${app.id}/pdf`;
+    } else if (app.form_type === 'LSPU-OSAS-SF-003') {
+        // Handle the new form type
+        return `/applications/${app.id}/export-commitment`;
     } else {
         // Default case
         console.warn('Unknown form type:', app.form_type);
         return `/applications/${app.id}/pdf`;
     }
 };
+
 </script>
 
 <template>

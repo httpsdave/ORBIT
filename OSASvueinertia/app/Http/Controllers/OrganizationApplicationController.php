@@ -40,6 +40,7 @@ class OrganizationApplicationController extends Controller
         $validationRules = array_merge($validationRules, [
             'application_date' => 'required|date',
             'director_name' => 'required|string|max:255',
+            
         ]);
     } elseif ($request->form_type === 'LSPU-OSAS-SF-002') {
         $validationRules = array_merge($validationRules, [
@@ -48,7 +49,21 @@ class OrganizationApplicationController extends Controller
             'academic_year_end' => 'required|string|max:10',
             'chairperson_name' => 'required|string|max:255',
         ]);
+    } elseif ($request->form_type === 'LSPU-OSAS-SF-003') {
+        // Commitment form specific validation
+        $validationRules = array_merge($validationRules, [
+            'adviser_signature' => 'nullable|string|max:255',
+            'adviser_college' => 'required|string|max:255',
+            'adviser_rank' => 'required|string|max:255',
+            'adviser_address' => 'required|string|max:255',
+            'adviser_contact' => 'required|string|max:255',
+            'form_date' => 'required|date',
+            'academic_year_start' => 'required|string|max:10',
+            'academic_year_end' => 'required|string|max:10',
+            
+        ]);
     }
+    
     
     $request->validate($validationRules);
     
@@ -58,6 +73,9 @@ class OrganizationApplicationController extends Controller
     if ($request->form_type === 'LSPU-OSAS-SF-002') {
         $data['application_date'] = now(); // Use current date for renewal forms
         $data['director_name'] = $data['chairperson_name']; // Use chairperson name for director
+    }elseif ($request->form_type === 'LSPU-OSAS-SF-003') {
+        $data['application_date'] = now(); // Use current date for renewal forms
+        
     }
     
     OrganizationApplication::create($data);
@@ -77,7 +95,29 @@ class OrganizationApplicationController extends Controller
             'president_name' => 'required|string|max:255',
             'application_date' => 'required|date',
         ]);
-
+            /*
+        // Base validation rules
+        $validationRules = [
+            'organization_name' => 'required|string|max:255',
+            'president_name' => 'required|string|max:255',
+        ];
+        
+        // Add form-specific validation rules for updates
+        if ($application->form_type === 'LSPU-OSAS-SF-001') {
+            $validationRules['application_date'] = 'required|date';
+        } elseif ($application->form_type === 'LSPU-OSAS-SF-002') {
+            $validationRules['college'] = 'required|string|max:255';
+            $validationRules['academic_year_start'] = 'required|string|max:10';
+            $validationRules['academic_year_end'] = 'required|string|max:10';
+        } elseif ($application->form_type === 'LSPU-OSAS-SF-003') {
+            // Commitment form specific validation for updates
+            $validationRules['adviser_college'] = 'required|string|max:255';
+            $validationRules['adviser_rank'] = 'required|string|max:255';
+            $validationRules['adviser_address'] = 'required|string|max:255';
+            $validationRules['adviser_contact'] = 'required|string|max:255';
+            $validationRules['form_date'] = 'required|date';
+        }
+*/
         $application->update($request->all());
 
         return redirect()->route('applications.index');
@@ -97,12 +137,20 @@ class OrganizationApplicationController extends Controller
         return $pdf->download('Application_' . $application->organization_name . '.pdf');
     }
     public function exportRenewalPdf(OrganizationApplication $application)
-{
-    $pdf = Pdf::loadView('pdfs.organization_renewal', compact('application'))
-            ->setPaper('A4', 'portrait');
+    {
+        $pdf = Pdf::loadView('pdfs.organization_renewal', compact('application'))
+                ->setPaper('A4', 'portrait');
 
-    return $pdf->download('Renewal_' . $application->organization_name . '.pdf');
-}
+        return $pdf->download('Renewal_' . $application->organization_name . '.pdf');
+    }
+
+    public function exportCommitmentPdf(OrganizationApplication $application)
+    {
+        $pdf = Pdf::loadView('pdfs.organization_commitment', compact('application'))
+                ->setPaper('A4', 'portrait');
+
+        return $pdf->download('Commitment_' . $application->organization_name . '.pdf');
+    }
 
 
 }
