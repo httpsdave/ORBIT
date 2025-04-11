@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Activity;
+
 
 class OrganizationApplication extends Model
 {
@@ -30,7 +32,26 @@ class OrganizationApplication extends Model
         'adviser_rank',
         'adviser_address',
         'adviser_contact',
-        'form_date'
+        'form_date',
+
+        // New fields for the plan of activities form
+        'secretary_name',
+
+        // New fields for the certification form
+        
+        'student_name' ,
+        'course_year_section' ,
+        'position_rank',
+        'is_bonafide' ,
+        'is_not_academic_probation',
+        'is_not_disciplinary_probation',
+        'has_position',
+
     ];
+
+    public function activities()
+    {
+        return $this->hasMany(Activity::class);
+    }
 }
 

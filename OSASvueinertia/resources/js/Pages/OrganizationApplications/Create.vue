@@ -9,6 +9,8 @@ const formOptions = [
     { value: 'LSPU-OSAS-SF-001', label: 'Student Organization Recognition Form' },
     { value: 'LSPU-OSAS-SF-002', label: 'Renewal Form' },
     { value: 'LSPU-OSAS-SF-003', label: 'Commitment Form' },
+    { value: 'LSPU-OSAS-SF-004', label: 'Plan of Activities' },
+    { value: 'LSPU-OSAS-SF-006', label: 'Student Certification' }, 
 ];
 
 const form = useForm({
@@ -35,17 +37,69 @@ const form = useForm({
     adviser_contact: '',
     form_date: '',
 
+    secretary_name: '',
+    activities: [], // Array to store multiple activities
+
+
+    // New fields for Certification Form
+    
+    student_name: '',
+    course_year_section: '',
+    position_rank: '',
+    is_bonafide: false,
+    is_not_academic_probation: false,
+    is_not_disciplinary_probation: false,
+    has_position: false,
+    
     
 });
+
+// Add a function to add a new empty activity
+const addActivity = () => {
+    form.activities.push({
+        objective: '',
+        name: '',
+        description: '',
+        persons_involved: '',
+        target_date: '',
+        budget: 0
+    });
+};
+
+// Add a function to remove an activity
+const removeActivity = (index) => {
+    form.activities.splice(index, 1);
+};
 
 const selectForm = () => {
     if (selectedForm.value) {
         form.form_type = selectedForm.value;
         showForm.value = true;
+        
+        // Add default activities for Plan of Activities form
+        if (selectedForm.value === 'LSPU-OSAS-SF-004' && form.activities.length === 0) {
+            // Add some empty rows
+            for(let i = 0; i < 3; i++) {
+                addActivity();
+            }
+        }
     }
 };
 
-const submit = () => form.post('/applications');
+const submit = () => {
+    form.post('/applications', {
+        onSuccess: () => {
+            alert('Form submitted successfully!');
+            // Reset form or redirect
+            showForm.value = false;
+            selectedForm.value = '';
+        },
+        onError: (errors) => {
+            console.error('Form submission errors:', errors);
+            // Display errors to user
+        }
+    });
+};
 </script>
 
 <template>
@@ -487,6 +541,275 @@ const submit = () => form.post('/applications');
         <span>09 November 2020</span>
     </div>
 </div>
+
+        <!-- PLAN OF ACTIVITIES FORM -->
+        <div v-if="showForm && selectedForm === 'LSPU-OSAS-SF-004'" class="mt-6 form-content">
+            <div class="header text-center">
+                <p class="text-sm font-bold mb-0">Republic of the Philippines</p>
+                <p class="text-base font-bold university-name mb-0">Laguna State Polytechnic University</p>
+                <p class="text-sm mb-0">Province of Laguna</p>
+                <div style="margin-top: 15px; text-decoration: underline;">{{ form.organization_name }}</div>
+                <p class="text-sm font-bold form-title mt-4 mb-4">PLAN OF ACTIVITIES</p>
+                <p class="text-sm mb-0">Semester AY {{ form.academic_year_start }}-{{ form.academic_year_end }}</p>
+            </div>
+
+            <!-- Form inputs -->
+            <div class="mt-8">
+                <h3 class="text-lg font-bold mb-4">Form Details</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block font-bold">Organization Name</label>
+                        <input v-model="form.organization_name" class="border p-2 w-full" required>
+                    </div>
+
+                    <div>
+                        <label class="block font-bold">Academic Year Start</label>
+                        <input v-model="form.academic_year_start" class="border p-2 w-full" required placeholder="23">
+                    </div>
+
+                    <div>
+                        <label class="block font-bold">Academic Year End</label>
+                        <input v-model="form.academic_year_end" class="border p-2 w-full" required placeholder="24">
+                    </div>
+
+                    <div>
+                        <label class="block font-bold">President Name</label>
+                        <input v-model="form.president_name" class="border p-2 w-full" required>
+                    </div>
+
+                    <div>
+                        <label class="block font-bold">Secretary Name</label>
+                        <input v-model="form.secretary_name" class="border p-2 w-full">
+                    </div>
+
+                    <div>
+                        <label class="block font-bold">Adviser Name</label>
+                        <input v-model="form.adviser_name" class="border p-2 w-full">
+                    </div>
+
+                    <div>
+                        <label class="block font-bold">Dean Name</label>
+                        <input v-model="form.dean_name" class="border p-2 w-full">
+                    </div>
+
+                    <div>
+                        <label class="block font-bold">Coordinator Name</label>
+                        <input v-model="form.coordinator_name" class="border p-2 w-full">
+                    </div>
+
+                    <div>
+                        <label class="block font-bold">Director Name</label>
+                        <input v-model="form.director_name" class="border p-2 w-full">
+                    </div>
+                </div>
+
+                <!-- Activities Table -->
+                <div class="mt-6">
+                    <h4 class="text-md font-bold mb-2">Activities</h4>
+                    
+                    <table class="w-full border-collapse border border-gray-300 mb-4">
+                        <thead>
+                            <tr class="bg-gray-100">
+                                <th class="border border-gray-300 p-2">OBJECTIVE</th>
+                                <th class="border border-gray-300 p-2">ACTIVITIES</th>
+                                <th class="border border-gray-300 p-2">BRIEF DESCRIPTION</th>
+                                <th class="border border-gray-300 p-2">PERSONS INVOLVED</th>
+                                <th class="border border-gray-300 p-2">TARGET DATE</th>
+                                <th class="border border-gray-300 p-2">BUDGET</th>
+                                <th class="border border-gray-300 p-2">ACTION</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(activity, index) in form.activities" :key="index">
+                                <td class="border border-gray-300 p-2">
+                                    <input v-model="activity.objective" class="w-full p-1" required>
+                                </td>
+                                <td class="border border-gray-300 p-2">
+                                    <input v-model="activity.name" class="w-full p-1" required>
+                                </td>
+                                <td class="border border-gray-300 p-2">
+                                    <textarea v-model="activity.description" class="w-full p-1" rows="2" required></textarea>
+                                </td>
+                                <td class="border border-gray-300 p-2">
+                                    <input v-model="activity.persons_involved" class="w-full p-1" required>
+                                </td>
+                                <td class="border border-gray-300 p-2">
+                                    <input type="date" v-model="activity.target_date" class="w-full p-1" required>
+                                </td>
+                                <td class="border border-gray-300 p-2">
+                                    <input type="number" v-model="activity.budget" step="0.01" min="0" class="w-full p-1" required>
+                                </td>
+                                <td class="border border-gray-300 p-2">
+                                    <button type="button" @click="removeActivity(index)" class="bg-red-500 text-white px-2 py-1 rounded text-xs">Remove</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <button type="button" @click="addActivity" class="bg-blue-500 text-white px-3 py-1 rounded mb-4">
+                        Add Activity Row
+                    </button>
+                </div>
+
+                <div class="mt-6 text-center">
+                    <button type="submit" @click="submit" class="bg-green-500 text-white px-4 py-2 rounded">Submit</button>
+                </div>
+            </div>
+
+            <div class="footer mt-8 text-xs flex justify-between">
+                <span>LSPU-OSAS-SF-004</span>
+                <span>Rev. 1</span>
+                <span>09 November 2020</span>
+            </div>
+        </div>
+
+        <!-- CERTIFICATION FORM -->
+<div v-if="showForm && selectedForm === 'LSPU-OSAS-SF-006'" class="mt-6 form-content">
+    <div class="header text-center">
+        <p class="text-sm font-bold mb-0">Republic of the Philippines</p>
+        <p class="text-base font-bold university-name mb-0">Laguna State Polytechnic University</p>
+        <p class="text-sm mb-0">Province of Laguna</p>
+        <p class="text-sm mb-0">Office of Student Affairs and Services</p>
+    </div>
+
+    <div class="mt-6 text-right">
+        <p class="mb-0"><span class="signature-line text-center border-b border-black min-w-[200px] inline-block">{{ form.formatted_date }}</span></p>
+        <p class="mb-0">DATE</p>
+    </div>
+
+    <div class="section text-center mt-4">
+        <p class="text-xl font-bold mb-4 underline">CERTIFICATION</p>
+    </div>
+
+    <div class="section mt-6">
+        <p class="mb-4">This certifies that <span class="blank-line text-center border-b border-black min-w-[300px] inline-block">{{ form.student_name }}</span>, a 
+        <span class="blank-line text-center border-b border-black min-w-[300px] inline-block">{{ form.course_year_section }}</span>,</p>
+        
+        <p class="mb-4">student of this College is:</p>
+        
+        <div class="mt-4">
+            <p class="mb-2">
+                <input type="checkbox" v-model="form.is_bonafide" class="mr-2">
+                a bonafide student;
+            </p>
+            <p class="mb-2">
+                <input type="checkbox" v-model="form.is_not_academic_probation" class="mr-2">
+                not under academic probation;
+            </p>
+            <p class="mb-2">
+                <input type="checkbox" v-model="form.is_not_disciplinary_probation" class="mr-2">
+                not under disciplinary probation;
+            </p>
+            <p class="mb-2">
+                <input type="checkbox" v-model="form.has_position" class="mr-2">
+                position/rank in the organization <span class="blank-line text-center border-b border-black min-w-[200px] inline-block">{{ form.position_rank }}</span>;
+            </p>
+        </div>
+    </div>
+
+    <div class="section mt-6">
+        <p class="mb-2">Noted:</p>
+    </div>
+
+    <div class="section mt-6">
+        <div class="signature-line mt-6 mb-1 text-center">
+            <p class="mb-0"><span class="text-center border-b border-black min-w-[250px] inline-block">{{ form.faculty_adviser }}</span></p>
+            <p class="mb-1 text-center">Faculty Adviser(s)</p>
+        </div>
+        
+        <div class="signature-line mt-6 mb-1 text-center">
+            <p class="mb-0"><span class="text-center border-b border-black min-w-[250px] inline-block">{{ form.dean_name }}</span></p>
+            <p class="mb-1 text-center">Dean/Assoc. Dean of College</p>
+        </div>
+    </div>
+
+    <!-- Form inputs -->
+    <div class="mt-8 border-t pt-6">
+        <h3 class="text-lg font-bold mb-4">Form Details</h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block font-bold">Certification Date</label>
+                <input type="date" v-model="form.certification_date" class="border p-2 w-full" required>
+            </div>
+
+            <div>
+                <label class="block font-bold">Student Name</label>
+                <input v-model="form.student_name" class="border p-2 w-full" required>
+            </div>
+
+            <div>
+                <label class="block font-bold">Course/Year and Section</label>
+                <input v-model="form.course_year_section" class="border p-2 w-full" required>
+            </div>
+
+            <div>
+                <label class="block font-bold">Position/Rank in Organization</label>
+                <input v-model="form.position_rank" class="border p-2 w-full">
+            </div>
+
+            <div>
+                <label class="block font-bold">Faculty Adviser(s)</label>
+                <input v-model="form.adviser_name" class="border p-2 w-full" required>
+            </div>
+
+            <div>
+                <label class="block font-bold">Dean/Assoc. Dean Name</label>
+                <input v-model="form.dean_name" class="border p-2 w-full" required>
+            </div>
+
+            <div>
+                <label class="block font-bold">Coordinator Name</label>
+                <input v-model="form.coordinator_name" class="border p-2 w-full" required>
+            </div>
+
+            <div>
+                <label class="block font-bold">Organization Name</label>
+                <input v-model="form.organization_name" class="border p-2 w-full" required>
+            </div>
+
+            <div>
+                <label class="block font-bold">President Name</label>
+                <input v-model="form.president_name" class="border p-2 w-full" required>
+            </div>
+            
+            <div class="md:col-span-2">
+                <label class="block font-bold">Student Status</label>
+                <div class="flex flex-col gap-2 mt-2">
+                    <label class="inline-flex items-center">
+                        <input type="checkbox" v-model="form.is_bonafide" class="mr-2">
+                        <span>Bonafide Student</span>
+                    </label>
+                    <label class="inline-flex items-center">
+                        <input type="checkbox" v-model="form.is_not_academic_probation" class="mr-2">
+                        <span>Not Under Academic Probation</span>
+                    </label>
+                    <label class="inline-flex items-center">
+                        <input type="checkbox" v-model="form.is_not_disciplinary_probation" class="mr-2">
+                        <span>Not Under Disciplinary Probation</span>
+                    </label>
+                    <label class="inline-flex items-center">
+                        <input type="checkbox" v-model="form.has_position" class="mr-2">
+                        <span>Has Position/Rank in Organization</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-6 text-center">
+            <button type="submit" @click="submit" class="bg-green-500 text-white px-4 py-2 rounded">Submit</button>
+        </div>
+    </div>
+
+    <div class="footer mt-8 text-xs flex justify-between">
+        <span>LSPU-OSAS-SF-006</span>
+        <span>Rev. 1</span>
+        <span>09 November 2020</span>
+    </div>
+</div>
+
+
 
     </div>
 

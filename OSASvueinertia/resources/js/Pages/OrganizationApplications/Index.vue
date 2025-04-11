@@ -28,8 +28,14 @@ const getPdfRoute = (app) => {
     } else if (app.form_type === 'LSPU-OSAS-SF-001') {
         return `/applications/${app.id}/pdf`;
     } else if (app.form_type === 'LSPU-OSAS-SF-003') {
-        // Handle the new form type
         return `/applications/${app.id}/export-commitment`;
+    
+    } else if (app.form_type === 'LSPU-OSAS-SF-004') {
+        return `/applications/${app.id}/export-plan`;
+    
+    } else if (app.form_type === 'LSPU-OSAS-SF-006') {
+        return `/applications/${app.id}/export-certification`;
+    
     } else {
         // Default case
         console.warn('Unknown form type:', app.form_type);

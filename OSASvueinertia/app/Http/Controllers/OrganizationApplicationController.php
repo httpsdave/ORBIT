@@ -62,7 +62,33 @@ class OrganizationApplicationController extends Controller
             'academic_year_end' => 'required|string|max:10',
             
         ]);
+    }  elseif ($request->form_type === 'LSPU-OSAS-SF-004') {
+        $validationRules = array_merge($validationRules, [
+            'secretary_name' => 'required|string|max:255',
+            'academic_year_start' => 'required|string|max:10',
+            'academic_year_end' => 'required|string|max:10',
+            
+            'activities' => 'required|array|min:1',
+            'activities.*.objective' => 'required|string|max:255',
+            'activities.*.name' => 'required|string|max:255',
+            'activities.*.description' => 'required|string|max:1000',
+            'activities.*.persons_involved' => 'required|string|max:255',
+            'activities.*.target_date' => 'required|date',
+            'activities.*.budget' => 'required|numeric|min:0',
+        ]);
+    }elseif ($request->form_type === 'LSPU-OSAS-SF-006') {
+        $validationRules = array_merge($validationRules, [
+            'student_name' => 'required|string|max:255',
+            'course_year_section' => 'required|string|max:255',
+            'position_rank' => 'nullable|string|max:255',
+            'is_bonafide' => 'required|boolean',
+            'is_not_academic_probation' => 'required|boolean',
+            'is_not_disciplinary_probation' => 'required|boolean',
+            'has_position' => 'required|boolean',
+        ]);
+        
     }
+    
     
     
     $request->validate($validationRules);
@@ -70,15 +96,37 @@ class OrganizationApplicationController extends Controller
     $data = $request->all();
     
     // Set default values for missing fields based on form type
-    if ($request->form_type === 'LSPU-OSAS-SF-002') {
+    if ($request->form_type === 'LSPU-OSAS-SF-002') 
+    {
         $data['application_date'] = now(); // Use current date for renewal forms
         $data['director_name'] = $data['chairperson_name']; // Use chairperson name for director
-    }elseif ($request->form_type === 'LSPU-OSAS-SF-003') {
+    }
+    elseif ($request->form_type === 'LSPU-OSAS-SF-003') 
+    {
+        $data['application_date'] = now(); // Use current date for renewal forms
+        
+    }
+    elseif ($request->form_type === 'LSPU-OSAS-SF-004') 
+    {
+        $data['application_date'] = now(); // Use current date for renewal forms
+        
+    }
+    elseif ($request->form_type === 'LSPU-OSAS-SF-006') 
+    {
         $data['application_date'] = now(); // Use current date for renewal forms
         
     }
     
-    OrganizationApplication::create($data);
+    
+    $application = OrganizationApplication::create($data);
+
+    // Save activities if this is the Plan of Activities form
+    if ($request->form_type === 'LSPU-OSAS-SF-004' && $request->has('activities')) {
+        foreach ($request->activities as $activityData) {
+            $application->activities()->create($activityData);
+        }
+    }
+
 
     return redirect()->route('applications.index');
 }
@@ -95,29 +143,8 @@ class OrganizationApplicationController extends Controller
             'president_name' => 'required|string|max:255',
             'application_date' => 'required|date',
         ]);
-            /*
-        // Base validation rules
-        $validationRules = [
-            'organization_name' => 'required|string|max:255',
-            'president_name' => 'required|string|max:255',
-        ];
-        
-        // Add form-specific validation rules for updates
-        if ($application->form_type === 'LSPU-OSAS-SF-001') {
-            $validationRules['application_date'] = 'required|date';
-        } elseif ($application->form_type === 'LSPU-OSAS-SF-002') {
-            $validationRules['college'] = 'required|string|max:255';
-            $validationRules['academic_year_start'] = 'required|string|max:10';
-            $validationRules['academic_year_end'] = 'required|string|max:10';
-        } elseif ($application->form_type === 'LSPU-OSAS-SF-003') {
-            // Commitment form specific validation for updates
-            $validationRules['adviser_college'] = 'required|string|max:255';
-            $validationRules['adviser_rank'] = 'required|string|max:255';
-            $validationRules['adviser_address'] = 'required|string|max:255';
-            $validationRules['adviser_contact'] = 'required|string|max:255';
-            $validationRules['form_date'] = 'required|date';
-        }
-*/
+           
+
         $application->update($request->all());
 
         return redirect()->route('applications.index');
@@ -151,6 +178,27 @@ class OrganizationApplicationController extends Controller
 
         return $pdf->download('Commitment_' . $application->organization_name . '.pdf');
     }
+
+    public function exportPlanPdf(OrganizationApplication $application)
+    {
+        $application->load('activities'); // Eager load activities for the PDF
+
+        // Pass both application and activities to the PDF view
+        $pdf = Pdf::loadView('pdfs.organization_plan', ['application' => $application, 'activities' => $application->activities])
+                ->setPaper('A4', 'portrait');
+
+        return $pdf->download('Plan_' . $application->organization_name . '.pdf');
+    }
+
+    public function exportCertificationPdf(OrganizationApplication $application)
+    {
+        $pdf = Pdf::loadView('pdfs.organization_certification', compact('application'))
+                ->setPaper('A4', 'portrait');
+
+        return $pdf->download('Certification_' . $application->organization_name . '.pdf');
+    }
+
+
 
 
 }
