@@ -16,7 +16,7 @@
 
         body {
             font-family: 'Times New Roman', serif;
-            font-size: 11pt;
+            font-size: 12pt;
             line-height: 1.1;
             margin: 0;
             padding: 0;
@@ -24,6 +24,7 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            position: relative;
         }
 
         .header {
@@ -107,24 +108,56 @@
             line-height: 2;
         }
 
+        /* Updated styling for the blank fields */
+        .student-blank {
+            display: inline-block;
+            min-width: 350px;
+            border-bottom: 1px solid black;
+            text-align: center;
+        }
+
+        .course-blank {
+            display: inline-block;
+            min-width: 300px;
+            border-bottom: 1px solid black;
+            text-align: center;
+        }
+
+        .position-blank {
+            display: inline-block;
+            min-width: 250px;
+            border-bottom: 1px solid black;
+            text-align: center;
+        }
+
+        /* Updated checkbox styling to use text-based parentheses */
         .checkbox-item {
             margin: 10px 0;
         }
 
-        .checkbox {
+        .text-checkbox {
             display: inline-block;
-            width: 12px;
-            height: 12px;
-            border: 1px solid black;
             margin-right: 8px;
+            font-weight: normal;
         }
 
         .position-line {
             margin: 10px 0;
         }
 
+        /* Updated signature section to be at bottom center */
+        .signature-section {
+            position: absolute;
+            bottom: 100px; /* Adjust this value as needed to position above footer */
+            left: 0;
+            right: 0;
+            text-align: center;
+        }
+
         .noted-section {
-            margin-top: 30px;
+            text-align: left;
+            margin-bottom: 20px;
+            padding-left: 80px; /* Added padding to move "Noted:" to the left */
         }
 
         .signature-line {
@@ -193,37 +226,41 @@
     </div>
 
     <div class="cert-content">
-        This certifies that <u>{{ $application->student_name ?? '___________________________________' }}</u>, a 
-        <u>{{ $application->course_year_section ?? '___________________________________' }}</u>, 
+        This certifies that <span class="student-blank">{{ $application->student_name ?? '' }}</span>, a 
+        <span class="course-blank">{{ $application->course_year_section ?? '' }}</span>, 
         
         student of this College is:
     </div>
 
+    <!-- Text-based checkboxes -->
     <div class="checkbox-item">
-        <span class="checkbox">( )</span> a bonafide student;
+        <span class="text-checkbox">({{ $application->is_bonafide ? '/' : ' ' }})</span> a bonafide student;
     </div>
     <div class="checkbox-item">
-        <span class="checkbox">( )</span> not under academic probation;
+        <span class="text-checkbox">({{ $application->is_not_academic_probation ? '/' : ' ' }})</span> not under academic probation;
     </div>
     <div class="checkbox-item">
-        <span class="checkbox">( )</span> not under disciplinary probation;
+        <span class="text-checkbox">({{ $application->is_not_disciplinary_probation ? '/' : ' ' }})</span> not under disciplinary probation;
     </div>
     <div class="position-line">
-        <span class="checkbox">( )</span> position/rank in the organization <u>{{ $application->position_rank ?? '___________________' }}</u>;
+        <span class="text-checkbox">({{ $application->has_position ? '/' : ' ' }})</span> position/rank in the organization <span class="position-blank">{{ $application->position_rank ?? '' }}</span>;
     </div>
 
-    <div class="noted-section">
-        <p>Noted:</p>
-    </div>
+    <!-- Moved signature section to the bottom -->
+    <div class="signature-section">
+        <div class="noted-section">
+            <p>Noted:</p>
+        </div>
 
-    <div class="signature-line">
-        <div class="signature-name">{{ $application->adviser_name ?? '' }}</div>
-        <div class="signature-title">Faculty Adviser(s)</div>
-    </div>
+        <div class="signature-line">
+            <div class="signature-name">{{ $application->adviser_name ?? '' }}</div>
+            <div class="signature-title">Faculty Adviser(s)</div>
+        </div>
 
-    <div class="signature-line">
-        <div class="signature-name">{{ $application->dean_name ?? '' }}</div>
-        <div class="signature-title">Dean/Assoc. Dean of College</div>
+        <div class="signature-line">
+            <div class="signature-name">{{ $application->dean_name ?? '' }}</div>
+            <div class="signature-title">Dean/Assoc. Dean of College</div>
+        </div>
     </div>
 
     <div class="footer">
