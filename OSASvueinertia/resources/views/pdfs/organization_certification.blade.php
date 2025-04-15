@@ -29,10 +29,33 @@
 
         .header {
             text-align: center;
-            font-size: 15px;
+            /* Increased base font size from 15px to 16px */
+            font-size: 16px;
             font-weight: bold;
             margin: 0 0 0.5cm 0;
             padding-top: 0.5cm;
+        }
+        
+        /* New styles for specific header elements */
+        .header-title {
+            /* Republic of the Philippines */
+            font-size: 16px;
+        }
+        
+        .header-university {
+            /* University name */
+            font-size: 18px;
+        }
+        
+        .header-province {
+            /* Province of Laguna */
+            font-size: 16px;
+        }
+        
+        .header-office {
+            /* Office of Student Affairs and Services */
+            font-size: 20px;
+            margin-top: 40px;
         }
 
         .section {
@@ -96,16 +119,19 @@
 
         .cert-title {
             text-align: center;
-            font-size: 16pt;
+            font-size: 20pt;
             font-weight: bold;
             margin: 30px 0;
             
         }
 
+        /* Modified: Updated line height to 1.5 for 1.5 spacing */
         .cert-content {
             text-align: justify;
             margin: 20px 0;
-            line-height: 2;
+            line-height: 1.5; /* Changed from 2 to 1.5 for 1.5 spacing */
+            padding-left: 40px;
+            padding-right: 40px;
         }
 
         /* Updated styling for the blank fields */
@@ -131,8 +157,12 @@
         }
 
         /* Updated checkbox styling to use text-based parentheses */
+        /* Modified: Added 1.5 line spacing and consistent padding */
         .checkbox-item {
             margin: 10px 0;
+            padding-left: 40px;
+            padding-right: 40px;
+            line-height: 1.5; /* Added 1.5 line spacing */
         }
 
         .text-checkbox {
@@ -141,28 +171,56 @@
             font-weight: normal;
         }
 
+        /* Modified: Added 1.5 line spacing to position line */
         .position-line {
             margin: 10px 0;
+            padding-left: 40px;
+            padding-right: 40px;
+            line-height: 1.5; /* Added 1.5 line spacing */
         }
 
-        /* Updated signature section to be at bottom center */
+        /* MODIFIED: Adjusted the signature section */
         .signature-section {
+            position: relative;
+            /* THIS CONTROLS THE DISTANCE FROM THE CHECKBOXES TO THE "NOTED:" SECTION */
+            margin-top: 250px; /* ADJUST THIS VALUE to move the "Noted:" section up/down */
+        }
+
+        /* MODIFIED: Adjusted the noted section positioning */
+        .noted-section {
+            text-align: left;
+            /* THIS CONTROLS THE DISTANCE BETWEEN "NOTED:" AND THE DEAN SIGNATURE */
+            margin-bottom: 100px; /* ADJUST THIS VALUE to control space between adviser and dean */
+            padding-left: 80px;
+        }
+
+        /* Dean signature section positioned at bottom */
+        .dean-signature-section {
             position: absolute;
-            bottom: 100px; /* Adjust this value as needed to position above footer */
+            /* THIS CONTROLS HOW HIGH UP FROM THE BOTTOM THE DEAN SIGNATURE APPEARS */
+            bottom: 100px; /* ADJUST THIS VALUE to move the dean signature up/down */
             left: 0;
             right: 0;
             text-align: center;
         }
 
-        .noted-section {
-            text-align: left;
-            margin-bottom: 20px;
-            padding-left: 80px; /* Added padding to move "Noted:" to the left */
+        .adviser-section {
+            margin-top: 10px;
+            padding-left: 80px;
         }
 
         .signature-line {
             margin-top: 40px;
             text-align: center;
+        }
+
+        /* Modified: Added different signature names for advisor and dean */
+        .signature-name-adviser {
+            margin: 0;
+            width: 200px;
+            border-bottom: 1px solid black;
+            text-align: center;
+            margin-left: -40px;
         }
 
         .signature-name {
@@ -174,7 +232,19 @@
 
         .signature-title {
             text-align: center;
-            font-size: 10pt;
+            font-size: 12pt;
+        }
+
+        /* Modified: Added a new class for adviser title */
+        .signature-title-adviser {
+            text-align: left;
+            font-size: 12pt;
+            margin-left: 10px;
+        }
+
+        /* MODIFIED: Faculty adviser signature spacing */
+        .faculty-adviser-signature {
+            margin-top: 30px; /* ADJUST THIS VALUE to control space between "Noted:" and signature line */
         }
 
         .footer {
@@ -204,16 +274,36 @@
             right: -1.0cm;
             bottom: 0;
         }
+        
+        .labeled-blank {
+        position: relative;
+        display: inline-block;
+        }
+        
+        .student-blank, .course-blank {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .blank-label {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 10pt;
+            line-height: 1;
+            margin-top: 2px;
+        }
     </style>
 </head>
 <body>
     <div class="header">
         <img src="{{ public_path('images/lspu-logo.png') }}" alt="LSPU Logo" class="logo">
-        Republic of the Philippines<br>
-        Laguna State Polytechnic University<br>
-        Province of Laguna<br>
-        <br>
-        OFFICE OF STUDENT AFFAIRS AND SERVICES
+        <div class="header-title">Republic of the Philippines</div>
+        <div class="header-university">Laguna State Polytechnic University</div>
+        <div class="header-province">Province of Laguna</div>
+        <div class="header-office">OFFICE OF STUDENT AFFAIRS AND SERVICES</div>
     </div>
 
     <div class="date-line">
@@ -225,9 +315,25 @@
         CERTIFICATION
     </div>
 
+    <!-- Modified cert-content section with simpler approach -->
     <div class="cert-content">
-        This certifies that <span class="student-blank">{{ $application->student_name ?? '' }}</span>, a 
-        <span class="course-blank">{{ $application->course_year_section ?? '' }}</span>, 
+        This certifies that 
+        <div style="display: inline-block; vertical-align: top;">
+            <div>
+                <span class="student-blank">{{ $application->student_name ?? '' }}</span>
+            </div>
+            <div style="text-align: center; font-size: 10pt; margin-top: -5px;">
+                student name
+            </div>
+        </div>, a 
+        <div style="display: inline-block; vertical-align: top;">
+            <div>
+                <span class="course-blank">{{ $application->course_year_section ?? '' }}</span>
+            </div>
+            <div style="text-align: center; font-size: 10pt; margin-top: -5px;">
+                course/year and section
+            </div>
+        </div>, 
         
         student of this College is:
     </div>
@@ -246,21 +352,22 @@
         <span class="text-checkbox">({{ $application->has_position ? '/' : ' ' }})</span> position/rank in the organization <span class="position-blank">{{ $application->position_rank ?? '' }}</span>;
     </div>
 
-    <!-- Moved signature section to the bottom -->
+    <!-- MODIFIED: Split into two separate sections -->
     <div class="signature-section">
         <div class="noted-section">
             <p>Noted:</p>
+            <!-- Faculty adviser signature -->
+            <div class="faculty-adviser-signature">
+                <div class="signature-name-adviser">{{ $application->adviser_name ?? '' }}</div>
+                <div class="signature-title-adviser">Faculty Adviser(s)</div>
+            </div>
         </div>
+    </div>
 
-        <div class="signature-line">
-            <div class="signature-name">{{ $application->adviser_name ?? '' }}</div>
-            <div class="signature-title">Faculty Adviser(s)</div>
-        </div>
-
-        <div class="signature-line">
-            <div class="signature-name">{{ $application->dean_name ?? '' }}</div>
-            <div class="signature-title">Dean/Assoc. Dean of College</div>
-        </div>
+    <!-- MODIFIED: Separate dean signature section to keep at bottom -->
+    <div class="dean-signature-section">
+        <div class="signature-name">{{ $application->dean_name ?? '' }}</div>
+        <div class="signature-title">Dean/Assoc. Dean of College</div>
     </div>
 
     <div class="footer">
