@@ -36,7 +36,11 @@ const getPdfRoute = (app) => {
     } else if (app.form_type === 'LSPU-OSAS-SF-006') {
         return `/applications/${app.id}/export-certification`;
     
-    } else {
+    } else if (app.form_type === 'LSPU-OSAS-SF-005') {
+        return `/applications/${app.id}/export-members`;
+    
+    } 
+    else {
         // Default case
         console.warn('Unknown form type:', app.form_type);
         return `/applications/${app.id}/pdf`;

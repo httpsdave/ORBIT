@@ -76,7 +76,21 @@ class OrganizationApplicationController extends Controller
             'activities.*.target_date' => 'required|date',
             'activities.*.budget' => 'required|numeric|min:0',
         ]);
-    }elseif ($request->form_type === 'LSPU-OSAS-SF-006') {
+    }
+    elseif ($request->form_type === 'LSPU-OSAS-SF-005') {
+        $validationRules = array_merge($validationRules, [
+            'semester' => 'required|string|in:1st,2nd,Summer',
+            'academic_year_start' => 'required|string|max:10',
+            'academic_year_end' => 'required|string|max:10',
+            'second_adviser' => 'nullable|string|max:255',
+            'members' => 'required|array|min:1',
+            'members.*.student_name' => 'required|string|max:255',
+            'members.*.student_number' => 'required|string|max:50',
+            'members.*.course_year_section' => 'required|string|max:255',
+            'members.*.photo_path' => 'nullable|file|image|max:2048',
+        ]);
+    }
+    elseif ($request->form_type === 'LSPU-OSAS-SF-006') {
         $validationRules = array_merge($validationRules, [
             'student_name' => 'required|string|max:255',
             'course_year_section' => 'required|string|max:255',
@@ -116,6 +130,20 @@ class OrganizationApplicationController extends Controller
         $data['application_date'] = now(); // Use current date for renewal forms
         
     }
+    elseif ($request->form_type === 'LSPU-OSAS-SF-005') 
+        {
+            $data['application_date'] = now(); // Use current date for list of members form
+            
+            // Process member photos
+            if (isset($data['members']) && is_array($data['members'])) {
+                foreach ($data['members'] as $key => $member) {
+                    if (isset($member['photo_path']) && $member['photo_path'] instanceof \Illuminate\Http\UploadedFile) {
+                        $path = $member['photo_path']->store('member_photos', 'public');
+                        $data['members'][$key]['photo_path'] = $path;
+                    }
+                }
+            }
+        }
     
     
     $application = OrganizationApplication::create($data);
@@ -127,6 +155,12 @@ class OrganizationApplicationController extends Controller
         }
     }
 
+    // Save members if this is the List of Members form
+    if ($request->form_type === 'LSPU-OSAS-SF-005' && $request->has('members')) {
+        foreach ($data['members'] as $memberData) {
+            $application->members()->create($memberData);
+        }
+    }
 
     return redirect()->route('applications.index');
 }
@@ -189,6 +223,28 @@ class OrganizationApplicationController extends Controller
 
         return $pdf->download('Plan_' . $application->organization_name . '.pdf');
     }
+
+    public function exportMembersPdf(OrganizationApplication $application)
+    {
+        // Eager load the members relationship
+        $application->load('members');
+
+        // Check if members data exists
+        if ($application->members->isEmpty()) {
+            return response()->json(['error' => 'No members found for this organization.']);
+        }
+
+        // Generate the PDF using the loaded data
+        $pdf = Pdf::loadView('pdfs.organization_list', [
+                'application' => $application, 
+                'members' => $application->members
+            ])
+            ->setPaper('A4', 'portrait');
+
+        // Return the PDF as a download
+        return $pdf->download('Members_' . $application->organization_name . '.pdf');
+    }
+
 
     public function exportCertificationPdf(OrganizationApplication $application)
     {

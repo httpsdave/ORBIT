@@ -25,6 +25,7 @@ Route::get('/applications/{application}/export-renewal', [OrganizationApplicatio
 Route::get('/applications/{application}/export-commitment', [OrganizationApplicationController::class, 'exportCommitmentPdf'])->name('applications.export-commitment');
 Route::get('/applications/{application}/export-plan', [OrganizationApplicationController::class, 'exportPlanPdf'])->name('applications.export-plan');
 Route::get('/applications/{application}/export-certification', [OrganizationApplicationController::class, 'exportCertificationPdf'])->name('applications.export-certification');
+Route::get('/applications/{application}/export-members', [OrganizationApplicationController::class, 'exportMembersPdf'])->name('applications.export-members');
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');

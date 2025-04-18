@@ -47,11 +47,24 @@ class OrganizationApplication extends Model
         'is_not_disciplinary_probation',
         'has_position',
 
+        // New fields for the list of members form
+        'semester',
+        'second_adviser',
+
+
+
     ];
 
     public function activities()
     {
         return $this->hasMany(Activity::class);
     }
+
+    
+    public function members()
+    {
+        return $this->hasMany(Member::class);
+    }
+
 }
 
