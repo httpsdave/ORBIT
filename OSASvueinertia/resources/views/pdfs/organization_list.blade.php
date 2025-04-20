@@ -58,22 +58,22 @@
         }
 
         .photo-cell {
-            width: 70px;
+            width: 96px; /* Standard 1x1 inch photo size at 96 DPI */
             vertical-align: top;
             padding-right: 10px;
         }
 
         .info-cell {
             vertical-align: top;
-            width: calc(100% - 80px); /* Ensure info cell has proper width */
+            width: calc(100% - 106px); /* Ensure info cell has proper width */
         }
 
         .photo-box {
             border: 1px solid black;
-            width: 70px;
-            height: 70px;
+            width: 96px;
+            height: 96px;
             text-align: center;
-            line-height: 70px;
+            line-height: 96px;
             font-size: 10pt;
             position: relative;
             overflow: hidden;
@@ -130,8 +130,17 @@
             bottom: 0;
         }
 
+        /* New signature row layout */
+        .signature-row {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-top: 20px;
+        }
+
         .signature {
             margin-top: 20px;
+            width: 45%; /* Width for signature blocks */
         }
 
         .signature p {
@@ -162,62 +171,109 @@
             text-align: center;
             margin-bottom: 10px;
         }
+        
+        /* Page break for DomPDF compatibility */
+        .page-break {
+            page-break-before: always;
+        }
+        
+        /* Add top margin for content to ensure header visibility */
+        .content {
+            margin-top: 1cm;
+        }
     </style>
 </head>
 <body>
-    <div class="header">
-        <img src="{{ public_path('images/lspu-logo.png') }}" alt="LSPU Logo" class="logo">
-        Republic of the Philippines<br>
-        Laguna State Polytechnic University<br>
-        Province of Laguna<br>
-        <br>
-        OFFICE OF STUDENT AFFAIRS AND SERVICES<br>
-        <br>
-        <span class="sub-header">List of Members</span>
-    </div>
-
-    <div class="semester-section">
-        <span>{{ $application->semester ?? '__' }} Sem. / AY {{ $application->academic_year_start ?? '20__' }}-{{ $application->academic_year_end ?? '20__' }}</span>
-    </div>
-
-    <div class="section center-align">
-        <p>Name of Organization: <span class="signature-line">{{ $application->organization_name }}</span></p>
-    </div>
-
-    <!-- Member grid using simple tables -->
-    <table>
-        @php
-            // Calculate how many rows we need
-            $rowCount = ceil($members->count() / 2);
-            // Create array of members for easier access
-            $membersArray = $members->toArray();
-        @endphp
+    <!-- Function to generate header -->
+    @php
+    function showHeader() {
+        // This function will be called to generate the header for each page
+        $header = '<div class="header">
+                <img src="' . public_path('images/lspu-logo.png') . '" alt="LSPU Logo" class="logo">
+                Republic of the Philippines<br>
+                Laguna State Polytechnic University<br>
+                Province of Laguna<br>
+                <br>
+                OFFICE OF STUDENT AFFAIRS AND SERVICES<br>
+                <br>
+                <span class="sub-header">List of Members</span>
+            </div>';
+        return $header;
+    }
+    
+    function showFooter() {
+        // This function will generate the footer HTML
+        $footer = '<div class="footer">
+                <div class="footer-left">LSPU-OSAS-SF-005</div>
+                <div class="footer-center">Rev. 1</div>
+                <div class="footer-right">09 November 2020</div>
+            </div>';
+        return $footer;
+    }
+    
+    function showSemesterInfo($application) {
+        $info = '<div class="semester-section">
+                <span>' . ($application->semester ?? '__') . ' Sem. / AY ' . 
+                ($application->academic_year_start ?? '20__') . '-' . 
+                ($application->academic_year_end ?? '20__') . '</span>
+            </div>
+            <div class="section center-align">
+                <p>Name of Organization: <span class="signature-line">' . 
+                ($application->organization_name ?? '') . '</span></p>
+            </div>';
+        return $info;
+    }
+    @endphp
+    
+    <!-- First page header -->
+    {!! showHeader() !!}
+    {!! showSemesterInfo($application) !!}
+    
+    <!-- Calculate total pages needed -->
+    @php
+        // Define how many members per page
+        $membersPerPage = 10; // 5 rows with 2 columns = 10 members per page
+        $totalMembers = $members->count();
+        $totalPages = ceil($totalMembers / $membersPerPage);
         
-        @for ($row = 0; $row < $rowCount; $row++)
-            <tr>
-                @for ($col = 0; $col < 2; $col++)
+        // For tracking which page we're on
+        $currentPage = 1;
+    @endphp
+
+    <!-- First page members -->
+    <div class="content">
+        <table>
+            @php
+                $startIndex = 0;
+                $endIndex = min($membersPerPage, $totalMembers);
+                $membersPerColumn = 5;
+            @endphp
+            
+            @for ($row = 0; $row < $membersPerColumn; $row++)
+                <tr>
+                    <!-- Left Column -->
                     <td>
                         @php
-                            $index = $row * 2 + $col;
-                            $member = $members[$index] ?? null;
+                            $leftIndex = $row;
+                            $leftMember = $members[$leftIndex] ?? null;
                         @endphp
                         
-                        @if ($member)
+                        @if ($leftIndex < $totalMembers && $leftMember)
                             <table class="member-table">
                                 <tr>
                                     <td class="photo-cell">
                                         <div class="photo-box">
-                                            @if($member->photo_path)
-                                                <img src="{{ storage_path('app/public/' . $member->photo_path) }}" alt="Member Photo" width="68" height="68">
+                                            @if($leftMember->photo_path)
+                                                <img src="{{ storage_path('app/public/' . $leftMember->photo_path) }}" alt="Member Photo" width="94" height="94">
                                             @else
                                                 <span class="photo-box-text">1 x 1</span>
                                             @endif
                                         </div>
                                     </td>
                                     <td class="info-cell">
-                                        <div class="member-info">{{ $member->student_name ?? '' }}</div>
-                                        <div class="member-info">{{ $member->student_number ?? '' }}</div>
-                                        <div class="member-info">{{ $member->course_year_section ?? '' }}</div>
+                                        <div class="member-info">{{ $leftMember->student_name ?? '' }}</div>
+                                        <div class="member-info">{{ $leftMember->student_number ?? '' }}</div>
+                                        <div class="member-info">{{ $leftMember->course_year_section ?? '' }}</div>
                                     </td>
                                 </tr>
                             </table>
@@ -236,36 +292,203 @@
                             </table>
                         @endif
                     </td>
+                    
+                    <!-- Right Column -->
+                    <td>
+                        @php
+                            $rightIndex = $row + $membersPerColumn;
+                            $rightMember = $members[$rightIndex] ?? null;
+                        @endphp
+                        
+                        @if ($rightIndex < $totalMembers && $rightMember)
+                            <table class="member-table">
+                                <tr>
+                                    <td class="photo-cell">
+                                        <div class="photo-box">
+                                            @if($rightMember->photo_path)
+                                                <img src="{{ storage_path('app/public/' . $rightMember->photo_path) }}" alt="Member Photo" width="94" height="94">
+                                            @else
+                                                <span class="photo-box-text">1 x 1</span>
+                                            @endif
+                                        </div>
+                                    </td>
+                                    <td class="info-cell">
+                                        <div class="member-info">{{ $rightMember->student_name ?? '' }}</div>
+                                        <div class="member-info">{{ $rightMember->student_number ?? '' }}</div>
+                                        <div class="member-info">{{ $rightMember->course_year_section ?? '' }}</div>
+                                    </td>
+                                </tr>
+                            </table>
+                        @else
+                            <table class="member-table">
+                                <tr>
+                                    <td class="photo-cell">
+                                        <div class="photo-box"><span class="photo-box-text">1 x 1</span></div>
+                                    </td>
+                                    <td class="info-cell">
+                                        <div class="member-info"></div>
+                                        <div class="member-info">Student Number</div>
+                                        <div class="member-info">Course - Year Section</div>
+                                    </td>
+                                </tr>
+                            </table>
+                        @endif
+                    </td>
+                </tr>
+            @endfor
+        </table>
+    </div>
+
+    <!-- First page footer -->
+    {!! showFooter() !!}
+
+    <!-- Generate additional pages if needed -->
+    @for ($page = 1; $page < $totalPages; $page++)
+        <!-- Create a page break div -->
+        <div class="page-break"></div>
+        
+        <!-- Repeat header on each page -->
+        {!! showHeader() !!}
+        {!! showSemesterInfo($application) !!}
+        
+        <!-- Calculate starting and ending indices for this page -->
+        @php
+            $startIdx = $page * $membersPerPage;
+            $endIdx = min(($page + 1) * $membersPerPage, $totalMembers);
+            $currentPage = $page + 1;
+        @endphp
+        
+        <div class="content">
+            <table>
+                @for ($row = 0; $row < $membersPerColumn; $row++)
+                    <tr>
+                        <!-- Left Column -->
+                        <td>
+                            @php
+                                $leftIndex = $startIdx + $row;
+                                $leftMember = isset($members[$leftIndex]) ? $members[$leftIndex] : null;
+                            @endphp
+                            
+                            @if ($leftIndex < $totalMembers && $leftMember)
+                                <table class="member-table">
+                                    <tr>
+                                        <td class="photo-cell">
+                                            <div class="photo-box">
+                                                @if($leftMember->photo_path)
+                                                    <img src="{{ storage_path('app/public/' . $leftMember->photo_path) }}" alt="Member Photo" width="94" height="94">
+                                                @else
+                                                    <span class="photo-box-text">1 x 1</span>
+                                                @endif
+                                            </div>
+                                        </td>
+                                        <td class="info-cell">
+                                            <div class="member-info">{{ $leftMember->student_name ?? '' }}</div>
+                                            <div class="member-info">{{ $leftMember->student_number ?? '' }}</div>
+                                            <div class="member-info">{{ $leftMember->course_year_section ?? '' }}</div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            @else
+                                <table class="member-table">
+                                    <tr>
+                                        <td class="photo-cell">
+                                            <div class="photo-box"><span class="photo-box-text">1 x 1</span></div>
+                                        </td>
+                                        <td class="info-cell">
+                                            <div class="member-info"></div>
+                                            <div class="member-info">Student Number</div>
+                                            <div class="member-info">Course - Year Section</div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            @endif
+                        </td>
+                        
+                        <!-- Right Column -->
+                        <td>
+                            @php
+                                $rightIndex = $startIdx + $row + $membersPerColumn;
+                                $rightMember = isset($members[$rightIndex]) ? $members[$rightIndex] : null;
+                            @endphp
+                            
+                            @if ($rightIndex < $totalMembers && $rightMember)
+                                <table class="member-table">
+                                    <tr>
+                                        <td class="photo-cell">
+                                            <div class="photo-box">
+                                                @if($rightMember->photo_path)
+                                                    <img src="{{ storage_path('app/public/' . $rightMember->photo_path) }}" alt="Member Photo" width="94" height="94">
+                                                @else
+                                                    <span class="photo-box-text">1 x 1</span>
+                                                @endif
+                                            </div>
+                                        </td>
+                                        <td class="info-cell">
+                                            <div class="member-info">{{ $rightMember->student_name ?? '' }}</div>
+                                            <div class="member-info">{{ $rightMember->student_number ?? '' }}</div>
+                                            <div class="member-info">{{ $rightMember->course_year_section ?? '' }}</div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            @else
+                                <table class="member-table">
+                                    <tr>
+                                        <td class="photo-cell">
+                                            <div class="photo-box"><span class="photo-box-text">1 x 1</span></div>
+                                        </td>
+                                        <td class="info-cell">
+                                            <div class="member-info"></div>
+                                            <div class="member-info">Student Number</div>
+                                            <div class="member-info">Course - Year Section</div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            @endif
+                        </td>
+                    </tr>
                 @endfor
-            </tr>
-        @endfor
-    </table>
+            </table>
+        </div>
+        
+        <!-- Add footer to each page -->
+        {!! showFooter() !!}
+    @endfor
 
-    <div class="signature left-align">
-        <p><span class="signature-line">{{ $application->adviser_name ?? '' }}</span></p>
-        <p>Faculty Adviser</p>
-        <p>Date: <span class="signature-line">{{ now()->format('F d, Y') }}</span></p>
-    </div>
+    <!-- Only add signature section on the last page -->
+    @if($totalMembers > 0)
+        @if($currentPage == $totalPages)
+            <!-- Signatures - only on the last page -->
+            <table style="width: 100%; margin-top: 20px; border-collapse: collapse;">
+                <tr>
+                    <td style="width: 50%; vertical-align: top; text-align: center;">
+                        <div style="width: 200px; margin: 0 auto;">
+                            <p style="margin-bottom: 0;">
+                                <span class="signature-line" style="display: block; min-width: 200px; text-align: center;">{{ $application->adviser_name ?? '' }}</span>
+                            </p>
+                            <p style="margin-top: 2px; text-align: center; font-weight: bold;">Faculty Adviser</p>
+                        </div>
+                        <p style="text-align: left; padding-left: 10px;">Date: <span class="signature-line">{{ now()->format('F d, Y') }}</span></p>
+                    </td>
+                    <td style="width: 50%; vertical-align: top; text-align: center;">
+                        <div style="width: 200px; margin: 0 auto;">
+                            <p style="margin-bottom: 0;">
+                                <span class="signature-line" style="display: block; min-width: 200px; text-align: center;">{{ $application->second_adviser ?? '' }}</span>
+                            </p>
+                            <p style="margin-top: 2px; text-align: center; font-weight: bold;">Faculty Adviser</p>
+                        </div>
+                        <p style="text-align: left; padding-left: 10px;">Date: <span class="signature-line">{{ now()->format('F d, Y') }}</span></p>
+                    </td>
+                </tr>
+            </table>
+            <div class="section center-align">
+                <p>Noted:</p>
+            </div>
 
-    <div class="signature right-align">
-        <p><span class="signature-line">{{ $application->second_adviser ?? '' }}</span></p>
-        <p>Faculty Adviser</p>
-        <p>Date: <span class="signature-line">{{ now()->format('F d, Y') }}</span></p>
-    </div>
-
-    <div class="section center-align">
-        <p>Noted:</p>
-    </div>
-
-    <div class="signature center-align">
-        <p><span class="signature-line">{{ $application->dean_name ?? '' }}</span></p>
-        <p>Dean/Assoc. Dean of College</p>
-    </div>
-
-    <div class="footer">
-        <div class="footer-left">LSPU-OSAS-SF-005</div>
-        <div class="footer-center">Rev. 1</div>
-        <div class="footer-right">09 November 2020</div>
-    </div>
+            <div class="signature center-align" style="width: 100%;">
+                <p style="margin-bottom: 0;"><span class="signature-line">{{ $application->dean_name ?? '' }}</span></p>
+                <p style="margin-top: 2px; font-weight: bold;">Dean/Assoc. Dean of College</p>
+            </div>
+        @endif
+    @endif
 </body>
 </html>
