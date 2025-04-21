@@ -11,7 +11,8 @@ const formOptions = [
     { value: 'LSPU-OSAS-SF-003', label: 'Commitment Form' },
     { value: 'LSPU-OSAS-SF-004', label: 'Plan of Activities' },
     { value: 'LSPU-OSAS-SF-005', label: 'List of Members' },
-    { value: 'LSPU-OSAS-SF-006', label: 'Student Certification' }, 
+    { value: 'LSPU-OSAS-SF-006', label: 'Student Certification' },
+    { value: 'LSPU-OSAS-SF-007', label: 'List of Officers' }, 
 ];
 
 const form = useForm({
@@ -55,7 +56,9 @@ const form = useForm({
     // New fields for List of   Members
     semester:'',
     second_adviser: '',
-    members: [] // Array to store multiple members
+    members: [], // Array to store multiple members
+    // New fields for List of Officers
+    officers: [], // Array to store multiple officers
 });
 
 // Add a function to add a new empty activity
@@ -90,6 +93,21 @@ const removeMember = (index) => {
     form.members.splice(index, 1);
 };
 
+// Add a function to add a new empty officer
+const addOfficer = () => {
+    form.officers.push({
+        student_name: '',
+        position: '',
+        student_number: '',
+        photo_path: null
+    });
+};
+
+// Add a function to remove an officer
+const removeOfficer = (index) => {
+    form.officers.splice(index, 1);
+};
+
 const selectForm = () => {
     if (selectedForm.value) {
         form.form_type = selectedForm.value;
@@ -110,17 +128,31 @@ const selectForm = () => {
                 addMember();
             }
         }
+        
+        // Add default officers for List of Officers form
+        if (selectedForm.value === 'LSPU-OSAS-SF-007' && form.officers.length === 0) {
+            // Add four empty officer entries
+            for(let i = 0; i < 4; i++) {
+                addOfficer();
+            }
+        }
     }
 };
 
-const handlePhotoUpload = (event, index) => {
+const handlePhotoUpload = (event, index, type = 'members') => {
     const file = event.target.files[0];
     if (file) {
-        // Create a temporary URL for preview in the form
-        form.members[index].photo_preview = URL.createObjectURL(file);
-        
-        // Store the actual file for upload
-        form.members[index].photo_path = file;  // Change from photo to photo_path to match blade template
+        if (type === 'members') {
+            // Create a temporary URL for preview in the form
+            form.members[index].photo_preview = URL.createObjectURL(file);
+            // Store the actual file for upload
+            form.members[index].photo_path = file;
+        } else if (type === 'officers') {
+            // Create a temporary URL for preview in the form
+            form.officers[index].photo_preview = URL.createObjectURL(file);
+            // Store the actual file for upload
+            form.officers[index].photo_path = file;
+        }
     }
 };
 
@@ -1048,13 +1080,165 @@ const submit = () => {
     </div>
 </div>
 
+<!-- List of Officers -->
+<div v-if="form.form_type === 'LSPU-OSAS-SF-007'" class="form-container">
+                <h2 class="text-lg font-bold mb-4">List of Officers Form</h2>
+                
+                <!-- Officer list preview -->
+                <div class="preview-section border p-4 mb-6">
+                    <div class="header text-center mb-4">
+                        <div class="text-center font-bold">
+                            Republic of the Philippines<br>
+                            Laguna State Polytechnic University<br>
+                            Province of Laguna<br>
+                            <br>
+                            OFFICE OF STUDENT AFFAIRS AND SERVICES
+                        </div>
+                    </div>
+                    
+                    <div class="organization-details text-center mb-4">
+                        <p>Name of Organization: <span class="border-b border-black px-2">{{ form.organization_name }}</span></p>
+                        <p>A.Y. {{ form.academic_year_start }}-{{ form.academic_year_end }}</p>
+                    </div>
+                    
+                    <div class="list-title text-center font-bold mb-4">LIST OF OFFICERS</div>
+                    
+                    <!-- Officers list -->
+                    <div v-for="(officer, index) in form.officers" :key="index" class="officer-row flex mb-6">
+                        <div class="photo-box border border-black w-16 h-16 flex items-center justify-center mr-4 text-xs">
+                            <img v-if="officer.photo_path && typeof officer.photo_path === 'object'" 
+                                :src="URL.createObjectURL(officer.photo_path)" 
+                                alt="Officer Photo" class="w-full h-full">
+                            <span v-else>2X2</span>
+                        </div>
+                        <div class="officer-details flex-1">
+                            <div class="field-row flex mb-2">
+                                <div class="field-label w-24">Name</div>
+                                <div class="field-colon w-2 mr-1">:</div>
+                                <div class="field-value flex-1 border-b border-black">{{ officer.student_name || '' }}</div>
+                            </div>
+                            <div class="field-row flex mb-2">
+                                <div class="field-label w-24">Position</div>
+                                <div class="field-colon w-2 mr-1">:</div>
+                                <div class="field-value flex-1 border-b border-black">{{ officer.position || '' }}</div>
+                            </div>
+                            <div class="field-row flex mb-2">
+                                <div class="field-label w-24">Student I.D. No.</div>
+                                <div class="field-colon w-2 mr-1">:</div>
+                                <div class="field-value flex-1 border-b border-black">{{ officer.student_number || '' }}</div>
+                            </div>
+                            <div class="field-row flex mb-2">
+                                <div class="field-label w-24">Signature</div>
+                                <div class="field-colon w-2 mr-1">:</div>
+                                <div class="field-value flex-1 border-b border-black"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="footer mt-8 text-xs flex justify-between">
+                        <span>LSPU-OSAS-SF-007</span>
+                        <span>Rev. 1</span>
+                        <span>09 November 2020</span>
+                    </div>
+                </div>
+                
+                <!-- Form inputs for officers -->
+                <div class="mt-8 border-t pt-6">
+                    <h3 class="text-lg font-bold mb-4">Form Details</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block font-bold">Organization Name</label>
+                            <input v-model="form.organization_name" class="border p-2 w-full" required>
+                        </div>
+
+                        <div>
+                            <label class="block font-bold">Academic Year Start</label>
+                            <input v-model="form.academic_year_start" class="border p-2 w-full" placeholder="20__" required>
+                        </div>
+
+                        <div>
+                            <label class="block font-bold">Academic Year End</label>
+                            <input v-model="form.academic_year_end" class="border p-2 w-full" placeholder="20__" required>
+                        </div>
+
+                        <div>
+                            <label class="block font-bold">President Name</label>
+                            <input v-model="form.president_name" class="border p-2 w-full" required>
+                        </div>
+
+                        <div>
+                            <label class="block font-bold">Faculty Adviser Name</label>
+                            <input v-model="form.adviser_name" class="border p-2 w-full" required>
+                        </div>
+
+                        <div>
+                            <label class="block font-bold">Coordinator Name</label>
+                            <input v-model="form.coordinator_name" class="border p-2 w-full" required>
+                        </div>
+
+                        <div>
+                            <label class="block font-bold">Dean/Assoc. Dean Name</label>
+                            <input v-model="form.dean_name" class="border p-2 w-full" required>
+                        </div>
+                    </div>
+
+                    <!-- Officer List Management -->
+                    <div class="mt-6">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-lg font-bold">Officers</h3>
+                            <button @click="addOfficer" type="button" class="bg-blue-500 text-white px-3 py-1 rounded">
+                                Add Officer
+                            </button>
+                        </div>
+
+                        <div v-for="(officer, index) in form.officers" :key="index" class="mt-4 p-4 border rounded">
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="font-bold">Officer #{{ index + 1 }}</h4>
+                                <button @click="removeOfficer(index)" type="button" class="text-red-500">
+                                    Remove
+                                </button>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block font-bold">Name</label>
+                                    <input v-model="officer.student_name" class="border p-2 w-full" required>
+                                </div>
+
+                                <div>
+                                    <label class="block font-bold">Position</label>
+                                    <input v-model="officer.position" class="border p-2 w-full" required>
+                                </div>
+
+                                <div>
+                                    <label class="block font-bold">Student I.D. No.</label>
+                                    <input v-model="officer.student_number" class="border p-2 w-full" required>
+                                </div>
+
+                                <div>
+                                    <label class="block font-bold">2x2 Photo</label>
+                                    <input type="file" @change="event => handlePhotoUpload(event, index, 'officers')" class="border p-2 w-full" accept="image/*">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 text-center">
+                        <button type="submit" @click="submit" class="bg-green-500 text-white px-4 py-2 rounded">Submit</button>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+
 
 
     </div>
 
-    
-
-    
 </template>
 
 

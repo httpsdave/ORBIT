@@ -101,6 +101,16 @@ class OrganizationApplicationController extends Controller
             'has_position' => 'required|boolean',
         ]);
         
+    }elseif ($request->form_type === 'LSPU-OSAS-SF-007') {
+        $validationRules = array_merge($validationRules, [
+            'academic_year_start' => 'required|string|max:10',
+            'academic_year_end' => 'required|string|max:10',
+            'officers' => 'required|array|min:1',
+            'officers.*.student_name' => 'required|string|max:255',
+            'officers.*.position' => 'required|string|max:255',
+            'officers.*.student_number' => 'required|string|max:50',
+            'officers.*.photo_path' => 'nullable|file|image|max:2048',
+        ]);
     }
     
     
@@ -143,6 +153,18 @@ class OrganizationApplicationController extends Controller
                     }
                 }
             }
+        }elseif ($request->form_type === 'LSPU-OSAS-SF-007') {
+            $data['application_date'] = now(); // Use current date for list of officers form
+            
+            // Process officer photos
+            if (isset($data['officers']) && is_array($data['officers'])) {
+                foreach ($data['officers'] as $key => $officer) {
+                    if (isset($officer['photo_path']) && $officer['photo_path'] instanceof \Illuminate\Http\UploadedFile) {
+                        $path = $officer['photo_path']->store('officer_photos', 'public');
+                        $data['officers'][$key]['photo_path'] = $path;
+                    }
+                }
+            }
         }
     
     
@@ -159,6 +181,13 @@ class OrganizationApplicationController extends Controller
     if ($request->form_type === 'LSPU-OSAS-SF-005' && $request->has('members')) {
         foreach ($data['members'] as $memberData) {
             $application->members()->create($memberData);
+        }
+    }
+
+    // Save officers if this is the List of Officers form
+    if ($request->form_type === 'LSPU-OSAS-SF-007' && $request->has('officers')) {
+        foreach ($data['officers'] as $officerData) {
+            $application->officers()->create($officerData);
         }
     }
 
@@ -190,71 +219,129 @@ class OrganizationApplicationController extends Controller
         return redirect()->route('applications.index');
     }
 
-    public function exportPdf(OrganizationApplication $application)
-    {
-        $pdf = Pdf::loadView('pdfs.organization_application', compact('application'))
-                ->setPaper('A4', 'portrait');
+    public function exportPdf(OrganizationApplication $application, Request $request)
+{
+    $pdf = Pdf::loadView('pdfs.organization_application', compact('application'))
+            ->setPaper('A4', 'portrait');
 
-        return $pdf->download('Application_' . $application->organization_name . '.pdf');
+    $action = $request->query('action', 'download');
+    
+    if ($action === 'view') {
+        return $pdf->stream('Application_' . $application->organization_name . '.pdf');
     }
-    public function exportRenewalPdf(OrganizationApplication $application)
-    {
-        $pdf = Pdf::loadView('pdfs.organization_renewal', compact('application'))
-                ->setPaper('A4', 'portrait');
+    
+    return $pdf->download('Application_' . $application->organization_name . '.pdf');
+}
 
-        return $pdf->download('Renewal_' . $application->organization_name . '.pdf');
+public function exportRenewalPdf(OrganizationApplication $application, Request $request)
+{
+    $pdf = Pdf::loadView('pdfs.organization_renewal', compact('application'))
+            ->setPaper('A4', 'portrait');
+            
+    $action = $request->query('action', 'download');
+    
+    if ($action === 'view') {
+        return $pdf->stream('Renewal_' . $application->organization_name . '.pdf');
+    }
+    
+    return $pdf->download('Renewal_' . $application->organization_name . '.pdf');
+}
+
+public function exportCommitmentPdf(OrganizationApplication $application, Request $request)
+{
+    $pdf = Pdf::loadView('pdfs.organization_commitment', compact('application'))
+            ->setPaper('A4', 'portrait');
+            
+    $action = $request->query('action', 'download');
+    
+    if ($action === 'view') {
+        return $pdf->stream('Commitment_' . $application->organization_name . '.pdf');
+    }
+    
+    return $pdf->download('Commitment_' . $application->organization_name . '.pdf');
+}
+
+public function exportPlanPdf(OrganizationApplication $application, Request $request)
+{
+    $application->load('activities'); // Eager load activities for the PDF
+
+    // Pass both application and activities to the PDF view
+    $pdf = Pdf::loadView('pdfs.organization_plan', ['application' => $application, 'activities' => $application->activities])
+            ->setPaper('A4', 'portrait');
+            
+    $action = $request->query('action', 'download');
+    
+    if ($action === 'view') {
+        return $pdf->stream('Plan_' . $application->organization_name . '.pdf');
+    }
+    
+    return $pdf->download('Plan_' . $application->organization_name . '.pdf');
+}
+
+public function exportMembersPdf(OrganizationApplication $application, Request $request)
+{
+    // Eager load the members relationship
+    $application->load('members');
+
+    // Check if members data exists
+    if ($application->members->isEmpty()) {
+        return response()->json(['error' => 'No members found for this organization.']);
     }
 
-    public function exportCommitmentPdf(OrganizationApplication $application)
-    {
-        $pdf = Pdf::loadView('pdfs.organization_commitment', compact('application'))
-                ->setPaper('A4', 'portrait');
-
-        return $pdf->download('Commitment_' . $application->organization_name . '.pdf');
+    // Generate the PDF using the loaded data
+    $pdf = Pdf::loadView('pdfs.organization_list', [
+            'application' => $application, 
+            'members' => $application->members
+        ])
+        ->setPaper('A4', 'portrait');
+        
+    $action = $request->query('action', 'download');
+    
+    if ($action === 'view') {
+        return $pdf->stream('Members_' . $application->organization_name . '.pdf');
     }
+    
+    return $pdf->download('Members_' . $application->organization_name . '.pdf');
+}
 
-    public function exportPlanPdf(OrganizationApplication $application)
-    {
-        $application->load('activities'); // Eager load activities for the PDF
-
-        // Pass both application and activities to the PDF view
-        $pdf = Pdf::loadView('pdfs.organization_plan', ['application' => $application, 'activities' => $application->activities])
-                ->setPaper('A4', 'portrait');
-
-        return $pdf->download('Plan_' . $application->organization_name . '.pdf');
+public function exportCertificationPdf(OrganizationApplication $application, Request $request)
+{
+    $pdf = Pdf::loadView('pdfs.organization_certification', compact('application'))
+            ->setPaper('A4', 'portrait');
+            
+    $action = $request->query('action', 'download');
+    
+    if ($action === 'view') {
+        return $pdf->stream('Certification_' . $application->organization_name . '.pdf');
     }
+    
+    return $pdf->download('Certification_' . $application->organization_name . '.pdf');
+}
 
-    public function exportMembersPdf(OrganizationApplication $application)
+public function exportOfficersPdf(OrganizationApplication $application, Request $request)
     {
-        // Eager load the members relationship
-        $application->load('members');
+        // Eager load the officers relationship
+        $application->load('officers');
 
-        // Check if members data exists
-        if ($application->members->isEmpty()) {
-            return response()->json(['error' => 'No members found for this organization.']);
+        // Check if officers data exists
+        if ($application->officers->isEmpty()) {
+            return response()->json(['error' => 'No officers found for this organization.']);
         }
 
         // Generate the PDF using the loaded data
-        $pdf = Pdf::loadView('pdfs.organization_list', [
+        $pdf = Pdf::loadView('pdfs.organization_officers', [
                 'application' => $application, 
-                'members' => $application->members
+                'officers' => $application->officers
             ])
             ->setPaper('A4', 'portrait');
-
-        // Return the PDF as a download
-        return $pdf->download('Members_' . $application->organization_name . '.pdf');
+            
+        $action = $request->query('action', 'download');
+        
+        if ($action === 'view') {
+            return $pdf->stream('Officers_' . $application->organization_name . '.pdf');
+        }
+        
+        return $pdf->download('Officers_' . $application->organization_name . '.pdf');
     }
-
-
-    public function exportCertificationPdf(OrganizationApplication $application)
-    {
-        $pdf = Pdf::loadView('pdfs.organization_certification', compact('application'))
-                ->setPaper('A4', 'portrait');
-
-        return $pdf->download('Certification_' . $application->organization_name . '.pdf');
-    }
-
-
-
 
 }

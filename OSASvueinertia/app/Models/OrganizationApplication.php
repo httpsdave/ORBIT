@@ -66,5 +66,10 @@ class OrganizationApplication extends Model
         return $this->hasMany(Member::class);
     }
 
+    public function officers()
+    {
+        return $this->hasMany(Officer::class);
+    }
+
 }
 
