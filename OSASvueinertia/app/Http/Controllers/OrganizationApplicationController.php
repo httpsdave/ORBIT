@@ -238,6 +238,8 @@ class OrganizationApplicationController extends Controller
         return redirect()->route('applications.index');
     }
 
+
+    
     public function exportPdf(OrganizationApplication $application, Request $request)
 {
     $pdf = Pdf::loadView('pdfs.organization_application', compact('application'))
