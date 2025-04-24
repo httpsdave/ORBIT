@@ -51,6 +51,10 @@ class OrganizationApplication extends Model
         'semester',
         'second_adviser',
 
+         // Student Activity Attendance Sheet fields
+         'activity_name',
+         'activity_date',
+
 
 
     ];
@@ -69,6 +73,11 @@ class OrganizationApplication extends Model
     public function officers()
     {
         return $this->hasMany(Officer::class);
+    }
+
+    public function attendees()
+    {
+        return $this->hasMany(Attendee::class);
     }
 
 }

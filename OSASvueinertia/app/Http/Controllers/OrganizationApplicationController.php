@@ -111,6 +111,16 @@ class OrganizationApplicationController extends Controller
             'officers.*.student_number' => 'required|string|max:50',
             'officers.*.photo_path' => 'nullable|file|image|max:2048',
         ]);
+    }elseif ($request->form_type === 'LSPU-OSAS-SF-009') {
+        $validationRules = array_merge($validationRules, [
+            'college' => 'nullable|string|max:255',
+            'activity_name' => 'nullable|string|max:255',
+            'activity_date' => 'nullable|date',
+            'attendees' => 'nullable|array|min:1',
+            'attendees.*.name' => 'nullable|string|max:255',
+            'attendees.*.course_year_section' => 'nullable|string|max:255',
+            'attendees.*.signature' => 'nullable',
+        ]);
     }
     
     
@@ -165,6 +175,8 @@ class OrganizationApplicationController extends Controller
                     }
                 }
             }
+        }elseif ($request->form_type === 'LSPU-OSAS-SF-009') {
+            $data['application_date'] = now(); // Use current date for attendance sheet
         }
     
     
@@ -188,6 +200,13 @@ class OrganizationApplicationController extends Controller
     if ($request->form_type === 'LSPU-OSAS-SF-007' && $request->has('officers')) {
         foreach ($data['officers'] as $officerData) {
             $application->officers()->create($officerData);
+        }
+    }
+
+    // Save attendees if this is the Student Activity Attendance Sheet
+    if ($request->form_type === 'LSPU-OSAS-SF-009' && $request->has('attendees')) {
+        foreach ($data['attendees'] as $attendeeData) {
+            $application->attendees()->create($attendeeData);
         }
     }
 
@@ -319,29 +338,60 @@ public function exportCertificationPdf(OrganizationApplication $application, Req
 }
 
 public function exportOfficersPdf(OrganizationApplication $application, Request $request)
-    {
-        // Eager load the officers relationship
-        $application->load('officers');
+{
+    // Eager load the officers relationship
+    $application->load('officers');
 
-        // Check if officers data exists
-        if ($application->officers->isEmpty()) {
-            return response()->json(['error' => 'No officers found for this organization.']);
-        }
-
-        // Generate the PDF using the loaded data
-        $pdf = Pdf::loadView('pdfs.organization_officers', [
-                'application' => $application, 
-                'officers' => $application->officers
-            ])
-            ->setPaper('A4', 'portrait');
-            
-        $action = $request->query('action', 'download');
-        
-        if ($action === 'view') {
-            return $pdf->stream('Officers_' . $application->organization_name . '.pdf');
-        }
-        
-        return $pdf->download('Officers_' . $application->organization_name . '.pdf');
+    // Check if officers data exists
+    if ($application->officers->isEmpty()) {
+        return response()->json(['error' => 'No officers found for this organization.']);
     }
 
+    // Generate the PDF using the loaded data
+    $pdf = Pdf::loadView('pdfs.organization_officers', [
+            'application' => $application, 
+            'officers' => $application->officers
+        ])
+        ->setPaper('A4', 'portrait');
+        
+    $action = $request->query('action', 'download');
+    
+    if ($action === 'view') {
+        return $pdf->stream('Officers_' . $application->organization_name . '.pdf');
+    }
+    
+    return $pdf->download('Officers_' . $application->organization_name . '.pdf');
 }
+
+public function exportAttendancePdf(OrganizationApplication $application, Request $request)
+{
+    // Eager load the attendees relationship
+    $application->load('attendees');
+
+    // Check if attendees data exists
+    if ($application->attendees->isEmpty()) {
+        return response()->json(['error' => 'No attendees found for this activity.']);
+    }
+
+    // Generate the PDF using the loaded data
+    $pdf = Pdf::loadView('pdfs.organization_attendance', [
+            'application' => $application, 
+            'attendees' => $application->attendees
+        ])
+        ->setPaper('A4', 'portrait');
+        
+    $action = $request->query('action', 'download');
+    
+    if ($action === 'view') {
+        return $pdf->stream('Attendance_' . $application->activity_name . '.pdf');
+    }
+    
+    return $pdf->download('Attendance_' . $application->activity_name . '.pdf');
+}
+
+
+
+
+}
+
+

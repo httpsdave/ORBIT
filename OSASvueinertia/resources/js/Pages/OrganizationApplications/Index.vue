@@ -91,7 +91,9 @@ const getPdfRoute = (app, action = 'download') => {
         return `/applications/${app.id}/export-members${queryParams}`;
     } else if (app.form_type === 'LSPU-OSAS-SF-007') {
         return `/applications/${app.id}/export-officers${queryParams}`;
-    } else {
+    } else if (app.form_type === 'LSPU-OSAS-SF-009') {
+        return `/applications/${app.id}/export-attendance${queryParams}`;
+    }else {
         // Default case
         console.warn('Unknown form type:', app.form_type);
         return `/applications/${app.id}/pdf${queryParams}`;
@@ -114,6 +116,8 @@ const formTypeToName = (formType) => {
             return 'Certification Form';
         case 'LSPU-OSAS-SF-007':
             return 'Officers List';
+        case 'LSPU-OSAS-SF-009':
+            return 'Student Activity Attendance Sheet';
         default:
             return formType;
     }
