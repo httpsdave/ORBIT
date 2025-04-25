@@ -6,12 +6,8 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\OrganizationApplicationController;
-use App\Http\Middleware\CheckRole;
-use App\Models\User;
-use App\Models\Role;
 
-// Authentication routes (login, register, password reset)
-require __DIR__.'/auth.php';
+
 
 // ALL routes protected behind authentication
 Route::middleware(['auth'])->group(function () {
@@ -19,11 +15,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/', 'App\Http\Controllers\FrontendController@index')->name('myhome');
     Route::get('/about', 'App\Http\Controllers\FrontendController@about')->name('aboutUs');
     Route::inertia('/contact', 'Frontend/Contact')->name('contactUs');
-    
-    // Profile routes
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.delete');
     
     // Applications routes
     Route::get('/applications', [OrganizationApplicationController::class, 'index'])->name('applications.index');
@@ -53,9 +44,7 @@ Route::middleware(['auth'])->group(function () {
     })->middleware(['verified'])->name('dashboard');
     
     // Admin routes
-    
-
-    Route::middleware(['verified', CheckRole::class.':admin'])->prefix('admin')->group(function () {
+    Route::middleware(['verified', 'role:admin'])->prefix('admin')->group(function () {
         Route::get('/dashboard', function () {
             return Inertia::render('Admin/Dashboard');
         })->name('admin.dashboard');
@@ -63,7 +52,7 @@ Route::middleware(['auth'])->group(function () {
         // Other admin routes
         Route::get('/users', function () {
             return Inertia::render('Admin/Users', [
-                'users' => User::with('role')->get()
+                'users' => \App\Models\User::with('role')->get()
             ]);
         })->name('admin.users');
     });

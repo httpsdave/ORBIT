@@ -18,9 +18,20 @@ class RegisteredUserController extends Controller
     /**
      * Display the registration view.
      */
-    public function create(): Response
+    /*public function create(): Response
     {
         return Inertia::render('Auth/Register');
+
+        
+    }*/
+    protected function create(array $input)
+    {
+        return User::create([
+            'name' => $input['name'],
+            'email' => $input['email'],
+            'password' => Hash::make($input['password']),
+            'role_id' => 2, // Default to regular user role
+        ]);
     }
 
     /**
@@ -47,5 +58,9 @@ class RegisteredUserController extends Controller
         Auth::login($user);
 
         return redirect(route('dashboard', absolute: false));
+
+        
     }
+    
+    
 }

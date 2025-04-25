@@ -13,8 +13,24 @@ class OrganizationApplicationController extends Controller
 {
     public function index()
     {
-        $applications = OrganizationApplication::all();
-        return Inertia::render('OrganizationApplications/Index', ['applications' => $applications]);
+        // If user is admin, show all applications
+        if (auth()->user()->isAdmin()) {
+            $applications = OrganizationApplication::all();
+        } else {
+            // For regular users, only show their own applications
+            $applications = OrganizationApplication::where('user_id', auth()->id())->get();
+            
+            // If no applications are found, this will help with debugging
+            if ($applications->isEmpty()) {
+                // For testing, you might want to see all applications if none are found
+                // $applications = OrganizationApplication::all();
+            }
+        }
+        
+        return Inertia::render('OrganizationApplications/Index', [
+            'applications' => $applications,
+            'userId' => auth()->id() // Send user ID to the frontend for debugging
+        ]);
     }
 
     public function create()
@@ -125,10 +141,13 @@ class OrganizationApplicationController extends Controller
     
     
     
-    $request->validate($validationRules);
-    
     $data = $request->all();
     
+    // Explicitly set user_id - make sure this line executes
+    $data['user_id'] = auth()->id();
+    
+    // For debugging, you might want to log this
+    \Log::info('Creating application for user: ' . auth()->id());
     // Set default values for missing fields based on form type
     if ($request->form_type === 'LSPU-OSAS-SF-002') 
     {

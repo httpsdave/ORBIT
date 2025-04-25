@@ -26,10 +26,15 @@
             min-height: 100vh;
         }
 
+        /* New class for Calibri font */
+        .calibri-font {
+            font-family: 'Calibri', 'Arial', sans-serif;
+        }
+
         .header {
             text-align: center;
             font-size: 16px;
-            font-weight: bold;
+            
             margin: 0 0 2px 0;
             padding-top: 0.5cm;
         }
@@ -89,6 +94,13 @@
             text-align: center; 
         }
 
+        /* Modified style for "Very respectfully yours" text only */
+        .respectfully-text {
+            text-align: left;
+            margin-left: 59%; /* Positions the text more to the left */
+            display: block;
+        }
+
         p { 
             margin: 3px 0;
             word-wrap: break-word;
@@ -97,9 +109,9 @@
         }
 
         .indented {
-    text-indent: 1.27cm;
-    margin-bottom: 20px; /* Adjust this value as needed */
-}
+            text-indent: 1.27cm;
+            margin-bottom: 20px; /* Adjust this value as needed */
+        }
 
 
         .logo {
@@ -156,6 +168,7 @@
             height: 20px;
             line-height: 20px;
             font-size: 10pt;
+            font-family: 'Calibri', 'Arial', sans-serif; /* Changed footer font to Calibri */
         }
 
         .footer-left {
@@ -181,15 +194,22 @@
             display: inline;
             word-break: break-word;
         }
+
+        .university-name {
+            max-width: 60%; /* Adjust as needed */
+            height: auto;
+            margin: 4px 0; /* Add some spacing above and below */
+            display: inline-block;
+        }
     </style>
 </head>
 <body>
     <div class="header">
     <img src="{{ public_path('images/lspu-logo.png') }}" alt="LSPU Logo" class="logo">
         
-        <p>Republic of the Philippines</p>
-        <p class="university-name">Laguna State Polytechnic University</p>
-        <p>Province of Laguna</p>
+        <p class="calibri-font">Republic of the Philippines</p>
+        <img src="{{ public_path('images/lspu-name.png') }}" alt="Laguna State Polytechnic University" class="university-name"><br>
+        <p class="calibri-font">Province of Laguna</p>
         <br>
         <p class="office-title">Office of Student Affairs and Services</p>
         <p class="form-title">RENEWAL FORM</p>
@@ -218,7 +238,7 @@
         </div>
 
         <div class="section right-align">
-            <p>Very respectfully yours,</p>
+            <p class="respectfully-text">Very respectfully yours,</p>
 
             <div class="signature">
                 <p><span class="signature-line">{{ $application->president_name }}</span></p>

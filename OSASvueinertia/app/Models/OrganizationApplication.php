@@ -12,6 +12,8 @@ class OrganizationApplication extends Model
     use HasFactory;
 
     protected $fillable = [
+
+        'user_id',
         'form_type',
         'organization_name',
         'president_name',
@@ -78,6 +80,11 @@ class OrganizationApplication extends Model
     public function attendees()
     {
         return $this->hasMany(Attendee::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 
 }
