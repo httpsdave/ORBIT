@@ -81,6 +81,15 @@
             overflow-wrap: break-word;
             word-wrap: break-word;
         }
+        
+        .title-under-signature {
+            display: inline-block;
+            min-width: 250px;
+            max-width: 90%;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
 
         .right-align { 
             text-align: right; 
@@ -242,14 +251,14 @@
 
             <div class="signature">
                 <p><span class="signature-line">{{ $application->president_name }}</span></p>
-                <p>Organization President</p>
+                <p><span class="title-under-signature">Organization President</span></p>
             </div>
         </div>
 
         <div class="section right-align">
             <div class="signature">
                 <p><span class="signature-line">{{ $application->organization_name }}</span></p>
-                <p>Name of Organization</p>
+                <p><span class="title-under-signature">Name of Organization</span></p>
             </div>
         </div>
 
@@ -257,14 +266,14 @@
             <p>Noted:</p>
             <div class="signature">
                 <p><span class="signature-line">{{ $application->adviser_name }}</span></p>
-                <p>Adviser's Student Organization</p>
+                <p><span class="title-under-signature">Adviser's Student Organization</span></p>
             </div>
         </div>
 
         <div class="section right-align">
             <div class="signature">
                 <p><span class="signature-line">{{ $application->dean_name }}</span></p>
-                <p>Dean/Assoc. Dean of College</p>
+                <p><span class="title-under-signature">Dean/Assoc. Dean of College</span></p>
             </div>
         </div>
 

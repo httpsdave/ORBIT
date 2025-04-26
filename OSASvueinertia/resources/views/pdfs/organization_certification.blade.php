@@ -31,15 +31,16 @@
             text-align: center;
             /* Increased base font size from 15px to 16px */
             font-size: 16px;
-            font-weight: bold;
+           
             margin: 0 0 0.5cm 0;
             padding-top: 0.5cm;
         }
         
-        /* New styles for specific header elements */
+        /* Updated header elements with Calibri font */
         .header-title {
             /* Republic of the Philippines */
             font-size: 16px;
+            font-family: 'Calibri', sans-serif;
         }
         
         .header-university {
@@ -50,11 +51,12 @@
         .header-province {
             /* Province of Laguna */
             font-size: 16px;
+            font-family: 'Calibri', sans-serif;
         }
         
         .header-office {
             /* Office of Student Affairs and Services */
-            font-size: 20px;
+            font-size: 18px;
             margin-top: 40px;
         }
 
@@ -144,14 +146,14 @@
 
         .course-blank {
             display: inline-block;
-            min-width: 300px;
+            min-width: 350px;
             border-bottom: 1px solid black;
             text-align: center;
         }
 
         .position-blank {
             display: inline-block;
-            min-width: 250px;
+            min-width: 210px;
             border-bottom: 1px solid black;
             text-align: center;
         }
@@ -159,31 +161,44 @@
         /* Updated checkbox styling to use text-based parentheses */
         /* Modified: Added 1.5 line spacing and consistent padding */
         .checkbox-item {
-            margin: 10px 0;
+            margin: 15px 0; /* Increased margin for more spacing */
             padding-left: 40px;
             padding-right: 40px;
             line-height: 1.5; /* Added 1.5 line spacing */
         }
 
         .text-checkbox {
-            display: inline-block;
-            margin-right: 8px;
+            display: inline;
+            margin-right: 2px;
             font-weight: normal;
         }
 
         /* Modified: Added 1.5 line spacing to position line */
         .position-line {
-            margin: 10px 0;
+            margin: 15px 0; /* Increased margin for more spacing */
             padding-left: 40px;
             padding-right: 40px;
             line-height: 1.5; /* Added 1.5 line spacing */
+        }
+
+        /* Added new style for the standalone text */
+        .college-is-text {
+            margin: 45px 0 25px 0; /* Add space above and below */
+            padding-left: 40px;
+            padding-right: 40px;
+            line-height: 1.5;
+        }
+        
+        /* NEW: Added margin-top to the checkbox-container to move it down */
+        .checkbox-container {
+            margin-top: 40px; /* Adjust this value to move checkboxes further down */
         }
 
         /* MODIFIED: Adjusted the signature section */
         .signature-section {
             position: relative;
             /* THIS CONTROLS THE DISTANCE FROM THE CHECKBOXES TO THE "NOTED:" SECTION */
-            margin-top: 250px; /* ADJUST THIS VALUE to move the "Noted:" section up/down */
+            margin-top: 200px; /* ADJUST THIS VALUE to move the "Noted:" section up/down - reduced to account for new spacing */
         }
 
         /* MODIFIED: Adjusted the noted section positioning */
@@ -247,6 +262,7 @@
             margin-top: 30px; /* ADJUST THIS VALUE to control space between "Noted:" and signature line */
         }
 
+        /* Updated footer with Calibri font */
         .footer {
             position: absolute;
             bottom: 0;
@@ -254,6 +270,7 @@
             height: 20px;
             line-height: 20px;
             font-size: 10pt;
+            font-family: 'Calibri', sans-serif;
         }
 
         .footer-left {
@@ -295,50 +312,61 @@
             line-height: 1;
             margin-top: 2px;
         }
+        .university-name {
+            max-width: 60%; /* Adjust as needed */
+            height: auto;
+            margin: 4px 0; /* Add some spacing above and below */
+            display: inline-block;
+        }
     </style>
 </head>
 <body>
     <div class="header">
         <img src="{{ public_path('images/lspu-logo.png') }}" alt="LSPU Logo" class="logo">
         <div class="header-title">Republic of the Philippines</div>
-        <div class="header-university">Laguna State Polytechnic University</div>
+        <img src="{{ public_path('images/lspu-name.png') }}" alt="Laguna State Polytechnic University" class="university-name"><br>
         <div class="header-province">Province of Laguna</div>
-        <div class="header-office">OFFICE OF STUDENT AFFAIRS AND SERVICES</div>
+        <div class="header-office"><strong>OFFICE OF STUDENT AFFAIRS AND SERVICES</strong></div>
     </div>
 
-    <div class="date-line">
-        <p><u>{{ \Carbon\Carbon::parse($application->application_date)->format('F d, Y') }}</u></p>
-        <p>DATE</p>
-    </div>
+    <!-- Modified date-line section to center DATE under its underline -->
+<div class="date-line">
+    <p><u>{{ \Carbon\Carbon::parse($application->application_date)->format('F d, Y') }}</u></p>
+    <p style="text-align: right; margin-right: 15px;">DATE</p>
+</div>
 
     <div class="cert-title">
         CERTIFICATION
     </div>
 
-    <!-- Modified cert-content section with simpler approach -->
     <div class="cert-content">
-        This certifies that 
-        <div style="display: inline-block; vertical-align: top;">
-            <div>
-                <span class="student-blank">{{ $application->student_name ?? '' }}</span>
-            </div>
-            <div style="text-align: center; font-size: 10pt; margin-top: -5px;">
-                student name
-            </div>
-        </div>, a 
-        <div style="display: inline-block; vertical-align: top;">
-            <div>
-                <span class="course-blank">{{ $application->course_year_section ?? '' }}</span>
-            </div>
-            <div style="text-align: center; font-size: 10pt; margin-top: -5px;">
-                course/year and section
-            </div>
-        </div>, 
-        
+    This certifies that 
+    <div style="display: inline-block; vertical-align: bottom; position: relative; top: 6px;">
+        <div>
+            <span class="student-blank">{{ $application->student_name ?? '' }}</span>
+        </div>
+        <div style="text-align: center; font-size: 11;font-weight:bold; margin-top: -5px;">
+            student name
+        </div>
+    </div>, a 
+    <div style="display: inline-block; vertical-align: bottom; position: relative; top: 6px;">
+        <div>
+            <span class="course-blank">{{ $application->course_year_section ?? '' }}</span>
+        </div>
+        <div style="text-align: center; font-size: 11pt;font-weight:bold; margin-top: -5px;">
+            course/year and section
+        </div>
+    </div>.
+</div>
+    
+    <!-- Moved "student of this College is:" to its own line -->
+    <div class="college-is-text">
         student of this College is:
     </div>
 
-    <!-- Text-based checkboxes -->
+   <!-- Wrapped checkboxes in a container with margin-top -->
+<div class="checkbox-container" style="padding-left: 25px;">
+    <!-- Text-based checkboxes with increased spacing -->
     <div class="checkbox-item">
         <span class="text-checkbox">({{ $application->is_bonafide ? '/' : ' ' }})</span> a bonafide student;
     </div>
@@ -351,18 +379,19 @@
     <div class="position-line">
         <span class="text-checkbox">({{ $application->has_position ? '/' : ' ' }})</span> position/rank in the organization <span class="position-blank">{{ $application->position_rank ?? '' }}</span>;
     </div>
+</div>
 
-    <!-- MODIFIED: Split into two separate sections -->
-    <div class="signature-section">
-        <div class="noted-section">
-            <p>Noted:</p>
-            <!-- Faculty adviser signature -->
-            <div class="faculty-adviser-signature">
-                <div class="signature-name-adviser">{{ $application->adviser_name ?? '' }}</div>
-                <div class="signature-title-adviser">Faculty Adviser(s)</div>
-            </div>
+ <!-- Modified Noted section to move just the "Noted:" text higher -->
+<div class="signature-section" style="margin-top: 100px;">
+    <div class="noted-section" style="padding-left: 80px;">
+        <p style="margin-left: -40px; margin-bottom: 70px;"><strong>Noted:</strong></p>
+        <!-- Faculty adviser signature -->
+        <div class="faculty-adviser-signature" style="margin-top: -15px;">
+            <div class="signature-name-adviser">{{ $application->adviser_name ?? '' }}</div>
+            <div class="signature-title-adviser">Faculty Adviser(s)</div>
         </div>
     </div>
+</div>
 
     <!-- MODIFIED: Separate dean signature section to keep at bottom -->
     <div class="dean-signature-section">
