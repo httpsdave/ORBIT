@@ -26,8 +26,21 @@
             text-align: center;
             font-size: 18px;
             font-weight: bold;
-            margin: 0 0 0.5cm 0;
-            padding-top: 0.5cm;
+            margin: 0 0 0.3cm 0;
+            padding-top: 0.3cm;
+        }
+        
+        /* Make Republic of the Philippines and Province of Laguna not bold */
+        .header-text {
+            font-weight: normal;
+            font-family: 'Calibri', sans-serif;
+            font-size:11pt;
+        }
+
+        /* Add more space after Province of Laguna */
+        .province-text {
+            margin-bottom: 12px; /* Added space after Province of Laguna */
+            display: block;
         }
 
         .logo {
@@ -42,7 +55,7 @@
         table {
             width: 100%;
             border-collapse: separate;
-            border-spacing: 0 15px; /* Reduced spacing between rows */
+            border-spacing: 0 12px;
         }
 
         td {
@@ -54,18 +67,19 @@
         .member-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 5px; /* Add space between member entries */
+            margin-bottom: 3px;
         }
 
         .photo-cell {
-            width: 96px; /* Standard 1x1 inch photo size at 96 DPI */
+            width: 96px;
             vertical-align: top;
             padding-right: 10px;
         }
 
         .info-cell {
             vertical-align: top;
-            width: calc(100% - 106px); /* Ensure info cell has proper width */
+            width: calc(100% - 106px);
+            text-align: center;
         }
 
         .photo-box {
@@ -79,7 +93,6 @@
             overflow: hidden;
         }
         
-        /* Ensure "PICTURE" text stays inside the box */
         .photo-box-text {
             position: absolute;
             top: 50%;
@@ -90,25 +103,26 @@
             font-size: 10pt;
         }
 
-        /* Remove underlines and adjust spacing */
         .member-info {
-            margin-bottom: 5px;
-            min-height: 16px; /* Reduced height */
-            padding: 2px 0;
-            white-space: nowrap; /* Prevent text wrapping */
-            overflow: hidden;    /* Hide overflow text */
-            text-overflow: ellipsis; /* Add ellipsis for overflow */
-            max-width: 100%;     /* Ensure text doesn't exceed width */
-            display: block;      /* Make it a block element */
+            margin-bottom: 3px;
+            min-height: 15px;
+            padding: 1px 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+            display: block;
         }
-
+        
         .footer {
             position: fixed;
             bottom: 0;
             width: 100%;
             height: 20px;
             line-height: 20px;
-            font-size: 10pt;
+            font-size: 11pt;
+            font-family: 'Calibri', sans-serif;
+            font-weight: normal;
         }
 
         .footer-left {
@@ -130,28 +144,34 @@
             bottom: 0;
         }
 
-        /* New signature row layout */
         .signature-row {
             display: flex;
             justify-content: space-between;
             width: 100%;
-            margin-top: 20px;
+            margin-top: 15px;
         }
 
         .signature {
-            margin-top: 20px;
-            width: 45%; /* Width for signature blocks */
+            margin-top: 15px;
+            width: 45%;
         }
 
         .signature p {
-            margin: 3px 0;
+            margin: 2px 0;
         }
 
         .signature-line {
+            display: inline;
+            border-bottom: 1px solid black;
+            padding-bottom: 1px;
+            text-align: center;
+        }
+        
+        .date-signature-line {
             display: inline-block;
             min-width: 200px;
             border-bottom: 1px solid black;
-            padding-bottom: 2px;
+            padding-bottom: 1px;
             text-align: center;
         }
 
@@ -169,17 +189,50 @@
         
         .semester-section {
             text-align: center;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
         }
         
-        /* Page break for DomPDF compatibility */
         .page-break {
             page-break-before: always;
         }
         
-        /* Add top margin for content to ensure header visibility */
         .content {
-            margin-top: 1cm;
+            margin-top: 0.6cm;
+        }
+
+        .university-name {
+            max-width: 60%;
+            height: auto;
+            margin: 3px 0;
+            display: inline-block;
+        }
+
+        .signature-section {
+            margin-top: 15px;
+        }
+        
+        .signature-table td {
+            padding-top: 5px;
+        }
+        
+        .noted-section {
+            margin-top: 10px;
+        }
+        
+        .dean-signature {
+            margin-top: 5px;
+        }
+
+        /* Office title with additional space */
+        .office-title {
+            margin-top: 10px; /* Added space before office title */
+            display: block;
+        }
+
+        /* Additional space before "List of Members" */
+        .sub-header {
+            margin-top: 6px;
+            display: block;
         }
     </style>
 </head>
@@ -190,12 +243,10 @@
         // This function will be called to generate the header for each page
         $header = '<div class="header">
                 <img src="' . public_path('images/lspu-logo.png') . '" alt="LSPU Logo" class="logo">
-                Republic of the Philippines<br>
-                Laguna State Polytechnic University<br>
-                Province of Laguna<br>
-                <br>
-                OFFICE OF STUDENT AFFAIRS AND SERVICES<br>
-                <br>
+                <span class="header-text">Republic of the Philippines<br>
+                <img src="' . public_path('images/lspu-name.png') .  '" alt="Laguna State Polytechnic University" class="university-name"><br>
+                <span class="province-text">Province of Laguna</span></span>
+                <span class="office-title">OFFICE OF STUDENT AFFAIRS AND SERVICES</span>
                 <span class="sub-header">List of Members</span>
             </div>';
         return $header;
@@ -213,12 +264,12 @@
     
     function showSemesterInfo($application) {
         $info = '<div class="semester-section">
-                <span>' . ($application->semester ?? '__') . ' Sem. / AY ' . 
-                ($application->academic_year_start ?? '20__') . '-' . 
-                ($application->academic_year_end ?? '20__') . '</span>
+                <span>' . ($application->semester ?? '__') . ' Sem. / A.Y. ' . 
+                20 . ($application->academic_year_start ?? '20__') . '-' . 
+                20 . ($application->academic_year_end ?? '20__') . '</span>
             </div>
             <div class="section center-align">
-                <p>Name of Organization: <span class="signature-line">' . 
+                <p style="margin: 3px 0;">Name of Organization: <span class="signature-line">' . 
                 ($application->organization_name ?? '') . '</span></p>
             </div>';
         return $info;
@@ -458,34 +509,34 @@
     @if($totalMembers > 0)
         @if($currentPage == $totalPages)
             <!-- Signatures - only on the last page -->
-            <table style="width: 100%; margin-top: 20px; border-collapse: collapse;">
+            <table class="signature-table" style="width: 100%; margin-top: 10px; border-collapse: collapse;">
                 <tr>
-                    <td style="width: 50%; vertical-align: top; text-align: center;">
+                    <td style="width: 50%; vertical-align: top; text-align: center; padding-top: 0;">
                         <div style="width: 200px; margin: 0 auto;">
                             <p style="margin-bottom: 0;">
-                                <span class="signature-line" style="display: block; min-width: 200px; text-align: center;">{{ $application->adviser_name ?? '' }}</span>
+                                <span class="date-signature-line" style="display: block; min-width: 200px; text-align: center;">{{ $application->adviser_name ?? '' }}</span>
                             </p>
                             <p style="margin-top: 2px; text-align: center; font-weight: bold;">Faculty Adviser</p>
                         </div>
-                        <p style="text-align: left; padding-left: 10px;">Date: <span class="signature-line">{{ now()->format('F d, Y') }}</span></p>
+                        <p style="text-align: left; padding-left: 10px; margin-top: 0;">Date: <span class="date-signature-line">{{ now()->format('F d, Y') }}</span></p>
                     </td>
-                    <td style="width: 50%; vertical-align: top; text-align: center;">
+                    <td style="width: 50%; vertical-align: top; text-align: center; padding-top: 0;">
                         <div style="width: 200px; margin: 0 auto;">
                             <p style="margin-bottom: 0;">
-                                <span class="signature-line" style="display: block; min-width: 200px; text-align: center;">{{ $application->second_adviser ?? '' }}</span>
+                                <span class="date-signature-line" style="display: block; min-width: 200px; text-align: center;">{{ $application->second_adviser ?? '' }}</span>
                             </p>
                             <p style="margin-top: 2px; text-align: center; font-weight: bold;">Faculty Adviser</p>
                         </div>
-                        <p style="text-align: left; padding-left: 10px;">Date: <span class="signature-line">{{ now()->format('F d, Y') }}</span></p>
+                        <p style="text-align: left; padding-left: 10px; margin-top: 0;">Date: <span class="date-signature-line">{{ now()->format('F d, Y') }}</span></p>
                     </td>
                 </tr>
             </table>
-            <div class="section center-align">
-                <p>Noted:</p>
+            <div class="noted-section center-align" style="margin-top: 5px;">
+                <p style="margin: 2px 0;">Noted:</p>
             </div>
 
-            <div class="signature center-align" style="width: 100%;">
-                <p style="margin-bottom: 0;"><span class="signature-line">{{ $application->dean_name ?? '' }}</span></p>
+            <div class="dean-signature center-align" style="width: 100%; margin-top: 3px;">
+                <p style="margin-bottom: 0;"><span class="date-signature-line">{{ $application->dean_name ?? '' }}</span></p>
                 <p style="margin-top: 2px; font-weight: bold;">Dean/Assoc. Dean of College</p>
             </div>
         @endif
