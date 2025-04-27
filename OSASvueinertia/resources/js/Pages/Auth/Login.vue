@@ -66,9 +66,9 @@ onMounted(() => {
                 </div>
                 
                 <div class="relative z-10 flex flex-col items-center transform transition-all duration-500 hover:scale-105">
-                    <div class="p-4 bg-white bg-opacity-10 backdrop-blur-sm rounded-full mb-8 shadow-lg hover:shadow-white/20 transition-all duration-300">
-                        <img src="/images/lspu-logo.png" alt="LSPU Logo" class="w-28 h-28 filter drop-shadow-lg">
-                    </div>
+    <div class="px-0.0 bg-white bg-opacity-10 backdrop-blur-sm rounded-full mb-6 shadow-lg hover:shadow-white/20 transition-all duration-300">
+        <img src="/images/lspu-logo.png" alt="LSPU Logo" class="w-48 h-48 object-cover filter drop-shadow-lg">
+    </div>
                     
                     <div class="text-center mb-8">
                         <h2 class="text-2xl font-bold mb-2">WELCOME TO</h2>

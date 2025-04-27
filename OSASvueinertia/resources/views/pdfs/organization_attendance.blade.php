@@ -15,7 +15,7 @@
         }
 
         body {
-            font-family: 'Times New Roman', serif;
+            font-family: 'Calibri', sans-serif;
             font-size: 11pt;
             line-height: 1;
             margin: 0;
@@ -43,15 +43,20 @@
         }
 
         .university-name {
-            font-family: 'Times New Roman', serif;
-            font-size: 14pt;
-            font-weight: bold;
+            max-width: 60%; /* Adjust as needed */
+            height: auto;
+            margin: 4px 0; /* Add some spacing above and below */
+            display: inline-block;
+        }
+        .calibri-text {
+            font-family: Calibri, sans-serif;
         }
 
         .title {
             text-align: center;
-            font-size: 12pt;
+            font-size: 11pt;
             font-weight: bold;
+            font-style: italic;
             margin: 0.2cm 0;
         }
 
@@ -161,12 +166,12 @@
 
     <div class="header">
     <img src="{{ public_path('images/lspu-logo.png') }}" alt="LSPU Logo" class="logo">
-        <div>Republic of the Philippines</div>
-        <div class="university-name">Laguna State Polytechnic University</div>
-        <div>Province of Laguna</div>
+        <span class="calibri-text">Republic of the Philippines</span><br>
+        <img src="{{ public_path('images/lspu-name.png') }}" alt="Laguna State Polytechnic University" class="university-name"><br>
+        <span class="calibri-text">Province of Laguna</span><br>
         <div style="margin-top: 5px; font-weight: bold;">OFFICE OF STUDENT AFFAIRS AND SERVICES</div>
         <div class="title" style="margin-top: 5px;">STUDENT ACTIVITY ATTENDANCE SHEET</div>
-        <div style="font-weight: bold; margin-top: 5px;">COLLEGE OF ___________________</div>
+        <span class= "underline" style="font-weight: bold; margin-top: 5px;">COLLEGE OF {{ $application->college ?? '' }}</span>
     </div>
 
     <div class="content">
@@ -187,13 +192,31 @@
                 <th>COURSE/YEAR &<br>SECTION</th>
                 <th>SIGNATURE</th>
             </tr>
-            @for($i = 1; $i <= 35; $i++)
-            <tr>
-                <td><span class="row-number">{{ $i }}.</span></td>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-            </tr>
-            @endfor
+            @if(isset($application->attendees) && count($application->attendees) > 0)
+                @foreach($application->attendees as $index => $attendee)
+                <tr>
+                    <td><span class="row-number">{{ $index + 1 }}.</span> {{ $attendee['name'] }}</td>
+                    <td>{{ $attendee['course_year_section'] }}</td>
+                    <td>&nbsp;</td>
+                </tr>
+                @endforeach
+                
+                @for($i = count($application->attendees) + 1; $i <= 35; $i++)
+                <tr>
+                    <td><span class="row-number">{{ $i }}.</span></td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                </tr>
+                @endfor
+            @else
+                @for($i = 1; $i <= 35; $i++)
+                <tr>
+                    <td><span class="row-number">{{ $i }}.</span></td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                </tr>
+                @endfor
+            @endif
         </table>
     </div>
 
