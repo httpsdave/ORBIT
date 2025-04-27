@@ -20,32 +20,45 @@
             line-height: 1;
             margin: 0;
             padding: 0;
+            position: relative;
         }
 
         .header {
             text-align: center;
-            font-size: 14pt;
-            font-weight: bold;
-            margin: 0 0 0.3cm 0;
-            padding-top: 0.5cm;
+            font-size: 12pt;
+            font-weight: normal;
+            margin: 0;
+            padding-top: 0.3cm;
+            line-height: 1.2;
         }
 
         .logo {
             position: absolute;
-            top: 0.5cm;
-            left: 2.54cm;
-            width: 80px;
+            top: -0.5cm;
+            left: -2cm;
+            width: 250px;
             height: auto;
         }
 
         .organization-details {
             text-align: center;
+            margin-top: 0.1cm;
+            margin-bottom: 0.2cm;
+        }
+        
+        .organization-details p {
+            margin: 0.1cm 0;
+        }
+
+        .list-title {
+            text-align: center;
+            font-weight: bold;
             margin-bottom: 0.3cm;
+            font-size: 14pt;
         }
 
         .officer-details {
             float: left;
-            /* Add padding-top to move the text fields down to align with images */
             padding-top: 0.4cm;
         }
 
@@ -53,17 +66,15 @@
             text-align: center;
             font-weight: bold;
             margin-bottom: 0.5cm;
-            font-size: 14pt;
+            font-size: 13pt;
         }
 
-        /* Optionally, you can also adjust the height of the officer row if needed */
         .officer-row {
-            margin-bottom: 0.4cm;
+            margin-bottom: 0.5cm;
             clear: both;
             height: 5.2cm;
         }
 
-        /* If you need more precise control, adjust the first field's margin */
         .officer-details .field-row:first-child {
             margin-top: 0.2cm;
         }
@@ -83,7 +94,7 @@
         }
 
         .field-row {
-            margin-bottom: 0.4cm;
+            margin-bottom: 0.5cm;
         }
 
         .field-label {
@@ -102,27 +113,34 @@
             min-width: 200px;
         }
 
-        /* DOMPDF compatible footer handling */
-        .footer-left {
+        /* Footer styling - compatible with DOMPDF */
+        .footer {
             position: fixed;
-            left: 2.54cm;
             bottom: 0;
+            width: 100%;
+            height: 20px;
+            line-height: 20px;
             font-size: 10pt;
+            font-family: Calibri, sans-serif;
+        }
+
+        .footer-left {
+            position: absolute;
+            left: -1.0cm; /* Match the left margin */
+            bottom: 0;
         }
 
         .footer-center {
-            position: fixed;
+            position: absolute;
             left: 50%;
-            bottom: 0;
             transform: translateX(-50%);
-            font-size: 10pt;
+            bottom: 0;
         }
 
         .footer-right {
-            position: fixed;
-            right: 2.54cm;
+            position: absolute;
+            right: -1.0cm; /* Match the right margin */
             bottom: 0;
-            font-size: 10pt;
         }
 
         .page-break {
@@ -134,27 +152,78 @@
             clear: both;
             display: table;
         }
+
+        .university-name {
+            max-width: 60%;
+            height: auto;
+            margin: 4px 0;
+            display: inline-block;
+        }
+
+        .calibri-text {
+            font-family: Calibri, sans-serif;
+        }
+        
+        .office-heading {
+            font-weight: bold;
+            font-size: 12pt;
+            margin-top: 0.5cm;
+        }
+        /* DOMPDF fixed footer compatibility */
+        @page {
+            margin-bottom: 30px; /* Space for footer */
+        }
+        
+        /* Original footer spacing */
+        .content {
+            margin-bottom: 0.5cm;
+        }
     </style>
 </head>
-<body>
-    <div class="footer-left">LSPU-OSAS-SF-007</div>
-    <div class="footer-center">Rev. 1</div>
-    <div class="footer-right">09 November 2020</div>
-
+<body> 
+    <!-- Footer that will appear on all pages with DOMPDF compatibility -->
+    <div class="footer">
+        <div class="footer-left">LSPU-OSAS-SF-007</div>
+        <div class="footer-center">Rev. 1</div>
+        <div class="footer-right">09 November 2020</div>
+    </div>
+    
+    <script type="text/php">
+        if (isset($pdf)) {
+            $font = $fontMetrics->getFont("Calibri", "normal");
+            $size = 10;
+            $y = $pdf->get_height() - 20;
+            
+            // Left footer
+            $pdf->page_text(20, $y, "LSPU-OSAS-SF-007", $font, $size);
+            
+            // Center footer
+            $text = "Rev. 1";
+            $width = $fontMetrics->get_text_width($text, $font, $size);
+            $x = ($pdf->get_width() - $width) / 2;
+            $pdf->page_text($x, $y, $text, $font, $size);
+            
+            // Right footer
+            $text = "09 November 2020";
+            $width = $fontMetrics->get_text_width($text, $font, $size);
+            $x = $pdf->get_width() - $width - 20;
+            $pdf->page_text($x, $y, $text, $font, $size);
+        }
+    </script>
+    
     <!-- First Page -->
     <div class="header">
-        <img src="{{ public_path('images/lspu-logo.png') }}" alt="LSPU Logo" class="logo">
-        Republic of the Philippines<br>
-        Laguna State Polytechnic University<br>
-        Province of Laguna<br>
-        <br>
-        OFFICE OF STUDENT AFFAIRS AND SERVICES
+    <img src="{{ public_path('images/lspu-logo.png') }}" alt="LSPU Logo" class="logo">
+        <span class="calibri-text">Republic of the Philippines</span><br>
+        <img src="{{ public_path('images/lspu-name.png') }}" alt="Laguna State Polytechnic University" class="university-name"><br>
+        <span class="calibri-text">Province of Laguna</span><br>
+        <span class="office-heading">OFFICE OF STUDENT AFFAIRS AND SERVICES</span>
     </div>
     
     <!-- Organization details -->
     <div class="organization-details">
-        <p>Name of Organization: {{ $application->organization_name ?? '____________________' }}</p>
-        <p>A.Y. {{ $application->academic_year_start ?? '2024' }}-{{ $application->academic_year_end ?? '2025' }}</p>
+        <p> {{ $application->organization_name ?? '____________________' }}</p>
+        <p>A.Y. 20{{ $application->academic_year_start ?? '2024' }}-20{{ $application->academic_year_end ?? '2025' }}</p>
     </div>
     
     <!-- List title -->
@@ -305,17 +374,16 @@
                 <!-- Header on new page -->
                 <div class="header">
                     <img src="{{ public_path('images/lspu-logo.png') }}" alt="LSPU Logo" class="logo">
-                    Republic of the Philippines<br>
-                    Laguna State Polytechnic University<br>
-                    Province of Laguna<br>
-                    <br>
-                    OFFICE OF STUDENT AFFAIRS AND SERVICES
+                    <span class="calibri-text">Republic of the Philippines</span><br>
+                    <img src="{{ public_path('images/lspu-name.png') }}" alt="Laguna State Polytechnic University" class="university-name"><br>
+                    <span class="calibri-text">Province of Laguna</span><br>
+                    <span class="office-heading">OFFICE OF STUDENT AFFAIRS AND SERVICES</span>
                 </div>
                 
                 <!-- Organization details on new page -->
                 <div class="organization-details">
-                    <p>Name of Organization: {{ $application->organization_name ?? '____________________' }}</p>
-                    <p>A.Y. {{ $application->academic_year_start ?? '2024' }}-{{ $application->academic_year_end ?? '2025' }}</p>
+                    <p>{{ $application->organization_name ?? '____________________' }}</p>
+                    <p>A.Y. 20{{ $application->academic_year_start ?? '2024' }}-20{{ $application->academic_year_end ?? '2025' }}</p>
                 </div>
                 
                 <!-- List title on new page -->
