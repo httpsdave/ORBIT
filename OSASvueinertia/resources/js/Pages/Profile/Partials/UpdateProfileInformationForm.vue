@@ -15,6 +15,15 @@ defineProps({
 });
 
 const user = usePage().props.auth.user;
+console.log('User data:', user);
+
+// Check for admin role based on role property structure
+const isAdmin = user.role && 
+    (user.role === 'admin' || 
+     user.role.name === 'admin' || 
+     (typeof user.role === 'object' && user.role.id === 1));
+
+console.log('Is admin:', isAdmin);
 
 const form = useForm({
     name: user.name,
@@ -30,11 +39,18 @@ const form = useForm({
             </h2>
 
             <p class="mt-1 text-sm text-gray-600">
-                Update your account's profile information and email address.
+                <template v-if="isAdmin">
+                    Update your account's profile information and email address.
+                </template>
+                <template v-else>
+                    Your account's profile information.
+                </template>
             </p>
         </header>
 
+        <!-- Admin version - editable form -->
         <form
+            v-if="isAdmin"
             @submit.prevent="form.patch(route('profile.update'))"
             class="mt-6 space-y-6"
         >
@@ -108,5 +124,37 @@ const form = useForm({
                 </Transition>
             </div>
         </form>
+
+        <!-- Regular user version - read-only view -->
+        <div v-else class="mt-6 space-y-6">
+            <div>
+                <InputLabel for="name" value="Name" />
+
+                <div class="mt-1 p-2 block w-full opacity-70 bg-gray-100 border border-gray-300 rounded-md cursor-not-allowed">
+                    {{ user.name }}
+                </div>
+            </div>
+
+            <div>
+                <InputLabel for="email" value="Email" />
+
+                <div class="mt-1 p-2 block w-full opacity-70 bg-gray-100 border border-gray-300 rounded-md cursor-not-allowed">
+                    {{ user.email }}
+                </div>
+            </div>
+
+            <div v-if="mustVerifyEmail && user.email_verified_at === null">
+                <p class="mt-2 text-sm text-gray-800">
+                    Your email address is unverified.
+                </p>
+
+                <div
+                    v-show="status === 'verification-link-sent'"
+                    class="mt-2 text-sm font-medium text-green-600"
+                >
+                    A new verification link has been sent to your email address.
+                </div>
+            </div>
+        </div>
     </section>
 </template>

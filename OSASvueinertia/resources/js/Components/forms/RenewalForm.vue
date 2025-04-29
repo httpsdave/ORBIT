@@ -17,7 +17,7 @@ const form = useForm({
   organization_name:props.initialFormData.organization_name || '',
   adviser_name:props.initialFormData.adviser_name || '',
   dean_name:props.initialFormData.dean_name || '',
-  coordinator_name:props.initialFormData || '',
+  coordinator_name:props.initialFormData.coordinator_name || '',
   chairperson_name:props.initialFormData.chairperson_name || '',
 
 });

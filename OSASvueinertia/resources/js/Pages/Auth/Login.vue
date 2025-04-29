@@ -245,12 +245,10 @@ onMounted(() => {
                     </button>
 
                     <div class="text-center">
-                        <Link
-                            :href="route('register')"
-                            class="text-xs text-gray-400 hover:text-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 rounded-md px-2 py-1 inline-block transition duration-300"
-                        >
-                            Don't have an account? <span class="font-medium text-blue-400">Register</span>
-                        </Link>
+                        <p class="text-xs text-gray-400">
+                            Account access is managed by administrators. 
+                            <span class="text-blue-400">Contact your administrator for access.</span>
+                        </p>
                     </div>
                 </form>
                 

@@ -67,6 +67,18 @@ Route::middleware(['auth'])->group(function () {
             ]);
         })->name('admin.users');
     });
+
+    Route::middleware(['verified', CheckRole::class.':admin'])->prefix('admin')->group(function () {
+        Route::get('/dashboard', function () {
+            return Inertia::render('Admin/Dashboard');
+        })->name('admin.dashboard');
+        
+        // Admin User Management Routes
+        Route::get('/users', 'App\Http\Controllers\Admin\UserController@index')->name('admin.users');
+        Route::post('/users', 'App\Http\Controllers\Admin\UserController@store')->name('admin.users.store');
+        Route::put('/users/{user}', 'App\Http\Controllers\Admin\UserController@update')->name('admin.users.update');
+        Route::delete('/users/{user}', 'App\Http\Controllers\Admin\UserController@destroy')->name('admin.users.destroy');
+    });
 });
 
 // Redirect root to login if not authenticated

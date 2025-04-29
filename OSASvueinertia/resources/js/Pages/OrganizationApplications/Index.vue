@@ -2,7 +2,7 @@
 import { defineProps, ref, onMounted } from 'vue';
 import { Link, router } from '@inertiajs/vue3';
 import { Head } from '@inertiajs/vue3';
-
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 const props = defineProps({ 
   applications: Array,
   successMessage: String
@@ -138,6 +138,7 @@ const formTypeToName = (formType) => {
 </script>
 
 <template>
+    <AuthenticatedLayout>
     <Head title="Applications | LSPU ORBIT" />
     
     <div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 font-sans">
@@ -337,6 +338,7 @@ const formTypeToName = (formType) => {
             </div>
         </div>
     </div>
+</AuthenticatedLayout>
 </template>
 
 <style scoped>
