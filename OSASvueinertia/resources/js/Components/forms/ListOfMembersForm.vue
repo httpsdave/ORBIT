@@ -63,10 +63,10 @@ const handlePhotoUpload = (event, index, type = 'members') => {
 
 // Initialize with data from props if available
 if (props.initialFormData?.members && props.initialFormData.members.length > 0) {
-  // Copy activities from initialFormData
+  // Copy members from initialFormData
   form.members = [...props.initialFormData.members];
 } else {
-  // Add default empty activities
+  // Add default empty members
   for(let i = 0; i < 4; i++) {
                 addMember();
 
