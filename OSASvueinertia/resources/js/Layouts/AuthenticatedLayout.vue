@@ -20,6 +20,7 @@ const handleCloseMobileMenu = () => {
       <AppNavigation 
         :is-admin="isAdmin" 
         @close-mobile-menu="handleCloseMobileMenu"
+        
       />
 
       <!-- Page Heading -->

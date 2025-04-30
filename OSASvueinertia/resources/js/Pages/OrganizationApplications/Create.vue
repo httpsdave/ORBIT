@@ -151,6 +151,7 @@ const handleFormSubmitted = (data) => {
       />
     </div>
   </div>
+  
 </template>
 <style scoped>
 /* Ensure A4 Paper Size */

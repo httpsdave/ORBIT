@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\FormController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\EventController;
 use Inertia\Inertia;
 use App\Http\Controllers\OrganizationApplicationController;
 use App\Http\Middleware\CheckRole;
@@ -15,6 +16,23 @@ require __DIR__.'/auth.php';
 
 // ALL routes protected behind authentication
 Route::middleware(['auth'])->group(function () {
+
+    Route::get('/', function () {
+        return redirect('/calendar');
+    });
+    
+    Route::get('/calendar', [EventController::class, 'index'])->name('calendar');
+
+    Route::prefix('api')->group(function () {
+        // Your API routes
+        Route::post('/events', [EventController::class, 'store']);
+        Route::get('/events', [EventController::class, 'getEvents']);
+        Route::put('/events/{event}', [EventController::class, 'update']);
+        Route::delete('/events/{event}', [EventController::class, 'destroy']);
+        Route::post('/extract-event-info', [EventController::class, 'extractEventInfo']);
+        });
+    
+
     // Frontend routes
     Route::get('/', 'App\Http\Controllers\FrontendController@index')->name('myhome');
     Route::get('/about', 'App\Http\Controllers\FrontendController@about')->name('aboutUs');

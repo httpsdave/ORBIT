@@ -13,7 +13,7 @@ use Inertia\Inertia;
 class UserController extends Controller
 {
     /**
-     * Display a listing of users.
+     * Display a listing of the users.
      *
      * @return \Inertia\Response
      */
@@ -21,7 +21,7 @@ class UserController extends Controller
     {
         return Inertia::render('Admin/Users', [
             'users' => User::with('role')->get(),
-            'roles' => Role::all(),
+            'roles' => Role::all()
         ]);
     }
 
@@ -59,31 +59,34 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        $request->validate([
+        $rules = [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'role_id' => 'required|exists:roles,id',
-        ]);
+        ];
 
-        $user->update([
-            'name' => $request->name,
-            'email' => $request->email,
-            'role_id' => $request->role_id,
-        ]);
-
+        // Only validate password if it's provided
         if ($request->filled('password')) {
-            $request->validate([
-                'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            ]);
-
-            $user->update([
-                'password' => Hash::make($request->password),
-            ]);
+            $rules['password'] = ['required', 'confirmed', Rules\Password::defaults()];
         }
+
+        $request->validate($rules);
+
+        // Update user details
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->role_id = $request->role_id;
+        
+        // Only update password if provided
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
+        
+        $user->save();
 
         return redirect()->route('admin.users');
     }
-    
+
     /**
      * Remove the specified user from storage.
      *
@@ -92,13 +95,13 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        // Prevent self-deletion
-        if ($user->id === auth()->id()) {
-            return back()->with('error', 'You cannot delete your own account.');
+        // Don't allow deletion of yourself
+        if (auth()->id() === $user->id) {
+            return back()->withErrors(['error' => 'You cannot delete your own account.']);
         }
-        
+
         $user->delete();
-        
-        return redirect()->route('admin.users')->with('success', 'User deleted successfully.');
+
+        return redirect()->route('admin.users');
     }
 }

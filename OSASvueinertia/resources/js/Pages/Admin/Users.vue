@@ -16,8 +16,10 @@ const props = defineProps({
 });
 
 const showingCreateModal = ref(false);
+const showingEditModal = ref(false);
 const showingDeleteModal = ref(false);
 const userToDelete = ref(null);
+const userToEdit = ref(null);
 
 const form = useForm({
     name: '',
@@ -25,6 +27,14 @@ const form = useForm({
     password: '',
     password_confirmation: '',
     role_id: '',
+});
+
+const editForm = useForm({
+    name: '',
+    email: '',
+    role_id: '',
+    password: '',
+    password_confirmation: '',
 });
 
 const deleteForm = useForm({});
@@ -35,6 +45,26 @@ const createUser = () => {
         onSuccess: () => {
             form.reset();
             showingCreateModal.value = false;
+        },
+    });
+};
+
+const confirmUserEdit = (user) => {
+    userToEdit.value = user;
+    editForm.name = user.name;
+    editForm.email = user.email;
+    editForm.role_id = user.role.id;
+    editForm.password = '';
+    editForm.password_confirmation = '';
+    showingEditModal.value = true;
+};
+
+const updateUser = () => {
+    editForm.put(route('admin.users.update', userToEdit.value.id), {
+        preserveScroll: true,
+        onSuccess: () => {
+            showingEditModal.value = false;
+            userToEdit.value = null;
         },
     });
 };
@@ -95,7 +125,12 @@ const deleteUser = () => {
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                         <div class="flex space-x-3">
-                                           
+                                            <button 
+                                                @click="confirmUserEdit(user)" 
+                                                class="text-blue-600 hover:text-blue-900"
+                                            >
+                                                Edit
+                                            </button>
                                             <button 
                                                 @click="confirmUserDeletion(user)" 
                                                 class="text-red-600 hover:text-red-900"
@@ -190,6 +225,87 @@ const deleteUser = () => {
                         </SecondaryButton>
                         <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                             Create User
+                        </PrimaryButton>
+                    </div>
+                </form>
+            </div>
+        </Modal>
+
+        <!-- Edit User Modal -->
+        <Modal :show="showingEditModal" @close="showingEditModal = false">
+            <div class="p-6">
+                <h2 class="text-lg font-medium text-gray-900">
+                    Edit User
+                </h2>
+
+                <form @submit.prevent="updateUser" class="mt-6 space-y-6">
+                    <div>
+                        <InputLabel for="edit_name" value="Name" />
+                        <TextInput
+                            id="edit_name"
+                            type="text"
+                            class="mt-1 block w-full"
+                            v-model="editForm.name"
+                            required
+                            autofocus
+                        />
+                        <InputError class="mt-2" :message="editForm.errors.name" />
+                    </div>
+
+                    <div>
+                        <InputLabel for="edit_email" value="Email" />
+                        <TextInput
+                            id="edit_email"
+                            type="email"
+                            class="mt-1 block w-full"
+                            v-model="editForm.email"
+                            required
+                        />
+                        <InputError class="mt-2" :message="editForm.errors.email" />
+                    </div>
+
+                    <div>
+                        <InputLabel for="edit_role" value="Role" />
+                        <select
+                            id="edit_role"
+                            class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                            v-model="editForm.role_id"
+                            required
+                        >
+                            <option value="">Select Role</option>
+                            <option v-for="role in roles" :key="role.id" :value="role.id">{{ role.name }}</option>
+                        </select>
+                        <InputError class="mt-2" :message="editForm.errors.role_id" />
+                    </div>
+
+                    <div>
+                        <InputLabel for="edit_password" value="Password (leave blank to keep current)" />
+                        <TextInput
+                            id="edit_password"
+                            type="password"
+                            class="mt-1 block w-full"
+                            v-model="editForm.password"
+                        />
+                        <InputError class="mt-2" :message="editForm.errors.password" />
+                    </div>
+
+                    <div>
+                        <InputLabel for="edit_password_confirmation" value="Confirm Password" />
+                        <TextInput
+                            id="edit_password_confirmation"
+                            type="password"
+                            class="mt-1 block w-full"
+                            v-model="editForm.password_confirmation"
+                        />
+                        <InputError class="mt-2" :message="editForm.errors.password_confirmation" />
+                    </div>
+
+                    <div class="flex items-center justify-end mt-4">
+                        <SecondaryButton @click="showingEditModal = false" class="mr-2">
+                            Cancel
+                        </SecondaryButton>
+                        <PrimaryButton :class="{ 'opacity-25': editForm.processing }" :disabled="editForm.processing">
+                            Update User
                         </PrimaryButton>
                     </div>
                 </form>

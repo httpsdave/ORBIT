@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, onMounted, onUnmounted } from 'vue';
+import { computed, ref, onMounted, onUnmounted, watch } from 'vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import Dropdown from '@/Components/Dropdown.vue';
@@ -18,6 +18,9 @@ const props = defineProps({
 const emit = defineEmits(['close-mobile-menu']);
 
 const showingNavigationDropdown = ref(false);
+const showingUserDropdown = ref(false);
+const userDropdownRef = ref(null);
+const userDropdownTriggerRef = ref(null);
 const user = computed(() => usePage().props.auth.user);
 const isScrolled = ref(false);
 
@@ -26,8 +29,27 @@ const handleScroll = () => {
   isScrolled.value = window.scrollY > 20;
 };
 
+// Close dropdowns when clicking outside
+const handleClickOutside = (event) => {
+  // Check if the click was outside the user dropdown
+  if (
+    userDropdownRef.value && 
+    !userDropdownRef.value.contains(event.target) && 
+    userDropdownTriggerRef.value && 
+    !userDropdownTriggerRef.value.contains(event.target)
+  ) {
+    showingUserDropdown.value = false;
+  }
+};
+
+// Toggle user dropdown
+const toggleUserDropdown = () => {
+  showingUserDropdown.value = !showingUserDropdown.value;
+};
+
 onMounted(() => {
   window.addEventListener('scroll', handleScroll);
+  document.addEventListener('click', handleClickOutside);
   // Add initial transition delay for navigation elements
   setTimeout(() => {
     navElementsVisible.value = true;
@@ -36,6 +58,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll);
+  document.removeEventListener('click', handleClickOutside);
 });
 
 // Close mobile menu when clicking outside
@@ -59,6 +82,7 @@ const navElementsVisible = ref(false);
       <!-- Primary Navigation Menu -->
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="flex h-16 justify-between items-center">
+          
           <div class="flex items-center">
             <!-- Logo -->
             <div class="flex shrink-0 items-center">
@@ -130,17 +154,7 @@ const navElementsVisible = ref(false);
                 </NavLink>
               </template>
               
-              <!-- Common navigation item -->
-              <NavLink 
-                :href="route('myhome')" 
-                :active="route().current('myhome')" 
-                class="px-3 py-2 text-gray-600 font-medium hover:text-blue-600 transition-all duration-300 rounded-lg hover:bg-blue-100"
-                activeClass="text-blue-600 bg-blue-50 shadow-sm"
-                :class="{'translate-y-0 opacity-100': navElementsVisible, 'translate-y-4 opacity-0': !navElementsVisible}"
-                style="transition-delay: 300ms;"
-              >
-                Home
-              </NavLink>
+              
             </div>
           </div>
 
@@ -156,46 +170,61 @@ const navElementsVisible = ref(false);
               Admin
             </div>
             
-            <!-- Settings Dropdown -->
-            <Dropdown 
-              align="right" 
-              width="48" 
+            <!-- Calendar Icon Link for Desktop -->
+            <Link 
+              :href="route('calendar')" 
+              class="flex items-center justify-center h-8 w-8 rounded-full bg-blue-50 text-gray-600 hover:text-blue-600 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 shadow-sm"
               :class="{'translate-y-0 opacity-100': navElementsVisible, 'translate-y-4 opacity-0': !navElementsVisible}"
-              style="transition-delay: 600ms;"
+              style="transition-delay: 550ms;"
             >
-              <template #trigger>
-                <button
-                  type="button"
-                  class="flex items-center rounded-full bg-blue-50 p-1 text-gray-600 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-white transition-all duration-300 shadow-md hover:shadow-blue-300/30"
-                >
-                  <span class="sr-only">Open user menu</span>
-                  <div class="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-green-400 flex items-center justify-center text-white font-medium shadow-inner">
-                    {{ user.name.charAt(0).toUpperCase() }}
-                  </div>
-                </button>
-              </template>
-
-              <template #content>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </Link>
+            
+            <!-- User Dropdown -->
+            <div class="relative" 
+                :class="{'translate-y-0 opacity-100': navElementsVisible, 'translate-y-4 opacity-0': !navElementsVisible}"
+                style="transition-delay: 600ms;">
+              <!-- User Dropdown Trigger -->
+              <button
+                ref="userDropdownTriggerRef"
+                @click="toggleUserDropdown"
+                type="button"
+                class="flex items-center rounded-full bg-blue-50 p-1 text-gray-600 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-white transition-all duration-300 shadow-md hover:shadow-blue-300/30"
+              >
+                <span class="sr-only">Open user menu</span>
+                <div class="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-green-400 flex items-center justify-center text-white font-medium shadow-inner">
+                  {{ user.name.charAt(0).toUpperCase() }}
+                </div>
+              </button>
+              
+              <!-- User Dropdown Content -->
+              <div 
+                ref="userDropdownRef"
+                v-show="showingUserDropdown"
+                class="absolute right-0 mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50 animate-fadeIn"
+              >
                 <div class="px-4 py-3 border-b border-gray-200 bg-white">
                   <p class="text-sm font-medium text-gray-900">{{ $page.props.auth.user.name }}</p>
                   <p class="text-xs text-gray-500 mt-1">{{ $page.props.auth.user.email }}</p>
                 </div>
                 <div class="bg-white">
-                  <DropdownLink :href="route('profile.edit')" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-blue-600 transition-colors">
+                  <Link :href="route('profile.edit')" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-blue-600 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
                     My Profile
-                  </DropdownLink>
-                  <DropdownLink :href="route('logout')" method="post" as="button" class="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors">
+                  </Link>
+                  <Link :href="route('logout')" method="post" as="button" class="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                     </svg>
                     Sign Out
-                  </DropdownLink>
+                  </Link>
                 </div>
-              </template>
-            </Dropdown>
+              </div>
+            </div>
           </div>
 
           <!-- Mobile menu button -->
@@ -300,18 +329,18 @@ const navElementsVisible = ref(false);
             </ResponsiveNavLink>
           </template>
           
-          <!-- Common mobile navigation item -->
+          <!-- Calendar Link with Icon -->
           <ResponsiveNavLink 
-            :href="route('myhome')" 
-            :active="route().current('myhome')"
+            :href="route('calendar')" 
+            :active="route().current('calendar')"
             class="block px-3 py-2 rounded-lg text-base font-medium text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-all duration-300"
             activeClass="bg-blue-50 text-blue-600 border-l-2 border-blue-500"
           >
             <div class="flex items-center">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
-              Home
+              Calendar
             </div>
           </ResponsiveNavLink>
 
