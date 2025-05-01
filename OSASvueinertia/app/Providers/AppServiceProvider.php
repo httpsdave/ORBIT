@@ -26,6 +26,7 @@ class AppServiceProvider extends ServiceProvider
          $this->app->bind('role', function ($app) {
             return new Role();
         });
+        
 
         
     }

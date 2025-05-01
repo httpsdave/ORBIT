@@ -128,10 +128,34 @@ const navElementsVisible = ref(false);
                 >
                   Users
                 </NavLink>
+                
+                <!-- New Student Organizations Link -->
+                <NavLink 
+                  :href="route('admin.student-orgs.index')" 
+                  :active="route().current().startsWith('admin.student-orgs')" 
+                  class="px-3 py-2 text-gray-600 font-medium hover:text-blue-600 transition-all duration-300 rounded-lg hover:bg-blue-100"
+                  activeClass="text-blue-600 bg-blue-50 shadow-sm"
+                  :class="{'translate-y-0 opacity-100': navElementsVisible, 'translate-y-4 opacity-0': !navElementsVisible}"
+                  style="transition-delay: 300ms;"
+                >
+                  Organizations
+                </NavLink>
+                
+                <!-- New Colleges Link -->
+                <NavLink 
+                  :href="route('admin.colleges.index')" 
+                  :active="route().current().startsWith('admin.colleges')" 
+                  class="px-3 py-2 text-gray-600 font-medium hover:text-blue-600 transition-all duration-300 rounded-lg hover:bg-blue-100"
+                  activeClass="text-blue-600 bg-blue-50 shadow-sm"
+                  :class="{'translate-y-0 opacity-100': navElementsVisible, 'translate-y-4 opacity-0': !navElementsVisible}"
+                  style="transition-delay: 400ms;"
+                >
+                  Colleges
+                </NavLink>
               </template>
               
-              <!-- Regular User Navigation -->
-              <template v-else>
+               <!-- Regular User Navigation -->
+               <template v-else>
                 <NavLink 
                   :href="route('dashboard')" 
                   :active="route().current('dashboard')" 
@@ -151,6 +175,26 @@ const navElementsVisible = ref(false);
                   style="transition-delay: 200ms;"
                 >
                   Applications
+                </NavLink>
+                <NavLink 
+                  :href="route('colleges.index')" 
+                  :active="route().current().startsWith('colleges')" 
+                  class="px-3 py-2 text-gray-600 font-medium hover:text-blue-600 transition-all duration-300 rounded-lg hover:bg-blue-100"
+                  activeClass="text-blue-600 bg-blue-50 shadow-sm"
+                  :class="{'translate-y-0 opacity-100': navElementsVisible, 'translate-y-4 opacity-0': !navElementsVisible}"
+                  style="transition-delay: 300ms;"
+                >
+                  Colleges
+                </NavLink>
+                <NavLink 
+                  :href="route('student-orgs.index')" 
+                  :active="route().current().startsWith('student-orgs')" 
+                  class="px-3 py-2 text-gray-600 font-medium hover:text-blue-600 transition-all duration-300 rounded-lg hover:bg-blue-100"
+                  activeClass="text-blue-600 bg-blue-50 shadow-sm"
+                  :class="{'translate-y-0 opacity-100': navElementsVisible, 'translate-y-4 opacity-0': !navElementsVisible}"
+                  style="transition-delay: 400ms;"
+                >
+                  Organizations
                 </NavLink>
               </template>
               
@@ -297,6 +341,36 @@ const navElementsVisible = ref(false);
                 Users
               </div>
             </ResponsiveNavLink>
+            
+            <!-- New Student Organizations Link for Mobile -->
+            <ResponsiveNavLink 
+              :href="route('admin.student-orgs.index')" 
+              :active="route().current().startsWith('admin.student-orgs')"
+              class="block px-3 py-2 rounded-lg text-base font-medium text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-all duration-300"
+              activeClass="bg-blue-50 text-blue-600 border-l-2 border-blue-500"
+            >
+              <div class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                Organizations
+              </div>
+            </ResponsiveNavLink>
+            
+            <!-- New Colleges Link for Mobile -->
+            <ResponsiveNavLink 
+              :href="route('admin.colleges.index')" 
+              :active="route().current().startsWith('admin.colleges')"
+              class="block px-3 py-2 rounded-lg text-base font-medium text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-all duration-300"
+              activeClass="bg-blue-50 text-blue-600 border-l-2 border-blue-500"
+            >
+              <div class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+                Colleges
+              </div>
+            </ResponsiveNavLink>
           </template>
           
           <!-- Regular User Mobile Navigation -->
@@ -325,6 +399,36 @@ const navElementsVisible = ref(false);
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
                 Applications
+              </div>
+            </ResponsiveNavLink>
+            
+            <!-- New Student Organizations Link for Mobile Regular Users -->
+            <ResponsiveNavLink 
+              :href="route('student-orgs.index')" 
+              :active="route().current().startsWith('student-orgs')"
+              class="block px-3 py-2 rounded-lg text-base font-medium text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-all duration-300"
+              activeClass="bg-blue-50 text-blue-600 border-l-2 border-blue-500"
+            >
+              <div class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                Organizations
+              </div>
+            </ResponsiveNavLink>
+            
+            <!-- New Colleges Link for Mobile Regular Users -->
+            <ResponsiveNavLink 
+              :href="route('colleges.index')" 
+              :active="route().current().startsWith('colleges')"
+              class="block px-3 py-2 rounded-lg text-base font-medium text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-all duration-300"
+              activeClass="bg-blue-50 text-blue-600 border-l-2 border-blue-500"
+            >
+              <div class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+                Colleges
               </div>
             </ResponsiveNavLink>
           </template>

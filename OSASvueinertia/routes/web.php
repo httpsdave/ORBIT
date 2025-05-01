@@ -2,11 +2,17 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\FormController;
-use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EventController;
+use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\OrganizationApplicationController;
+use App\Http\Controllers\Admin\CollegeController;
+use App\Http\Controllers\Admin\StudentOrgController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\UserDashboardController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\PublicCollegeController;
+use App\Http\Controllers\PublicStudentOrgController;
 use App\Http\Middleware\CheckRole;
 use App\Models\User;
 use App\Models\Role;
@@ -14,29 +20,33 @@ use App\Models\Role;
 // Authentication routes (login, register, password reset)
 require __DIR__.'/auth.php';
 
+// Redirect root to login if not authenticated
+Route::redirect('/', '/login');
+
 // ALL routes protected behind authentication
 Route::middleware(['auth'])->group(function () {
 
+    // Change default redirect to dashboard instead of calendar
     Route::get('/', function () {
-        return redirect('/calendar');
+        return redirect('/dashboard');
     });
     
     Route::get('/calendar', [EventController::class, 'index'])->name('calendar');
 
+    // API routes
     Route::prefix('api')->group(function () {
-        // Your API routes
         Route::post('/events', [EventController::class, 'store']);
         Route::get('/events', [EventController::class, 'getEvents']);
         Route::put('/events/{event}', [EventController::class, 'update']);
         Route::delete('/events/{event}', [EventController::class, 'destroy']);
         Route::post('/extract-event-info', [EventController::class, 'extractEventInfo']);
-        });
+        
+        // API routes for colleges and student orgs
+        Route::get('/colleges', [PublicCollegeController::class, 'getAll'])->name('api.colleges.all');
+        Route::get('/student-orgs', [PublicStudentOrgController::class, 'getAll'])->name('api.student-orgs.all');
+    });
     
-
-    // Frontend routes
-    Route::get('/', 'App\Http\Controllers\FrontendController@index')->name('myhome');
-    Route::get('/about', 'App\Http\Controllers\FrontendController@about')->name('aboutUs');
-    Route::inertia('/contact', 'Frontend/Contact')->name('contactUs');
+    
     
     // Profile routes
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -51,6 +61,7 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/applications/{application}', [OrganizationApplicationController::class, 'update'])->name('applications.update');
     Route::delete('/applications/{application}', [OrganizationApplicationController::class, 'destroy'])->name('applications.destroy');
     
+    // PDF export routes
     Route::get('/applications/{application}/pdf', [OrganizationApplicationController::class, 'exportPdf'])->name('applications.pdf');
     Route::get('/applications/{application}/export-renewal', [OrganizationApplicationController::class, 'exportRenewalPdf'])->name('applications.export-renewal');
     Route::get('/applications/{application}/export-commitment', [OrganizationApplicationController::class, 'exportCommitmentPdf'])->name('applications.export-commitment');
@@ -60,44 +71,49 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/applications/{application}/export-officers', [OrganizationApplicationController::class, 'exportOfficersPdf'])->name('applications.export-officers');
     Route::get('/applications/{application}/export-attendance', [OrganizationApplicationController::class, 'exportAttendancePdf'])->name('applications.export-attendance');
 
-    // User dashboard route
+    // Public Routes for Colleges and Student Organizations (view-only)
+    Route::get('/colleges', [PublicCollegeController::class, 'index'])->name('colleges.index');
+    Route::get('/colleges/{college}', [PublicCollegeController::class, 'show'])->name('colleges.show');
+    
+    Route::get('/student-orgs', [PublicStudentOrgController::class, 'index'])->name('student-orgs.index');
+    Route::get('/student-orgs/{studentOrg}', [PublicStudentOrgController::class, 'show'])->name('student-orgs.show');
+
+
+    // User dashboard route with admin redirect
     Route::get('/dashboard', function () {
         // Redirect admins to admin dashboard
         if (auth()->user()->isAdmin()) {
             return redirect()->route('admin.dashboard');
         }
         
-        return Inertia::render('Dashboard');
+        // Forward to the UserDashboardController for regular users
+        return app(UserDashboardController::class)->index(request());
     })->middleware(['verified'])->name('dashboard');
     
-    // Admin routes
-    
 
+    // Admin routes - SINGLE consolidated admin route group
     Route::middleware(['verified', CheckRole::class.':admin'])->prefix('admin')->group(function () {
-        Route::get('/dashboard', function () {
-            return Inertia::render('Admin/Dashboard');
-        })->name('admin.dashboard');
-        
-        // Other admin routes
-        Route::get('/users', function () {
-            return Inertia::render('Admin/Users', [
-                'users' => User::with('role')->get()
-            ]);
-        })->name('admin.users');
-    });
-
-    Route::middleware(['verified', CheckRole::class.':admin'])->prefix('admin')->group(function () {
-        Route::get('/dashboard', function () {
-            return Inertia::render('Admin/Dashboard');
-        })->name('admin.dashboard');
+        // Use DashboardController for dashboard
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
         
         // Admin User Management Routes
-        Route::get('/users', 'App\Http\Controllers\Admin\UserController@index')->name('admin.users');
-        Route::post('/users', 'App\Http\Controllers\Admin\UserController@store')->name('admin.users.store');
-        Route::put('/users/{user}', 'App\Http\Controllers\Admin\UserController@update')->name('admin.users.update');
-        Route::delete('/users/{user}', 'App\Http\Controllers\Admin\UserController@destroy')->name('admin.users.destroy');
+        Route::get('/users', [UserController::class, 'index'])->name('admin.users');
+        Route::post('/users', [UserController::class, 'store'])->name('admin.users.store');
+        Route::put('/users/{user}', [UserController::class, 'update'])->name('admin.users.update');
+        Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
+
+        // Student Organizations Management Routes
+        Route::get('/student-orgs', [StudentOrgController::class, 'index'])->name('admin.student-orgs.index');
+        Route::post('/student-orgs', [StudentOrgController::class, 'store'])->name('admin.student-orgs.store');
+        Route::put('/student-orgs/{studentOrg}', [StudentOrgController::class, 'update'])->name('admin.student-orgs.update');
+        Route::delete('/student-orgs/{studentOrg}', [StudentOrgController::class, 'destroy'])->name('admin.student-orgs.destroy');
+        Route::get('/student-orgs/all', [StudentOrgController::class, 'getAll'])->name('admin.student-orgs.all');
+         
+        // College Management Routes
+        Route::get('/colleges', [CollegeController::class, 'index'])->name('admin.colleges.index');
+        Route::post('/colleges', [CollegeController::class, 'store'])->name('admin.colleges.store');
+        Route::put('/colleges/{college}', [CollegeController::class, 'update'])->name('admin.colleges.update');
+        Route::delete('/colleges/{college}', [CollegeController::class, 'destroy'])->name('admin.colleges.destroy');
+        Route::get('/colleges/all', [CollegeController::class, 'getAll'])->name('admin.colleges.all');
     });
 });
-
-// Redirect root to login if not authenticated
-Route::redirect('/', '/login');
