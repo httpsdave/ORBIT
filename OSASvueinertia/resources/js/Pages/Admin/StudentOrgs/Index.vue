@@ -150,7 +150,7 @@
             {{ editMode ? 'Edit Student Organization' : 'Add New Student Organization' }}
           </h2>
 
-          <form @submit.prevent="editMode ? updateOrg() : createOrg()" class="mt-6 space-y-6">
+          <form @submit.prevent="editMode ? updateOrg() : createOrg()" class="mt-6 space-y-6" enctype="multipart/form-data">
             <!-- College Select -->
             <div>
               <InputLabel for="college_id" value="College" />
@@ -355,8 +355,24 @@ export default {
       });
     },
     updateOrg() {
-      this.form.post(route('admin.student-orgs.update', this.currentOrg.id), {
-        method: 'put',
+      // For file uploads with PUT, we need to use FormData directly
+      this.form.transform((data) => {
+        const formData = new FormData();
+        
+        // Add all form fields to the FormData
+        for (const key in data) {
+          if (key !== '_method') { // Skip the _method field as we'll handle it separately
+            if (data[key] !== null && data[key] !== undefined) {
+              formData.append(key, data[key]);
+            }
+          }
+        }
+        
+        // Add the method spoofing field - this is critical for Laravel to recognize it as PUT
+        formData.append('_method', 'PUT');
+        
+        return formData;
+      }).post(route('admin.student-orgs.update', this.currentOrg.id), {
         preserveScroll: true,
         onSuccess: () => this.closeModal()
       });

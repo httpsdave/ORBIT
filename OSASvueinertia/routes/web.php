@@ -60,7 +60,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/applications/{application}/edit', [OrganizationApplicationController::class, 'edit'])->name('applications.edit');
     Route::put('/applications/{application}', [OrganizationApplicationController::class, 'update'])->name('applications.update');
     Route::delete('/applications/{application}', [OrganizationApplicationController::class, 'destroy'])->name('applications.destroy');
-    
+    Route::post('/applications/{application}/update-status', [OrganizationApplicationController::class, 'updateStatus'])->name('applications.update-status');
+
     // PDF export routes
     Route::get('/applications/{application}/pdf', [OrganizationApplicationController::class, 'exportPdf'])->name('applications.pdf');
     Route::get('/applications/{application}/export-renewal', [OrganizationApplicationController::class, 'exportRenewalPdf'])->name('applications.export-renewal');
