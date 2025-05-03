@@ -4,22 +4,21 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\College;
-use App\Models\StudentOrg;
 use App\Models\Event;
+use App\Models\StudentOrg;
+use App\Models\OrganizationApplication; // Add this for pending applications
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
-    /**
-     * Display the admin dashboard.
-     */
     public function index()
     {
-        // Get colleges with student organizations count
-        $colleges = College::withCount('studentOrgs')->get();
-        
+        // Get colleges with student organization counts
+        $colleges = College::withCount('studentOrgs')
+            ->get();
+            
         // Get total student organizations count
         $totalStudentOrgs = StudentOrg::count();
         
@@ -36,11 +35,19 @@ class DashboardController extends Controller
                 ->first();
         }
         
+        // Get pending applications count
+        $pendingApplications = OrganizationApplication::where('status', 'pending')->count();
+        
+        // Get the authenticated user's name
+        $userName = auth()->user()->name;
+        
         return Inertia::render('Admin/Dashboard', [
             'collegesData' => $colleges,
             'todayEvent' => $todayEvent,
             'upcomingEvent' => $upcomingEvent,
             'totalStudentOrgs' => $totalStudentOrgs,
+            'pendingApplications' => $pendingApplications,
+            'userName' => $userName,
         ]);
     }
 }

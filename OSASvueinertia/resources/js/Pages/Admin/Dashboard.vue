@@ -25,6 +25,16 @@ const props = defineProps({
     totalStudentOrgs: {
         type: Number,
         default: 0,
+    },
+    // Add new prop for pending applications
+    pendingApplications: {
+        type: Number,
+        default: 0,
+    },
+    // Add username prop for greeting
+    userName: {
+        type: String,
+        default: '',
     }
 });
 
@@ -47,6 +57,14 @@ const formatDate = (dateString) => {
         minute: '2-digit'
     });
 };
+
+// Get greeting based on time of day
+const greeting = computed(() => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good Morning';
+    if (hour < 18) return 'Good Afternoon';
+    return 'Good Evening';
+});
 
 // Prepare chart data in a reactive ref, and update it when props change
 const pieChartData = ref({
@@ -217,7 +235,7 @@ const collegesWithOrgsCount = computed(() => {
     ).length;
 });
 
-// Average orgs per college
+// Average orgs per college - keeping for reference but we won't display it
 const avgOrgsPerCollege = computed(() => {
     if (collegesWithOrgsCount.value === 0) return 0;
     return ((props.totalStudentOrgs || 0) / collegesWithOrgsCount.value).toFixed(1);
@@ -232,8 +250,14 @@ const avgOrgsPerCollege = computed(() => {
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">Admin Dashboard</h2>
         </template>
 
-       
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <!-- Greeting Card - New Addition -->
+                <div class="bg-white overflow-hidden shadow-sm rounded-lg mb-6">
+                    <div class="p-6 bg-gradient-to-r from-indigo-50 to-blue-50">
+                        <h2 class="text-2xl font-bold text-gray-800">{{ greeting }}, {{ userName || 'Administrator' }}!</h2>
+                        <p class="mt-2 text-gray-600">Welcome to your administration dashboard. Here's an overview of your system.</p>
+                    </div>
+                </div>
+
                 <!-- Debug Information -->
                 <div class="bg-yellow-50 p-4 mb-6 rounded-lg shadow" v-if="collegesData.length === 0 || totalStudentOrgs === 0">
                     <h3 class="font-bold text-yellow-800">Debug Information</h3>
@@ -283,17 +307,17 @@ const avgOrgsPerCollege = computed(() => {
                         </div>
                     </div>
 
-                    <div class="bg-gradient-to-r from-emerald-500 to-emerald-600 overflow-hidden shadow-md rounded-lg text-white">
+                    <div class="bg-gradient-to-r from-amber-500 to-amber-600 overflow-hidden shadow-md rounded-lg text-white">
                         <div class="p-6">
                             <div class="flex items-center">
                                 <div class="p-3 rounded-full bg-white/20">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
                                 </div>
                                 <div class="ml-4">
-                                    <h4 class="text-lg font-semibold">Avg Orgs per College</h4>
-                                    <p class="text-3xl font-bold">{{ avgOrgsPerCollege }}</p>
+                                    <h4 class="text-lg font-semibold">Pending Applications</h4>
+                                    <p class="text-3xl font-bold">{{ pendingApplications }}</p>
                                 </div>
                             </div>
                         </div>
@@ -406,7 +430,7 @@ const avgOrgsPerCollege = computed(() => {
                 </div>
                 
                
-            </div>
+          
         
     </AuthenticatedLayout>
 </template>

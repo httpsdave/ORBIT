@@ -130,8 +130,8 @@ const timeUntilNext = computed(() => {
             </div>
         </template>
 
-        <div class="py-12 bg-gradient-to-b from-gray-50 to-white">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+       
+           
                 <!-- Welcome Card -->
                 <div 
                     class="bg-gradient-to-r from-blue-600 to-indigo-700 overflow-hidden shadow-lg rounded-xl mb-8 transform transition-all duration-500 ease-in-out"
@@ -387,7 +387,7 @@ const timeUntilNext = computed(() => {
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
+           
+       
     </AuthenticatedLayout>
 </template>

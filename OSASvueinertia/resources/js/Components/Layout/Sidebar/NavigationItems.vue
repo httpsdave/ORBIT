@@ -75,13 +75,6 @@ const userNavItems = [
   }
 ];
 
-// Calendar item - now separated from shared navigation items
-const calendarItem = {
-  name: 'Calendar',
-  route: 'calendar',
-  icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'
-};
-
 // Applications item for admin quick action button
 const adminApplicationsItem = {
   name: 'Applications',
@@ -147,16 +140,7 @@ onMounted(() => {
       </template>
     </nav>
     
-    <!-- Calendar link in its own section before footer -->
-    <div class="mt-auto mb-4 px-2">
-      <NavigationItem
-        :item="calendarItem"
-        :sidebar-expanded="sidebarExpanded"
-        :showing-sidebar="showingSidebar"
-      />
-    </div>
-    
-    <!-- Removed the New Application button from here since it's now after Organizations -->
+    <!-- Calendar section has been removed -->
   </div>
 </template>
 

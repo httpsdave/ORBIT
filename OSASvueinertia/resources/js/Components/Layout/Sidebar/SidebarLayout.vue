@@ -1,6 +1,6 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
-import { Link } from '@inertiajs/vue3';
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue';
+import { Link, usePage } from '@inertiajs/vue3';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import SidebarHeader from './SidebarHeader.vue';
 import NavigationItems from './NavigationItems.vue';
@@ -20,6 +20,39 @@ const emit = defineEmits(['close-mobile-menu']);
 // State management
 const showingSidebar = ref(false);
 const sidebarExpanded = ref(true);
+
+// User profile dropdown state
+const isDropdownOpen = ref(false);
+const dropdownRef = ref(null);
+const page = usePage();
+const user = computed(() => page.props.auth.user);
+
+// Calculate dropdown position based on sidebar state
+const dropdownPosition = computed(() => {
+  // If sidebar is expanded or showing on mobile, dropdown opens above
+  if (sidebarExpanded.value || showingSidebar.value) {
+    return 'top-full mt-2 right-0';
+  } 
+  // If sidebar is collapsed on desktop, dropdown opens to the right
+  return 'right-full mr-2 top-0';
+});
+
+// Toggle dropdown
+const toggleDropdown = () => {
+  isDropdownOpen.value = !isDropdownOpen.value;
+};
+
+// Close dropdown when sidebar state changes
+watch(() => sidebarExpanded.value, () => {
+  isDropdownOpen.value = false;
+});
+
+// Calendar data - moved from NavigationItems.vue
+const calendarItem = {
+  name: 'Calendar',
+  route: 'calendar',
+  icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'
+};
 
 // Toggle sidebar for mobile
 const toggleSidebar = () => {
@@ -71,6 +104,13 @@ const closeSidebarOnClickOutside = (event) => {
   }
 };
 
+// Close dropdown when clicking outside
+const closeDropdownOnClickOutside = (event) => {
+  if (dropdownRef.value && !dropdownRef.value.contains(event.target)) {
+    isDropdownOpen.value = false;
+  }
+};
+
 // Check window size and adjust sidebar on small screens
 const checkWindowSize = () => {
   if (window.innerWidth < 768) {
@@ -111,12 +151,17 @@ const handleKeyDown = (event) => {
         console.error('Could not save sidebar preference');
       }
     }
+    // Also close dropdown if open
+    if (isDropdownOpen.value) {
+      isDropdownOpen.value = false;
+    }
   }
 };
 
 // Lifecycle hooks
 onMounted(() => {
   document.addEventListener('click', closeSidebarOnClickOutside);
+  document.addEventListener('click', closeDropdownOnClickOutside);
   document.addEventListener('keydown', handleKeyDown);
   window.addEventListener('resize', checkWindowSize);
   
@@ -126,6 +171,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   document.removeEventListener('click', closeSidebarOnClickOutside);
+  document.removeEventListener('click', closeDropdownOnClickOutside);
   document.removeEventListener('keydown', handleKeyDown);
   window.removeEventListener('resize', checkWindowSize);
 });
@@ -161,12 +207,25 @@ onUnmounted(() => {
               ORBIT
             </span>
           </Link>
-          
-          
         </div>
         
         <!-- Right side - user profile & actions -->
         <div class="flex items-center space-x-4">
+          <!-- Calendar link -->
+          <Link 
+            :href="route(calendarItem.route)"
+            class="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300 group relative"
+            aria-label="Calendar"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="calendarItem.icon" />
+            </svg>
+            <!-- Tooltip for calendar -->
+            <span class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+              Calendar
+            </span>
+          </Link>
+          
           <!-- Notifications button (optional) -->
           <button class="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -174,23 +233,76 @@ onUnmounted(() => {
             </svg>
           </button>
           
-          <!-- User profile -->
-          <Link 
-            :href="route('profile.edit')"
-            class="flex items-center group"
-          >
-            <div class="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-green-400 flex items-center justify-center text-white font-medium shadow-sm group-hover:shadow-md transition-all duration-300">
-              {{ $page.props.auth.user.name.charAt(0).toUpperCase() }}
-            </div>
-            <div class="ml-2 hidden sm:block">
-              <div class="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-300">
-                {{ $page.props.auth.user.name }}
+          <!-- User profile with dropdown -->
+          <div ref="dropdownRef" class="relative">
+            <button 
+              @click.stop="toggleDropdown"
+              class="flex items-center group focus:outline-none focus:ring-2 focus:ring-blue-400 rounded-full"
+              aria-haspopup="true"
+              :aria-expanded="isDropdownOpen"
+            >
+              <div class="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-green-400 flex items-center justify-center text-white font-medium shadow-sm group-hover:shadow-md transition-all duration-300">
+                {{ $page.props.auth.user.name.charAt(0).toUpperCase() }}
               </div>
-              <div v-if="isAdmin" class="text-xs font-medium text-indigo-700 bg-indigo-100 px-2 py-0.5 rounded-full border border-indigo-200">
-                Admin
+              <div class="ml-2 hidden sm:block">
+                <div class="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-300">
+                  {{ $page.props.auth.user.name }}
+                </div>
+                <div v-if="isAdmin" class="text-xs font-medium text-indigo-700 bg-indigo-100 px-2 py-0.5 rounded-full border border-indigo-200">
+                  Admin
+                </div>
+              </div>
+              <!-- Dropdown indicator -->
+              <svg 
+                class="ml-1 h-4 w-4 text-gray-400 transition-transform duration-300 hidden sm:block"
+                :class="{'rotate-180': isDropdownOpen}"
+                xmlns="http://www.w3.org/2000/svg" 
+                fill="none" 
+                viewBox="0 0 24 24" 
+                stroke="currentColor"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            
+            <!-- Dropdown Menu -->
+            <div 
+              v-show="isDropdownOpen"
+              :class="[
+                'absolute bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden z-50 w-56 mt-2',
+                'right-0'
+              ]"
+            >
+              <div class="py-2 px-4 border-b border-gray-100">
+                <div class="text-sm font-medium text-gray-800">{{ user.name }}</div>
+                <div class="text-xs text-gray-500 truncate">{{ user.email }}</div>
+              </div>
+              <div class="flex flex-col">
+                <Link 
+                  :href="route('profile.edit')" 
+                  class="flex items-center px-4 py-2 text-gray-600 font-medium hover:text-blue-600 transition-all duration-300 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  :aria-current="route().current('profile.edit') ? 'page' : undefined"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                  <span class="ml-3">My Profile</span>
+                </Link>
+                
+                <Link 
+                  :href="route('logout')" 
+                  method="post" 
+                  as="button" 
+                  class="w-full flex items-center px-4 py-2 text-red-600 font-medium hover:text-red-700 transition-all duration-300 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-400"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                  </svg>
+                  <span class="ml-3">Sign Out</span>
+                </Link>
               </div>
             </div>
-          </Link>
+          </div>
         </div>
       </div>
     </header>
@@ -222,7 +334,7 @@ onUnmounted(() => {
         :showing-sidebar="showingSidebar"
       />
       
-      <!-- Bottom Actions -->
+      <!-- Bottom Actions (Empty for future implementation) -->
       <SidebarFooter 
         :sidebar-expanded="sidebarExpanded" 
         :showing-sidebar="showingSidebar"

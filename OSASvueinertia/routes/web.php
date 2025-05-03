@@ -31,15 +31,21 @@ Route::middleware(['auth'])->group(function () {
         return redirect('/dashboard');
     });
     
+    // Ensure user role is passed to calendar view
     Route::get('/calendar', [EventController::class, 'index'])->name('calendar');
 
     // API routes
     Route::prefix('api')->group(function () {
-        Route::post('/events', [EventController::class, 'store']);
+        // Ensure these routes check for admin role
+        Route::middleware(['auth'])->group(function () {
+            Route::post('/events', [EventController::class, 'store']);
+            Route::put('/events/{event}', [EventController::class, 'update']);
+            Route::delete('/events/{event}', [EventController::class, 'destroy']);
+            Route::post('/extract-event-info', [EventController::class, 'extractEventInfo']);
+        });
+        
+        // This route can be accessed by all authenticated users
         Route::get('/events', [EventController::class, 'getEvents']);
-        Route::put('/events/{event}', [EventController::class, 'update']);
-        Route::delete('/events/{event}', [EventController::class, 'destroy']);
-        Route::post('/extract-event-info', [EventController::class, 'extractEventInfo']);
         
         // API routes for colleges and student orgs
         Route::get('/colleges', [PublicCollegeController::class, 'getAll'])->name('api.colleges.all');
@@ -79,6 +85,18 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/student-orgs', [PublicStudentOrgController::class, 'index'])->name('student-orgs.index');
     Route::get('/student-orgs/{studentOrg}', [PublicStudentOrgController::class, 'show'])->name('student-orgs.show');
 
+
+    // Upload signed document
+    Route::post('/applications/{application}/upload-document', [OrganizationApplicationController::class, 'uploadSignedDocument'])
+    ->name('applications.upload-document');
+
+    // View signed document
+    Route::get('/applications/{application}/view-document', [OrganizationApplicationController::class, 'viewSignedDocument'])
+    ->name('applications.view-document');
+
+    // Delete signed document
+    Route::delete('/applications/{application}/delete-document', [OrganizationApplicationController::class, 'deleteSignedDocument'])
+    ->name('applications.delete-document');
 
     // User dashboard route with admin redirect
     Route::get('/dashboard', function () {

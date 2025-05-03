@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Storage;
 
 
 class OrganizationApplicationController extends Controller
@@ -50,6 +51,7 @@ class OrganizationApplicationController extends Controller
             'dean_name' => 'required|string|max:255',
             'coordinator_name' => 'required|string|max:255',
             'status' => 'string|in:Pending,Approved,Disapproved',
+            'signed_document' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240', // Add validation for signed document
         ];
         
         // Add form-specific validation rules
@@ -199,6 +201,13 @@ class OrganizationApplicationController extends Controller
                 $data['application_date'] = now(); // Use current date for attendance sheet
             }
         
+        // Handle signed document upload
+        if ($request->hasFile('signed_document')) {
+            $path = $request->file('signed_document')->store('signed_documents', 'public');
+            $data['signed_document_path'] = $path;
+        }
+
+        
         
         $application = OrganizationApplication::create($data);
 
@@ -244,18 +253,83 @@ class OrganizationApplicationController extends Controller
             'organization_name' => 'required|string|max:255',
             'president_name' => 'required|string|max:255',
             'application_date' => 'required|date',
+            'signed_document' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240', // Add validation for signed document update
         ]);
+        
+        $data = $request->all();
+        
+        // Handle signed document upload on update
+        if ($request->hasFile('signed_document')) {
+            // Delete old document if exists
+            if ($application->signed_document_path) {
+                Storage::disk('public')->delete($application->signed_document_path);
+            }
+            
+            $path = $request->file('signed_document')->store('signed_documents', 'public');
+            $data['signed_document_path'] = $path;
+        }
            
-
-        $application->update($request->all());
+        $application->update($data);
 
         return redirect()->route('applications.index');
     }
 
     public function destroy(OrganizationApplication $application)
     {
+        // Delete the signed document if it exists
+        if ($application->signed_document_path) {
+            Storage::disk('public')->delete($application->signed_document_path);
+        }
+        
         $application->delete();
         return redirect()->route('applications.index');
+    }
+    
+    // Add a new method to handle signed document uploads separately
+    public function uploadSignedDocument(Request $request, OrganizationApplication $application)
+    {
+        $request->validate([
+            'signed_document' => 'required|file|mimes:pdf,jpg,jpeg,png|max:10240'
+        ]);
+        
+        // Delete old document if exists
+        if ($application->signed_document_path) {
+            Storage::disk('public')->delete($application->signed_document_path);
+        }
+        
+        $path = $request->file('signed_document')->store('signed_documents', 'public');
+        $application->signed_document_path = $path;
+        $application->save();
+        
+        return redirect()->back()->with('success', 'Signed document uploaded successfully');
+    }
+
+    public function deleteSignedDocument(OrganizationApplication $application)
+    {
+        // Check if document exists
+        if ($application->signed_document_path) {
+            // Delete file from storage
+            Storage::disk('public')->delete($application->signed_document_path);
+            
+            // Update database record
+            $application->signed_document_path = null;
+            $application->save();
+            
+            return redirect()->back()->with('success', 'Signed document deleted successfully');
+        }
+        
+        return redirect()->back()->with('error', 'No signed document found');
+    }
+    
+    // Add a method to view/download the signed document
+    public function viewSignedDocument(OrganizationApplication $application)
+    {
+        if (!$application->signed_document_path) {
+            return redirect()->back()->with('error', 'No signed document available');
+        }
+        
+        $filePath = Storage::disk('public')->path($application->signed_document_path);
+        return response()->file($filePath);
     }
 
     /* NEW METHOD: Update application status */
