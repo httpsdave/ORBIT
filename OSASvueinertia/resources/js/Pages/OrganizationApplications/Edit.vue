@@ -1,35 +1,245 @@
 <script setup>
-import { defineProps } from 'vue';
+import { ref } from 'vue';
 import { useForm } from '@inertiajs/vue3';
+import StudentOrganizationForm from '@/Components/forms/StudentOrganizationForm.vue';
+import RenewalForm from '@/Components/forms/RenewalForm.vue';
+import CommitmentForm from '@/Components/forms/CommitmentForm.vue';
+import PlanOfActivitiesForm from '@/Components/forms/PlanOfActivitiesForm.vue';
+import ListOfMembersForm from '@/Components/forms/ListOfMembersForm.vue';
+import StudentCertificationForm from '@/Components/forms/StudentCertificationForm.vue';
+import ListOfOfficersForm from '@/Components/forms/ListOfOfficersForm.vue';
+import ActivityAttendanceForm from '@/Components/forms/ActivityAttendanceForm.vue';
 
-const props = defineProps({ application: Object });
-
-const form = useForm({
-    organization_name: props.application.organization_name,
-    president_name: props.application.president_name,
-    application_date: props.application.application_date,
+const props = defineProps({
+  application: {
+    type: Object,
+    required: true
+  }
 });
 
-const submit = () => form.put(`/applications/${props.application.id}`);
+// Initialize form data based on the application type
+const initializeFormData = () => {
+  const formData = { ...props.application };
+  
+  // Initialize activities for Plan of Activities form if they don't exist
+  if (props.application.form_type === 'LSPU-OSAS-SF-004') {
+    if (!formData.activities || !formData.activities.length) {
+      formData.activities = Array(3).fill().map(() => ({
+        objective: '',
+        name: '',
+        description: '',
+        persons_involved: '',
+        target_date: '',
+        budget: 0
+      }));
+    }
+  }
+  
+  // Initialize members for List of Members form if they don't exist
+  else if (props.application.form_type === 'LSPU-OSAS-SF-005') {
+    if (!formData.members || !formData.members.length) {
+      formData.members = Array(4).fill().map(() => ({
+        student_name: '',
+        student_number: '',
+        course_year_section: '',
+        photo_path: null
+      }));
+    }
+  }
+  
+  // Initialize officers for List of Officers form if they don't exist
+  else if (props.application.form_type === 'LSPU-OSAS-SF-007') {
+    if (!formData.officers || !formData.officers.length) {
+      formData.officers = Array(4).fill().map(() => ({
+        student_name: '',
+        position: '',
+        student_number: '',
+        photo_path: null
+      }));
+    }
+  }
+  
+  // Initialize attendees for Student Activity Attendance Sheet if they don't exist
+  else if (props.application.form_type === 'LSPU-OSAS-SF-009') {
+    if (!formData.attendees || !formData.attendees.length) {
+      formData.attendees = Array(10).fill().map(() => ({
+        name: '',
+        course_year_section: '',
+        signature: null
+      }));
+    }
+  }
+  
+  return formData;
+};
+
+const formData = ref(initializeFormData());
+
+const handleFormSubmitted = (data) => {
+  // Create a form instance using the updated data
+  const form = useForm({
+    ...data,
+    _method: 'PUT', // For method spoofing (PUT request)
+  });
+  
+  // Submit the form to the update endpoint
+  form.put(`/applications/${props.application.id}`, {
+    onSuccess: () => {
+      // Redirect or show success message
+      window.location.href = '/applications';
+    }
+  });
+};
+
+const downloadSignedDocument = () => {
+  if (props.application.signed_document_path) {
+    window.open(`/applications/${props.application.id}/signed-document`, '_blank');
+  }
+};
+
+const deleteSignedDocument = () => {
+  if (props.application.signed_document_path && confirm('Are you sure you want to delete the signed document?')) {
+    const form = useForm({});
+    form.delete(`/applications/${props.application.id}/signed-document`, {
+      onSuccess: () => {
+        // Refresh the page to update the UI
+        window.location.reload();
+      }
+    });
+  }
+};
 </script>
 
 <template>
-    <div class="p-6">
-        <h1 class="text-xl font-bold">Edit Application</h1>
-        <form @submit.prevent="submit" class="mt-4 space-y-4">
-            <div>
-                <label class="block">Organization Name</label>
-                <input v-model="form.organization_name" class="border p-2 w-full" required>
-            </div>
-            <div>
-                <label class="block">President Name</label>
-                <input v-model="form.president_name" class="border p-2 w-full" required>
-            </div>
-            <div>
-                <label class="block">Application Date</label>
-                <input type="date" v-model="form.application_date" class="border p-2 w-full" required>
-            </div>
-            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Update</button>
-        </form>
+  <div class="p-6 document">
+    <h1 class="text-2xl font-bold mb-6">Edit {{ props.application.organization_name }} Application</h1>
+    
+    <!-- Signed Document Section -->
+    <div v-if="props.application.signed_document_path" class="mb-6 p-4 bg-gray-100 rounded">
+      <h2 class="text-lg font-semibold">Signed Document</h2>
+      <div class="flex items-center mt-2">
+        <button @click="downloadSignedDocument" class="bg-blue-500 text-white px-3 py-1 rounded mr-2">
+          View Document
+        </button>
+        <button @click="deleteSignedDocument" class="bg-red-500 text-white px-3 py-1 rounded">
+          Delete Document
+        </button>
+      </div>
     </div>
+    
+    <!-- Status Information -->
+    <div class="mb-6 p-4 rounded" :class="{
+      'bg-yellow-100': props.application.status === 'Pending',
+      'bg-green-100': props.application.status === 'Approved',
+      'bg-red-100': props.application.status === 'Disapproved'
+    }">
+      <h2 class="text-lg font-semibold">Status: {{ props.application.status }}</h2>
+      <p v-if="props.application.feedback" class="mt-2">
+        <strong>Feedback:</strong> {{ props.application.feedback }}
+      </p>
+    </div>
+    
+    <!-- Display the appropriate form based on form_type -->
+    <div>
+      <!-- Student Organization Form -->
+      <StudentOrganizationForm 
+        v-if="props.application.form_type === 'LSPU-OSAS-SF-001'" 
+        :initialFormData="formData"
+        :isEdit="true"
+        @submitted="handleFormSubmitted"
+      />
+      
+      <!-- Renewal Form -->
+      <RenewalForm 
+        v-else-if="props.application.form_type === 'LSPU-OSAS-SF-002'" 
+        :initialFormData="formData"
+        :isEdit="true"
+        @submitted="handleFormSubmitted"
+      />
+      
+      <!-- Commitment Form -->
+      <CommitmentForm 
+        v-else-if="props.application.form_type === 'LSPU-OSAS-SF-003'" 
+        :initialFormData="formData"
+        :isEdit="true"
+        @submitted="handleFormSubmitted"
+      />
+      
+      <!-- Plan of Activities Form -->
+      <PlanOfActivitiesForm 
+        v-else-if="props.application.form_type === 'LSPU-OSAS-SF-004'" 
+        :initialFormData="formData"
+        :isEdit="true"
+        @submitted="handleFormSubmitted"
+      />
+      
+      <!-- List of Members Form -->
+      <ListOfMembersForm 
+        v-else-if="props.application.form_type === 'LSPU-OSAS-SF-005'" 
+        :initialFormData="formData"
+        :isEdit="true"
+        @submitted="handleFormSubmitted"
+      />
+      
+      <!-- Student Certification Form -->
+      <StudentCertificationForm 
+        v-else-if="props.application.form_type === 'LSPU-OSAS-SF-006'" 
+        :initialFormData="formData"
+        :isEdit="true"
+        @submitted="handleFormSubmitted"
+      />
+      
+      <!-- List of Officers Form -->
+      <ListOfOfficersForm 
+        v-else-if="props.application.form_type === 'LSPU-OSAS-SF-007'" 
+        :initialFormData="formData"
+        :isEdit="true"
+        @submitted="handleFormSubmitted"
+      />
+      
+      <!-- Student Activity Attendance Sheet -->
+      <ActivityAttendanceForm 
+        v-else-if="props.application.form_type === 'LSPU-OSAS-SF-009'" 
+        :initialFormData="formData"
+        :isEdit="true"
+        @submitted="handleFormSubmitted"
+      />
+      
+      <!-- Fallback for unknown form types -->
+      <div v-else class="bg-red-100 p-4 rounded">
+        <p>Unknown form type: {{ props.application.form_type }}</p>
+      </div>
+    </div>
+  </div>
 </template>
+
+<style scoped>
+/* Ensure A4 Paper Size */
+.document {
+    width: 210mm;
+    min-height: 297mm;
+    padding: 20mm;
+    margin: auto;
+    background: white;
+}
+
+/* Set Font to Times New Roman, Font Size to 10pt, and Line Spacing to 1.0 */
+.form-content {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 10pt;
+    line-height: 1.0;
+}
+
+/* Ensure Proper Printing */
+@media print {
+    body {
+        width: 210mm;
+        height: 297mm;
+        margin: 0;
+        padding: 20mm;
+    }
+    .document {
+        page-break-before: always;
+    }
+}
+</style>

@@ -21,7 +21,7 @@ class OrganizationApplicationController extends Controller
             // For regular users, only show their own applications
             $applications = OrganizationApplication::where('user_id', auth()->id())->get();
             
-            // If no applications are found, this will help with debugging
+           
             if ($applications->isEmpty()) {
                 // For testing, you might want to see all applications if none are found
                 // $applications = OrganizationApplication::all();
@@ -248,31 +248,157 @@ class OrganizationApplicationController extends Controller
     }
 
     public function update(Request $request, OrganizationApplication $application)
-    {
-        $request->validate([
-            'organization_name' => 'required|string|max:255',
-            'president_name' => 'required|string|max:255',
+{
+    // Common fields validation
+    $validationRules = [
+        'organization_name' => 'required|string|max:255',
+        'president_name' => 'required|string|max:255',
+        'adviser_name' => 'required|string|max:255',
+        'dean_name' => 'required|string|max:255',
+        'coordinator_name' => 'required|string|max:255',
+        'signed_document' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
+    ];
+    
+    // Add form-specific validation rules based on form type
+    if ($application->form_type === 'LSPU-OSAS-SF-001') {
+        $validationRules = array_merge($validationRules, [
             'application_date' => 'required|date',
-            'signed_document' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240', // Add validation for signed document update
+            'director_name' => 'required|string|max:255',
+        ]);
+    } elseif ($application->form_type === 'LSPU-OSAS-SF-002') {
+        $validationRules = array_merge($validationRules, [
+            'college' => 'required|string|max:255',
+            'academic_year_start' => 'required|string|max:10',
+            'academic_year_end' => 'required|string|max:10',
+            'chairperson_name' => 'required|string|max:255',
+        ]);
+    } elseif ($application->form_type === 'LSPU-OSAS-SF-003') {
+        $validationRules = array_merge($validationRules, [
+            'adviser_signature' => 'nullable|string|max:255',
+            'adviser_college' => 'required|string|max:255',
+            'adviser_rank' => 'required|string|max:255',
+            'adviser_address' => 'required|string|max:255',
+            'adviser_contact' => 'required|string|max:255',
+            'form_date' => 'required|date',
+            'academic_year_start' => 'required|string|max:10',
+            'academic_year_end' => 'required|string|max:10',
+        ]);
+    } elseif ($application->form_type === 'LSPU-OSAS-SF-004') {
+        $validationRules = array_merge($validationRules, [
+            'secretary_name' => 'required|string|max:255',
+            'academic_year_start' => 'required|string|max:10',
+            'academic_year_end' => 'required|string|max:10',
         ]);
         
-        $data = $request->all();
+        // Special handling for activities below
+    } elseif ($application->form_type === 'LSPU-OSAS-SF-005') {
+        $validationRules = array_merge($validationRules, [
+            'semester' => 'required|string|in:1st,2nd,Summer',
+            'academic_year_start' => 'required|string|max:10',
+            'academic_year_end' => 'required|string|max:10',
+            'second_adviser' => 'nullable|string|max:255',
+        ]);
         
-        // Handle signed document upload on update
-        if ($request->hasFile('signed_document')) {
-            // Delete old document if exists
-            if ($application->signed_document_path) {
-                Storage::disk('public')->delete($application->signed_document_path);
+        // Special handling for members below
+    } elseif ($application->form_type === 'LSPU-OSAS-SF-006') {
+        $validationRules = array_merge($validationRules, [
+            'student_name' => 'required|string|max:255',
+            'course_year_section' => 'required|string|max:255',
+            'position_rank' => 'nullable|string|max:255',
+            'is_bonafide' => 'required|boolean',
+            'is_not_academic_probation' => 'required|boolean',
+            'is_not_disciplinary_probation' => 'required|boolean',
+            'has_position' => 'required|boolean',
+        ]);
+    } elseif ($application->form_type === 'LSPU-OSAS-SF-007') {
+        $validationRules = array_merge($validationRules, [
+            'academic_year_start' => 'required|string|max:10',
+            'academic_year_end' => 'required|string|max:10',
+        ]);
+        
+        // Special handling for officers below
+    } elseif ($application->form_type === 'LSPU-OSAS-SF-009') {
+        $validationRules = array_merge($validationRules, [
+            'college' => 'nullable|string|max:255',
+            'activity_name' => 'nullable|string|max:255',
+            'activity_date' => 'nullable|date',
+        ]);
+        
+        // Special handling for attendees below
+    }
+    
+    // Validate the request data
+    $validatedData = $request->validate($validationRules);
+    
+    // Handle signed document upload on update
+    if ($request->hasFile('signed_document')) {
+        // Delete old document if exists
+        if ($application->signed_document_path) {
+            Storage::disk('public')->delete($application->signed_document_path);
+        }
+        
+        $path = $request->file('signed_document')->store('signed_documents', 'public');
+        $validatedData['signed_document_path'] = $path;
+    }
+    
+    // Update the application with validated data
+    $application->update($validatedData);
+    
+    // Handle form-specific related data updates
+    if ($application->form_type === 'LSPU-OSAS-SF-004' && $request->has('activities')) {
+        // Delete existing activities
+        $application->activities()->delete();
+        
+        // Create new activities
+        foreach ($request->activities as $activityData) {
+            $application->activities()->create($activityData);
+        }
+    }
+    
+    if ($application->form_type === 'LSPU-OSAS-SF-005' && $request->has('members')) {
+        // Delete existing members
+        $application->members()->delete();
+        
+        // Create new members
+        foreach ($request->members as $memberData) {
+            // Handle member photo if present
+            if (isset($memberData['photo_path']) && $memberData['photo_path'] instanceof \Illuminate\Http\UploadedFile) {
+                $path = $memberData['photo_path']->store('member_photos', 'public');
+                $memberData['photo_path'] = $path;
             }
             
-            $path = $request->file('signed_document')->store('signed_documents', 'public');
-            $data['signed_document_path'] = $path;
+            $application->members()->create($memberData);
         }
-           
-        $application->update($data);
-
-        return redirect()->route('applications.index');
     }
+    
+    if ($application->form_type === 'LSPU-OSAS-SF-007' && $request->has('officers')) {
+        // Delete existing officers
+        $application->officers()->delete();
+        
+        // Create new officers
+        foreach ($request->officers as $officerData) {
+            // Handle officer photo if present
+            if (isset($officerData['photo_path']) && $officerData['photo_path'] instanceof \Illuminate\Http\UploadedFile) {
+                $path = $officerData['photo_path']->store('officer_photos', 'public');
+                $officerData['photo_path'] = $path;
+            }
+            
+            $application->officers()->create($officerData);
+        }
+    }
+    
+    if ($application->form_type === 'LSPU-OSAS-SF-009' && $request->has('attendees')) {
+        // Delete existing attendees
+        $application->attendees()->delete();
+        
+        // Create new attendees
+        foreach ($request->attendees as $attendeeData) {
+            $application->attendees()->create($attendeeData);
+        }
+    }
+    
+    return redirect()->route('applications.index')->with('success', 'Application updated successfully');
+}
 
     public function destroy(OrganizationApplication $application)
     {

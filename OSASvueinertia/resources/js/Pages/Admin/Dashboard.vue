@@ -254,7 +254,7 @@ const avgOrgsPerCollege = computed(() => {
                 <div class="bg-white overflow-hidden shadow-sm rounded-lg mb-6">
                     <div class="p-6 bg-gradient-to-r from-indigo-50 to-blue-50">
                         <h2 class="text-2xl font-bold text-gray-800">{{ greeting }}, {{ userName || 'Administrator' }}!</h2>
-                        <p class="mt-2 text-gray-600">Welcome to your administration dashboard. Here's an overview of your system.</p>
+                        <p class="mt-2 text-gray-600">Welcome to orbit. Here's an overview of your system.</p>
                     </div>
                 </div>
 

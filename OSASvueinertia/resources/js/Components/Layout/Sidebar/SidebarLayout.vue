@@ -11,6 +11,11 @@ const props = defineProps({
   isAdmin: {
     type: Boolean,
     default: false
+  },
+  // New prop to control logo size
+  logoSize: {
+    type: String,
+    default: 'large' // 'default', 'medium', 'large'
   }
 });
 
@@ -35,6 +40,20 @@ const dropdownPosition = computed(() => {
   } 
   // If sidebar is collapsed on desktop, dropdown opens to the right
   return 'right-full mr-2 top-0';
+});
+
+// Compute logo size class based on prop
+const logoSizeClass = computed(() => {
+  switch(props.logoSize) {
+    case 'medium':
+      return 'h-10 w-auto';
+    case 'large':
+      return 'h-12 w-auto';
+    case 'extra-large':
+      return 'h-16 w-auto';
+    default:
+      return 'h-8 w-auto';
+  }
 });
 
 // Toggle dropdown
@@ -200,10 +219,24 @@ onUnmounted(() => {
             class="flex items-center"
           >
             <div class="relative">
-              <div class="absolute inset-0 bg-blue-500 opacity-20 blur-sm rounded-lg transform rotate-45 animate-pulse"></div>
-              <ApplicationLogo class="block h-8 w-auto filter drop-shadow" alt="ORBIT logo" />
+              <!-- Animated background glow, size adjusted to match logo -->
+              <div 
+               
+                :class="{'scale-125': props.logoSize === 'medium', 'scale-150': props.logoSize === 'large', 'scale-175': props.logoSize === 'extra-large'}"
+              ></div>
+              <!-- Logo with dynamic size class -->
+              <ApplicationLogo :class="[logoSizeClass, 'block filter drop-shadow']" alt="ORBIT logo" />
             </div>
-            <span class="ml-2 font-semibold text-lg text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-green-500">
+            <!-- Company name text adjusted based on logo size -->
+            <span 
+              class="ml-2 font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-green-500"
+              :class="{
+                'text-lg': props.logoSize === 'default',
+                'text-xl': props.logoSize === 'medium',
+                'text-2xl': props.logoSize === 'large',
+                'text-3xl': props.logoSize === 'extra-large'
+              }"
+            >
               ORBIT
             </span>
           </Link>
@@ -226,12 +259,16 @@ onUnmounted(() => {
             </span>
           </Link>
           
-          <!-- Notifications button (optional) -->
-          <button class="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-            </svg>
-          </button>
+      <!-- Notifications button with tooltip -->
+      <button class="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300 group relative">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+          </svg>
+          <!-- Tooltip for notifications -->
+          <span class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-50">
+            Notifications
+          </span>
+        </button>
           
           <!-- User profile with dropdown -->
           <div ref="dropdownRef" class="relative">
@@ -307,13 +344,13 @@ onUnmounted(() => {
       </div>
     </header>
 
-    <!-- Sidebar - with additional top padding to account for the fixed header -->
-    <aside
+   <!-- Sidebar - with additional top padding to account for the fixed header -->
+   <aside
       id="sidebar"
       :class="[
         'z-30 transition-all duration-300 ease-in-out border-r border-gray-200 bg-white shadow-lg shadow-blue-200/20 flex flex-col',
         sidebarExpanded ? 'md:w-64' : 'md:w-20',
-        showingSidebar ? 'fixed left-0 w-64 h-full pt-16' : 'fixed -left-64 md:left-0 md:relative md:h-screen pt-16'
+        showingSidebar ? 'fixed left-0 w-64 h-full pt-16' : 'fixed -left-64 md:left-0 md:relative pt-16 h-auto min-h-screen'
       ]"
       aria-label="Navigation sidebar"
       @click="handleSidebarClick"
@@ -381,5 +418,10 @@ a:focus, button:focus {
   aside:not(.md\:w-64) {
     cursor: pointer;
   }
+}
+
+/* Add scale-175 which isn't standard in Tailwind */
+.scale-175 {
+  transform: scale(1.75);
 }
 </style>

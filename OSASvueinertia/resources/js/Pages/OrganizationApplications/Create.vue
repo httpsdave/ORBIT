@@ -80,6 +80,7 @@ const handleFormSubmitted = (data) => {
     // Reset the form
     currentForm.value = '';
     formData.value = {};
+    
 };
 </script>
 
