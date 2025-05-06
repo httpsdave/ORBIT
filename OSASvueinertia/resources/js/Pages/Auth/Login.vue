@@ -1,12 +1,11 @@
 <script setup>
 import Checkbox from '@/Components/Checkbox.vue';
-import GuestLayout from '@/Layouts/GuestLayout.vue';
+
 import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
+
 import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 
 defineProps({
     canResetPassword: {
@@ -26,9 +25,24 @@ const form = useForm({
 const passwordVisible = ref(false);
 const isLoading = ref(false);
 const formElement = ref(null);
+// Set dark mode as default
+const isDarkMode = ref(true);
+const activeSlide = ref(0);
+const slideInterval = ref(null);
+
+// Slideshow images
+const slideshowImages = [
+    '/images/LSPU1.jpg',
+    '/images/LSPU2.jpg',
+    '/images/LSPU3.jpg',
+];
 
 const togglePasswordVisibility = () => {
     passwordVisible.value = !passwordVisible.value;
+};
+
+const toggleTheme = () => {
+    isDarkMode.value = !isDarkMode.value;
 };
 
 const submit = () => {
@@ -43,10 +57,26 @@ const submit = () => {
     });
 };
 
+const startSlideshow = () => {
+    slideInterval.value = setInterval(() => {
+        activeSlide.value = (activeSlide.value + 1) % slideshowImages.length;
+    }, 10000);
+};
+
 onMounted(() => {
     // Fade in animation on page load
     if (formElement.value) {
         formElement.value.classList.add('opacity-100');
+    }
+    
+    // Start slideshow
+    startSlideshow();
+});
+
+onBeforeUnmount(() => {
+    // Clear slideshow interval when component is unmounted
+    if (slideInterval.value) {
+        clearInterval(slideInterval.value);
     }
 });
 </script>
@@ -54,10 +84,37 @@ onMounted(() => {
 <template>
     <Head title="Login | LSPU ORBIT" />
     
-    <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 px-4 py-8">
-        <div ref="formElement" class="w-full max-w-4xl flex flex-col md:flex-row gap-4 relative opacity-0 transition-opacity duration-700">
-            <!-- Left side panel with gradient and logo (hidden on small screens) -->
-            <div class="hidden md:flex md:w-2/5 lg:w-2/5 bg-gradient-to-br from-green-600 via-teal-500 to-blue-600 p-6 flex-col items-center justify-center text-white relative rounded-2xl shadow-2xl overflow-hidden transition-all duration-300 hover:shadow-blue-500/20">
+    <!-- Main container with slideshow background -->
+    <div class="min-h-screen flex items-center justify-center px-4 py-8 relative overflow-hidden">
+        <!-- Background slideshow -->
+        <div class="absolute inset-0 z-0">
+            <transition-group name="fade">
+                <div 
+                    v-for="(image, index) in slideshowImages" 
+                    :key="index" 
+                    v-show="activeSlide === index"
+                    class="absolute inset-0 bg-cover bg-center transition-opacity duration-1000"
+                    :style="{ backgroundImage: `url(${image})`, filter: isDarkMode ? 'brightness(0.7)' : 'brightness(1.1) contrast(1.1)' }"
+                >
+                </div>
+            </transition-group>
+            <!-- Overlay to ensure content readability -->
+            <div class="absolute inset-0" :class="isDarkMode ? 'bg-gray-900 bg-opacity-60' : 'bg-white bg-opacity-40 backdrop-filter backdrop-blur-sm'"></div>
+        </div>
+        
+        <!-- Content wrapper -->
+        <div 
+            ref="formElement" 
+            class="w-full max-w-4xl flex flex-col md:flex-row gap-4 relative opacity-0 transition-all duration-700 z-20"
+            :class="isDarkMode ? 'text-white' : 'text-gray-800'"
+        >
+            <!-- Left side panel -->
+            <div 
+                class="hidden md:flex md:w-2/5 lg:w-2/5 flex-col items-center justify-center relative rounded-2xl overflow-hidden transition-all duration-300 shadow-xl z-10"
+                :class="isDarkMode 
+                    ? 'bg-gradient-to-br from-green-600 via-teal-500 to-blue-600 hover:shadow-blue-500/20 bg-opacity-90' 
+                    : 'bg-gradient-to-br from-green-500 via-teal-400 to-blue-500 hover:shadow-blue-300/30 bg-opacity-90'"
+            >
                 <!-- Animated background pattern -->
                 <div class="absolute inset-0 overflow-hidden opacity-10">
                     <div class="absolute top-1/4 left-1/4 w-16 h-16 rounded-full bg-white transform rotate-45 animate-pulse"></div>
@@ -65,14 +122,14 @@ onMounted(() => {
                     <div class="absolute top-3/4 left-1/2 w-12 h-12 rounded-full bg-white animate-pulse" style="animation-delay: 2s;"></div>
                 </div>
                 
-                <div class="relative z-10 flex flex-col items-center transform transition-all duration-500 hover:scale-105">
+                <div class="relative z-10 flex flex-col items-center transform transition-all duration-500 hover:scale-105 p-6">
                     <div class="px-0.0 bg-white bg-opacity-10 backdrop-blur-sm rounded-full mb-4 shadow-lg hover:shadow-white/20 transition-all duration-300">
                         <img src="/images/lspu-logo.png" alt="LSPU Logo" class="w-32 h-32 object-cover filter drop-shadow-lg">
                     </div>
                     
                     <div class="text-center mb-6">
-                        <h2 class="text-xl font-bold mb-1">WELCOME TO</h2>
-                        <h1 class="text-3xl lg:text-4xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-white to-blue-200">LSPU ORBIT</h1>
+                        <h2 class="text-xl font-bold mb-1 text-white">WELCOME TO</h2>
+                        <h1 class="text-3xl lg:text-4xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-white to-blue-100">LSPU ORBIT</h1>
                         <div class="h-1 w-28 bg-white opacity-70 mx-auto mb-4 rounded-full"></div>
                         <p class="text-white text-opacity-90 text-xs max-w-xs mx-auto leading-relaxed">Your comprehensive portal to university resources, services, and online learning tools</p>
                     </div>
@@ -104,9 +161,15 @@ onMounted(() => {
             </div>
             
             <!-- Right side panel with login form -->
-            <div class="w-full md:w-3/5 lg:w-3/5 bg-gray-900 bg-opacity-95 backdrop-blur-lg p-5 md:p-8 rounded-2xl shadow-2xl transition-all duration-300 border border-gray-800">
+            <div 
+                class="w-full md:w-3/5 lg:w-3/5 p-5 md:p-8 rounded-2xl shadow-xl transition-all duration-300 border backdrop-filter backdrop-blur-md"
+                :class="isDarkMode 
+                    ? 'bg-gray-900 bg-opacity-70 border-gray-800' 
+                    : 'bg-white bg-opacity-60 border-white border-opacity-40'"
+            >
+                
                 <!-- Top banner for small screens -->
-                <div class="md:hidden w-full bg-gradient-to-r from-green-600 to-blue-600 p-4 flex justify-center items-center rounded-xl mb-6 shadow-lg">
+                <div class="md:hidden w-full bg-gradient-to-r from-green-500 to-blue-500 p-4 flex justify-center items-center rounded-xl mb-6 shadow-lg">
                     <img src="/images/lspu-logo.png" alt="LSPU Logo" class="w-12 h-12 mr-3">
                     <div class="text-white">
                         <h2 class="text-lg font-bold">LSPU ORBIT</h2>
@@ -124,7 +187,9 @@ onMounted(() => {
                                 <path d="M24 6L42 24L24 42L6 24L24 6Z" stroke="#3B82F6" stroke-width="2.5"/>
                             </svg>
                         </div>
-                        <h1 class="text-xl font-bold text-white ml-2">LSPU<span class="text-blue-400">ORBIT</span></h1>
+                        <h1 class="text-xl font-bold ml-2" :class="isDarkMode ? 'text-white' : 'text-gray-800'">
+                            LSPU<span class="text-blue-500">ORBIT</span>
+                        </h1>
                     </div>
 
                     <!-- Colored banner -->
@@ -135,20 +200,24 @@ onMounted(() => {
                         <div class="w-1/4 h-1.5 bg-red-500 animate-pulse" style="animation-delay: 0.8s;"></div>
                     </div>
                     
-                    <p class="text-gray-400 text-xs text-center tracking-wider">INTEGRITY • PROFESSIONALISM • INNOVATION</p>
+                    <p class="text-xs text-center tracking-wider" :class="isDarkMode ? 'text-gray-400' : 'text-gray-500'">
+                        INTEGRITY • PROFESSIONALISM • INNOVATION
+                    </p>
                 </div>
                 
-                <div v-if="status" class="mb-5 py-2.5 px-3 bg-green-500 bg-opacity-10 border border-green-500 border-opacity-20 text-green-400 text-xs font-medium rounded-lg text-center animate-fadeIn">
+                <div v-if="status" class="mb-5 py-2.5 px-3 bg-green-500 bg-opacity-10 border border-green-500 border-opacity-20 text-green-500 text-xs font-medium rounded-lg text-center animate-fadeIn">
                     {{ status }}
                 </div>
 
-                <h2 class="text-white text-xl font-semibold mb-6 text-center">Sign in to your account</h2>
+                <h2 class="text-xl font-semibold mb-6 text-center" :class="isDarkMode ? 'text-white' : 'text-gray-800'">
+                    Sign in to your account
+                </h2>
 
                 <form @submit.prevent="submit" class="space-y-5" novalidate>
                     <div>
                         <div class="relative group">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-500 group-focus-within:text-blue-400 transition-colors duration-300">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-focus-within:text-blue-500 transition-colors duration-300" :class="isDarkMode ? 'text-gray-500' : 'text-gray-400'">
                                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                                     <circle cx="12" cy="7" r="4"></circle>
                                 </svg>
@@ -156,22 +225,25 @@ onMounted(() => {
                             <TextInput
                                 id="email"
                                 type="email"
-                                class="pl-10 pr-4 py-3 bg-gray-800 bg-opacity-50 border-gray-700 text-white rounded-xl w-full focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-40 transition duration-300"
+                                class="pl-10 pr-4 py-3 rounded-xl w-full focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-40 transition duration-300"
+                                :class="isDarkMode 
+                                    ? 'bg-gray-800 bg-opacity-70 border-gray-700 text-white' 
+                                    : 'bg-white bg-opacity-70 border-white border-opacity-50 text-gray-800'"
                                 v-model="form.email"
-                                placeholder=" Email"
+                                placeholder="Email"
                                 required
                                 autofocus
                                 autocomplete="username"
                                 aria-label="Email address"
                             />
                         </div>
-                        <InputError class="mt-2 text-red-400 text-xs" :message="form.errors.email" />
+                        <InputError class="mt-2 text-red-500 text-xs" :message="form.errors.email" />
                     </div>
 
                     <div>
                         <div class="relative group">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-500 group-focus-within:text-blue-400 transition-colors duration-300">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-focus-within:text-blue-500 transition-colors duration-300" :class="isDarkMode ? 'text-gray-500' : 'text-gray-400'">
                                     <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                                     <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                                 </svg>
@@ -179,7 +251,10 @@ onMounted(() => {
                             <TextInput
                                 id="password"
                                 :type="passwordVisible ? 'text' : 'password'"
-                                class="pl-10 pr-10 py-3 bg-gray-800 bg-opacity-50 border-gray-700 text-white rounded-xl w-full focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-40 transition duration-300"
+                                class="pl-10 pr-10 py-3 rounded-xl w-full focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-40 transition duration-300"
+                                :class="isDarkMode 
+                                    ? 'bg-gray-800 bg-opacity-70 border-gray-700 text-white' 
+                                    : 'bg-white bg-opacity-70 border-white border-opacity-50 text-gray-800'"
                                 v-model="form.password"
                                 placeholder="Password"
                                 required
@@ -189,7 +264,8 @@ onMounted(() => {
                             <button 
                                 type="button" 
                                 @click="togglePasswordVisibility" 
-                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-blue-400 transition-colors duration-300"
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center hover:text-blue-500 transition-colors duration-300"
+                                :class="isDarkMode ? 'text-gray-500' : 'text-gray-400'"
                                 aria-label="Toggle password visibility"
                             >
                                 <svg v-if="!passwordVisible" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -202,19 +278,30 @@ onMounted(() => {
                                 </svg>
                             </button>
                         </div>
-                        <InputError class="mt-2 text-red-400 text-xs" :message="form.errors.password" />
+                        <InputError class="mt-2 text-red-500 text-xs" :message="form.errors.password" />
                     </div>
 
                     <div class="flex items-center justify-between">
                         <label class="flex items-center group cursor-pointer">
-                            <Checkbox name="remember" v-model:checked="form.remember" class="text-blue-500 border-gray-700 rounded focus:ring-offset-gray-900 focus:ring-blue-500" />
-                            <span class="ml-2 text-xs text-gray-400 group-hover:text-gray-300 transition-colors duration-300">Remember me</span>
+                            <Checkbox 
+                                name="remember" 
+                                v-model:checked="form.remember" 
+                                class="text-blue-500 rounded focus:ring-blue-500" 
+                                :class="isDarkMode ? 'border-gray-700 focus:ring-offset-gray-900' : 'border-gray-300 focus:ring-offset-white'"
+                            />
+                            <span 
+                                class="ml-2 text-xs group-hover:text-gray-700 transition-colors duration-300" 
+                                :class="isDarkMode ? 'text-gray-400 group-hover:text-gray-300' : 'text-gray-500'"
+                            >
+                                Remember me
+                            </span>
                         </label>
                         
                         <Link
                             v-if="canResetPassword"
                             :href="route('password.request')"
-                            class="text-xs text-gray-400 hover:text-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 rounded-md transition duration-300"
+                            class="text-xs hover:text-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 rounded-md transition duration-300"
+                            :class="isDarkMode ? 'text-gray-400' : 'text-gray-500'"
                         >
                             Forgot Password?
                         </Link>
@@ -222,8 +309,13 @@ onMounted(() => {
 
                     <button
                         type="submit"
-                        class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-medium py-3 px-4 rounded-xl transition duration-300 flex items-center justify-center relative overflow-hidden group shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-                        :class="{ 'opacity-80 cursor-not-allowed': form.processing || isLoading }"
+                        class="w-full text-white font-medium py-3 px-4 rounded-xl transition duration-300 flex items-center justify-center relative overflow-hidden group shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+                        :class="[
+                            isDarkMode 
+                                ? 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600' 
+                                : 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500',
+                            { 'opacity-80 cursor-not-allowed': form.processing || isLoading }
+                        ]"
                         :disabled="form.processing || isLoading"
                         aria-label="Sign In"
                     >
@@ -245,24 +337,52 @@ onMounted(() => {
                     </button>
 
                     <div class="text-center">
-                        <p class="text-xs text-gray-400">
+                        <p class="text-xs" :class="isDarkMode ? 'text-gray-400' : 'text-gray-500'">
                             Account access is managed by administrators. 
-                            <span class="text-blue-400">Contact your administrator for access.</span>
+                            <span class="text-blue-500">Contact your administrator for access.</span>
                         </p>
                     </div>
                 </form>
                 
                 <div class="mt-8 text-center">
-                    <p class="text-xs text-gray-600">
+                    <p class="text-xs" :class="isDarkMode ? 'text-gray-500' : 'text-gray-400'">
                         © 2025 Laguna State Polytechnic University
                     </p>
                     <div class="mt-1 flex justify-center space-x-3">
-                        <a href="#" class="text-xs text-gray-600 hover:text-gray-400 transition-colors duration-300">Privacy Policy</a>
-                        <span class="text-gray-700">•</span>
-                        <a href="#" class="text-xs text-gray-600 hover:text-gray-400 transition-colors duration-300">Terms of Service</a>
+                        <a 
+                            href="#" 
+                            class="text-xs hover:text-gray-700 transition-colors duration-300" 
+                            :class="isDarkMode ? 'text-gray-500 hover:text-gray-400' : 'text-gray-500'"
+                        >
+                            Privacy Policy
+                        </a>
+                        <span :class="isDarkMode ? 'text-gray-700' : 'text-gray-400'">•</span>
+                        <a 
+                            href="#" 
+                            class="text-xs hover:text-gray-700 transition-colors duration-300" 
+                            :class="isDarkMode ? 'text-gray-500 hover:text-gray-400' : 'text-gray-500'"
+                        >
+                            Terms of Service
+                        </a>
                     </div>
                 </div>
             </div>
+        </div>
+        
+        <!-- Slideshow navigation dots -->
+        <div class="absolute bottom-4 left-0 right-0 flex justify-center space-x-2 z-10">
+            <button 
+                v-for="(_, index) in slideshowImages" 
+                :key="index"
+                @click="activeSlide = index" 
+                class="w-2 h-2 rounded-full transition-all duration-300"
+                :class="[
+                    activeSlide === index 
+                        ? isDarkMode ? 'bg-white scale-125' : 'bg-blue-500 scale-125' 
+                        : isDarkMode ? 'bg-gray-600 hover:bg-gray-400' : 'bg-gray-300 hover:bg-gray-400'
+                ]"
+                :aria-label="`Go to slide ${index + 1}`"
+            ></button>
         </div>
     </div>
 </template>
@@ -275,6 +395,17 @@ onMounted(() => {
 
 .animate-fadeIn {
   animation: fadeIn 0.6s ease-out forwards;
+}
+
+/* Slideshow transition */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 1s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 
 /* Improve focus visibility for accessibility */
