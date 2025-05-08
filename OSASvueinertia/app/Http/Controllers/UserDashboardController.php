@@ -34,20 +34,18 @@ class UserDashboardController extends Controller
                 ];
             });
         
-        // Get today's event
-        $todayEvent = Event::where('start_date', '>=', Carbon::today()->startOfDay())
-            ->where('start_date', '<=', Carbon::today()->endOfDay())
-            ->orderBy('start_date', 'asc')
+        // Get today's event - matching the Admin approach
+        $todayEvent = Event::where('start_date', '<=', Carbon::now())
+            ->where('end_date', '>=', Carbon::now())
             ->first();
             
-        // Get upcoming events
-        $upcomingEvents = Event::where('start_date', '>', Carbon::today()->endOfDay())
+        // Get upcoming events - making sure they are truly upcoming
+        $upcomingEvents = Event::where('start_date', '>', Carbon::now())
             ->orderBy('start_date', 'asc')
             ->take(5)
             ->get();
         
-        // Create recent activity - this would normally come from an Activity model
-        // This is just a placeholder implementation
+        // Create recent activity
         $recentActivity = $this->getRecentUserActivity($user);
         
         return Inertia::render('Dashboard', [

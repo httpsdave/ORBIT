@@ -292,10 +292,10 @@ const statsCards = computed(() => [
 
         <!-- Colored Banner -->
         <div class="flex w-full mb-6 overflow-hidden rounded-lg shadow-md">
-            <div class="w-1/4 h-1.5 bg-blue-500 animate-pulse" style="animation-delay: 0.2s;"></div>
-            <div class="w-1/4 h-1.5 bg-green-500 animate-pulse" style="animation-delay: 0.4s;"></div>
-            <div class="w-1/4 h-1.5 bg-yellow-500 animate-pulse" style="animation-delay: 0.6s;"></div>
-            <div class="w-1/4 h-1.5 bg-red-500 animate-pulse" style="animation-delay: 0.8s;"></div>
+            <div class="w-1/4 h-1.5 bg-blue-500 " style="animation-delay: 0.2s;"></div>
+            <div class="w-1/4 h-1.5 bg-green-500 " style="animation-delay: 0.4s;"></div>
+            <div class="w-1/4 h-1.5 bg-yellow-500 " style="animation-delay: 0.6s;"></div>
+            <div class="w-1/4 h-1.5 bg-red-500 " style="animation-delay: 0.8s;"></div>
         </div>
 
         <!-- Greeting Card -->
@@ -496,7 +496,5 @@ const statsCards = computed(() => [
         opacity: 0.5;
     }
 }
-.animate-pulse {
-    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
+
 </style>

@@ -1,35 +1,114 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, watch, onMounted, onUnmounted } from 'vue';
+import { ChevronDown } from 'lucide-vue-next';
 
 const props = defineProps({
   formOptions: {
     type: Array,
     required: true
+  },
+  title: {
+    type: String,
+    default: 'Select a Form to Fill'
   }
 });
 
 const emit = defineEmits(['form-selected']);
 
 const selectedForm = ref('');
+const isOpen = ref(false);
+const dropdownRef = ref(null);
 
-const selectForm = () => {
-  if (selectedForm.value) {
-    emit('form-selected', selectedForm.value);
+const selectForm = (value) => {
+  selectedForm.value = value;
+  isOpen.value = false;
+  emit('form-selected', value);
+};
+
+watch(selectedForm, (newValue) => {
+  if (newValue) {
+    emit('form-selected', newValue);
+  }
+});
+
+const getSelectedLabel = () => {
+  if (!selectedForm.value) return 'Choose a form';
+  const option = props.formOptions.find(opt => opt.value === selectedForm.value);
+  return option ? option.label : 'Choose a form';
+};
+
+const closeDropdown = (event) => {
+  if (dropdownRef.value && !dropdownRef.value.contains(event.target)) {
+    isOpen.value = false;
   }
 };
+
+onMounted(() => {
+  document.addEventListener('click', closeDropdown);
+});
+
+onUnmounted(() => {
+  document.removeEventListener('click', closeDropdown);
+});
 </script>
 
 <template>
-  <div class="p-6">
-    <h1 class="text-xl font-bold text-center">Select a Form to Fill</h1>
-    <div class="mt-4">
-      <label class="block font-bold">Choose Form</label>
-      <select v-model="selectedForm" @change="selectForm" class="border p-2 w-full">
-        <option value="">-- Select Form --</option>
-        <option v-for="option in formOptions" :key="option.value" :value="option.value">
-          {{ option.label }}
-        </option>
-      </select>
+  <div class="w-full max-w-md mx-auto bg-white rounded-lg shadow-md" ref="dropdownRef">
+    <!-- Animated Color Banner -->
+    <div class="flex w-full overflow-hidden rounded-t-lg">
+      <div class="w-1/4 h-1.5 bg-blue-500 animate-pulse" style="animation-delay: 0.2s;"></div>
+      <div class="w-1/4 h-1.5 bg-green-500 animate-pulse" style="animation-delay: 0.4s;"></div>
+      <div class="w-1/4 h-1.5 bg-yellow-500 animate-pulse" style="animation-delay: 0.6s;"></div>
+      <div class="w-1/4 h-1.5 bg-red-500 animate-pulse" style="animation-delay: 0.8s;"></div>
+    </div>
+
+    <div class="p-4 sm:p-6">
+      <h1 class="text-lg sm:text-xl font-semibold text-gray-800 text-center mb-4 sm:mb-6">{{ title }}</h1>
+
+      <div class="relative">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Choose Form</label>
+
+        <!-- Dropdown Button -->
+        <button
+          @click.stop="isOpen = !isOpen"
+          type="button"
+          class="relative w-full bg-white border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-3 text-left cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-150 hover:bg-gray-50"
+        >
+          <span class="block truncate" :class="[selectedForm ? 'text-gray-800' : 'text-gray-500']">
+            {{ getSelectedLabel() }}
+          </span>
+          <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+            <ChevronDown class="h-5 w-5 text-gray-400" aria-hidden="true" />
+          </span>
+        </button>
+
+        <!-- Dropdown Menu -->
+        <div
+          v-show="isOpen"
+          class="absolute z-50 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none transition-all duration-150"
+        >
+          <div
+            v-for="option in formOptions"
+            :key="option.value"
+            @click="selectForm(option.value)"
+            class="cursor-pointer select-none relative py-2.5 pl-3 pr-9 hover:bg-blue-50 transition-colors duration-150"
+            :class="{ 'bg-blue-50 text-blue-700': selectedForm === option.value }"
+          >
+            {{ option.label }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Submission Button (only visible when a form is selected) -->
+      <div v-if="selectedForm" class="mt-4 sm:mt-6">
+        <button
+          type="button"
+          @click="emit('form-selected', selectedForm)"
+          class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-150"
+        >
+          Continue to Selected Form
+        </button>
+      </div>
     </div>
   </div>
 </template>
