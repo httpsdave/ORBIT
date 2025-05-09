@@ -1,38 +1,37 @@
 <template>
   <div>
-    <AuthenticatedLayout>
-      <div class="py-8 bg-gray-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <!-- Animated colored banner -->
-          <div class="flex w-full mb-6 overflow-hidden rounded-lg shadow-md">
-            <div class="w-1/4 h-1.5 bg-blue-500" style="animation-delay: 0.2s;"></div>
-            <div class="w-1/4 h-1.5 bg-green-500" style="animation-delay: 0.4s;"></div>
-            <div class="w-1/4 h-1.5 bg-yellow-500" style="animation-delay: 0.6s;"></div>
-            <div class="w-1/4 h-1.5 bg-red-500" style="animation-delay: 0.8s;"></div>
-          </div>
+    <AuthenticatedLayout title="Student Organizations">
+      <template #header>
+        <div class="flex justify-between items-center">
+          <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            Manage Student Organizations
+          </h2>
+          <button
+            type="button"
+            @click="openCreateModal"
+            class="inline-flex items-center px-4 py-2 bg-blue-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-600 active:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 transition ease-in-out duration-150 shadow-sm"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            Add New Organization
+          </button>
+        </div>
+      </template>
 
-          <div class="flex justify-between items-center mb-8">
-            <h1 class="text-3xl font-bold text-gray-800 flex items-center">
-              <span class="mr-2">Manage Student Organizations</span>
-              <span class="text-sm bg-blue-100 text-blue-800 py-1 px-2 rounded-full">
-                {{ getTotalOrganizationsCount() }} total
-              </span>
-            </h1>
-            <button
-              type="button"
-              @click="openCreateModal"
-              class="inline-flex items-center px-4 py-2 bg-blue-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-600 active:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 transition ease-in-out duration-150 shadow-sm"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-              </svg>
-              Add New Organization
-            </button>
+      <div class="py-6">
+       
+          <!-- Color Banner -->
+          <div class="flex w-full mb-4 overflow-hidden rounded-lg shadow-lg">
+            <div class="w-1/4 h-1.5 bg-blue-500 " style="animation-delay: 0.2s;"></div>
+            <div class="w-1/4 h-1.5 bg-green-500 " style="animation-delay: 0.4s;"></div>
+            <div class="w-1/4 h-1.5 bg-yellow-500 " style="animation-delay: 0.6s;"></div>
+            <div class="w-1/4 h-1.5 bg-red-500 " style="animation-delay: 0.8s;"></div>
           </div>
 
           <!-- Alert Messages -->
           <div v-if="$page.props.flash && $page.props.flash.message" 
-               class="mb-6 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg shadow-sm" 
+               class="mb-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-sm" 
                role="alert">
             <div class="flex">
               <div class="flex-shrink-0">
@@ -41,13 +40,13 @@
                 </svg>
               </div>
               <div class="ml-3">
-                <p class="text-sm font-medium">{{ $page.props.flash.message }}</p>
+                <p class="text-sm">{{ $page.props.flash.message }}</p>
               </div>
             </div>
           </div>
 
           <div v-if="$page.props.flash && $page.props.flash.error" 
-               class="mb-6 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg shadow-sm" 
+               class="mb-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-sm" 
                role="alert">
             <div class="flex">
               <div class="flex-shrink-0">
@@ -56,179 +55,157 @@
                 </svg>
               </div>
               <div class="ml-3">
-                <p class="text-sm font-medium">{{ $page.props.flash.error }}</p>
+                <p class="text-sm">{{ $page.props.flash.error }}</p>
               </div>
             </div>
           </div>
 
-          <!-- Colleges grid with organizations -->
-          <div v-if="colleges.length === 0" class="bg-white rounded-xl shadow-md p-8 text-center">
-            <div class="text-gray-500">No colleges found</div>
-          </div>
-          
-          <div v-else class="grid grid-cols-1 gap-6">
-            <div
-              v-for="college in colleges"
-              :key="college.id"
-              class="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden flex flex-col"
-            >
-              <!-- Colored top border based on college ID -->
-              <div class="h-1 w-full" :class="{
-                'bg-blue-500': college.id % 4 === 0,
-                'bg-green-500': college.id % 4 === 1,
-                'bg-yellow-500': college.id % 4 === 2,
-                'bg-red-500': college.id % 4 === 3,
-              }"></div>
-              
-              <!-- College Header -->
-              <div 
-                @click="toggleCollege(college.id, $event)"
-                class="p-6 flex justify-between items-center cursor-pointer hover:bg-gray-50 transition-colors"
-                data-college-accordion
-              >
-                <div class="flex items-center">
-                  <div>
-                    <h2 class="text-xl font-semibold text-gray-800 leading-tight flex items-center">
-                      {{ college.acronym }}
-                      <span class="ml-2 text-gray-600 text-sm">{{ college.name }}</span>
-                    </h2>
+          <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="p-6 bg-white border-b border-gray-200">
+              <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg font-medium text-gray-900">
+                  Student Organizations by College
+                </h3>
+                <div class="text-sm text-gray-500">
+                  {{ getTotalOrganizationsCount() }} Total Organizations
+                </div>
+              </div>
+
+              <!-- Colleges Accordion -->
+              <div class="space-y-3">
+                <div v-for="college in colleges" :key="college.id" class="border rounded-md overflow-hidden shadow-sm hover:shadow transition-shadow duration-200" data-college-accordion>
+                  <div 
+                    @click="toggleCollege(college.id, $event)"
+                    class="flex justify-between items-center p-4 cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors duration-150"
+                  >
+                    <div class="flex items-center">
+                      
+                      <div>
+                        <span class="text-lg font-medium text-gray-900">{{ college.acronym }}</span>
+                        <span class="ml-2 text-sm text-gray-600">{{ college.name }}</span>
+                      </div>
+                    </div>
+                    <div class="flex items-center">
+                      <span class="mr-2 text-sm font-medium px-2 py-1 rounded-full" 
+                            :class="college.student_orgs.length > 0 ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'">
+                        {{ college.student_orgs.length }} Organizations
+                      </span>
+                      <svg
+                        :class="{'transform rotate-180': openColleges.includes(college.id)}"
+                        class="w-5 h-5 transition-transform text-gray-500"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M19 9l-7 7-7-7"
+                        ></path>
+                      </svg>
+                    </div>
+                  </div>
+
+                  <!-- Student Organizations List -->
+                  <div v-if="openColleges.includes(college.id)" 
+                      class="p-4 divide-y divide-gray-100 bg-white transition-all duration-300 ease-in-out">
+                    <div v-if="college.student_orgs.length === 0" class="text-center text-gray-500 py-8">
+                      <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                      </svg>
+                      <p class="mt-2">No organizations found for this college</p>
+                      <button
+                        @click="openCreateModalForCollege(college.id)"
+                        class="mt-3 inline-flex items-center px-3 py-1.5 text-sm bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+                      >
+                        Add Organization
+                      </button>
+                    </div>
+                    <div v-else class="overflow-x-auto -mx-4 sm:-mx-0">
+                      <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                          <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Organization
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Acronym
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Status
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Actions
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                          <tr v-for="org in college.student_orgs" :key="org.id" class="hover:bg-gray-50 transition-colors">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                              <div class="flex items-center">
+                                <div v-if="org.logo_path" class="flex-shrink-0 h-10 w-10">
+                                  <img class="h-10 w-10 rounded-full object-cover border border-gray-200" :src="'/storage/' + org.logo_path" alt="" />
+                                </div>
+                                <div v-else class="flex-shrink-0 h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-500">
+                                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                                  </svg>
+                                </div>
+                                <div class="ml-4">
+                                  <div class="text-sm font-medium text-gray-900">
+                                    {{ org.name }}
+                                  </div>
+                                  <div v-if="org.description" class="text-xs text-gray-500 max-w-md truncate">
+                                    {{ org.description }}
+                                  </div>
+                                </div>
+                              </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                              <div class="text-sm text-gray-900">{{ org.acronym || '-' }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                              <span
+                                :class="[
+                                  'px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full',
+                                  org.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                                ]"
+                              >
+                                {{ org.status }}
+                              </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                              <button
+                                @click="openEditModal(org)"
+                                class="inline-flex items-center text-blue-500 hover:text-blue-700 mr-3"
+                              >
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                                Edit
+                              </button>
+                              <button
+                                @click="confirmDelete(org)"
+                                class="inline-flex items-center text-red-500 hover:text-red-700"
+                              >
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                                Delete
+                              </button>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
-                <div class="flex items-center">
-                  <span class="mr-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium" 
-                        :class="college.student_orgs.length > 0 ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-600'">
-                    {{ college.student_orgs.length }} {{ college.student_orgs.length === 1 ? 'Organization' : 'Organizations' }}
-                  </span>
-                  <svg
-                    :class="{'transform rotate-180': openColleges.includes(college.id)}"
-                    class="w-5 h-5 transition-transform text-gray-500"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M19 9l-7 7-7-7"
-                    ></path>
-                  </svg>
-                </div>
-              </div>
-
-              <!-- Student Organizations List -->
-              <div v-if="openColleges.includes(college.id)" 
-                   class="border-t border-gray-100 transition-all duration-300 ease-in-out">
-                <div v-if="college.student_orgs.length === 0" class="bg-white p-8 text-center rounded-b-xl">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                  </svg>
-                  <p class="mt-2 text-gray-500">No organizations found for this college</p>
-                  <button
-                    @click="openCreateModalForCollege(college.id)"
-                    class="mt-4 inline-flex items-center px-3 py-2 text-sm font-medium bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                    </svg>
-                    Add Organization
-                  </button>
-                </div>
-                <div v-else class="overflow-x-auto">
-                  <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                      <tr>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Organization
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Acronym
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Status
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Actions
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                      <tr v-for="org in college.student_orgs" :key="org.id" class="hover:bg-gray-50 transition-colors">
-                        <td class="px-6 py-4 whitespace-nowrap">
-                          <div class="flex items-center">
-                            <div v-if="org.logo_path" class="flex-shrink-0 h-10 w-10">
-                              <img class="h-10 w-10 rounded-full object-cover border border-gray-200" :src="'/storage/' + org.logo_path" alt="" />
-                            </div>
-                            <div v-else class="flex-shrink-0 h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-500">
-                              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-                              </svg>
-                            </div>
-                            <div class="ml-4">
-                              <div class="text-sm font-medium text-gray-900">
-                                {{ org.name }}
-                              </div>
-                              <div v-if="org.description" class="text-xs text-gray-500 max-w-md truncate">
-                                {{ org.description }}
-                              </div>
-                            </div>
-                          </div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                          <div class="text-sm text-gray-900">{{ org.acronym || '-' }}</div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                          <span
-                            :class="[
-                              'px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full',
-                              org.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                            ]"
-                          >
-                            {{ org.status }}
-                          </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                          <button
-                            @click="openEditModal(org)"
-                            class="inline-flex items-center text-blue-600 hover:text-blue-800 mr-3 transition-colors"
-                          >
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                            </svg>
-                            Edit
-                          </button>
-                          <button
-                            @click="confirmDelete(org)"
-                            class="inline-flex items-center text-red-600 hover:text-red-800 transition-colors"
-                          >
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                            Delete
-                          </button>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-                
-                <!-- Add organization button at the bottom for colleges with existing orgs -->
-                <div v-if="college.student_orgs.length > 0" class="p-4 bg-gray-50 border-t border-gray-100 flex justify-center">
-                  <button
-                    @click="openCreateModalForCollege(college.id)"
-                    class="inline-flex items-center px-3 py-2 text-sm font-medium bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                    </svg>
-                    Add Organization
-                  </button>
-                </div>
               </div>
             </div>
           </div>
-        </div>
+        
       </div>
 
       <!-- Create/Edit Modal -->
@@ -389,7 +366,6 @@
 </template>
 
 <script>
-import { Head, Link } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Modal from '@/Components/Modal.vue';
 import InputLabel from '@/Components/InputLabel.vue';
@@ -409,9 +385,7 @@ export default {
     InputError,
     PrimaryButton,
     SecondaryButton,
-    DangerButton,
-    Head,
-    Link
+    DangerButton
   },
   props: {
     colleges: Array
@@ -488,14 +462,12 @@ export default {
         this.openColleges.push(collegeId);
       }
     },
-    
     openCreateModal() {
       this.editMode = false;
       this.form.reset();
       this.form.clearErrors();
       this.showModal = true;
     },
-    
     openCreateModalForCollege(collegeId) {
       this.editMode = false;
       this.form.reset();
@@ -503,7 +475,6 @@ export default {
       this.form.college_id = collegeId;
       this.showModal = true;
     },
-    
     openEditModal(org) {
       this.editMode = true;
       this.currentOrg = org;
@@ -518,7 +489,6 @@ export default {
       
       this.showModal = true;
     },
-    
     closeModal() {
       this.showModal = false;
       setTimeout(() => {
@@ -528,14 +498,12 @@ export default {
         this.form.clearErrors();
       }, 300);
     },
-    
     createOrg() {
       this.form.post(route('admin.student-orgs.store'), {
         preserveScroll: true,
         onSuccess: () => this.closeModal()
       });
     },
-    
     updateOrg() {
       // For file uploads with PUT, we need to use FormData directly
       this.form.transform((data) => {

@@ -90,72 +90,110 @@ const deleteUser = () => {
 
     <AuthenticatedLayout>
         <template #header>
+            <!-- Colored banner -->
+            <div class="flex w-full overflow-hidden rounded-lg mb-2">
+                <div class="w-1/4 h-1 bg-blue-500 " style="animation-delay: 0.2s;"></div>
+                <div class="w-1/4 h-1 bg-green-500 " style="animation-delay: 0.4s;"></div>
+                <div class="w-1/4 h-1 bg-yellow-500 " style="animation-delay: 0.6s;"></div>
+                <div class="w-1/4 h-1 bg-red-500 " style="animation-delay: 0.8s;"></div>
+            </div>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 User Management
             </h2>
         </template>
 
-        <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="py-6 md:py-12">
+           
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900">
-                        <div class="flex justify-between mb-6">
-                            <h3 class="text-lg font-medium">All Users</h3>
-                            <PrimaryButton @click="showingCreateModal = true">Add New User</PrimaryButton>
+                    <div class="p-4 sm:p-6">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 pb-4 border-b border-gray-100">
+                            <h3 class="text-lg font-medium text-gray-900 mb-4 sm:mb-0">
+                                
+                                <span class="ml-2">All Users</span>
+                            </h3>
+                            <PrimaryButton 
+                                @click="showingCreateModal = true"
+                                class="flex items-center justify-center px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-200 shadow-sm"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                                </svg>
+                                Add New User
+                            </PrimaryButton>
                         </div>
                         
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                <tr v-for="user in users" :key="user.id">
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ user.name }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ user.email }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
-                                              :class="user.role.slug === 'admin' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'">
-                                            {{ user.role.name }}
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        <div class="flex space-x-3">
-                                            <button 
-                                                @click="confirmUserEdit(user)" 
-                                                class="text-blue-600 hover:text-blue-900"
-                                            >
-                                                Edit
-                                            </button>
-                                            <button 
-                                                @click="confirmUserDeletion(user)" 
-                                                class="text-red-600 hover:text-red-900"
-                                                v-if="user.id !== $page.props.auth.user.id"
-                                            >
-                                                Delete
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <div class="overflow-x-auto bg-white rounded-lg">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <tr v-for="user in users" :key="user.id" class="hover:bg-gray-50 transition-colors duration-150">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ user.name }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ user.email }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
+                                                  :class="user.role.slug === 'admin' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'">
+                                                {{ user.role.name }}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                            <div class="flex space-x-3">
+                                                <button 
+                                                    @click="confirmUserEdit(user)" 
+                                                    class="flex items-center text-blue-500 hover:text-blue-700 transition-colors duration-150"
+                                                >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                    </svg>
+                                                    Edit
+                                                </button>
+                                                <button 
+                                                    @click="confirmUserDeletion(user)" 
+                                                    class="flex items-center text-red-500 hover:text-red-700 transition-colors duration-150"
+                                                    v-if="user.id !== $page.props.auth.user.id"
+                                                >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                    </svg>
+                                                    Delete
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr v-if="users.length === 0">
+                                        <td colspan="4" class="px-6 py-8 text-center text-gray-500">
+                                            No users found.
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
-            </div>
+          
         </div>
 
         <!-- Create User Modal -->
         <Modal :show="showingCreateModal" @close="showingCreateModal = false">
             <div class="p-6">
-                <h2 class="text-lg font-medium text-gray-900">
-                    Create New User
-                </h2>
+                <div class="flex items-center mb-4">
+                    <div class="bg-blue-500 p-2 rounded-lg mr-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                    </div>
+                    <h2 class="text-lg font-medium text-gray-900">
+                        Create New User
+                    </h2>
+                </div>
 
-                <form @submit.prevent="createUser" class="mt-6 space-y-6">
+                <form @submit.prevent="createUser" class="mt-6 space-y-4">
                     <div>
                         <InputLabel for="name" value="Name" />
                         <TextInput
@@ -165,6 +203,7 @@ const deleteUser = () => {
                             v-model="form.name"
                             required
                             autofocus
+                            placeholder="Enter user's name"
                         />
                         <InputError class="mt-2" :message="form.errors.name" />
                     </div>
@@ -177,6 +216,7 @@ const deleteUser = () => {
                             class="mt-1 block w-full"
                             v-model="form.email"
                             required
+                            placeholder="Enter user's email"
                         />
                         <InputError class="mt-2" :message="form.errors.email" />
                     </div>
@@ -189,6 +229,7 @@ const deleteUser = () => {
                             class="mt-1 block w-full"
                             v-model="form.password"
                             required
+                            placeholder="Enter password"
                         />
                         <InputError class="mt-2" :message="form.errors.password" />
                     </div>
@@ -201,6 +242,7 @@ const deleteUser = () => {
                             class="mt-1 block w-full"
                             v-model="form.password_confirmation"
                             required
+                            placeholder="Confirm password"
                         />
                         <InputError class="mt-2" :message="form.errors.password_confirmation" />
                     </div>
@@ -219,11 +261,15 @@ const deleteUser = () => {
                         <InputError class="mt-2" :message="form.errors.role_id" />
                     </div>
 
-                    <div class="flex items-center justify-end mt-4">
+                    <div class="flex items-center justify-end pt-4 border-t border-gray-100">
                         <SecondaryButton @click="showingCreateModal = false" class="mr-2">
                             Cancel
                         </SecondaryButton>
-                        <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                        <PrimaryButton 
+                            :class="{ 'opacity-25': form.processing }" 
+                            :disabled="form.processing"
+                            class="bg-blue-500 hover:bg-blue-600"
+                        >
                             Create User
                         </PrimaryButton>
                     </div>
@@ -234,11 +280,18 @@ const deleteUser = () => {
         <!-- Edit User Modal -->
         <Modal :show="showingEditModal" @close="showingEditModal = false">
             <div class="p-6">
-                <h2 class="text-lg font-medium text-gray-900">
-                    Edit User
-                </h2>
+                <div class="flex items-center mb-4">
+                    <div class="bg-blue-500 p-2 rounded-lg mr-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                    </div>
+                    <h2 class="text-lg font-medium text-gray-900">
+                        Edit User
+                    </h2>
+                </div>
 
-                <form @submit.prevent="updateUser" class="mt-6 space-y-6">
+                <form @submit.prevent="updateUser" class="mt-6 space-y-4">
                     <div>
                         <InputLabel for="edit_name" value="Name" />
                         <TextInput
@@ -285,6 +338,7 @@ const deleteUser = () => {
                             type="password"
                             class="mt-1 block w-full"
                             v-model="editForm.password"
+                            placeholder="Enter new password or leave blank"
                         />
                         <InputError class="mt-2" :message="editForm.errors.password" />
                     </div>
@@ -296,15 +350,20 @@ const deleteUser = () => {
                             type="password"
                             class="mt-1 block w-full"
                             v-model="editForm.password_confirmation"
+                            placeholder="Confirm new password"
                         />
                         <InputError class="mt-2" :message="editForm.errors.password_confirmation" />
                     </div>
 
-                    <div class="flex items-center justify-end mt-4">
+                    <div class="flex items-center justify-end pt-4 border-t border-gray-100">
                         <SecondaryButton @click="showingEditModal = false" class="mr-2">
                             Cancel
                         </SecondaryButton>
-                        <PrimaryButton :class="{ 'opacity-25': editForm.processing }" :disabled="editForm.processing">
+                        <PrimaryButton 
+                            :class="{ 'opacity-25': editForm.processing }" 
+                            :disabled="editForm.processing"
+                            class="bg-blue-500 hover:bg-blue-600"
+                        >
                             Update User
                         </PrimaryButton>
                     </div>
@@ -315,24 +374,33 @@ const deleteUser = () => {
         <!-- Delete User Confirmation Modal -->
         <Modal :show="showingDeleteModal" @close="showingDeleteModal = false">
             <div class="p-6">
-                <h2 class="text-lg font-medium text-gray-900">
-                    Delete User
-                </h2>
+                <div class="flex items-center mb-4">
+                    <div class="bg-red-500 p-2 rounded-lg mr-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                    </div>
+                    <h2 class="text-lg font-medium text-gray-900">
+                        Delete User
+                    </h2>
+                </div>
 
                 <p class="mt-1 text-sm text-gray-600">
                     Are you sure you want to delete this user? This action cannot be undone.
                 </p>
 
-                <div v-if="userToDelete" class="mt-4 p-4 bg-gray-100 rounded-md">
-                    <p><strong>Name:</strong> {{ userToDelete.name }}</p>
-                    <p><strong>Email:</strong> {{ userToDelete.email }}</p>
-                    <p v-if="userToDelete.role"><strong>Role:</strong> {{ userToDelete.role.name }}</p>
+                <div v-if="userToDelete" class="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                    <p class="mb-1"><span class="font-medium text-gray-700">Name:</span> {{ userToDelete.name }}</p>
+                    <p class="mb-1"><span class="font-medium text-gray-700">Email:</span> {{ userToDelete.email }}</p>
+                    <p v-if="userToDelete.role"><span class="font-medium text-gray-700">Role:</span> {{ userToDelete.role.name }}</p>
                 </div>
 
                 <div class="mt-6 flex justify-end">
-                    <SecondaryButton @click="showingDeleteModal = false">Cancel</SecondaryButton>
+                    <SecondaryButton @click="showingDeleteModal = false" class="mr-2">
+                        Cancel
+                    </SecondaryButton>
                     <DangerButton
-                        class="ml-3"
+                        class="bg-red-500 hover:bg-red-600"
                         :class="{ 'opacity-25': deleteForm.processing }"
                         :disabled="deleteForm.processing"
                         @click="deleteUser"

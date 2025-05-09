@@ -15,7 +15,7 @@ const props = defineProps({
   // New prop to control logo size
   logoSize: {
     type: String,
-    default: 'large' // 'default', 'medium', 'large'
+    default: 'extra-large' // 'default', 'medium', 'large'
   }
 });
 
