@@ -2,57 +2,86 @@
     <AuthenticatedLayout :user="auth.user">
         <Head title="Student Organizations" />
 
-        <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 bg-white border-b border-gray-200">
-                        <h1 class="text-2xl font-semibold mb-6">Student Organizations</h1>
+        <!-- Color banner -->
+        <div class="flex w-full overflow-hidden">
+            <div class="w-1/4 h-1.5 bg-blue-500 " style="animation-delay: 0.2s;"></div>
+            <div class="w-1/4 h-1.5 bg-green-500 " style="animation-delay: 0.4s;"></div>
+            <div class="w-1/4 h-1.5 bg-yellow-500 " style="animation-delay: 0.6s;"></div>
+            <div class="w-1/4 h-1.5 bg-red-500 " style="animation-delay: 0.8s;"></div>
+        </div>
 
-                        <div v-for="college in colleges" :key="college.id" class="mb-10">
-                            <h2 class="text-xl font-semibold mb-4 px-4 py-2 bg-gray-100 rounded">
-                                <Link :href="route('colleges.show', college.id)" class="text-blue-600 hover:text-blue-800">
-                                    {{ college.name }} <span v-if="college.acronym">({{ college.acronym }})</span>
-                                </Link>
-                            </h2>
+        <div class="py-8 px-4 sm:px-6 lg:px-8">
+       
+                <div class="flex items-center justify-between mb-8">
+                    <h1 class="text-3xl font-bold text-gray-900">Student Organizations</h1>
+                </div>
 
-                            <p v-if="college.student_orgs.length === 0" class="text-gray-500 ml-4">
-                                No organizations found for this college.
-                            </p>
+                <div v-for="college in colleges" :key="college.id" class="mb-12">
+                    <div class="flex items-center mb-6 group">
+                        <div class="w-1 h-8 bg-blue-500 mr-3 rounded"></div>
+                        <h2 class="text-2xl font-semibold">
+                            <Link :href="route('colleges.show', college.id)" class="text-gray-800 hover:text-blue-600 transition duration-300">
+                                {{ college.name }} <span v-if="college.acronym" class="text-gray-500">({{ college.acronym }})</span>
+                            </Link>
+                        </h2>
+                    </div>
 
-                            <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                <div
-                                    v-for="org in college.student_orgs"
-                                    :key="org.id"
-                                    class="bg-gray-50 p-6 rounded-lg shadow hover:shadow-md transition"
-                                >
-                                    <h3 class="text-lg font-semibold">
-                                        <Link :href="route('student-orgs.show', org.id)" class="text-blue-600 hover:text-blue-800">
-                                            {{ org.name }} <span v-if="org.acronym">({{ org.acronym }})</span>
-                                        </Link>
-                                    </h3>
-                                    <img
-                                        v-if="org.logo_path"
-                                        :src="`/storage/${org.logo_path}`"
-                                        :alt="`${org.name} logo`"
-                                        class="h-16 w-auto object-contain mt-3 mb-3"
-                                    />
-                                    <p class="text-gray-600 mt-2">{{ org.description }}</p>
-                                    <div class="mt-3 text-sm">
-                                        <span
-                                            class="px-2 py-1 rounded"
-                                            :class="org.status === 'active'
-                                                ? 'bg-green-100 text-green-800'
-                                                : 'bg-red-100 text-red-800'"
-                                        >
-                                            {{ org.status === 'active' ? 'Active' : 'Inactive' }}
-                                        </span>
+                    <p v-if="college.student_orgs.length === 0" class="text-gray-500 ml-4 italic">
+                        No organizations found for this college.
+                    </p>
+
+                    <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div
+                            v-for="org in college.student_orgs"
+                            :key="org.id"
+                            class="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-gray-100 flex flex-col"
+                        >
+                            <div class="h-1.5 w-full" :class="{
+                                'bg-green-500': org.status === 'active',
+                                'bg-red-500': org.status !== 'active'
+                            }"></div>
+                            <div class="p-6 flex-grow">
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0 mr-4" v-if="org.logo_path">
+                                        <img
+                                            :src="`/storage/${org.logo_path}`"
+                                            :alt="`${org.name} logo`"
+                                            class="h-16 w-16 object-contain rounded-md bg-gray-50 p-1"
+                                        />
+                                    </div>
+                                    <div class="flex-grow">
+                                        <h3 class="text-lg font-semibold mb-2">
+                                            <Link :href="route('student-orgs.show', org.id)" class="text-gray-800 hover:text-blue-600 transition duration-300">
+                                                {{ org.name }}
+                                            </Link>
+                                        </h3>
+                                        <div v-if="org.acronym" class="text-sm font-medium text-gray-500 mb-2">
+                                            {{ org.acronym }}
+                                        </div>
+                                        <p class="text-gray-600 text-sm line-clamp-3">{{ org.description || 'No description available' }}</p>
                                     </div>
                                 </div>
+                            </div>
+                            <div class="px-6 py-3 bg-gray-50 flex justify-between items-center">
+                                <span
+                                    class="px-2 py-1 rounded-full text-xs font-medium"
+                                    :class="org.status === 'active'
+                                        ? 'bg-green-100 text-green-800'
+                                        : 'bg-red-100 text-red-800'"
+                                >
+                                    {{ org.status === 'active' ? 'Active' : 'Inactive' }}
+                                </span>
+                                <Link 
+                                    :href="route('student-orgs.show', org.id)" 
+                                    class="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                                >
+                                    View Details
+                                </Link>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+          
         </div>
     </AuthenticatedLayout>
 </template>
@@ -67,3 +96,12 @@ defineProps({
     colleges: Array,
 });
 </script>
+
+<style scoped>
+.line-clamp-3 {
+    display: -webkit-box;
+  
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+</style>

@@ -131,7 +131,9 @@ onBeforeUnmount(() => {
                         <h2 class="text-xl font-bold mb-1 text-white">WELCOME TO</h2>
                         <h1 class="text-3xl lg:text-4xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-white to-blue-100">LSPU ORBIT</h1>
                         <div class="h-1 w-28 bg-white opacity-70 mx-auto mb-4 rounded-full"></div>
-                        <p class="text-white text-opacity-90 text-xs max-w-xs mx-auto leading-relaxed">Your comprehensive portal to university resources, services, and online learning tools</p>
+                        <p class="text-white text-opacity-90 text-xs max-w-xs mx-auto leading-relaxed">🚀 Organized Records for Better Institutional Tracking. Streamline creation, submission, and tracking of organizational documents while delivering real-time updates on campus events.
+
+</p>
                     </div>
                 </div>
 

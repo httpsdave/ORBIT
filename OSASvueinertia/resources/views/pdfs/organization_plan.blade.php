@@ -36,7 +36,7 @@
 
         .subtitle {
             text-align: center;
-            font-size: 18px;
+            font-size: 22px;
             font-weight: bold;
             margin: 1cm 0 0.5cm 0;
         }
@@ -183,9 +183,16 @@
         }
 
         .university-name {
-            font-family: 'Old English Text MT', 'Times New Roman', serif;
-            font-size: 16pt;
+            max-width: 60%; /* Adjust as needed */
+            height: auto;
+            margin: 4px 0; /* Add some spacing above and below */
+            display: inline-block;
         }
+        .calibri-text {
+            font-family: Calibri, sans-serif;
+            font-weight: normal;
+        }
+
 
         /* Print-specific styles */
         @media print {
@@ -200,9 +207,9 @@
     <div class="header">
     <img src="{{ public_path('images/lspu-logo.png') }}" alt="LSPU Logo" class="logo">
 
-        Republic of the Philippines<br>
-        <span class="university-name">Laguna State Polytechnic University</span><br>
-        Province of Laguna<br>
+    <span class="calibri-text">Republic of the Philippines</span><br>
+        <img src="{{ public_path('images/lspu-name.png') }}" alt="Laguna State Polytechnic University" class="university-name"><br>
+        <span class="calibri-text">Province of Laguna</span><br>
         <br>
         <div style="margin-top: 15px; text-decoration: underline;">{{ $application->organization_name }}</div>
         <div class="subtitle">PLAN OF ACTIVITIES</div>

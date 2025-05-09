@@ -199,8 +199,8 @@ const updateApplicationStatus = (statusData) => {
       </div>
     </template>
 
-    <div class="py-12">
-      <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+   
+      
         <!-- Success Message -->
         <div v-if="showMessage" class="mb-6 transition-opacity duration-500 ease-in-out">
           <div class="bg-gradient-to-r from-green-500 to-emerald-500 text-white py-4 px-6 rounded-lg shadow-md flex items-center justify-between">
@@ -257,8 +257,8 @@ const updateApplicationStatus = (statusData) => {
           />
           <NoApplicationsMessage v-else />
         </div>
-      </div>
-    </div>
+    
+  
 
     <!-- Status Update Modal -->
     <StatusModal

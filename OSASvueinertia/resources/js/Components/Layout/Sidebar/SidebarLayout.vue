@@ -25,6 +25,8 @@ const emit = defineEmits(['close-mobile-menu']);
 // State management
 const showingSidebar = ref(false);
 const sidebarExpanded = ref(true);
+const isSidebarHovering = ref(false); // New state for hover effect
+const windowWidth = ref(window.innerWidth); // Track window width
 
 // User profile dropdown state
 const isDropdownOpen = ref(false);
@@ -97,6 +99,19 @@ const handleSidebarClick = (event) => {
   }
 };
 
+// Handle sidebar hover (Google Classroom style)
+const handleSidebarMouseEnter = () => {
+  if (!sidebarExpanded.value && windowWidth.value >= 768) {
+    isSidebarHovering.value = true;
+  }
+};
+
+const handleSidebarMouseLeave = () => {
+  if (!sidebarExpanded.value && windowWidth.value >= 768) {
+    isSidebarHovering.value = false;
+  }
+};
+
 // Close sidebar when clicking outside on mobile
 const closeSidebarOnClickOutside = (event) => {
   if (window.innerWidth < 768 && showingSidebar.value) {
@@ -132,9 +147,12 @@ const closeDropdownOnClickOutside = (event) => {
 
 // Check window size and adjust sidebar on small screens
 const checkWindowSize = () => {
+  windowWidth.value = window.innerWidth;
+  
   if (window.innerWidth < 768) {
     sidebarExpanded.value = false;
     showingSidebar.value = false;
+    isSidebarHovering.value = false;
   } else if (window.innerWidth >= 768) {
     // Only restore the saved preference when on desktop
     try {
@@ -349,16 +367,18 @@ onUnmounted(() => {
       id="sidebar"
       :class="[
         'z-30 transition-all duration-300 ease-in-out border-r border-gray-200 bg-white shadow-lg shadow-blue-200/20 flex flex-col',
-        sidebarExpanded ? 'md:w-64' : 'md:w-20',
+        sidebarExpanded || isSidebarHovering ? 'md:w-64' : 'md:w-20',
         showingSidebar ? 'fixed left-0 w-64 h-full pt-16' : 'fixed -left-64 md:left-0 md:relative pt-16 h-auto min-h-screen'
       ]"
       aria-label="Navigation sidebar"
       @click="handleSidebarClick"
+      @mouseenter="handleSidebarMouseEnter"
+      @mouseleave="handleSidebarMouseLeave"
     >
       <!-- Sidebar Header -->
       <SidebarHeader 
         :is-admin="isAdmin" 
-        :sidebar-expanded="sidebarExpanded" 
+        :sidebar-expanded="sidebarExpanded || isSidebarHovering" 
         :showing-sidebar="showingSidebar"
         @toggle-sidebar-expanded="toggleSidebarExpanded"
         @close-sidebar="closeSidebar"
@@ -367,13 +387,13 @@ onUnmounted(() => {
       <!-- Navigation Links -->
       <NavigationItems 
         :is-admin="isAdmin" 
-        :sidebar-expanded="sidebarExpanded" 
+        :sidebar-expanded="sidebarExpanded || isSidebarHovering" 
         :showing-sidebar="showingSidebar"
       />
       
       <!-- Bottom Actions (Empty for future implementation) -->
       <SidebarFooter 
-        :sidebar-expanded="sidebarExpanded" 
+        :sidebar-expanded="sidebarExpanded || isSidebarHovering" 
         :showing-sidebar="showingSidebar"
       />
     </aside>
