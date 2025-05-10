@@ -47,9 +47,9 @@ class OrganizationApplicationController extends Controller
             'form_type' => 'required|string',
             'organization_name' => 'required|string|max:255',
             'president_name' => 'required|string|max:255',
-            'adviser_name' => 'required|string|max:255',
-            'dean_name' => 'required|string|max:255',
-            'coordinator_name' => 'required|string|max:255',
+            'adviser_name' => 'string|max:255',
+            'dean_name' => 'string|max:255',
+            'coordinator_name' => 'string|max:255',
             'status' => 'string|in:Pending,Approved,Disapproved',
             'signed_document' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240', // Add validation for signed document
         ];

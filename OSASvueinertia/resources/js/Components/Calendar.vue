@@ -35,6 +35,19 @@
         </div>
       </div>
       
+     
+      <div v-if="isAdmin" class="mt-4 bg-white rounded-lg shadow p-4">
+        <button 
+          @click="createNewEvent" 
+          class="w-full flex items-center justify-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+        >
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+          </svg>
+          Create New Event
+        </button>
+      </div>
+
       <div v-if="isProcessing" class="mt-4 bg-white rounded-lg shadow p-4">
         <div class="flex items-center space-x-3">
           <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-700"></div>
@@ -42,48 +55,58 @@
         </div>
       </div>
       
-      <div v-if="extractedData || isEditing" class="mt-4 bg-white rounded-lg shadow p-4">
-        <h2 class="text-lg font-semibold mb-2">
-          {{ isEditing ? 'Edit Event' : 'Extracted Event Information' }}
-        </h2>
-        <div class="space-y-2">
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Event Title</label>
-            <input v-model="eventForm.title" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Date</label>
-            <input v-model="eventForm.date" type="date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Start Time</label>
-            <input v-model="eventForm.start_time" type="time" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700">End Time</label>
-            <input v-model="eventForm.end_time" type="time" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Description</label>
-            <textarea v-model="eventForm.description" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"></textarea>
-          </div>
-          <div class="flex justify-end space-x-2">
-            <button 
-              v-if="isEditing"
-              @click="cancelEdit" 
-              class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-            >
-              Cancel
-            </button>
-            <button 
-              @click="isEditing ? updateEvent() : saveEvent()" 
-              class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              {{ isEditing ? 'Update Event' : 'Save Event' }}
-            </button>
-          </div>
-        </div>
+      <!-- Update this portion of the template in the EventForm modal section -->
+<div 
+  v-if="extractedData || isEditing" 
+  class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+  @click.self="cancelEdit"
+>
+  <div class="bg-white rounded-lg shadow p-4 max-w-md w-full mx-4">
+    <h2 class="text-lg font-semibold mb-2">
+      {{ isEditing ? 'Edit Event' : 'Create New Event' }}
+    </h2>
+    <div class="space-y-2">
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Event Title</label>
+        <input v-model="eventForm.title" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" />
       </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Start Date</label>
+        <input v-model="eventForm.date" type="date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Start Time</label>
+        <input v-model="eventForm.start_time" type="time" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">End Date</label>
+        <input v-model="eventForm.end_date" type="date" :min="eventForm.date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">End Time</label>
+        <input v-model="eventForm.end_time" type="time" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Description</label>
+        <textarea v-model="eventForm.description" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"></textarea>
+      </div>
+      <div class="flex justify-end space-x-2">
+        <button 
+          @click="cancelEdit" 
+          class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+        >
+          Cancel
+        </button>
+        <button 
+          @click="isEditing ? updateEvent() : saveEvent()" 
+          class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        >
+          {{ isEditing ? 'Update Event' : 'Save Event' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
     </div>
     
     <!-- Upcoming Events panel (width changes based on admin status) -->
@@ -139,7 +162,11 @@
   </div>
   
   <!-- Event Details Modal for non-admin users -->
-  <div v-if="showEventDetailsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div 
+  v-if="showEventDetailsModal" 
+  class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+  @click.self="closeEventDetailsModal"
+>
     <div class="bg-white rounded-lg shadow-lg p-6 max-w-md w-full mx-4">
       <div class="flex justify-between items-center mb-4">
         <h3 class="text-lg font-bold">{{selectedEvent.title}}</h3>
@@ -202,7 +229,8 @@ export default {
     
     const eventForm = reactive({
       title: '',
-      date: '',
+      date: '',       // Start date
+      end_date: '',   // New field for end date
       start_time: '',
       end_time: '',
       description: ''
@@ -347,104 +375,117 @@ export default {
     }
     
     function saveEvent() {
-      if (!props.isAdmin) return; // Safety check
+  if (!props.isAdmin) return; // Safety check
+  
+  const startDate = `${eventForm.date}T${eventForm.start_time}`;
+  // Use end_date if provided, otherwise fall back to start date
+  const endDateStr = eventForm.end_date || eventForm.date;
+  const endDate = eventForm.end_time ? `${endDateStr}T${eventForm.end_time}` : null;
+  
+  axios.post('/api/events', {
+    title: eventForm.title,
+    start_date: startDate,
+    end_date: endDate,
+    description: eventForm.description
+  })
+    .then(response => {
+      // Add the new event to the list
+      events.value.push(response.data);
+      filterExpiredEvents();
       
-      const startDate = `${eventForm.date}T${eventForm.start_time}`;
-      const endDate = eventForm.end_time ? `${eventForm.date}T${eventForm.end_time}` : null;
-      
-      axios.post('/api/events', {
-        title: eventForm.title,
-        start_date: startDate,
-        end_date: endDate,
-        description: eventForm.description
-      })
-        .then(response => {
-          // Add the new event to the list
-          events.value.push(response.data);
-          filterExpiredEvents();
-          
-          // Reset the form
-          resetForm();
-          alert('Event saved successfully!');
-        })
-        .catch(error => {
-          if (error.response && error.response.status === 403) {
-            alert('Unauthorized: You do not have permission to perform this action.');
-          } else {
-            console.error('Error saving event:', error);
-            alert('Failed to save event. Please try again.');
-          }
-        });
-    }
+      // Reset the form
+      resetForm();
+      alert('Event saved successfully!');
+    })
+    .catch(error => {
+      if (error.response && error.response.status === 403) {
+        alert('Unauthorized: You do not have permission to perform this action.');
+      } else {
+        console.error('Error saving event:', error);
+        alert('Failed to save event. Please try again.');
+      }
+    });
+}
     
     function editEvent(event) {
-      if (!props.isAdmin) return; // Safety check
-      
-      // Switch to edit mode
-      isEditing.value = true;
-      currentEditId.value = event.id;
-      extractedData.value = null;
-      
-      // Parse the date and times from the event
-      const eventDate = dayjs(event.start_date);
-      const eventEndDate = event.end_date ? dayjs(event.end_date) : null;
-      
-      // Fill the form with the event data
-      eventForm.title = event.title;
-      eventForm.date = eventDate.format('YYYY-MM-DD');
-      eventForm.start_time = eventDate.format('HH:mm');
-      eventForm.end_time = eventEndDate ? eventEndDate.format('HH:mm') : '';
-      eventForm.description = event.description || '';
-    }
+  if (!props.isAdmin) return; // Safety check
+  
+  // Switch to edit mode
+  isEditing.value = true;
+  currentEditId.value = event.id;
+  extractedData.value = null;
+  
+  // Parse the date and times from the event
+  const eventDate = dayjs(event.start_date);
+  const eventEndDate = event.end_date ? dayjs(event.end_date) : null;
+  
+  // Fill the form with the event data
+  eventForm.title = event.title;
+  eventForm.date = eventDate.format('YYYY-MM-DD');
+  eventForm.start_time = eventDate.format('HH:mm');
+  
+  if (eventEndDate) {
+    eventForm.end_date = eventEndDate.format('YYYY-MM-DD');
+    eventForm.end_time = eventEndDate.format('HH:mm');
+  } else {
+    eventForm.end_date = eventDate.format('YYYY-MM-DD'); // Default to same day
+    eventForm.end_time = '';
+  }
+  
+  eventForm.description = event.description || '';
+}
     
     function updateEvent() {
-      if (!props.isAdmin) return; // Safety check
+  if (!props.isAdmin) return; // Safety check
+  
+  const startDate = `${eventForm.date}T${eventForm.start_time}`;
+  // Use end_date if provided, otherwise fall back to start date
+  const endDateStr = eventForm.end_date || eventForm.date;
+  const endDate = eventForm.end_time ? `${endDateStr}T${eventForm.end_time}` : null;
+  
+  axios.put(`/api/events/${currentEditId.value}`, {
+    title: eventForm.title,
+    start_date: startDate,
+    end_date: endDate,
+    description: eventForm.description
+  })
+    .then(response => {
+      // Update the event in our local state
+      const index = events.value.findIndex(e => e.id === currentEditId.value);
+      if (index !== -1) {
+        events.value[index] = response.data;
+        filterExpiredEvents();
+      }
       
-      const startDate = `${eventForm.date}T${eventForm.start_time}`;
-      const endDate = eventForm.end_time ? `${eventForm.date}T${eventForm.end_time}` : null;
-      
-      axios.put(`/api/events/${currentEditId.value}`, {
-        title: eventForm.title,
-        start_date: startDate,
-        end_date: endDate,
-        description: eventForm.description
-      })
-        .then(response => {
-          // Update the event in our local state
-          const index = events.value.findIndex(e => e.id === currentEditId.value);
-          if (index !== -1) {
-            events.value[index] = response.data;
-            filterExpiredEvents();
-          }
-          
-          // Reset the form and exit edit mode
-          resetForm();
-          alert('Event updated successfully!');
-        })
-        .catch(error => {
-          if (error.response && error.response.status === 403) {
-            alert('Unauthorized: You do not have permission to perform this action.');
-          } else {
-            console.error('Error updating event:', error);
-            alert('Failed to update event. Please try again.');
-          }
-        });
-    }
+      // Reset the form and exit edit mode
+      resetForm();
+      alert('Event updated successfully!');
+    })
+    .catch(error => {
+      if (error.response && error.response.status === 403) {
+        alert('Unauthorized: You do not have permission to perform this action.');
+      } else {
+        console.error('Error updating event:', error);
+        alert('Failed to update event. Please try again.');
+      }
+    });
+}
     
     function cancelEdit() {
       resetForm();
     }
     
     function resetForm() {
-      extractedData.value = null;
-      isEditing.value = false;
-      currentEditId.value = null;
-      eventForm.title = '';
-      eventForm.date = '';
-      eventForm.start_time = '';
-      eventForm.end_time = '';
-      eventForm.description = '';
-    }
+    extractedData.value = null;
+    isEditing.value = false;
+    currentEditId.value = null;
+    eventForm.title = '';
+    eventForm.date = '';
+    eventForm.end_date = ''; // Reset end date
+    eventForm.start_time = '';
+    eventForm.end_time = '';
+    eventForm.description = '';
+  }
     
     function deleteEvent(eventId) {
       if (!props.isAdmin) return; // Safety check
@@ -521,6 +562,22 @@ export default {
       showEventDetailsModal.value = false;
     }
     
+    function createNewEvent() {
+      isEditing.value = false;
+      currentEditId.value = null;
+      extractedData.value = {};
+      
+      // Set default values for the form
+      const today = dayjs().format('YYYY-MM-DD');
+      eventForm.title = '';
+      eventForm.date = today;
+      eventForm.end_date = today; // Default end date to same day
+      eventForm.start_time = '';
+      eventForm.end_time = '';
+      eventForm.description = '';
+    }
+
+
     return {
       events,
       displayedEvents,
@@ -544,7 +601,8 @@ export default {
       deleteEvent,
       formatDate,
       viewEventDetails,
-      closeEventDetailsModal
+      closeEventDetailsModal,
+      createNewEvent // Add this line
     };
   }
 };
