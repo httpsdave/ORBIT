@@ -1,21 +1,29 @@
 <script setup>
 import { Head } from '@inertiajs/vue3';
-import AppLayout from '@/Layouts/AuthenticatedLayout.vue';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Calendar from '@/Components/Calendar.vue';
+import { ref, onMounted } from 'vue';
 
-defineProps({
-  initialEvents: Array
+// Props definition
+const props = defineProps({
+  initialEvents: Array,
+  isAdmin: {
+    type: Boolean,
+    default: false
+  }
 });
+
 </script>
 
 <template>
-  <AppLayout>
+  <AuthenticatedLayout>
     <Head title="Calendar" />
 
-    <div class="py-12">
-      <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <Calendar :initial-events="initialEvents" />
-      </div>
-    </div>
-  </AppLayout>
+    
+      
+        <!-- Pass the isAdmin prop to the Calendar component -->
+        <Calendar :initial-events="initialEvents" :is-admin="isAdmin" />
+      
+    
+  </AuthenticatedLayout>
 </template>

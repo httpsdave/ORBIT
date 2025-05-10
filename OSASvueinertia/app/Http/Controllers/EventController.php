@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use thiagoalessio\TesseractOCR\TesseractOCR;
 use Smalot\PdfParser\Parser;
+use Illuminate\Support\Facades\Auth;
 
 class EventController extends Controller
 {
@@ -18,9 +19,11 @@ class EventController extends Controller
     public function index()
     {
         $events = Event::all();
+        $isAdmin = Auth::check() && Auth::user()->isAdmin();
 
         return Inertia::render('Calendar', [
-            'initialEvents' => $events
+            'initialEvents' => $events,
+            'isAdmin' => $isAdmin
         ]);
     }
 
@@ -29,6 +32,11 @@ class EventController extends Controller
      */
     public function store(Request $request)
     {
+        // Check if user is admin
+        if (!Auth::check() || !Auth::user()->isAdmin()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'start_date' => 'required|date',
@@ -46,6 +54,11 @@ class EventController extends Controller
      */
     public function update(Request $request, Event $event)
     {
+        // Check if user is admin
+        if (!Auth::check() || !Auth::user()->isAdmin()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         $validated = $request->validate([
             'title' => 'sometimes|string|max:255',
             'start_date' => 'sometimes|date',
@@ -63,6 +76,11 @@ class EventController extends Controller
      */
     public function destroy(Event $event)
     {
+        // Check if user is admin
+        if (!Auth::check() || !Auth::user()->isAdmin()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         $event->delete();
         return response()->json(null, 204);
     }
@@ -81,6 +99,11 @@ class EventController extends Controller
      */
     public function extractEventInfo(Request $request)
     {
+        // Check if user is admin
+        if (!Auth::check() || !Auth::user()->isAdmin()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         $request->validate([
             'document' => 'required|file|mimes:jpeg,png,pdf|max:10240',
         ]);

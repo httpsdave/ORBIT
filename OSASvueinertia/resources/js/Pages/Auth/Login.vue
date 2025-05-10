@@ -2,7 +2,7 @@
 import Checkbox from '@/Components/Checkbox.vue';
 
 import InputError from '@/Components/InputError.vue';
-
+import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ref, onMounted, onBeforeUnmount } from 'vue';
@@ -35,6 +35,7 @@ const slideshowImages = [
     '/images/LSPU1.jpg',
     '/images/LSPU2.jpg',
     '/images/LSPU3.jpg',
+    '/images/LSPU5.jpg',
 ];
 
 const togglePasswordVisibility = () => {
@@ -183,11 +184,11 @@ onBeforeUnmount(() => {
                     <!-- Logo and banner (shown only on larger screens) -->
                     <div class="hidden md:flex justify-center items-center mb-4">
                         <div class="relative">
-                            <div class="absolute inset-0 bg-blue-500 opacity-20 blur-sm rounded-lg transform rotate-45 animate-pulse"></div>
-                            <svg width="36" height="36" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" class="relative">
-                                <path d="M24 12L36 24L24 36L12 24L24 12Z" fill="#3B82F6"/>
-                                <path d="M24 6L42 24L24 42L6 24L24 6Z" stroke="#3B82F6" stroke-width="2.5"/>
-                            </svg>
+                            
+                            <header class="flex items-center space-x-2">
+                                <ApplicationLogo class="w-20 h-15 scale-150" />
+                            </header>
+
                         </div>
                         <h1 class="text-xl font-bold ml-2" :class="isDarkMode ? 'text-white' : 'text-gray-800'">
                             LSPU<span class="text-blue-500">ORBIT</span>
