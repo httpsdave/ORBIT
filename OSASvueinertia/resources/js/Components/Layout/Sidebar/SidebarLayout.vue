@@ -48,13 +48,13 @@ const dropdownPosition = computed(() => {
 const logoSizeClass = computed(() => {
   switch(props.logoSize) {
     case 'medium':
-      return 'h-10 w-auto';
+      return 'h-12 w-auto'; // Increased from h-10
     case 'large':
-      return 'h-12 w-auto';
+      return 'h-14 w-auto'; // Increased from h-12
     case 'extra-large':
-      return 'h-16 w-auto';
+      return 'h-18 w-auto'; // Increased from h-16
     default:
-      return 'h-8 w-auto';
+      return 'h-10 w-auto'; // Increased from h-8
   }
 });
 
@@ -232,28 +232,28 @@ onUnmounted(() => {
             </svg>
           </button>
           
-          <Link 
+           <Link 
             :href="isAdmin ? route('admin.dashboard') : route('dashboard')"
             class="flex items-center"
           >
             <div class="relative">
-              <!-- Animated background glow, size adjusted to match logo -->
+              <!-- Animated background glow, size adjusted to match larger logo -->
               <div 
-               
-                :class="{'scale-125': props.logoSize === 'medium', 'scale-150': props.logoSize === 'large', 'scale-175': props.logoSize === 'extra-large'}"
+                :class="{'scale-150': props.logoSize === 'medium', 'scale-175': props.logoSize === 'large', 'scale-200': props.logoSize === 'extra-large'}"
               ></div>
-              <!-- Logo with dynamic size class -->
-              <ApplicationLogo :class="[logoSizeClass, 'block filter drop-shadow']" alt="ORBIT logo" />
+              <!-- Enhanced Logo with larger size class -->
+              <ApplicationLogo :class="[logoSizeClass, 'block filter drop-shadow transform scale-125']" alt="ORBIT logo" />
             </div>
-            <!-- Company name text adjusted based on logo size -->
+            <!-- Company name text with bolder, wider font -->
             <span 
-              class="ml-2 font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-green-500"
+              class="ml-2 font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-green-500 tracking-wider uppercase"
               :class="{
                 'text-lg': props.logoSize === 'default',
                 'text-xl': props.logoSize === 'medium',
                 'text-2xl': props.logoSize === 'large',
                 'text-3xl': props.logoSize === 'extra-large'
               }"
+              style="font-family: 'Century Gothic',  sans-serif; letter-spacing: -0.01em"
             >
               ORBIT
             </span>
@@ -443,5 +443,14 @@ a:focus, button:focus {
 /* Add scale-175 which isn't standard in Tailwind */
 .scale-175 {
   transform: scale(1.75);
+}
+
+.scale-200 {
+  transform: scale(2);
+}
+
+/* Define h-18 which isn't standard in Tailwind */
+.h-18 {
+  height: 4.5rem;
 }
 </style>
