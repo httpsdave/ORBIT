@@ -32,12 +32,12 @@ const form = useForm({
 </script>
 
 <template>
-    <section>
-        <header>
-            <h2 class="text-lg font-medium text-gray-900">
+    <section class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+        <!-- Header with colored accent -->
+        <div class="border-l-4 border-blue-500 pl-3 mb-6">
+            <h2 class="text-xl font-semibold text-gray-800">
                 Profile Information
             </h2>
-
             <p class="mt-1 text-sm text-gray-600">
                 <template v-if="isAdmin">
                     Update your account's profile information and email address.
@@ -46,113 +46,128 @@ const form = useForm({
                     Your account's profile information.
                 </template>
             </p>
-        </header>
+        </div>
+
+        <!-- Status bar for verification status -->
+        <div 
+            v-if="mustVerifyEmail && user.email_verified_at === null"
+            class="mb-6 bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded-md"
+        >
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-yellow-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-yellow-700">
+                        Your email address is unverified.
+                        <Link
+                            v-if="isAdmin"
+                            :href="route('verification.send')"
+                            method="post"
+                            as="button"
+                            class="font-medium text-blue-500 underline hover:text-blue-700 focus:outline-none"
+                        >
+                            Click here to re-send the verification email.
+                        </Link>
+                    </p>
+                    <p
+                        v-show="status === 'verification-link-sent'"
+                        class="mt-2 text-sm font-medium text-green-500"
+                    >
+                        A new verification link has been sent to your email address.
+                    </p>
+                </div>
+            </div>
+        </div>
 
         <!-- Admin version - editable form -->
         <form
             v-if="isAdmin"
             @submit.prevent="form.patch(route('profile.update'))"
-            class="mt-6 space-y-6"
+            class="space-y-6"
         >
-            <div>
-                <InputLabel for="name" value="Name" />
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <InputLabel for="name" value="Name" class="text-gray-700 font-medium" />
+                    <TextInput
+                        id="name"
+                        type="text"
+                        class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 rounded-md shadow-sm"
+                        v-model="form.name"
+                        required
+                        autofocus
+                        autocomplete="name"
+                    />
+                    <InputError class="mt-2" :message="form.errors.name" />
+                </div>
 
-                <TextInput
-                    id="name"
-                    type="text"
-                    class="mt-1 block w-full"
-                    v-model="form.name"
-                    required
-                    autofocus
-                    autocomplete="name"
-                />
-
-                <InputError class="mt-2" :message="form.errors.name" />
-            </div>
-
-            <div>
-                <InputLabel for="email" value="Email" />
-
-                <TextInput
-                    id="email"
-                    type="email"
-                    class="mt-1 block w-full"
-                    v-model="form.email"
-                    required
-                    autocomplete="username"
-                />
-
-                <InputError class="mt-2" :message="form.errors.email" />
-            </div>
-
-            <div v-if="mustVerifyEmail && user.email_verified_at === null">
-                <p class="mt-2 text-sm text-gray-800">
-                    Your email address is unverified.
-                    <Link
-                        :href="route('verification.send')"
-                        method="post"
-                        as="button"
-                        class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                    >
-                        Click here to re-send the verification email.
-                    </Link>
-                </p>
-
-                <div
-                    v-show="status === 'verification-link-sent'"
-                    class="mt-2 text-sm font-medium text-green-600"
-                >
-                    A new verification link has been sent to your email address.
+                <div>
+                    <InputLabel for="email" value="Email" class="text-gray-700 font-medium" />
+                    <TextInput
+                        id="email"
+                        type="email"
+                        class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 rounded-md shadow-sm"
+                        v-model="form.email"
+                        required
+                        autocomplete="username"
+                    />
+                    <InputError class="mt-2" :message="form.errors.email" />
                 </div>
             </div>
 
-            <div class="flex items-center gap-4">
-                <PrimaryButton :disabled="form.processing">Save</PrimaryButton>
+            <div class="flex items-center pt-4 border-t border-gray-100">
+                <PrimaryButton 
+                    :disabled="form.processing"
+                    class="bg-blue-500 hover:bg-blue-600 focus:bg-blue-600"
+                >
+                    Save Changes
+                </PrimaryButton>
 
                 <Transition
-                    enter-active-class="transition ease-in-out"
+                    enter-active-class="transition ease-in-out duration-300"
                     enter-from-class="opacity-0"
-                    leave-active-class="transition ease-in-out"
+                    leave-active-class="transition ease-in-out duration-300"
                     leave-to-class="opacity-0"
                 >
                     <p
                         v-if="form.recentlySuccessful"
-                        class="text-sm text-gray-600"
+                        class="ml-4 text-sm text-green-500 flex items-center"
                     >
-                        Saved.
+                        <svg class="w-4 h-4 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                        </svg>
+                        Saved successfully
                     </p>
                 </Transition>
             </div>
         </form>
 
         <!-- Regular user version - read-only view -->
-        <div v-else class="mt-6 space-y-6">
-            <div>
-                <InputLabel for="name" value="Name" />
+        <div v-else class="space-y-6">
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <InputLabel for="name" value="Name" class="text-gray-700 font-medium" />
+                    <div class="mt-1 p-3 block w-full bg-gray-50 border border-gray-200 rounded-md text-gray-700">
+                        {{ user.name }}
+                    </div>
+                </div>
 
-                <div class="mt-1 p-2 block w-full opacity-70 bg-gray-100 border border-gray-300 rounded-md cursor-not-allowed">
-                    {{ user.name }}
+                <div>
+                    <InputLabel for="email" value="Email" class="text-gray-700 font-medium" />
+                    <div class="mt-1 p-3 block w-full bg-gray-50 border border-gray-200 rounded-md text-gray-700">
+                        {{ user.email }}
+                    </div>
                 </div>
             </div>
-
-            <div>
-                <InputLabel for="email" value="Email" />
-
-                <div class="mt-1 p-2 block w-full opacity-70 bg-gray-100 border border-gray-300 rounded-md cursor-not-allowed">
-                    {{ user.email }}
-                </div>
-            </div>
-
-            <div v-if="mustVerifyEmail && user.email_verified_at === null">
-                <p class="mt-2 text-sm text-gray-800">
-                    Your email address is unverified.
-                </p>
-
-                <div
-                    v-show="status === 'verification-link-sent'"
-                    class="mt-2 text-sm font-medium text-green-600"
-                >
-                    A new verification link has been sent to your email address.
+            
+            <div class="flex items-center pt-4 border-t border-gray-100">
+                <div class="px-3 py-2 text-sm text-gray-500 bg-gray-50 rounded-md inline-flex items-center">
+                    <svg class="w-4 h-4 mr-1 text-blue-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z" clip-rule="evenodd" />
+                    </svg>
+                    Contact an administrator to update your profile
                 </div>
             </div>
         </div>

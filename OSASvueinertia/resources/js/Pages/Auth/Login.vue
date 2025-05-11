@@ -7,6 +7,7 @@ import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 
+
 defineProps({
     canResetPassword: {
         type: Boolean,
@@ -113,9 +114,24 @@ onBeforeUnmount(() => {
             <div 
                 class="hidden md:flex md:w-2/5 lg:w-2/5 flex-col items-center justify-center relative rounded-2xl overflow-hidden transition-all duration-300 shadow-xl z-10"
                 :class="isDarkMode 
-                    ? 'bg-gradient-to-br from-green-600 via-teal-500 to-blue-600 hover:shadow-blue-500/20 bg-opacity-90' 
-                    : 'bg-gradient-to-br from-green-500 via-teal-400 to-blue-500 hover:shadow-blue-300/30 bg-opacity-90'"
+                    ? 'bg-gradient-to-br from-blue-500/80 via-green-500/70 to-yellow-500/60 hover:shadow-blue-500/20' 
+                    : 'bg-gradient-to-br from-blue-500/70 via-green-500/60 to-yellow-500/50 hover:shadow-blue-300/30'"
             >
+                <!-- Background image with overlay -->
+                <div class="absolute inset-0">
+                    <img 
+                        src="/images/left_panel.jpg" 
+                        alt="LSPU Background" 
+                        class="w-full h-full object-cover object-center transition-opacity duration-1000"
+                    />
+                    <!-- Gradient overlay on top of the image -->
+                    <div class="absolute inset-0" 
+                        :class="isDarkMode 
+                            ? 'bg-gradient-to-br from-blue-500/80 via-green-500/70 to-yellow-500/60' 
+                            : 'bg-gradient-to-br from-blue-500/70 via-green-500/60 to-yellow-500/50'">
+                    </div>
+                </div>
+                
                 <!-- Animated background pattern -->
                 <div class="absolute inset-0 overflow-hidden opacity-10">
                     <div class="absolute top-1/4 left-1/4 w-16 h-16 rounded-full bg-white transform rotate-45 animate-pulse"></div>
@@ -125,18 +141,18 @@ onBeforeUnmount(() => {
                 
                 <div class="relative z-10 flex flex-col items-center transform transition-all duration-500 hover:scale-105 p-6">
                     <div class="px-0.0 bg-white bg-opacity-10 backdrop-blur-sm rounded-full mb-4 shadow-lg hover:shadow-white/20 transition-all duration-300">
-                        <img src="/images/lspu-logo.png" alt="LSPU Logo" class="w-32 h-32 object-cover filter drop-shadow-lg">
+                        <img src="/images/lspu-logo.png" alt="LSPU Logo" class="w-24 h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 object-cover filter drop-shadow-lg">
                     </div>
                     
                     <div class="text-center mb-6">
-                        <h2 class="text-xl font-bold mb-1 text-white">WELCOME TO</h2>
-                        <h1 class="text-3xl lg:text-4xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-white to-blue-100">LSPU ORBIT</h1>
+                        <h2 class="text-lg md:text-xl font-bold mb-1 text-white">WELCOME TO</h2>
+                        <h1 class="text-2xl md:text-3xl lg:text-4xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-white to-blue-100">LSPU ORBIT</h1>
                         <div class="h-1 w-28 bg-white opacity-70 mx-auto mb-4 rounded-full"></div>
-                        <p class="text-white text-opacity-90 text-xs max-w-xs mx-auto leading-relaxed">🚀 Organized Records for Better Institutional Tracking. Streamline creation, submission, and tracking of organizational documents while delivering real-time updates on campus events.
-
-</p>
+                        <p class="text-white text-opacity-90 text-xs max-w-xs mx-auto leading-relaxed">🚀 Organized Records for Better Institutional Tracking. Streamline creation, submission, and tracking of organizational documents while delivering real-time updates on campus events.</p>
                     </div>
                 </div>
+
+                
 
                 <!-- Decorative elements -->
                 <div class="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-black opacity-30"></div>

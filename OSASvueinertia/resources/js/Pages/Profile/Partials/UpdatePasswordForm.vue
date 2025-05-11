@@ -34,86 +34,148 @@ const updatePassword = () => {
 </script>
 
 <template>
-    <section>
-        <header>
-            <h2 class="text-lg font-medium text-gray-900">
+    <section class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+        <!-- Header with colored accent -->
+        <div class="border-l-4 border-green-500 pl-3 mb-6">
+            <h2 class="text-xl font-semibold text-gray-800">
                 Update Password
             </h2>
-
             <p class="mt-1 text-sm text-gray-600">
-                Ensure your account is using a long, random password to stay
-                secure.
+                Ensure your account is using a long, random password to stay secure.
             </p>
-        </header>
+        </div>
 
-        <form @submit.prevent="updatePassword" class="mt-6 space-y-6">
-            <div>
-                <InputLabel for="current_password" value="Current Password" />
-
-                <TextInput
-                    id="current_password"
-                    ref="currentPasswordInput"
-                    v-model="form.current_password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    autocomplete="current-password"
-                />
-
-                <InputError
-                    :message="form.errors.current_password"
-                    class="mt-2"
-                />
+        <form @submit.prevent="updatePassword" class="space-y-6">
+            <!-- Password fields in responsive layout -->
+            <div class="space-y-6 md:space-y-0 md:grid md:grid-cols-2 md:gap-6">
+                <!-- Current password field -->
+                <div class="col-span-2 md:col-span-1">
+                    <InputLabel 
+                        for="current_password" 
+                        value="Current Password" 
+                        class="text-gray-700 font-medium" 
+                    />
+                    <div class="relative">
+                        <TextInput
+                            id="current_password"
+                            ref="currentPasswordInput"
+                            v-model="form.current_password"
+                            type="password"
+                            class="mt-1 block w-full border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50 rounded-md shadow-sm"
+                            autocomplete="current-password"
+                        />
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pt-1">
+                            <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                    </div>
+                    <InputError
+                        :message="form.errors.current_password"
+                        class="mt-2"
+                    />
+                </div>
+                
+                <!-- New password field -->
+                <div class="md:col-span-1">
+                    <InputLabel 
+                        for="password" 
+                        value="New Password" 
+                        class="text-gray-700 font-medium" 
+                    />
+                    <div class="relative">
+                        <TextInput
+                            id="password"
+                            ref="passwordInput"
+                            v-model="form.password"
+                            type="password"
+                            class="mt-1 block w-full border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50 rounded-md shadow-sm"
+                            autocomplete="new-password"
+                        />
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pt-1">
+                            <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                    </div>
+                    <InputError :message="form.errors.password" class="mt-2" />
+                </div>
+                
+                <!-- Password confirmation field -->
+                <div class="md:col-span-1">
+                    <InputLabel
+                        for="password_confirmation"
+                        value="Confirm Password"
+                        class="text-gray-700 font-medium"
+                    />
+                    <div class="relative">
+                        <TextInput
+                            id="password_confirmation"
+                            v-model="form.password_confirmation"
+                            type="password"
+                            class="mt-1 block w-full border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50 rounded-md shadow-sm"
+                            autocomplete="new-password"
+                        />
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pt-1">
+                            <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                    </div>
+                    <InputError
+                        :message="form.errors.password_confirmation"
+                        class="mt-2"
+                    />
+                </div>
             </div>
 
-            <div>
-                <InputLabel for="password" value="New Password" />
-
-                <TextInput
-                    id="password"
-                    ref="passwordInput"
-                    v-model="form.password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    autocomplete="new-password"
-                />
-
-                <InputError :message="form.errors.password" class="mt-2" />
+            <!-- Password tips/requirements section -->
+            <div class="py-3 px-4 bg-gray-50 rounded-md border border-gray-100">
+                <h3 class="text-sm font-medium text-gray-700 mb-2">Password Requirements:</h3>
+                <ul class="space-y-1 text-xs text-gray-600">
+                    <li class="flex items-center">
+                        <svg class="h-4 w-4 mr-1 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                        </svg>
+                        Minimum 8 characters in length
+                    </li>
+                    <li class="flex items-center">
+                        <svg class="h-4 w-4 mr-1 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                        </svg>
+                        Include a mix of letters, numbers, and symbols
+                    </li>
+                    <li class="flex items-center">
+                        <svg class="h-4 w-4 mr-1 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                        </svg>
+                        Avoid using personal information
+                    </li>
+                </ul>
             </div>
 
-            <div>
-                <InputLabel
-                    for="password_confirmation"
-                    value="Confirm Password"
-                />
-
-                <TextInput
-                    id="password_confirmation"
-                    v-model="form.password_confirmation"
-                    type="password"
-                    class="mt-1 block w-full"
-                    autocomplete="new-password"
-                />
-
-                <InputError
-                    :message="form.errors.password_confirmation"
-                    class="mt-2"
-                />
-            </div>
-
-            <div class="flex items-center gap-4">
-                <PrimaryButton :disabled="form.processing">Save</PrimaryButton>
+            <div class="flex items-center pt-4 border-t border-gray-100">
+                <PrimaryButton 
+                    :disabled="form.processing"
+                    class="bg-green-500 hover:bg-green-600 focus:bg-green-600"
+                >
+                    Update Password
+                </PrimaryButton>
 
                 <Transition
-                    enter-active-class="transition ease-in-out"
+                    enter-active-class="transition ease-in-out duration-300"
                     enter-from-class="opacity-0"
-                    leave-active-class="transition ease-in-out"
+                    leave-active-class="transition ease-in-out duration-300"
                     leave-to-class="opacity-0"
                 >
                     <p
                         v-if="form.recentlySuccessful"
-                        class="text-sm text-gray-600"
+                        class="ml-4 text-sm text-green-500 flex items-center"
                     >
-                        Saved.
+                        <svg class="w-4 h-4 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                        </svg>
+                        Password updated successfully
                     </p>
                 </Transition>
             </div>
