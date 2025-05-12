@@ -36,6 +36,7 @@ const slideshowImages = [
     '/images/LSPU1.jpg',
     '/images/LSPU2.jpg',
     '/images/LSPU3.jpg',
+    '/images/LSPU6.jpg',
     '/images/LSPU5.jpg',
 ];
 
@@ -140,15 +141,18 @@ onBeforeUnmount(() => {
                 </div>
                 
                 <div class="relative z-10 flex flex-col items-center transform transition-all duration-500 hover:scale-105 p-6">
-                    <div class="px-0.0 bg-white bg-opacity-10 backdrop-blur-sm rounded-full mb-4 shadow-lg hover:shadow-white/20 transition-all duration-300">
-                        <img src="/images/lspu-logo.png" alt="LSPU Logo" class="w-24 h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 object-cover filter drop-shadow-lg">
+                    <div class="px-0.0 bg-white bg-opacity-10 backdrop-blur-sm rounded-full mb-6 shadow-lg hover:shadow-white/20 transition-all duration-300">
+                        <img src="/images/lspu_logo_better.png" alt="LSPU Logo" class="w-24 h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 object-cover filter drop-shadow-lg">
                     </div>
                     
-                    <div class="text-center mb-6">
-                        <h2 class="text-lg md:text-xl font-bold mb-1 text-white">WELCOME TO</h2>
-                        <h1 class="text-2xl md:text-3xl lg:text-4xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-white to-blue-100">LSPU ORBIT</h1>
-                        <div class="h-1 w-28 bg-white opacity-70 mx-auto mb-4 rounded-full"></div>
-                        <p class="text-white text-opacity-90 text-xs max-w-xs mx-auto leading-relaxed">🚀 Organized Records for Better Institutional Tracking. Streamline creation, submission, and tracking of organizational documents while delivering real-time updates on campus events.</p>
+                    <div class="text-center mb-8">
+                        <h2 class="text-lg md:text-xl font-bold mb-2 text-white tracking-wider font-sans">WELCOME TO</h2>
+                        <h1 class="text-2xl md:text-3xl lg:text-4xl font-extrabold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-white to-blue-100 font-sans tracking-wide">ORBIT</h1>
+                        <div class="h-1 w-32 bg-white opacity-70 mx-auto mb-6 rounded-full"></div>
+                        <p class="text-white text-opacity-90 text-sm max-w-xs mx-auto leading-relaxed font-sans tracking-wide backdrop-blur-sm bg-white/5 p-3 rounded-lg shadow-inner">
+                            🚀 <span class="font-medium">Organized Records for Better Institutional Tracking.</span> 
+                            <span class="block mt-2">Streamline creation, submission, and tracking of organizational documents while delivering real-time updates on campus events.</span>
+                        </p>
                     </div>
                 </div>
 
@@ -189,7 +193,7 @@ onBeforeUnmount(() => {
                 
                 <!-- Top banner for small screens -->
                 <div class="md:hidden w-full bg-gradient-to-r from-green-500 to-blue-500 p-4 flex justify-center items-center rounded-xl mb-6 shadow-lg">
-                    <img src="/images/lspu-logo.png" alt="LSPU Logo" class="w-12 h-12 mr-3">
+                    <img src="/images/lspu_logo_better.png" alt="LSPU Logo" class="w-12 h-12 mr-3">
                     <div class="text-white">
                         <h2 class="text-lg font-bold">LSPU ORBIT</h2>
                         <div class="h-0.5 w-16 bg-white opacity-70"></div>
@@ -198,16 +202,14 @@ onBeforeUnmount(() => {
                 
                 <div class="mb-6">
                     <!-- Logo and banner (shown only on larger screens) -->
-                    <div class="hidden md:flex justify-center items-center mb-4">
-                        <div class="relative">
-                            
-                            <header class="flex items-center space-x-2">
+                    <div class="hidden md:flex justify-center items-center mb-6">
+                        <div class="relative mr-4">
+                            <header class="flex items-center">
                                 <ApplicationLogo class="w-20 h-15 scale-150" />
                             </header>
-
                         </div>
-                        <h1 class="text-xl font-bold ml-2" :class="isDarkMode ? 'text-white' : 'text-gray-800'">
-                            LSPU<span class="text-blue-500">ORBIT</span>
+                        <h1 class="text-2xl md:text-3xl font-bold" :class="isDarkMode ? 'text-white' : 'text-gray-800'">
+                            <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-green-500">LSPU</span><span class="text-transparent bg-clip-text bg-gradient-to-r from-green-500 to-blue-500"> ORBIT</span>
                         </h1>
                     </div>
 

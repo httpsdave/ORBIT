@@ -9,10 +9,12 @@ use App\Http\Controllers\OrganizationApplicationController;
 use App\Http\Controllers\Admin\CollegeController;
 use App\Http\Controllers\Admin\StudentOrgController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\PublicCollegeController;
 use App\Http\Controllers\PublicStudentOrgController;
+use App\Http\Controllers\UserNotificationController;
 use App\Http\Middleware\CheckRole;
 use App\Models\User;
 use App\Models\Role;
@@ -52,7 +54,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/student-orgs', [PublicStudentOrgController::class, 'getAll'])->name('api.student-orgs.all');
     });
     
-    
+    // User Notifications Routes
+    Route::get('/notifications', [UserNotificationController::class, 'index'])->name('notifications.index');
+    Route::get('/notifications/unread-count', [UserNotificationController::class, 'getUnreadCount'])->name('notifications.unread-count');
+    Route::patch('/notifications/{id}/mark-read', [UserNotificationController::class, 'markAsRead'])->name('notifications.mark-read');
+    Route::post('/notifications/mark-all-read', [UserNotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
     
     // Profile routes
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -134,5 +140,17 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/colleges/{college}', [CollegeController::class, 'update'])->name('admin.colleges.update');
         Route::delete('/colleges/{college}', [CollegeController::class, 'destroy'])->name('admin.colleges.destroy');
         Route::get('/colleges/all', [CollegeController::class, 'getAll'])->name('admin.colleges.all');
+        
+        // Admin Notification Management Routes
+        Route::get('/notifications', [NotificationController::class, 'index'])->name('admin.notifications.index');
+        Route::get('/notifications/unread-count', [NotificationController::class, 'getUnreadCount'])->name('admin.notifications.unread-count');
+        Route::get('/notifications/create', [NotificationController::class, 'create'])->name('admin.notifications.create');
+        Route::post('/notifications', [NotificationController::class, 'store'])->name('admin.notifications.store');
+        Route::get('/notifications/{notification}/edit', [NotificationController::class, 'edit'])->name('admin.notifications.edit');
+        Route::put('/notifications/{notification}', [NotificationController::class, 'update'])->name('admin.notifications.update');
+        Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy'])->name('admin.notifications.destroy');
+        Route::patch('/notifications/{notification}/toggle-active', [NotificationController::class, 'toggleActive'])->name('admin.notifications.toggle-active');
+        Route::patch('/notifications/{id}/mark-read', [NotificationController::class, 'markAsRead']);
+
     });
 });

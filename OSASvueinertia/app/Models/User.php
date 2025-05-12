@@ -48,4 +48,24 @@ class User extends Authenticatable
     {
         return $this->hasMany(OrganizationApplication::class);
     }
+
+    /**
+     * Get the notifications for the user.
+     */
+    public function notifications()
+    {
+        return $this->belongsToMany(Notification::class, 'user_notifications')
+            ->withPivot('is_read')
+            ->withTimestamps();
+    }
+    
+    /**
+     * Get unread notifications count
+     */
+    public function getUnreadNotificationsCountAttribute()
+    {
+        return $this->belongsToMany(Notification::class, 'user_notifications')
+            ->wherePivot('is_read', false)
+            ->count();
+    }
 }
