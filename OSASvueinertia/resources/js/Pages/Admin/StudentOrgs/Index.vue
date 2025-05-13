@@ -1,8 +1,17 @@
 <template>
   <div>
     <AuthenticatedLayout title="Student Organizations">
-      <template #header>
-        <div class="flex justify-between items-center">
+      
+        <template #header>
+          <!-- Color Banner -->
+          <div class="flex w-full mb-4 overflow-hidden rounded-lg shadow-lg">
+            <div class="w-1/4 h-1.5 bg-blue-500 " style="animation-delay: 0.2s;"></div>
+            <div class="w-1/4 h-1.5 bg-green-500 " style="animation-delay: 0.4s;"></div>
+            <div class="w-1/4 h-1.5 bg-yellow-500 " style="animation-delay: 0.6s;"></div>
+            <div class="w-1/4 h-1.5 bg-red-500 " style="animation-delay: 0.8s;"></div>
+          </div>
+
+          <div class="flex justify-between items-center">
           <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             Manage Student Organizations
           </h2>
@@ -17,18 +26,7 @@
             Add New Organization
           </button>
         </div>
-      </template>
-
-      <div class="py-6">
-       
-          <!-- Color Banner -->
-          <div class="flex w-full mb-4 overflow-hidden rounded-lg shadow-lg">
-            <div class="w-1/4 h-1.5 bg-blue-500 " style="animation-delay: 0.2s;"></div>
-            <div class="w-1/4 h-1.5 bg-green-500 " style="animation-delay: 0.4s;"></div>
-            <div class="w-1/4 h-1.5 bg-yellow-500 " style="animation-delay: 0.6s;"></div>
-            <div class="w-1/4 h-1.5 bg-red-500 " style="animation-delay: 0.8s;"></div>
-          </div>
-
+        </template>
           <!-- Alert Messages -->
           <div v-if="$page.props.flash && $page.props.flash.message" 
                class="mb-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-sm" 
@@ -206,7 +204,7 @@
             </div>
           </div>
         
-      </div>
+      
 
       <!-- Create/Edit Modal -->
       <Modal :show="showModal" @close="closeModal" maxWidth="md">

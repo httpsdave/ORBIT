@@ -1,25 +1,33 @@
 <template>
-  <h1 class="text-2xl font-bold mb-4">Event Calendar</h1>
+  <!-- Colored banner -->
+  <div class="flex w-full mb-4 overflow-hidden rounded-lg shadow-sm">
+    <div class="w-1/4 h-1.5 bg-blue-500 " style="animation-delay: 0.2s;"></div>
+    <div class="w-1/4 h-1.5 bg-green-500 " style="animation-delay: 0.4s;"></div>
+    <div class="w-1/4 h-1.5 bg-yellow-500 " style="animation-delay: 0.6s;"></div>
+    <div class="w-1/4 h-1.5 bg-red-500 " style="animation-delay: 0.8s;"></div>
+  </div>
   
-  <div class="mb-6 flex gap-4">
+  <h1 class="text-2xl font-bold mb-6 text-gray-800">Event Calendar</h1>
+  
+  <div class="mb-6 grid gap-6 md:grid-cols-2">
     <!-- Left panel - only visible to admins -->
-    <div v-if="isAdmin" class="w-1/2">
-      <div class="bg-white rounded-lg shadow p-4">
-        <h2 class="text-lg font-semibold mb-2">Upload Document</h2>
+    <div v-if="isAdmin" class="md:col-span-1">
+      <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-5">
+        <h2 class="text-lg font-semibold mb-4 text-gray-700">Upload Document</h2>
         <div class="flex items-center justify-center w-full">
           <label 
-            class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
+            class="flex flex-col items-center justify-center w-full h-36 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors duration-200"
             :class="{ 'border-blue-500': isDragging }"
             @dragover.prevent="isDragging = true"
             @dragleave.prevent="isDragging = false"
             @drop.prevent="onFileDrop"
           >
             <div class="flex flex-col items-center justify-center pt-5 pb-6">
-              <svg class="w-8 h-8 mb-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+              <svg class="w-10 h-10 mb-4 text-blue-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
               </svg>
-              <p class="mb-2 text-sm text-gray-500">
-                <span class="font-semibold">Click to upload</span> or drag and drop
+              <p class="mb-2 text-sm text-gray-600">
+                <span class="font-medium">Click to upload</span> or drag and drop
               </p>
               <p class="text-xs text-gray-500">PNG, JPG, PDF (MAX. 10MB)</p>
             </div>
@@ -35,11 +43,10 @@
         </div>
       </div>
       
-     
-      <div v-if="isAdmin" class="mt-4 bg-white rounded-lg shadow p-4">
+      <div v-if="isAdmin" class="mt-4">
         <button 
           @click="createNewEvent" 
-          class="w-full flex items-center justify-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+          class="w-full flex items-center justify-center px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400 transition-colors duration-200"
         >
           <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -48,89 +55,49 @@
         </button>
       </div>
 
-      <div v-if="isProcessing" class="mt-4 bg-white rounded-lg shadow p-4">
-        <div class="flex items-center space-x-3">
-          <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-700"></div>
-          <p>Processing document...</p>
+      <div v-if="isProcessing" class="mt-4 bg-white rounded-lg shadow-sm border border-gray-100 p-4">
+      <div class="flex items-center space-x-3">
+          <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-500"></div>
+          <p class="text-gray-600">Processing document...</p>
         </div>
       </div>
-      
-      <!-- Update this portion of the template in the EventForm modal section -->
-<div 
-  v-if="extractedData || isEditing" 
-  class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-  @click.self="cancelEdit"
->
-  <div class="bg-white rounded-lg shadow p-4 max-w-md w-full mx-4">
-    <h2 class="text-lg font-semibold mb-2">
-      {{ isEditing ? 'Edit Event' : 'Create New Event' }}
-    </h2>
-    <div class="space-y-2">
-      <div>
-        <label class="block text-sm font-medium text-gray-700">Event Title</label>
-        <input v-model="eventForm.title" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" />
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700">Start Date</label>
-        <input v-model="eventForm.date" type="date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" />
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700">Start Time</label>
-        <input v-model="eventForm.start_time" type="time" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" />
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700">End Date</label>
-        <input v-model="eventForm.end_date" type="date" :min="eventForm.date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" />
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700">End Time</label>
-        <input v-model="eventForm.end_time" type="time" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" />
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700">Description</label>
-        <textarea v-model="eventForm.description" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"></textarea>
-      </div>
-      <div class="flex justify-end space-x-2">
-        <button 
-          @click="cancelEdit" 
-          class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-        >
-          Cancel
-        </button>
-        <button 
-          @click="isEditing ? updateEvent() : saveEvent()" 
-          class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-        >
-          {{ isEditing ? 'Update Event' : 'Save Event' }}
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
     </div>
     
     <!-- Upcoming Events panel (width changes based on admin status) -->
-    <div :class="isAdmin ? 'w-1/2' : 'w-full'" class="bg-white rounded-lg shadow p-4">
-      <h2 class="text-lg font-semibold mb-2">Upcoming Events</h2>
-      <ul class="divide-y divide-gray-200">
-        <li v-for="event in upcomingEvents" :key="event.id" class="py-3">
+    <div :class="isAdmin ? 'md:col-span-1' : 'md:col-span-2'" class="bg-white rounded-lg shadow-sm border border-gray-100 p-5">
+      <h2 class="text-lg font-semibold mb-4 text-gray-700">Upcoming Events</h2>
+      <ul class="divide-y divide-gray-100">
+        <li v-for="event in upcomingEvents" :key="event.id" class="py-4">
           <div class="flex items-start space-x-4">
-            <div class="flex-shrink-0 bg-blue-100 rounded-md p-2 text-center">
-              <span class="text-sm font-medium text-blue-800">{{ formatDate(event.start_date, 'MMM') }}</span>
-              <p class="text-lg font-bold text-blue-800">{{ formatDate(event.start_date, 'DD') }}</p>
+            <div class="flex-shrink-0 bg-blue-50 rounded-lg p-3 text-center border-l-4 border-blue-500">
+              <span class="text-sm font-medium text-blue-500">{{ formatDate(event.start_date, 'MMM') }}</span>
+              <p class="text-xl font-bold text-gray-800">{{ formatDate(event.start_date, 'DD') }}</p>
+              <span class="text-xs text-blue-400">{{ formatDate(event.start_date, 'ddd') }}</span>
             </div>
             <div class="flex-1 min-w-0">
               <p class="text-sm font-medium text-gray-900 truncate">{{ event.title }}</p>
-              <p class="text-sm text-gray-500">{{ formatDate(event.start_date, 'h:mm A') }}</p>
+              <div class="flex items-center mt-1 text-xs text-gray-500">
+                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                {{ formatDate(event.start_date, 'h:mm A') }}
+                <span v-if="event.end_date && formatDate(event.start_date, 'YYYY-MM-DD') !== formatDate(event.end_date, 'YYYY-MM-DD')">
+                  - {{ formatDate(event.end_date, 'MMM DD, h:mm A') }}
+                </span>
+                <span v-else-if="event.end_date">
+                  - {{ formatDate(event.end_date, 'h:mm A') }}
+                </span>
+              </div>
+              <p v-if="event.description" class="text-xs text-gray-500 mt-1 line-clamp-2">{{ event.description }}</p>
             </div>
             <!-- Only show edit/delete buttons to admins -->
             <div v-if="isAdmin" class="flex-shrink-0 flex space-x-2">
-              <button @click="editEvent(event)" class="text-blue-600 hover:text-blue-800">
+              <button @click="editEvent(event)" class="text-blue-500 hover:text-blue-700 p-1 rounded transition-colors duration-200">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                 </svg>
               </button>
-              <button @click="deleteEvent(event.id)" class="text-red-600 hover:text-red-800">
+              <button @click="deleteEvent(event.id)" class="text-red-500 hover:text-red-700 p-1 rounded transition-colors duration-200">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                 </svg>
@@ -138,7 +105,7 @@
             </div>
             <!-- Show view details button to all users -->
             <div v-else class="flex-shrink-0">
-              <button @click="viewEventDetails(event)" class="text-blue-600 hover:text-blue-800">
+              <button @click="viewEventDetails(event)" class="text-blue-500 hover:text-blue-700 p-1 rounded transition-colors duration-200">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -147,49 +114,207 @@
             </div>
           </div>
         </li>
-        <li v-if="upcomingEvents.length === 0" class="py-3 text-center text-gray-500">
-          No upcoming events
+        <li v-if="upcomingEvents.length === 0" class="py-8 text-center text-gray-500">
+          <svg class="w-12 h-12 mx-auto text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          <p>No upcoming events</p>
         </li>
       </ul>
     </div>
   </div>
   
-  <div class="bg-white rounded-lg shadow p-4">
+  <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-5">
+    <!-- Custom calendar header with your color scheme -->
+    <div class="mb-6">
+      <!-- Colored banner for the calendar -->
+      <div class="flex w-full mb-4 overflow-hidden rounded-lg">
+        <div class="w-1/4 h-1.5 bg-blue-500"></div>
+        <div class="w-1/4 h-1.5 bg-green-500"></div>
+        <div class="w-1/4 h-1.5 bg-yellow-500"></div>
+        <div class="w-1/4 h-1.5 bg-red-500"></div>
+      </div>
+    </div>
+    
     <FullCalendar
       ref="fullCalendar"
       :options="calendarOptions"
+      class="full-calendar-custom"
     />
+    
+    
+  </div>
+  
+  <!-- Event Form Modal -->
+  <div 
+    v-if="extractedData || isEditing" 
+    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+    @click.self="cancelEdit"
+  >
+    <div class="bg-white rounded-lg shadow-lg p-6 max-w-md w-full mx-4">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-lg font-semibold text-gray-800">
+          {{ isEditing ? 'Edit Event' : 'Create New Event' }}
+        </h2>
+        <button @click="cancelEdit" class="text-gray-500 hover:text-gray-700">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Event Title</label>
+          <input v-model="eventForm.title" type="text" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50" />
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+            <input v-model="eventForm.date" type="date" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Start Time</label>
+            <input v-model="eventForm.start_time" type="time" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50" />
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+            <input v-model="eventForm.end_date" type="date" :min="eventForm.date" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">End Time</label>
+            <input v-model="eventForm.end_time" type="time" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50" />
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+          <textarea v-model="eventForm.description" rows="3" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"></textarea>
+        </div>
+        <div class="pt-4 flex justify-end space-x-3">
+          <button 
+            @click="cancelEdit" 
+            class="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200"
+          >
+            Cancel
+          </button>
+          <button 
+            @click="isEditing ? updateEvent() : saveEvent()" 
+            class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
+          >
+            {{ isEditing ? 'Update Event' : 'Save Event' }}
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
   
   <!-- Event Details Modal for non-admin users -->
   <div 
-  v-if="showEventDetailsModal" 
-  class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-  @click.self="closeEventDetailsModal"
->
+    v-if="showEventDetailsModal" 
+    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+    @click.self="closeEventDetailsModal"
+  >
     <div class="bg-white rounded-lg shadow-lg p-6 max-w-md w-full mx-4">
       <div class="flex justify-between items-center mb-4">
-        <h3 class="text-lg font-bold">{{selectedEvent.title}}</h3>
+        <h3 class="text-lg font-semibold text-gray-800">{{selectedEvent.title}}</h3>
         <button @click="closeEventDetailsModal" class="text-gray-500 hover:text-gray-700">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
       </div>
-      <div class="space-y-3">
-        <p><span class="font-medium">Date:</span> {{formatDate(selectedEvent.start_date, 'MMMM D, YYYY')}}</p>
-        <p><span class="font-medium">Time:</span> {{formatDate(selectedEvent.start_date, 'h:mm A')}} 
-          <span v-if="selectedEvent.end_date">- {{formatDate(selectedEvent.end_date, 'h:mm A')}}</span>
-        </p>
-        <div v-if="selectedEvent.description">
-          <p class="font-medium">Description:</p>
-          <p class="whitespace-pre-line">{{selectedEvent.description}}</p>
+      
+      <!-- Colored banner -->
+      <div class="flex w-full mb-4 overflow-hidden rounded-md">
+        <div class="w-1/4 h-1 bg-blue-500"></div>
+        <div class="w-1/4 h-1 bg-green-500"></div>
+        <div class="w-1/4 h-1 bg-yellow-500"></div>
+        <div class="w-1/4 h-1 bg-red-500"></div>
+      </div>
+      
+      <div class="space-y-4">
+        <div class="flex space-x-4">
+          <div class="flex-shrink-0 bg-blue-50 rounded-lg p-3 text-center border-l-4 border-blue-500">
+            <span class="text-sm font-medium text-blue-500">{{ formatDate(selectedEvent.start_date, 'MMM') }}</span>
+            <p class="text-xl font-bold text-gray-800">{{ formatDate(selectedEvent.start_date, 'DD') }}</p>
+          </div>
+          <div>
+            <p class="font-medium text-gray-700">{{formatDate(selectedEvent.start_date, 'dddd, MMMM D, YYYY')}}</p>
+            <p class="text-gray-600">{{formatDate(selectedEvent.start_date, 'h:mm A')}} 
+              <span v-if="selectedEvent.end_date">- {{formatDate(selectedEvent.end_date, 'h:mm A')}}</span>
+            </p>
+          </div>
+        </div>
+        
+        <div v-if="selectedEvent.description" class="mt-4 bg-gray-50 p-4 rounded-lg">
+          <p class="text-sm text-gray-600 font-medium mb-2">Description:</p>
+          <p class="text-gray-700 whitespace-pre-line">{{selectedEvent.description}}</p>
         </div>
       </div>
     </div>
   </div>
 </template>
-
+<style scoped>
+    /* Custom FullCalendar styling to match your color scheme */
+    :deep(.full-calendar-custom) {
+      --fc-border-color: #e5e7eb; /* gray-200 */
+      --fc-button-bg-color: #3B82F6; /* blue-500 */
+      --fc-button-border-color: #3B82F6; /* blue-500 */
+      --fc-button-hover-bg-color: #2563EB; /* blue-600 */
+      --fc-button-hover-border-color: #2563EB; /* blue-600 */
+      --fc-button-active-bg-color: #1D4ED8; /* blue-700 */
+      --fc-button-active-border-color: #1D4ED8; /* blue-700 */
+      --fc-event-bg-color: #3B82F6; /* blue-500 */
+      --fc-event-border-color: #3B82F6; /* blue-500 */
+      --fc-today-bg-color: #EFF6FF; /* blue-50 */
+      --fc-highlight-color: #F3F4F6; /* gray-100 */
+      --fc-list-event-hover-bg-color: #F3F4F6; /* gray-100 */
+    }
+    
+    :deep(.fc .fc-button) {
+      font-weight: 500;
+      border-radius: 0.375rem;
+      padding: 0.5rem 1rem;
+      transition: all 0.2s;
+    }
+    
+    :deep(.fc .fc-toolbar-title) {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #1F2937; /* gray-800 */
+    }
+    
+    :deep(.fc .fc-daygrid-day.fc-day-today) {
+      background-color: var(--fc-today-bg-color);
+    }
+    
+    :deep(.fc .fc-col-header-cell-cushion) {
+      font-weight: 600;
+    }
+    
+    :deep(.fc-event) {
+      border-radius: 0.25rem;
+      font-size: 0.875rem;
+    }
+    
+    :deep(.fc .fc-daygrid-day-number) {
+      font-weight: 500;
+      color: #4B5563; /* gray-600 */
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      :deep(.fc .fc-toolbar) {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+      
+      :deep(.fc .fc-toolbar-title) {
+        font-size: 1rem;
+      }
+    }
+    </style>
 <script>
 import { ref, reactive, onMounted, computed, watch, onUnmounted } from 'vue';
 import FullCalendar from '@fullcalendar/vue3';
@@ -361,6 +486,7 @@ export default {
           // Populate the form with extracted data
           eventForm.title = response.data.title || '';
           eventForm.date = response.data.date || '';
+          eventForm.end_date = response.data.end_date || response.data.date || ''; // Use end_date if available, otherwise use date
           eventForm.start_time = response.data.start_time || '';
           eventForm.end_time = response.data.end_time || '';
           eventForm.description = response.data.description || '';
@@ -375,117 +501,119 @@ export default {
     }
     
     function saveEvent() {
-  if (!props.isAdmin) return; // Safety check
-  
-  const startDate = `${eventForm.date}T${eventForm.start_time}`;
-  // Use end_date if provided, otherwise fall back to start date
-  const endDateStr = eventForm.end_date || eventForm.date;
-  const endDate = eventForm.end_time ? `${endDateStr}T${eventForm.end_time}` : null;
-  
-  axios.post('/api/events', {
-    title: eventForm.title,
-    start_date: startDate,
-    end_date: endDate,
-    description: eventForm.description
-  })
-    .then(response => {
-      // Add the new event to the list
-      events.value.push(response.data);
-      filterExpiredEvents();
+      if (!props.isAdmin) return; // Safety check
       
-      // Reset the form
-      resetForm();
-      alert('Event saved successfully!');
-    })
-    .catch(error => {
-      if (error.response && error.response.status === 403) {
-        alert('Unauthorized: You do not have permission to perform this action.');
-      } else {
-        console.error('Error saving event:', error);
-        alert('Failed to save event. Please try again.');
-      }
-    });
-}
+      // Make sure end_date has a value, defaulting to start date if not provided
+      const endDateStr = eventForm.end_date || eventForm.date;
+      
+      const startDate = `${eventForm.date}T${eventForm.start_time || '00:00'}`;
+      const endDate = `${endDateStr}T${eventForm.end_time || '23:59'}`;
+      
+      axios.post('/api/events', {
+        title: eventForm.title,
+        start_date: startDate,
+        end_date: endDate, // Always include end_date
+        description: eventForm.description
+      })
+        .then(response => {
+          // Add the new event to the list
+          events.value.push(response.data);
+          filterExpiredEvents();
+          
+          // Reset the form
+          resetForm();
+          alert('Event saved successfully!');
+        })
+        .catch(error => {
+          if (error.response && error.response.status === 403) {
+            alert('Unauthorized: You do not have permission to perform this action.');
+          } else {
+            console.error('Error saving event:', error);
+            alert('Failed to save event. Please try again.');
+          }
+        });
+    }
     
     function editEvent(event) {
-  if (!props.isAdmin) return; // Safety check
-  
-  // Switch to edit mode
-  isEditing.value = true;
-  currentEditId.value = event.id;
-  extractedData.value = null;
-  
-  // Parse the date and times from the event
-  const eventDate = dayjs(event.start_date);
-  const eventEndDate = event.end_date ? dayjs(event.end_date) : null;
-  
-  // Fill the form with the event data
-  eventForm.title = event.title;
-  eventForm.date = eventDate.format('YYYY-MM-DD');
-  eventForm.start_time = eventDate.format('HH:mm');
-  
-  if (eventEndDate) {
-    eventForm.end_date = eventEndDate.format('YYYY-MM-DD');
-    eventForm.end_time = eventEndDate.format('HH:mm');
-  } else {
-    eventForm.end_date = eventDate.format('YYYY-MM-DD'); // Default to same day
-    eventForm.end_time = '';
-  }
-  
-  eventForm.description = event.description || '';
-}
-    
-    function updateEvent() {
-  if (!props.isAdmin) return; // Safety check
-  
-  const startDate = `${eventForm.date}T${eventForm.start_time}`;
-  // Use end_date if provided, otherwise fall back to start date
-  const endDateStr = eventForm.end_date || eventForm.date;
-  const endDate = eventForm.end_time ? `${endDateStr}T${eventForm.end_time}` : null;
-  
-  axios.put(`/api/events/${currentEditId.value}`, {
-    title: eventForm.title,
-    start_date: startDate,
-    end_date: endDate,
-    description: eventForm.description
-  })
-    .then(response => {
-      // Update the event in our local state
-      const index = events.value.findIndex(e => e.id === currentEditId.value);
-      if (index !== -1) {
-        events.value[index] = response.data;
-        filterExpiredEvents();
+      if (!props.isAdmin) return; // Safety check
+      
+      // Switch to edit mode
+      isEditing.value = true;
+      currentEditId.value = event.id;
+      extractedData.value = null;
+      
+      // Parse the date and times from the event
+      const eventDate = dayjs(event.start_date);
+      const eventEndDate = event.end_date ? dayjs(event.end_date) : null;
+      
+      // Fill the form with the event data
+      eventForm.title = event.title;
+      eventForm.date = eventDate.format('YYYY-MM-DD');
+      eventForm.start_time = eventDate.format('HH:mm');
+      
+      if (eventEndDate) {
+        eventForm.end_date = eventEndDate.format('YYYY-MM-DD');
+        eventForm.end_time = eventEndDate.format('HH:mm');
+      } else {
+        eventForm.end_date = eventDate.format('YYYY-MM-DD'); // Default to same day
+        eventForm.end_time = '';
       }
       
-      // Reset the form and exit edit mode
-      resetForm();
-      alert('Event updated successfully!');
-    })
-    .catch(error => {
-      if (error.response && error.response.status === 403) {
-        alert('Unauthorized: You do not have permission to perform this action.');
-      } else {
-        console.error('Error updating event:', error);
-        alert('Failed to update event. Please try again.');
-      }
-    });
-}
+      eventForm.description = event.description || '';
+    }
+    
+    function updateEvent() {
+      if (!props.isAdmin) return; // Safety check
+      
+      // Make sure end_date has a value, defaulting to start date if not provided
+      const endDateStr = eventForm.end_date || eventForm.date;
+      
+      const startDate = `${eventForm.date}T${eventForm.start_time || '00:00'}`;
+      const endDate = `${endDateStr}T${eventForm.end_time || '23:59'}`;
+      
+      axios.put(`/api/events/${currentEditId.value}`, {
+        title: eventForm.title,
+        start_date: startDate,
+        end_date: endDate, // Always include end_date
+        description: eventForm.description
+      })
+        .then(response => {
+          // Update the event in our local state
+          const index = events.value.findIndex(e => e.id === currentEditId.value);
+          if (index !== -1) {
+            events.value[index] = response.data;
+            filterExpiredEvents();
+          }
+          
+          // Reset the form and exit edit mode
+          resetForm();
+          alert('Event updated successfully!');
+        })
+        .catch(error => {
+          if (error.response && error.response.status === 403) {
+            alert('Unauthorized: You do not have permission to perform this action.');
+          } else {
+            console.error('Error updating event:', error);
+            alert('Failed to update event. Please try again.');
+          }
+        });
+    }
     
     function cancelEdit() {
       resetForm();
     }
     
     function resetForm() {
-    extractedData.value = null;
-    isEditing.value = false;
-    currentEditId.value = null;
-    eventForm.title = '';
-    eventForm.date = '';
-    eventForm.end_date = ''; // Reset end date
-    eventForm.start_time = '';
-    eventForm.end_time = '';
-    eventForm.description = '';
-  }
+      extractedData.value = null;
+      isEditing.value = false;
+      currentEditId.value = null;
+      eventForm.title = '';
+      eventForm.date = '';
+      eventForm.end_date = ''; // Reset end date
+      eventForm.start_time = '';
+      eventForm.end_time = '';
+      eventForm.description = '';
+    }
     
     function deleteEvent(eventId) {
       if (!props.isAdmin) return; // Safety check
@@ -523,11 +651,11 @@ export default {
       
       const eventId = info.event.id;
       const newStartDate = info.event.start;
-      const newEndDate = info.event.end;
+      const newEndDate = info.event.end || info.event.start; // Default to start date if no end date
       
       axios.put(`/api/events/${eventId}`, {
         start_date: newStartDate,
-        end_date: newEndDate
+        end_date: newEndDate // Always include end_date
       })
         .then(() => {
           // Update the event in our local state
@@ -602,7 +730,7 @@ export default {
       formatDate,
       viewEventDetails,
       closeEventDetailsModal,
-      createNewEvent // Add this line
+      createNewEvent
     };
   }
 };
