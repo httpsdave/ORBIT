@@ -54,6 +54,22 @@ const formTypeToName = (formType) => {
   }
 };
 
+// Add this function to your methods
+const getDropdownPosition = (appId) => {
+  // Find the button element that triggered this dropdown
+  const buttonElement = document.querySelector(`[data-dropdown-trigger="${appId}"]`);
+  
+  if (!buttonElement) return { top: '0px', right: '0px' };
+  
+  const rect = buttonElement.getBoundingClientRect();
+  
+  // Position dropdown relative to the button
+  return {
+    top: `${rect.bottom + window.scrollY + 5}px`, // 5px padding below button
+    left: `${rect.right - 192 + window.scrollX}px`, // 192px = 48px (dropdown width) * 4
+  };
+};
+
 const getPdfRoute = (app, action = 'download') => {
   const queryParams = action === 'view' ? '?action=view' : '';
   
@@ -337,12 +353,13 @@ const handleAction = (app, action) => {
                     </svg>
                   </a>
                   
-                  <!-- More Actions Button -->
-                  <button 
-                    @click.stop="toggleDropdown(app.id)"
-                    class="bg-blue-600 hover:bg-blue-500 text-white p-2.5 rounded-lg transition duration-300 relative overflow-hidden group shadow-sm"
-                    title="More Actions"
-                  >
+                  <!-- Add data-dropdown-trigger attribute -->
+                    <button 
+                      @click.stop="toggleDropdown(app.id)"
+                      class="bg-blue-600 hover:bg-blue-500 text-white p-2.5 rounded-lg transition duration-300 relative overflow-hidden group shadow-sm"
+                      title="More Actions"
+                      :data-dropdown-trigger="app.id"
+                    >
                     <span class="absolute w-0 h-0 transition-all duration-300 ease-out bg-white rounded-full group-hover:w-16 group-hover:h-16 opacity-10"></span>
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                       <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
@@ -353,7 +370,8 @@ const handleAction = (app, action) => {
                 <!-- Dropdown Menu -->
                 <div 
                   v-if="activeDropdown === app.id"
-                  class="absolute right-0 mt-12 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10 py-1"
+                  class="fixed w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50 py-1"
+                  :style="getDropdownPosition(app.id)"
                   @click.stop
                 >
                   <!-- Admin-only Status Update Option -->

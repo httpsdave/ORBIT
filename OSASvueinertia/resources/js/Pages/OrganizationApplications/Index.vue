@@ -19,6 +19,8 @@ const showMessage = ref(!!props.successMessage);
 const searchQuery = ref('');
 const filteredApplications = ref([]);
 const formElement = ref(null);
+// Fix #1: Add the missing activeDropdown ref
+const activeDropdown = ref(null);
 
 // Status update variables
 const showStatusModal = ref(false);
@@ -56,6 +58,14 @@ onMounted(() => {
   if (formElement.value) {
     formElement.value.classList.add('opacity-100');
   }
+  
+  // Add global click handler to close dropdowns
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('[data-dropdown-trigger]') && 
+        !e.target.closest('.dropdown-menu')) {
+      activeDropdown.value = null;
+    }
+  });
 });
 
 const deleteApplication = (id) => {
@@ -176,6 +186,82 @@ const updateApplicationStatus = (statusData) => {
     });
   }
 };
+
+// Modify the closeDropdowns method
+const closeDropdowns = (event) => {
+  // Only close if clicking outside both the dropdown trigger and menu
+  if (!event.target.closest('[data-dropdown-trigger]') && 
+      !event.target.closest('.dropdown-menu')) {
+    activeDropdown.value = null;
+  }
+};
+
+// Fix #2: Add the missing handleDocumentUpload method
+const handleDocumentUpload = (applicationId, formData) => {
+  // Set loading state if needed
+  message.value = "Uploading document...";
+  showMessage.value = true;
+  
+  // Use Inertia for the upload if available
+  if (typeof router !== 'undefined' && router.post) {
+    router.post(`/applications/${applicationId}/upload-document`, formData, {
+      onSuccess: () => {
+        // Show success message
+        message.value = "Document uploaded successfully!";
+        showMessage.value = true;
+        
+        // Refresh applications list or update specific application
+        refreshApplications();
+        
+        // Auto-hide message after 5 seconds
+        setTimeout(() => {
+          showMessage.value = false;
+        }, 5000);
+      },
+      onError: (errors) => {
+        message.value = errors?.message || "Failed to upload document.";
+        showMessage.value = true;
+      }
+    });
+  } else {
+    // Fallback to standard fetch API if Inertia isn't available
+    fetch(`/applications/${applicationId}/upload-document`, {
+      method: 'POST',
+      body: formData,
+      // No need to set Content-Type as FormData will set it with boundary
+      headers: {
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+      }
+    })
+    .then(response => {
+      if (!response.ok) throw new Error('Failed to upload document');
+      return response.json();
+    })
+    .then(data => {
+      // Show success message
+      message.value = "Document uploaded successfully!";
+      showMessage.value = true;
+      
+      // Refresh applications list
+      refreshApplications();
+      
+      // Auto-hide message after 5 seconds
+      setTimeout(() => {
+        showMessage.value = false;
+      }, 5000);
+    })
+    .catch(error => {
+      message.value = error.message || "Failed to upload document.";
+      showMessage.value = true;
+    });
+  }
+};
+
+// Add to parent component
+const refreshApplications = () => {
+  // You might want to fetch fresh data here, or just use what you have
+  filteredApplications.value = [...props.applications];
+};
 </script>
 
 <template>
@@ -199,66 +285,61 @@ const updateApplicationStatus = (statusData) => {
       </div>
     </template>
 
-   
-      
-        <!-- Success Message -->
-        <div v-if="showMessage" class="mb-6 transition-opacity duration-500 ease-in-out">
-          <div class="bg-gradient-to-r from-green-500 to-emerald-500 text-white py-4 px-6 rounded-lg shadow-md flex items-center justify-between">
-            <div class="flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-              </svg>
-              <span>{{ message }}</span>
-            </div>
-            <button @click="showMessage = false" class="text-white hover:text-gray-100">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-              </svg>
-            </button>
-          </div>
+    <!-- Success Message -->
+    <div v-if="showMessage" class="mb-6 transition-opacity duration-500 ease-in-out">
+      <div class="bg-gradient-to-r from-green-500 to-emerald-500 text-white py-4 px-6 rounded-lg shadow-md flex items-center justify-between">
+        <div class="flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+          </svg>
+          <span>{{ message }}</span>
         </div>
+        <button @click="showMessage = false" class="text-white hover:text-gray-100">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+          </svg>
+        </button>
+      </div>
+    </div>
 
-        <!-- Search Box -->
-        <div class="mb-6">
-          <div class="relative rounded-xl shadow-sm">
-            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </div>
-            <input
-              type="text"
-              v-model="searchQuery"
-              @input="filterApplications"
-              class="form-input block w-full pl-12 pr-12 py-4 rounded-xl border-gray-200 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 transition duration-150"
-              placeholder="Search applications by organization, president, form type, or status..."
-            />
-            <div v-if="searchQuery" class="absolute inset-y-0 right-0 pr-4 flex items-center">
-              <button @click="searchQuery = ''; filterApplications()" class="text-gray-400 hover:text-gray-600">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-                </svg>
-              </button>
-            </div>
-          </div>
+    <!-- Search Box -->
+    <div class="mb-6">
+      <div class="relative rounded-xl shadow-sm">
+        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
         </div>
+        <input
+          type="text"
+          v-model="searchQuery"
+          @input="filterApplications"
+          class="form-input block w-full pl-12 pr-12 py-4 rounded-xl border-gray-200 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 transition duration-150"
+          placeholder="Search applications by organization, president, form type, or status..."
+        />
+        <div v-if="searchQuery" class="absolute inset-y-0 right-0 pr-4 flex items-center">
+          <button @click="searchQuery = ''; filterApplications()" class="text-gray-400 hover:text-gray-600">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
 
-        <!-- Applications Table or No Applications Message -->
-        <div 
-          ref="formElement"
-          class="opacity-0 transition-opacity duration-500 ease-in-out"
-        >
-          <ApplicationsTable 
-            v-if="filteredApplications.length > 0" 
-            :applications="filteredApplications" 
-            :isAdmin="isAdmin"
-            @openStatusModal="openStatusModal"
-            @deleteApplication="deleteApplication"
-          />
-          <NoApplicationsMessage v-else />
-        </div>
-    
-  
+    <!-- In parent component -->
+    <div class="relative">
+      <ApplicationsTable 
+        v-if="filteredApplications.length > 0" 
+        :applications="filteredApplications" 
+        :isAdmin="isAdmin"
+        @openStatusModal="openStatusModal"
+        @deleteApplication="deleteApplication"
+        @uploadDocument="handleDocumentUpload"
+        @refreshData="refreshApplications"
+      />
+      <NoApplicationsMessage v-else />
+    </div>
 
     <!-- Status Update Modal -->
     <StatusModal
