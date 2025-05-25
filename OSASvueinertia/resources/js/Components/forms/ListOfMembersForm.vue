@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 
 const props = defineProps({
@@ -17,30 +17,41 @@ const addMember = () => {
         student_name: '',
         student_number: '',
         course_year_section: '',
-        photo_path: null
+        photo_path: null,
+        photo_preview: null
     });
 };
 
 // Add a function to remove a member
 const removeMember = (index) => {
+    // Clean up object URL if it exists
+    if (form.members[index].photo_preview) {
+        URL.revokeObjectURL(form.members[index].photo_preview);
+    }
     form.members.splice(index, 1);
 };
 
+// Current date computed property
+const currentDate = computed(() => {
+    const today = new Date();
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return today.toLocaleDateString('en-US', options);
+});
 
 const form = useForm({
   form_type: 'LSPU-OSAS-SF-005',
  
   organization_name: props.initialFormData.organization_name || '',
-  academic_year_start:props.initialFormData.academic_year_start || '',
-  academic_year_end:props.initialFormData.academic_year_end || '',
-  semester:props.initialFormData.semester || '',
+  academic_year_start: props.initialFormData.academic_year_start || '',
+  academic_year_end: props.initialFormData.academic_year_end || '',
+  semester: props.initialFormData.semester || '',
   members: [],
   
   president_name: props.initialFormData.president_name || '',
-  secretary_name:props.initialFormData.secretary_name || '',
+  secretary_name: props.initialFormData.secretary_name || '',
   application_date: props.initialFormData.application_date || '',
   adviser_name: props.initialFormData.adviser_name || '',
-  second_adviser:props.initialFormData.second_adviser || '',
+  second_adviser: props.initialFormData.second_adviser || '',
   dean_name: props.initialFormData.dean_name || '',
   coordinator_name: props.initialFormData.coordinator_name || '',
   director_name: props.initialFormData.director_name || '',
@@ -50,6 +61,10 @@ const handlePhotoUpload = (event, index, type = 'members') => {
     const file = event.target.files[0];
     if (file) {
         if (type === 'members') {
+            // Clean up previous object URL if it exists
+            if (form.members[index].photo_preview) {
+                URL.revokeObjectURL(form.members[index].photo_preview);
+            }
             // Create a temporary URL for preview in the form
             form.members[index].photo_preview = URL.createObjectURL(file);
             // Store the actual file for upload
@@ -58,18 +73,28 @@ const handlePhotoUpload = (event, index, type = 'members') => {
     }
 };
 
-
-
+// Helper function to get photo preview URL
+const getPhotoPreview = (member) => {
+    if (member.photo_preview) {
+        return member.photo_preview;
+    }
+    if (member.photo_path && typeof member.photo_path === 'object') {
+        return URL.createObjectURL(member.photo_path);
+    }
+    return null;
+};
 
 // Initialize with data from props if available
 if (props.initialFormData?.members && props.initialFormData.members.length > 0) {
   // Copy members from initialFormData
-  form.members = [...props.initialFormData.members];
+  form.members = [...props.initialFormData.members.map(member => ({
+    ...member,
+    photo_preview: null
+  }))];
 } else {
   // Add default empty members
   for(let i = 0; i < 4; i++) {
-                addMember();
-
+    addMember();
   }
 }
 
@@ -118,27 +143,52 @@ const submit = () => {
     <!-- Member list preview -->
     <div class="member-section mt-6">
         <div v-for="(pair, pairIndex) in Array.from({ length: Math.ceil(form.members.length / 2) })" :key="pairIndex" class="flex mt-4 mb-8">
-            <div v-for="(_, offset) in [0, 1]" :key="offset" class="w-1/2 flex" 
-                v-if="pairIndex * 2 + offset < form.members.length">
+            <!-- Left member -->
+            <div v-if="pairIndex * 2 < form.members.length" class="w-1/2 flex">
                 <div class="photo-box border border-black w-[70px] h-[70px] flex items-center justify-center mr-2 text-xs">
-                    <img v-if="form.members[pairIndex * 2 + offset].photo_path && typeof form.members[pairIndex * 2 + offset].photo_path === 'object'" 
-                        :src="URL.createObjectURL(form.members[pairIndex * 2 + offset].photo_path)" 
-                        alt="Member Photo" class="w-[68px] h-[68px]">
+                    <img v-if="getPhotoPreview(form.members[pairIndex * 2])" 
+                        :src="getPhotoPreview(form.members[pairIndex * 2])" 
+                        alt="Member Photo" 
+                        class="w-[68px] h-[68px] object-cover">
                     <span v-else>1 x 1 PICTURE</span>
                 </div>
                 <div class="member-info flex-1 flex flex-col justify-between">
                     <div class="member-line border-b border-black mb-1 min-h-[20px]">
-                        {{ form.members[pairIndex * 2 + offset].student_name || '' }}
+                        {{ form.members[pairIndex * 2].student_name || '' }}
                     </div>
                     <div class="member-line border-b border-black mb-1 min-h-[20px]">
-                        ({{ form.members[pairIndex * 2 + offset].student_number || '' }})
+                        ({{ form.members[pairIndex * 2].student_number || '' }})
                     </div>
                     <div class="member-line border-b border-black mb-1 min-h-[20px]">
-                        ({{ form.members[pairIndex * 2 + offset].course_year_section || '' }})
+                        ({{ form.members[pairIndex * 2].course_year_section || '' }})
                     </div>
                 </div>
             </div>
-            <div v-if="(pairIndex * 2 + 1) >= form.members.length" class="w-1/2 flex">
+            
+            <!-- Right member -->
+            <div v-if="pairIndex * 2 + 1 < form.members.length" class="w-1/2 flex">
+                <div class="photo-box border border-black w-[70px] h-[70px] flex items-center justify-center mr-2 text-xs">
+                    <img v-if="getPhotoPreview(form.members[pairIndex * 2 + 1])" 
+                        :src="getPhotoPreview(form.members[pairIndex * 2 + 1])" 
+                        alt="Member Photo" 
+                        class="w-[68px] h-[68px] object-cover">
+                    <span v-else>1 x 1 PICTURE</span>
+                </div>
+                <div class="member-info flex-1 flex flex-col justify-between">
+                    <div class="member-line border-b border-black mb-1 min-h-[20px]">
+                        {{ form.members[pairIndex * 2 + 1].student_name || '' }}
+                    </div>
+                    <div class="member-line border-b border-black mb-1 min-h-[20px]">
+                        ({{ form.members[pairIndex * 2 + 1].student_number || '' }})
+                    </div>
+                    <div class="member-line border-b border-black mb-1 min-h-[20px]">
+                        ({{ form.members[pairIndex * 2 + 1].course_year_section || '' }})
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Empty placeholder for right side if odd number of members -->
+            <div v-else-if="pairIndex * 2 < form.members.length" class="w-1/2 flex">
                 <div class="photo-box border border-black w-[70px] h-[70px] flex items-center justify-center mr-2 text-xs">
                     1 x 1 PICTURE
                 </div>
@@ -265,6 +315,9 @@ const submit = () => {
                     <div>
                         <label class="block font-bold">1x1 Photo</label>
                         <input type="file" @change="event => handlePhotoUpload(event, index)" class="border p-2 w-full" accept="image/*">
+                        <div v-if="getPhotoPreview(member)" class="mt-2">
+                            <img :src="getPhotoPreview(member)" alt="Preview" class="w-16 h-16 object-cover border">
+                        </div>
                     </div>
                 </div>
             </div>

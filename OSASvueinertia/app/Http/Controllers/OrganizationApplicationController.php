@@ -16,11 +16,11 @@ class OrganizationApplicationController extends Controller
     {
         // If user is admin, show all applications
         if (auth()->user()->isAdmin()) {
-            $applications = OrganizationApplication::all();
+            $applications = OrganizationApplication::orderBy('created_at', 'asc')->get();
         } else {
             // For regular users, only show their own applications
-            $applications = OrganizationApplication::where('user_id', auth()->id())->get();
-            
+            $applications = OrganizationApplication::where('user_id', auth()->id())->orderBy('created_at', 'desc')->get();
+                    
            
             if ($applications->isEmpty()) {
                 // For testing, you might want to see all applications if none are found

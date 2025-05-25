@@ -16,7 +16,7 @@
 
         body {
             font-family: 'Times New Roman', serif;
-            font-size: 12pt;
+            font-size: 11.5pt;
             line-height: 1.1;
             margin: 0;
             padding: 0;
