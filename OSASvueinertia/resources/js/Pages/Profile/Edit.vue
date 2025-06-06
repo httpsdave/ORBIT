@@ -3,7 +3,16 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import DeleteUserForm from './Partials/DeleteUserForm.vue';
 import UpdatePasswordForm from './Partials/UpdatePasswordForm.vue';
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm.vue';
-import { Head } from '@inertiajs/vue3';
+import { Head, usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
+
+const page = usePage();
+const user = computed(() => page.props.auth.user);
+
+// Check if user is admin
+const isAdmin = computed(() => {
+    return user.value.role?.slug === 'admin' || user.value.is_admin;
+});
 
 defineProps({
     mustVerifyEmail: {
@@ -67,8 +76,8 @@ defineProps({
                     <UpdatePasswordForm class="max-w-xl" />
                 </div>
 
-                <!-- Delete Account Section -->
-                <div class="bg-white p-6 shadow-md rounded-lg border-l-4 border-red-500 transition-all duration-300 hover:shadow-xl">
+                <!-- Delete Account Section - Only show to admins -->
+                <div v-if="isAdmin" class="bg-white p-6 shadow-md rounded-lg border-l-4 border-red-500 transition-all duration-300 hover:shadow-xl">
                     <div class="mb-4">
                         <h3 class="text-lg font-medium text-gray-900 flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">

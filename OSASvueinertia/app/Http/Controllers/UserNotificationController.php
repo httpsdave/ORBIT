@@ -13,11 +13,13 @@ class UserNotificationController extends Controller
      * Display a listing of the user's notifications.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Inertia\Response
+     * @return \Inertia\Response|\Illuminate\Http\JsonResponse
      */
     public function index(Request $request)
     {
         $userId = Auth::id();
+        $limit = $request->get('limit', 10);
+        
         $query = \DB::table('user_notifications')
             ->join('notifications', 'user_notifications.notification_id', '=', 'notifications.id')
             ->where('user_notifications.user_id', $userId)
@@ -42,6 +44,30 @@ class UserNotificationController extends Controller
             $query->where('user_notifications.is_read', $isRead);
         }
 
+        // More specific check for AJAX requests - only return JSON if explicitly requested with limit parameter
+        if (($request->wantsJson() || $request->ajax() || $request->expectsJson()) && $request->has('limit')) {
+            $notifications = $query->orderBy('user_notifications.created_at', 'desc')
+                ->limit($limit)
+                ->get()
+                ->map(function ($notification) {
+                    return [
+                        'id' => $notification->id,
+                        'title' => $notification->title,
+                        'message' => $notification->message,
+                        'type' => $notification->type,
+                        'is_read' => (bool) $notification->is_read,
+                        'created_at' => \Carbon\Carbon::parse($notification->created_at)->diffForHumans(),
+                    ];
+                });
+
+            return response()->json([
+                'notifications' => [
+                    'data' => $notifications
+                ]
+            ]);
+        }
+
+        // For regular page requests, return paginated Inertia response
         $notifications = $query->orderBy('user_notifications.created_at', 'desc')
             ->paginate(10)
             ->through(function ($notification) {
@@ -94,7 +120,11 @@ class UserNotificationController extends Controller
                 ];
             });
 
-        return response()->json(['notifications' => $notifications]);
+        return response()->json([
+            'notifications' => [
+                'data' => $notifications
+            ]
+        ]);
     }
 
     /**
@@ -119,31 +149,41 @@ class UserNotificationController extends Controller
      * Mark a notification as read.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
      */
-    public function markAsRead($id)
+    public function markAsRead(Request $request, $id)
     {
         \DB::table('user_notifications')
             ->where('id', $id)
             ->where('user_id', Auth::id())
             ->update(['is_read' => true]);
 
-        return response()->json(['success' => true]);
+        // Check if this is a pure JSON API request (not Inertia)
+        if ($request->expectsJson() && !$request->header('X-Inertia')) {
+            return response()->json(['success' => true]);
+        }
+
+        // For Inertia requests, redirect back
+        return back();
     }
 
     /**
      * Mark all notifications as read.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
      */
-    public function markAllAsRead()
+    public function markAllAsRead(Request $request)
     {
         \DB::table('user_notifications')
             ->where('user_id', Auth::id())
             ->update(['is_read' => true]);
 
-        return response()->json(['success' => true]);
-    }
+        // Check if this is a pure JSON API request (not Inertia)
+        if ($request->expectsJson() && !$request->header('X-Inertia')) {
+            return response()->json(['success' => true]);
+        }
 
-    
+        // For Inertia requests, redirect back
+        return back();
+    }
 }

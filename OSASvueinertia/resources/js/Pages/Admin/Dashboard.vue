@@ -317,27 +317,7 @@ const statsCards = computed(() => [
             </div>
         </div>
 
-        <!-- Debug Information (Only shown when no data) -->
-        <div class="bg-yellow-50 p-4 mb-6 rounded-lg shadow-sm" v-if="collegesData.length === 0 || totalStudentOrgs === 0">
-            <div class="flex items-start">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-600 mt-0.5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <div>
-                    <h3 class="font-medium text-yellow-800">Debug Information</h3>
-                    <p class="text-sm text-yellow-700 mt-1">Colleges found: {{ collegesData.length }}</p>
-                    <p class="text-sm text-yellow-700">Total organizations: {{ totalStudentOrgs }}</p>
-                    <div v-if="collegesData.length > 0" class="mt-2">
-                        <p class="text-sm font-medium text-yellow-800">College Data:</p>
-                        <ul class="list-disc pl-5 text-sm text-yellow-700 mt-1">
-                            <li v-for="college in collegesData" :key="college.id">
-                                {{ college.name }}: {{ college.student_orgs_count }} orgs
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
+        
 
         <!-- Stats Cards -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
@@ -462,9 +442,9 @@ const statsCards = computed(() => [
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
                         <p class="mt-4 text-gray-600">No upcoming events scheduled</p>
-                        <button class="inline-block mt-3 px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-md hover:bg-blue-600 transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                        <a :href="route('calendar')" class="inline-block mt-3 px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-md hover:bg-blue-600 transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                             Create Event
-                        </button>
+                        </a>
                     </div>
                     
                     <div class="mt-6 flex space-x-3">

@@ -5,11 +5,19 @@ import InputLabel from '@/Components/InputLabel.vue';
 import Modal from '@/Components/Modal.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
-import { useForm } from '@inertiajs/vue3';
-import { nextTick, ref } from 'vue';
+import { useForm, usePage } from '@inertiajs/vue3';
+import { nextTick, ref, computed } from 'vue';
 
 const confirmingUserDeletion = ref(false);
 const passwordInput = ref(null);
+
+const page = usePage();
+const user = computed(() => page.props.auth.user);
+
+// Check if user is admin
+const isAdmin = computed(() => {
+    return user.value.role?.slug === 'admin' || user.value.is_admin;
+});
 
 const form = useForm({
     password: '',
@@ -39,7 +47,8 @@ const closeModal = () => {
 </script>
 
 <template>
-    <section class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+    <!-- Only show delete account section to admins -->
+    <section v-if="isAdmin" class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
         <!-- Header with red accent -->
         <div class="border-l-4 border-red-500 pl-3 mb-6">
             <h2 class="text-xl font-semibold text-gray-800">

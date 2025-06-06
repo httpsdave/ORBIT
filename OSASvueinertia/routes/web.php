@@ -52,6 +52,7 @@ Route::middleware(['auth'])->group(function () {
         // API routes for colleges and student orgs
         Route::get('/colleges', [PublicCollegeController::class, 'getAll'])->name('api.colleges.all');
         Route::get('/student-orgs', [PublicStudentOrgController::class, 'getAll'])->name('api.student-orgs.all');
+        Route::get('/notifications/recent', [UserNotificationController::class, 'getRecent']);
     });
     
     // User Notifications Routes
@@ -59,7 +60,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/notifications/unread-count', [UserNotificationController::class, 'getUnreadCount'])->name('notifications.unread-count');
     Route::patch('/notifications/{id}/mark-read', [UserNotificationController::class, 'markAsRead'])->name('notifications.mark-read');
     Route::post('/notifications/mark-all-read', [UserNotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
-    
+    Route::get('/notifications/recent', [UserNotificationController::class, 'getRecent'])->name('notifications.recent');
     // Profile routes
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
