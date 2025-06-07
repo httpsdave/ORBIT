@@ -321,7 +321,7 @@ const formatTimeAgo = (dateString) => {
   }
 };
 
-// Click outside to close
+// Click outside to close - Enhanced version
 const handleClickOutside = (event) => {
   if (dropdownRef.value && !dropdownRef.value.contains(event.target)) {
     closeDropdown();
@@ -337,12 +337,13 @@ const handleKeyDown = (event) => {
 
 // Lifecycle hooks
 onMounted(() => {
-  document.addEventListener('click', handleClickOutside);
+  // Use capture phase to ensure we catch the event before any stopPropagation
+  document.addEventListener('click', handleClickOutside, true);
   document.addEventListener('keydown', handleKeyDown);
 });
 
 onUnmounted(() => {
-  document.removeEventListener('click', handleClickOutside);
+  document.removeEventListener('click', handleClickOutside, true);
   document.removeEventListener('keydown', handleKeyDown);
 });
 </script>
@@ -362,7 +363,6 @@ onUnmounted(() => {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-
 @keyframes pulse {
   0%, 100% {
     opacity: 1;
@@ -371,5 +371,4 @@ onUnmounted(() => {
     opacity: .5;
   }
 }
-
 </style>

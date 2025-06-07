@@ -25,10 +25,78 @@ const form = useForm({
   dean_name: props.initialFormData.dean_name || '',
   coordinator_name: props.initialFormData.coordinator_name || '',
   director_name: props.initialFormData.director_name || '',
-  
+  academic_year_start: props.initialFormData.academic_year_start || '',
+  academic_year_end: props.initialFormData.academic_year_end || '',
 });
 
+// Add errors ref object
+const errors = ref({});
+
+// Add validation function
+const validateForm = () => {
+  errors.value = {};
+  
+  if (!form.organization_name.trim()) {
+    errors.value.organization_name = 'Organization name is required';
+  }
+  
+  if (!form.academic_year_start.trim()) {
+    errors.value.academic_year_start = 'Academic year start is required';
+  }
+  
+  if (!form.academic_year_end.trim()) {
+    errors.value.academic_year_end = 'Academic year end is required';
+  }
+  
+  if (!form.adviser_name.trim()) {
+    errors.value.adviser_name = 'Adviser name is required';
+  }
+  
+  if (!form.adviser_college.trim()) {
+    errors.value.adviser_college = 'Adviser college is required';
+  }
+  
+  if (!form.adviser_rank.trim()) {
+    errors.value.adviser_rank = 'Academic rank is required';
+  }
+  
+  if (!form.adviser_address.trim()) {
+    errors.value.adviser_address = 'Home address is required';
+  }
+  
+  if (!form.adviser_contact.trim()) {
+    errors.value.adviser_contact = 'Contact number is required';
+  }
+  
+  if (!form.form_date.trim()) {
+    errors.value.form_date = 'Form date is required';
+  }
+  
+  if (!form.dean_name.trim()) {
+    errors.value.dean_name = 'Dean name is required';
+  }
+  
+  if (!form.coordinator_name.trim()) {
+    errors.value.coordinator_name = 'Coordinator name is required';
+  }
+  
+  if (!form.director_name.trim()) {
+    errors.value.director_name = 'Director name is required';
+  }
+  
+  if (!form.president_name.trim()) {
+    errors.value.president_name = 'President name is required';
+  }
+  
+  return Object.keys(errors.value).length === 0;
+};
+
 const submit = () => {
+  // Call validation before posting
+  if (!validateForm()) {
+    return;
+  }
+  
   form.post('/applications', {
     onSuccess: () => {
       alert('Form submitted successfully!');
@@ -116,21 +184,25 @@ const submit = () => {
             <div>
                 <label class="block font-bold">Organization Name</label>
                 <input v-model="form.organization_name" class="border p-2 w-full" required>
+                <p v-if="errors.organization_name" class="text-red-500 text-sm mt-1">{{ errors.organization_name }}</p>
             </div>
 
             <div>
                 <label class="block font-bold">Academic Year Start</label>
                 <input v-model="form.academic_year_start" class="border p-2 w-full" required placeholder="23">
+                <p v-if="errors.academic_year_start" class="text-red-500 text-sm mt-1">{{ errors.academic_year_start }}</p>
             </div>
 
             <div>
                 <label class="block font-bold">Academic Year End</label>
                 <input v-model="form.academic_year_end" class="border p-2 w-full" required placeholder="24">
+                <p v-if="errors.academic_year_end" class="text-red-500 text-sm mt-1">{{ errors.academic_year_end }}</p>
             </div>
 
             <div>
                 <label class="block font-bold">Adviser Name</label>
                 <input v-model="form.adviser_name" class="border p-2 w-full" required>
+                <p v-if="errors.adviser_name" class="text-red-500 text-sm mt-1">{{ errors.adviser_name }}</p>
             </div>
 
            <!-- <div>
@@ -141,46 +213,55 @@ const submit = () => {
             <div>
                 <label class="block font-bold">Adviser College</label>
                 <input v-model="form.adviser_college" class="border p-2 w-full" required>
+                <p v-if="errors.adviser_college" class="text-red-500 text-sm mt-1">{{ errors.adviser_college }}</p>
             </div>
 
             <div>
                 <label class="block font-bold">Academic Rank</label>
                 <input v-model="form.adviser_rank" class="border p-2 w-full" required>
+                <p v-if="errors.adviser_rank" class="text-red-500 text-sm mt-1">{{ errors.adviser_rank }}</p>
             </div>
 
             <div>
                 <label class="block font-bold">Home Address</label>
                 <input v-model="form.adviser_address" class="border p-2 w-full" required>
+                <p v-if="errors.adviser_address" class="text-red-500 text-sm mt-1">{{ errors.adviser_address }}</p>
             </div>
 
             <div>
                 <label class="block font-bold">Contact Number(s)</label>
                 <input v-model="form.adviser_contact" class="border p-2 w-full" required>
+                <p v-if="errors.adviser_contact" class="text-red-500 text-sm mt-1">{{ errors.adviser_contact }}</p>
             </div>
 
             <div>
                 <label class="block font-bold">Form Date</label>
                 <input type="date" v-model="form.form_date" class="border p-2 w-full" required>
+                <p v-if="errors.form_date" class="text-red-500 text-sm mt-1">{{ errors.form_date }}</p>
             </div>
 
             <div>
                 <label class="block font-bold">Dean Name</label>
                 <input v-model="form.dean_name" class="border p-2 w-full" required>
+                <p v-if="errors.dean_name" class="text-red-500 text-sm mt-1">{{ errors.dean_name }}</p>
             </div>
 
             <div>
                 <label class="block font-bold">Coordinator Name</label>
                 <input v-model="form.coordinator_name" class="border p-2 w-full" required>
+                <p v-if="errors.coordinator_name" class="text-red-500 text-sm mt-1">{{ errors.coordinator_name }}</p>
             </div>
 
             <div>
                 <label class="block font-bold">Director Name</label>
                 <input v-model="form.director_name" class="border p-2 w-full" required>
+                <p v-if="errors.director_name" class="text-red-500 text-sm mt-1">{{ errors.director_name }}</p>
             </div>
 
             <div>
                 <label class="block font-bold">President Name</label>
                 <input v-model="form.president_name" class="border p-2 w-full" required>
+                <p v-if="errors.president_name" class="text-red-500 text-sm mt-1">{{ errors.president_name }}</p>
             </div>
         </div>
 

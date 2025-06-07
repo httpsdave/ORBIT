@@ -9,6 +9,9 @@ const props = defineProps({
   }
 });
 
+// Add errors ref object
+const errors = ref({});
+
 // Add a function to add a new empty officer
 const addOfficer = () => {
     form.officers.push({
@@ -87,7 +90,64 @@ if (props.initialFormData?.officers && props.initialFormData.officers.length > 0
   }
 }
 
+// Validation function
+const validateForm = () => {
+  errors.value = {};
+  
+  // Validate main form fields
+  if (!form.organization_name.trim()) {
+    errors.value.organization_name = 'Organization name is required';
+  }
+  
+  if (!form.academic_year_start.trim()) {
+    errors.value.academic_year_start = 'Academic year start is required';
+  }
+  
+  if (!form.academic_year_end.trim()) {
+    errors.value.academic_year_end = 'Academic year end is required';
+  }
+  
+  if (!form.president_name.trim()) {
+    errors.value.president_name = 'President name is required';
+  }
+  
+  if (!form.adviser_name.trim()) {
+    errors.value.adviser_name = 'Faculty adviser name is required';
+  }
+  
+  if (!form.coordinator_name.trim()) {
+    errors.value.coordinator_name = 'Coordinator name is required';
+  }
+  
+  if (!form.dean_name.trim()) {
+    errors.value.dean_name = 'Dean/Assoc. Dean name is required';
+  }
+  
+  // Validate officers
+  form.officers.forEach((officer, index) => {
+    if (!officer.student_name.trim()) {
+      errors.value[`officer_${index}_name`] = 'Officer name is required';
+    }
+    
+    if (!officer.position.trim()) {
+      errors.value[`officer_${index}_position`] = 'Officer position is required';
+    }
+    
+    if (!officer.student_number.trim()) {
+      errors.value[`officer_${index}_student_number`] = 'Student I.D. number is required';
+    }
+  });
+  
+  // Return true if no errors
+  return Object.keys(errors.value).length === 0;
+};
+
 const submit = () => {
+  // Validate form before submitting
+  if (!validateForm()) {
+    return;
+  }
+  
   form.post('/applications', {
     onSuccess: () => {
       alert('Form submitted successfully!');
@@ -171,36 +231,43 @@ const submit = () => {
         <div>
           <label class="block font-bold">Organization Name</label>
           <input v-model="form.organization_name" class="border p-2 w-full" required>
+          <div v-if="errors.organization_name" class="text-red-500 text-sm mt-1">{{ errors.organization_name }}</div>
         </div>
 
         <div>
           <label class="block font-bold">Academic Year Start</label>
           <input v-model="form.academic_year_start" class="border p-2 w-full" placeholder="20__" required>
+          <div v-if="errors.academic_year_start" class="text-red-500 text-sm mt-1">{{ errors.academic_year_start }}</div>
         </div>
 
         <div>
           <label class="block font-bold">Academic Year End</label>
           <input v-model="form.academic_year_end" class="border p-2 w-full" placeholder="20__" required>
+          <div v-if="errors.academic_year_end" class="text-red-500 text-sm mt-1">{{ errors.academic_year_end }}</div>
         </div>
 
         <div>
           <label class="block font-bold">President Name</label>
           <input v-model="form.president_name" class="border p-2 w-full" required>
+          <div v-if="errors.president_name" class="text-red-500 text-sm mt-1">{{ errors.president_name }}</div>
         </div>
 
         <div>
           <label class="block font-bold">Faculty Adviser Name</label>
           <input v-model="form.adviser_name" class="border p-2 w-full" required>
+          <div v-if="errors.adviser_name" class="text-red-500 text-sm mt-1">{{ errors.adviser_name }}</div>
         </div>
 
         <div>
           <label class="block font-bold">Coordinator Name</label>
           <input v-model="form.coordinator_name" class="border p-2 w-full" required>
+          <div v-if="errors.coordinator_name" class="text-red-500 text-sm mt-1">{{ errors.coordinator_name }}</div>
         </div>
 
         <div>
           <label class="block font-bold">Dean/Assoc. Dean Name</label>
           <input v-model="form.dean_name" class="border p-2 w-full" required>
+          <div v-if="errors.dean_name" class="text-red-500 text-sm mt-1">{{ errors.dean_name }}</div>
         </div>
       </div>
 
@@ -225,16 +292,19 @@ const submit = () => {
             <div>
               <label class="block font-bold">Name</label>
               <input v-model="officer.student_name" class="border p-2 w-full" required>
+              <div v-if="errors[`officer_${index}_name`]" class="text-red-500 text-sm mt-1">{{ errors[`officer_${index}_name`] }}</div>
             </div>
 
             <div>
               <label class="block font-bold">Position</label>
               <input v-model="officer.position" class="border p-2 w-full" required>
+              <div v-if="errors[`officer_${index}_position`]" class="text-red-500 text-sm mt-1">{{ errors[`officer_${index}_position`] }}</div>
             </div>
 
             <div>
               <label class="block font-bold">Student I.D. No.</label>
               <input v-model="officer.student_number" class="border p-2 w-full" required>
+              <div v-if="errors[`officer_${index}_student_number`]" class="text-red-500 text-sm mt-1">{{ errors[`officer_${index}_student_number`] }}</div>
             </div>
 
             <div>

@@ -23,7 +23,47 @@ const form = useForm({
   status: props.initialFormData.status || 'Pending',
 });
 
+const errors = ref({});
+
+const validateForm = () => {
+  errors.value = {};
+  
+  if (!form.organization_name.trim()) {
+    errors.value.organization_name = 'Organization Name is required';
+  }
+  
+  if (!form.president_name.trim()) {
+    errors.value.president_name = 'President Name is required';
+  }
+  
+  if (!form.application_date.trim()) {
+    errors.value.application_date = 'Application Date is required';
+  }
+  
+  if (!form.adviser_name.trim()) {
+    errors.value.adviser_name = 'Adviser Name is required';
+  }
+  
+  if (!form.dean_name.trim()) {
+    errors.value.dean_name = 'Dean Name is required';
+  }
+  
+  if (!form.coordinator_name.trim()) {
+    errors.value.coordinator_name = 'Coordinator Name is required';
+  }
+  
+  if (!form.director_name.trim()) {
+    errors.value.director_name = 'Director Name is required';
+  }
+  
+  return Object.keys(errors.value).length === 0;
+};
+
 const submit = () => {
+  if (!validateForm()) {
+    return;
+  }
+  
   form.post('/applications', {
     onSuccess: () => {
       alert('Form submitted successfully!');
@@ -127,36 +167,43 @@ const submit = () => {
             <div>
                 <label class="block font-bold">Organization Name</label>
                 <input v-model="form.organization_name" class="border p-2 w-full" required>
+                <p v-if="errors.organization_name" class="text-red-500 text-sm mt-1">{{ errors.organization_name }}</p>
             </div>
 
             <div>
                 <label class="block font-bold">Application Date</label>
                 <input type="date" v-model="form.application_date" class="border p-2 w-full" required>
+                <p v-if="errors.application_date" class="text-red-500 text-sm mt-1">{{ errors.application_date }}</p>
             </div>
 
             <div>
                 <label class="block font-bold">President Name</label>
                 <input v-model="form.president_name" class="border p-2 w-full" required>
+                <p v-if="errors.president_name" class="text-red-500 text-sm mt-1">{{ errors.president_name }}</p>
             </div>
 
             <div>
                 <label class="block font-bold">Adviser Name</label>
                 <input v-model="form.adviser_name" class="border p-2 w-full" required>
+                <p v-if="errors.adviser_name" class="text-red-500 text-sm mt-1">{{ errors.adviser_name }}</p>
             </div>
 
             <div>
                 <label class="block font-bold">Dean Name</label>
                 <input v-model="form.dean_name" class="border p-2 w-full" required>
+                <p v-if="errors.dean_name" class="text-red-500 text-sm mt-1">{{ errors.dean_name }}</p>
             </div>
 
             <div>
                 <label class="block font-bold">Coordinator Name</label>
                 <input v-model="form.coordinator_name" class="border p-2 w-full" required>
+                <p v-if="errors.coordinator_name" class="text-red-500 text-sm mt-1">{{ errors.coordinator_name }}</p>
             </div>
 
             <div>
                 <label class="block font-bold">Director Name</label>
                 <input v-model="form.director_name" class="border p-2 w-full" required>
+                <p v-if="errors.director_name" class="text-red-500 text-sm mt-1">{{ errors.director_name }}</p>
             </div>
         </div>
 
@@ -173,4 +220,3 @@ const submit = () => {
 </div>
 
 </template>
-

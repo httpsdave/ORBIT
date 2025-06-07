@@ -33,7 +33,67 @@ const form = useForm({
 
 });
 
+const errors = ref({});
+
+const validateForm = () => {
+  errors.value = {};
+  
+  if (!form.certification_date.trim()) {
+    errors.value.certification_date = 'Certification Date is required';
+  }
+  
+  if (!form.student_name.trim()) {
+    errors.value.student_name = 'Student Name is required';
+  }
+  
+  if (!form.course_year_section.trim()) {
+    errors.value.course_year_section = 'Course/Year and Section is required';
+  }
+  
+  if (!form.adviser_name.trim()) {
+    errors.value.adviser_name = 'Faculty Adviser is required';
+  }
+  
+  if (!form.dean_name.trim()) {
+    errors.value.dean_name = 'Dean/Assoc. Dean Name is required';
+  }
+  
+  if (!form.coordinator_name.trim()) {
+    errors.value.coordinator_name = 'Coordinator Name is required';
+  }
+  
+  if (!form.organization_name.trim()) {
+    errors.value.organization_name = 'Organization Name is required';
+  }
+  
+  if (!form.president_name.trim()) {
+    errors.value.president_name = 'President Name is required';
+  }
+  
+  if (!form.is_bonafide) {
+    errors.value.is_bonafide = 'Bonafide Student certification is required';
+  }
+  
+  if (!form.is_not_academic_probation) {
+    errors.value.is_not_academic_probation = 'Academic probation status is required';
+  }
+  
+  if (!form.is_not_disciplinary_probation) {
+    errors.value.is_not_disciplinary_probation = 'Disciplinary probation status is required';
+  }
+  
+  if (!form.has_position) {
+    errors.value.has_position = 'Position/rank status is required';
+  }
+  
+  return Object.keys(errors.value).length === 0;
+};
+
 const submit = () => {
+  if (!validateForm()) {
+    return;
+  }
+  
   form.post('/applications', {
     onSuccess: () => {
       alert('Form submitted successfully!');
@@ -115,16 +175,19 @@ const submit = () => {
             <div>
                 <label class="block font-bold">Certification Date</label>
                 <input type="date" v-model="form.certification_date" class="border p-2 w-full" required>
+                <p v-if="errors.certification_date" class="text-red-500 text-sm mt-1">{{ errors.certification_date }}</p>
             </div>
 
             <div>
                 <label class="block font-bold">Student Name</label>
                 <input v-model="form.student_name" class="border p-2 w-full" required>
+                <p v-if="errors.student_name" class="text-red-500 text-sm mt-1">{{ errors.student_name }}</p>
             </div>
 
             <div>
                 <label class="block font-bold">Course/Year and Section</label>
                 <input v-model="form.course_year_section" class="border p-2 w-full" required>
+                <p v-if="errors.course_year_section" class="text-red-500 text-sm mt-1">{{ errors.course_year_section }}</p>
             </div>
 
             <div>
@@ -135,47 +198,56 @@ const submit = () => {
             <div>
                 <label class="block font-bold">Faculty Adviser(s)</label>
                 <input v-model="form.adviser_name" class="border p-2 w-full" required>
+                <p v-if="errors.adviser_name" class="text-red-500 text-sm mt-1">{{ errors.adviser_name }}</p>
             </div>
 
             <div>
                 <label class="block font-bold">Dean/Assoc. Dean Name</label>
                 <input v-model="form.dean_name" class="border p-2 w-full" required>
+                <p v-if="errors.dean_name" class="text-red-500 text-sm mt-1">{{ errors.dean_name }}</p>
             </div>
 
             <div>
                 <label class="block font-bold">Coordinator Name</label>
                 <input v-model="form.coordinator_name" class="border p-2 w-full" required>
+                <p v-if="errors.coordinator_name" class="text-red-500 text-sm mt-1">{{ errors.coordinator_name }}</p>
             </div>
 
             <div>
                 <label class="block font-bold">Organization Name</label>
                 <input v-model="form.organization_name" class="border p-2 w-full" required>
+                <p v-if="errors.organization_name" class="text-red-500 text-sm mt-1">{{ errors.organization_name }}</p>
             </div>
 
             <div>
                 <label class="block font-bold">President Name</label>
                 <input v-model="form.president_name" class="border p-2 w-full" required>
+                <p v-if="errors.president_name" class="text-red-500 text-sm mt-1">{{ errors.president_name }}</p>
             </div>
             
             <div class="md:col-span-2">
                 <label class="block font-bold">Student Status</label>
                 <div class="flex flex-col gap-2 mt-2">
                     <label class="inline-flex items-center">
-                        <input type="checkbox" v-model="form.is_bonafide" class="mr-2">
+                        <input type="checkbox" v-model="form.is_bonafide" class="mr-2" required>
                         <span>Bonafide Student</span>
                     </label>
+                    <p v-if="errors.is_bonafide" class="text-red-500 text-sm mt-1">{{ errors.is_bonafide }}</p>
                     <label class="inline-flex items-center">
-                        <input type="checkbox" v-model="form.is_not_academic_probation" class="mr-2">
+                        <input type="checkbox" v-model="form.is_not_academic_probation" class="mr-2" required>
                         <span>Not Under Academic Probation</span>
                     </label>
+                    <p v-if="errors.is_not_academic_probation" class="text-red-500 text-sm mt-1">{{ errors.is_not_academic_probation }}</p>
                     <label class="inline-flex items-center">
-                        <input type="checkbox" v-model="form.is_not_disciplinary_probation" class="mr-2">
+                        <input type="checkbox" v-model="form.is_not_disciplinary_probation" class="mr-2" required>
                         <span>Not Under Disciplinary Probation</span>
                     </label>
+                    <p v-if="errors.is_not_disciplinary_probation" class="text-red-500 text-sm mt-1">{{ errors.is_not_disciplinary_probation }}</p>
                     <label class="inline-flex items-center">
-                        <input type="checkbox" v-model="form.has_position" class="mr-2">
+                        <input type="checkbox" v-model="form.has_position" class="mr-2" required>
                         <span>Has Position/Rank in Organization</span>
                     </label>
+                    <p v-if="errors.has_position" class="text-red-500 text-sm mt-1">{{ errors.has_position }}</p>
                 </div>
             </div>
         </div>

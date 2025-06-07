@@ -11,6 +11,9 @@ const props = defineProps({
 
 const emit = defineEmits(['submitted']);
 
+// Add errors ref object
+const errors = ref({});
+
 // Add a function to add a new empty member
 const addMember = () => {
     form.members.push({
@@ -98,7 +101,68 @@ if (props.initialFormData?.members && props.initialFormData.members.length > 0) 
   }
 }
 
+// Validation function
+const validateForm = () => {
+  errors.value = {};
+  
+  // Validate main form fields
+  if (!form.organization_name.trim()) {
+    errors.value.organization_name = 'Organization name is required';
+  }
+  
+  if (!form.president_name.trim()) {
+    errors.value.president_name = 'President name is required';
+  }
+  
+  if (!form.coordinator_name.trim()) {
+    errors.value.coordinator_name = 'Coordinator name is required';
+  }
+  
+  if (!form.semester.trim()) {
+    errors.value.semester = 'Semester is required';
+  }
+  
+  if (!form.academic_year_start.trim()) {
+    errors.value.academic_year_start = 'Academic year start is required';
+  }
+  
+  if (!form.academic_year_end.trim()) {
+    errors.value.academic_year_end = 'Academic year end is required';
+  }
+  
+  if (!form.adviser_name.trim()) {
+    errors.value.adviser_name = 'Faculty adviser name is required';
+  }
+  
+  if (!form.dean_name.trim()) {
+    errors.value.dean_name = 'Dean/Assoc. Dean name is required';
+  }
+  
+  // Validate members
+  form.members.forEach((member, index) => {
+    if (!member.student_name.trim()) {
+      errors.value[`member_${index}_name`] = 'Student name is required';
+    }
+    
+    if (!member.student_number.trim()) {
+      errors.value[`member_${index}_number`] = 'Student number is required';
+    }
+    
+    if (!member.course_year_section.trim()) {
+      errors.value[`member_${index}_course`] = 'Course - Year & Section is required';
+    }
+  });
+  
+  // Return true if no errors
+  return Object.keys(errors.value).length === 0;
+};
+
 const submit = () => {
+  // Validate form before submitting
+  if (!validateForm()) {
+    return;
+  }
+  
   form.post('/applications', {
     onSuccess: () => {
       alert('Form submitted successfully!');
@@ -231,16 +295,19 @@ const submit = () => {
             <div>
                 <label class="block font-bold">Organization Name</label>
                 <input v-model="form.organization_name" class="border p-2 w-full" required>
+                <div v-if="errors.organization_name" class="text-red-500 text-sm mt-1">{{ errors.organization_name }}</div>
             </div>
 
             <div>
                 <label class="block font-bold">President Name</label>
                 <input v-model="form.president_name" class="border p-2 w-full" required>
+                <div v-if="errors.president_name" class="text-red-500 text-sm mt-1">{{ errors.president_name }}</div>
             </div>
 
             <div>
                 <label class="block font-bold">Coordinator Name</label>
                 <input v-model="form.coordinator_name" class="border p-2 w-full" required>
+                <div v-if="errors.coordinator_name" class="text-red-500 text-sm mt-1">{{ errors.coordinator_name }}</div>
             </div>
 
             <div>
@@ -251,21 +318,25 @@ const submit = () => {
                     <option value="2nd">2nd Semester</option>
                     <option value="Summer">Summer</option>
                 </select>
+                <div v-if="errors.semester" class="text-red-500 text-sm mt-1">{{ errors.semester }}</div>
             </div>
 
             <div>
                 <label class="block font-bold">Academic Year Start</label>
                 <input v-model="form.academic_year_start" class="border p-2 w-full" placeholder="20__" required>
+                <div v-if="errors.academic_year_start" class="text-red-500 text-sm mt-1">{{ errors.academic_year_start }}</div>
             </div>
 
             <div>
                 <label class="block font-bold">Academic Year End</label>
                 <input v-model="form.academic_year_end" class="border p-2 w-full" placeholder="20__" required>
+                <div v-if="errors.academic_year_end" class="text-red-500 text-sm mt-1">{{ errors.academic_year_end }}</div>
             </div>
 
             <div>
                 <label class="block font-bold">Faculty Adviser Name</label>
                 <input v-model="form.adviser_name" class="border p-2 w-full" required>
+                <div v-if="errors.adviser_name" class="text-red-500 text-sm mt-1">{{ errors.adviser_name }}</div>
             </div>
 
             <div>
@@ -276,6 +347,7 @@ const submit = () => {
             <div>
                 <label class="block font-bold">Dean/Assoc. Dean Name</label>
                 <input v-model="form.dean_name" class="border p-2 w-full" required>
+                <div v-if="errors.dean_name" class="text-red-500 text-sm mt-1">{{ errors.dean_name }}</div>
             </div>
         </div>
 
@@ -300,16 +372,19 @@ const submit = () => {
                     <div>
                         <label class="block font-bold">Student Name</label>
                         <input v-model="member.student_name" class="border p-2 w-full" required>
+                        <div v-if="errors[`member_${index}_name`]" class="text-red-500 text-sm mt-1">{{ errors[`member_${index}_name`] }}</div>
                     </div>
 
                     <div>
                         <label class="block font-bold">Student Number</label>
                         <input v-model="member.student_number" class="border p-2 w-full" required>
+                        <div v-if="errors[`member_${index}_number`]" class="text-red-500 text-sm mt-1">{{ errors[`member_${index}_number`] }}</div>
                     </div>
 
                     <div>
                         <label class="block font-bold">Course - Year & Section</label>
                         <input v-model="member.course_year_section" class="border p-2 w-full" required>
+                        <div v-if="errors[`member_${index}_course`]" class="text-red-500 text-sm mt-1">{{ errors[`member_${index}_course`] }}</div>
                     </div>
 
                     <div>
