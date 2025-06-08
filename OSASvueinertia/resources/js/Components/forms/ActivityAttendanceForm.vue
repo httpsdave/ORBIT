@@ -9,6 +9,13 @@ const props = defineProps({
   }
 });
 
+// Add errors ref object
+const errors = ref({
+  college: '',
+  organization_name: '',
+  president_name: ''
+});
+
 // Add a function to add a new attendee
 const addAttendee = () => {
     form.attendees.push({
@@ -23,6 +30,33 @@ const removeAttendee = (index) => {
     form.attendees.splice(index, 1);
 };
 
+// Add validateForm function
+const validateForm = () => {
+  // Clear previous errors
+  Object.keys(errors.value).forEach(key => {
+    errors.value[key] = '';
+  });
+
+  let isValid = true;
+
+  // Check each required field
+  if (!form.college || form.college.trim() === '') {
+    errors.value.college = 'College is required';
+    isValid = false;
+  }
+
+  if (!form.organization_name || form.organization_name.trim() === '') {
+    errors.value.organization_name = 'Organization Name is required';
+    isValid = false;
+  }
+
+  if (!form.president_name || form.president_name.trim() === '') {
+    errors.value.president_name = 'President Name is required';
+    isValid = false;
+  }
+
+  return isValid;
+};
 
 const emit = defineEmits(['submitted']);
 
@@ -57,6 +91,11 @@ if (props.initialFormData?.attendees && props.initialFormData.attendees.length >
 }
 
 const submit = () => {
+  // Call validation before posting
+  if (!validateForm()) {
+    return;
+  }
+
   form.post('/applications', {
     onSuccess: () => {
       alert('Form submitted successfully!');
@@ -88,41 +127,29 @@ const submit = () => {
             <div>
                 <label class="block font-bold">College</label>
                 <input v-model="form.college" class="border p-2 w-full" required>
+                <p v-if="errors.college" class="text-red-500 text-sm mt-1">{{ errors.college }}</p>
             </div>
 
             <div>
                 <label class="block font-bold">Activity Name</label>
-                <input v-model="form.activity_name" class="border p-2 w-full" required>
+                <input v-model="form.activity_name" class="border p-2 w-full">
             </div>
 
             <div>
                 <label class="block font-bold">Activity Date</label>
-                <input type="date" v-model="form.activity_date" class="border p-2 w-full" required>
+                <input type="date" v-model="form.activity_date" class="border p-2 w-full">
             </div>
 
             <div>
                 <label class="block font-bold">Organization Name</label>
                 <input v-model="form.organization_name" class="border p-2 w-full" required>
+                <p v-if="errors.organization_name" class="text-red-500 text-sm mt-1">{{ errors.organization_name }}</p>
             </div>
 
             <div>
                 <label class="block font-bold">President Name</label>
                 <input v-model="form.president_name" class="border p-2 w-full" required>
-            </div>
-
-            <div>
-                <label class="block font-bold">Faculty Adviser Name</label>
-                <input v-model="form.adviser_name" class="border p-2 w-full" required>
-            </div>
-
-            <div>
-                <label class="block font-bold">Coordinator Name</label>
-                <input v-model="form.coordinator_name" class="border p-2 w-full" required>
-            </div>
-
-            <div>
-                <label class="block font-bold">Dean/Assoc. Dean Name</label>
-                <input v-model="form.dean_name" class="border p-2 w-full" required>
+                <p v-if="errors.president_name" class="text-red-500 text-sm mt-1">{{ errors.president_name }}</p>
             </div>
         </div>
 

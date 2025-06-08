@@ -59,13 +59,7 @@ onMounted(() => {
     formElement.value.classList.add('opacity-100');
   }
   
-  // Add global click handler to close dropdowns
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('[data-dropdown-trigger]') && 
-        !e.target.closest('.dropdown-menu')) {
-      activeDropdown.value = null;
-    }
-  });
+  
 });
 
 const deleteApplication = (id) => {
@@ -187,14 +181,7 @@ const updateApplicationStatus = (statusData) => {
   }
 };
 
-// Modify the closeDropdowns method
-const closeDropdowns = (event) => {
-  // Only close if clicking outside both the dropdown trigger and menu
-  if (!event.target.closest('[data-dropdown-trigger]') && 
-      !event.target.closest('.dropdown-menu')) {
-    activeDropdown.value = null;
-  }
-};
+
 
 // Fix #2: Add the missing handleDocumentUpload method
 const handleDocumentUpload = (applicationId, formData) => {

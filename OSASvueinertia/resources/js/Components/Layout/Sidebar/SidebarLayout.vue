@@ -142,8 +142,10 @@ const closeSidebarOnClickOutside = (event) => {
   } else if (window.innerWidth >= 768 && sidebarExpanded.value) {
     // For desktop mode, check if click is outside the sidebar to collapse it
     const sidebarElement = document.getElementById('sidebar');
+    
     if (sidebarElement && !sidebarElement.contains(event.target)) {
       sidebarExpanded.value = false;
+      isSidebarHovering.value = false; // Reset hover state when collapsing
       try {
         localStorage.setItem('sidebarExpanded', 'false');
       } catch (e) {
@@ -197,6 +199,7 @@ const handleKeyDown = (event) => {
     } else if (sidebarExpanded.value && window.innerWidth >= 768) {
       // Collapse sidebar with Escape key on desktop
       sidebarExpanded.value = false;
+      isSidebarHovering.value = false; // Reset hover state when collapsing
       try {
         localStorage.setItem('sidebarExpanded', 'false');
       } catch (e) {
@@ -382,8 +385,12 @@ onUnmounted(() => {
       id="sidebar"
       :class="[
         'z-30 transition-all duration-300 ease-in-out border-r border-gray-200 bg-white shadow-lg shadow-blue-200/20 flex flex-col',
+        // Desktop positioning logic - always fixed positioned
+        'md:fixed md:left-0 md:pt-16 md:h-screen',
+        // Width logic - hover overlays, expanded overlays but appears to push content
         sidebarExpanded || isSidebarHovering ? 'md:w-64' : 'md:w-20',
-        showingSidebar ? 'fixed left-0 w-64 h-full pt-16' : 'fixed -left-64 md:left-0 md:relative pt-16 h-auto min-h-screen'
+        // Mobile positioning
+        showingSidebar ? 'fixed left-0 w-64 h-full pt-16' : 'fixed -left-64'
       ]"
       aria-label="Navigation sidebar"
       @click="handleSidebarClick"
@@ -414,7 +421,13 @@ onUnmounted(() => {
     </aside>
 
     <!-- Main Content - with additional top padding to account for the fixed header -->
-    <div class="flex-1 flex flex-col min-h-screen overflow-hidden pt-16 md:ml-0">
+    <div 
+        :class="[
+          'flex-1 flex flex-col min-h-screen overflow-hidden pt-16',
+          // Only push content when sidebar is expanded (not when hovering)
+          sidebarExpanded ? 'md:ml-64' : 'md:ml-20'
+        ]"
+      >
       <!-- Page Content -->
       <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 relative p-4 sm:p-6">
         <!-- Content provided via slot -->

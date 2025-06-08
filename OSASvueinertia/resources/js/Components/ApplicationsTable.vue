@@ -1,7 +1,6 @@
 <script setup>
-import { defineProps, defineEmits, ref, nextTick } from 'vue';
 import { Link, router } from '@inertiajs/vue3';
-
+import { defineProps, defineEmits, ref, nextTick, onMounted, onUnmounted } from 'vue';
 const props = defineProps({
   applications: Array,
   isAdmin: Boolean,
@@ -106,12 +105,7 @@ const toggleDropdown = (appId) => {
   }
 };
 
-// Close dropdown when clicking outside
-const closeDropdowns = (event) => {
-  if (!event.target.closest('.dropdown-container')) {
-    activeDropdown.value = null;
-  }
-};
+
 
 // Function to trigger file input click
 const triggerFileUpload = (appId) => {
@@ -230,10 +224,27 @@ const handleAction = (app, action) => {
       break;
   }
 };
+
+// Add this after your existing refs
+onMounted(() => {
+  document.addEventListener('click', closeDropdowns);
+});
+
+onUnmounted(() => {
+  document.removeEventListener('click', closeDropdowns);
+});
+
+// Update the closeDropdowns function
+const closeDropdowns = (event) => {
+  if (!event.target.closest('.dropdown-container')) {
+    activeDropdown.value = null;
+  }
+};
+
 </script>
 
 <template>
-  <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100" @click="closeDropdowns">
+  <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 relative" @click="closeDropdowns">
     <!-- File input (hidden) -->
     <input 
       ref="fileInput"
@@ -275,7 +286,7 @@ const handleAction = (app, action) => {
       <div class="w-1/4 h-1.5 bg-red-500 animate-pulse" style="animation-delay: 0.8s;"></div>
     </div>
     
-    <div class="overflow-x-auto">
+    <div class="overflow-x-auto relative">
       <table class="w-full">
         <thead>
           <tr class="bg-gray-50 text-left text-gray-600 text-sm">
@@ -367,11 +378,10 @@ const handleAction = (app, action) => {
                   </button>
                 </div>
                 
-                <!-- Dropdown Menu -->
+                <!-- Replace the current dropdown div with this -->
                 <div 
                   v-if="activeDropdown === app.id"
-                  class="fixed w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50 py-1"
-                  :style="getDropdownPosition(app.id)"
+                  class="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50 py-1"
                   @click.stop
                 >
                   <!-- Admin-only Status Update Option -->
