@@ -6,6 +6,10 @@ const props = defineProps({
   initialFormData: {
     type: Object,
     default: () => ({})
+  },
+  isEdit: {
+    type: Boolean,
+    default: false
   }
 });
 
@@ -64,15 +68,22 @@ const submit = () => {
     return;
   }
   
-  form.post('/applications', {
-    onSuccess: () => {
-      alert('Form submitted successfully!');
-      emit('submitted', form.data());
-    },
-    onError: (errors) => {
-      console.error('Form submission errors:', errors);
-    }
-  });
+  // Check if we're in edit mode
+  if (props.isEdit) {
+    // For edit mode, just emit the data - don't make HTTP request here
+    emit('submitted', form.data());
+  } else {
+    // For create mode, make the POST request
+    form.post('/applications', {
+      onSuccess: () => {
+        alert('Form submitted successfully!');
+        emit('submitted', form.data());
+      },
+      onError: (errors) => {
+        console.error('Form submission errors:', errors);
+      }
+    });
+  }
 };
 </script>
 

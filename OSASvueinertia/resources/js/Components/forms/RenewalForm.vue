@@ -6,6 +6,10 @@ const props = defineProps({
   initialFormData: {
     type: Object,
     default: () => ({})
+  },
+  isEdit: {
+    type: Boolean,
+    default: false
   }
 });
 
@@ -13,13 +17,15 @@ const emit = defineEmits(['submitted']);
 
 const form = useForm({
   form_type: 'LSPU-OSAS-SF-002',
-  president_name:props.initialFormData.president_name || '',
-  organization_name:props.initialFormData.organization_name || '',
-  adviser_name:props.initialFormData.adviser_name || '',
-  dean_name:props.initialFormData.dean_name || '',
-  coordinator_name:props.initialFormData.coordinator_name || '',
-  chairperson_name:props.initialFormData.chairperson_name || '',
-
+  organization_name: props.initialFormData.organization_name || '',
+  college: props.initialFormData.college || '',
+  academic_year_start: props.initialFormData.academic_year_start || '',
+  academic_year_end: props.initialFormData.academic_year_end || '',
+  president_name: props.initialFormData.president_name || '',
+  adviser_name: props.initialFormData.adviser_name || '',
+  dean_name: props.initialFormData.dean_name || '',
+  coordinator_name: props.initialFormData.coordinator_name || '',
+  chairperson_name: props.initialFormData.chairperson_name || '',
 });
 
 // Add errors ref object
@@ -36,17 +42,17 @@ const validateForm = () => {
     isValid = false;
   }
 
-  if (!form.college) {
+  if (!form.college.trim()) {
     errors.value.college = 'College is required';
     isValid = false;
   }
 
-  if (!form.academic_year_start) {
+  if (!form.academic_year_start.trim()) {
     errors.value.academic_year_start = 'Academic Year Start is required';
     isValid = false;
   }
 
-  if (!form.academic_year_end) {
+  if (!form.academic_year_end.trim()) {
     errors.value.academic_year_end = 'Academic Year End is required';
     isValid = false;
   }
@@ -80,20 +86,26 @@ const validateForm = () => {
 };
 
 const submit = () => {
-  // Call validation before posting
   if (!validateForm()) {
     return;
   }
-
-  form.post('/applications', {
-    onSuccess: () => {
-      alert('Form submitted successfully!');
-      emit('submitted', form.data());
-    },
-    onError: (errors) => {
-      console.error('Form submission errors:', errors);
-    }
-  });
+  
+  // Check if we're in edit mode
+  if (props.isEdit) {
+    // For edit mode, just emit the data - don't make HTTP request here
+    emit('submitted', form.data());
+  } else {
+    // For create mode, make the POST request
+    form.post('/applications', {
+      onSuccess: () => {
+        alert('Form submitted successfully!');
+        emit('submitted', form.data());
+      },
+      onError: (errors) => {
+        console.error('Form submission errors:', errors);
+      }
+    });
+  }
 };
 </script>
 
@@ -233,7 +245,9 @@ const submit = () => {
         </div>
 
         <div class="mt-6 text-center">
-            <button type="submit" @click="submit" class="bg-green-500 text-white px-4 py-2 rounded">Submit</button>
+            <button type="submit" @click="submit" class="bg-green-500 text-white px-4 py-2 rounded">
+              {{ props.isEdit ? 'Update' : 'Submit' }}
+            </button>
         </div>
     </div>
 
@@ -243,5 +257,4 @@ const submit = () => {
         <span>09 November 2020</span>
     </div>
 </div>
-
 </template>

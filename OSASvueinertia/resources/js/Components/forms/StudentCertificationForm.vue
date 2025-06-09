@@ -6,6 +6,10 @@ const props = defineProps({
   initialFormData: {
     type: Object,
     default: () => ({})
+  },
+  isEdit: {
+    type: Boolean,
+    default: false
   }
 });
 
@@ -21,16 +25,16 @@ const form = useForm({
   coordinator_name: props.initialFormData.coordinator_name || '',
   director_name: props.initialFormData.director_name || '',
 
-  is_bonafide:props.initialFormData.is_bonafide || '',
-  is_not_academic_probation:props.initialFormData.is_not_academic_probation || '',
-  is_not_disciplinary_probation:props.initialFormData.is_not_disciplinary_probation || '',
-  has_position:props.initialFormData.has_position || '',
+  // Fixed: Convert boolean values properly for checkboxes
+  is_bonafide: props.initialFormData.is_bonafide === true || props.initialFormData.is_bonafide === 1 || props.initialFormData.is_bonafide === '1',
+  is_not_academic_probation: props.initialFormData.is_not_academic_probation === true || props.initialFormData.is_not_academic_probation === 1 || props.initialFormData.is_not_academic_probation === '1',
+  is_not_disciplinary_probation: props.initialFormData.is_not_disciplinary_probation === true || props.initialFormData.is_not_disciplinary_probation === 1 || props.initialFormData.is_not_disciplinary_probation === '1',
+  has_position: props.initialFormData.has_position === true || props.initialFormData.has_position === 1 || props.initialFormData.has_position === '1',
 
-  certification_date:props.initialFormData.certification_date || '',
-  student_name:props.initialFormData.certification_date || '',
-  course_year_section:props.initialFormData.course_year_section || '',
-  
-
+  certification_date: props.initialFormData.certification_date || '',
+  student_name: props.initialFormData.student_name || '',
+  course_year_section: props.initialFormData.course_year_section || '',
+  position_rank: props.initialFormData.position_rank || '',
 });
 
 const errors = ref({});
@@ -94,13 +98,19 @@ const submit = () => {
     return;
   }
   
-  form.post('/applications', {
+  // Fixed: Use appropriate HTTP method for edit vs create
+  const method = props.isEdit ? 'put' : 'post';
+  const url = props.isEdit ? `/applications/${props.initialFormData.id}` : '/applications';
+  
+  form[method](url, {
     onSuccess: () => {
-      alert('Form submitted successfully!');
+      alert(props.isEdit ? 'Form updated successfully!' : 'Form submitted successfully!');
       emit('submitted', form.data());
     },
     onError: (errors) => {
       console.error('Form submission errors:', errors);
+      // Set server validation errors
+      errors.value = errors;
     }
   });
 };
@@ -117,7 +127,8 @@ const submit = () => {
     </div>
 
     <div class="mt-6 text-right">
-        <p class="mb-0"><span class="signature-line text-center border-b border-black min-w-[200px] inline-block">{{ form.formatted_date }}</span></p>
+        <!-- Fixed: Use certification_date instead of formatted_date -->
+        <p class="mb-0"><span class="signature-line text-center border-b border-black min-w-[200px] inline-block">{{ form.certification_date }}</span></p>
         <p class="mb-0">DATE</p>
     </div>
 
@@ -157,7 +168,8 @@ const submit = () => {
 
     <div class="section mt-6">
         <div class="signature-line mt-6 mb-1 text-center">
-            <p class="mb-0"><span class="text-center border-b border-black min-w-[250px] inline-block">{{ form.faculty_adviser }}</span></p>
+            <!-- Fixed: Use adviser_name instead of faculty_adviser -->
+            <p class="mb-0"><span class="text-center border-b border-black min-w-[250px] inline-block">{{ form.adviser_name }}</span></p>
             <p class="mb-1 text-center">Faculty Adviser(s)</p>
         </div>
         
@@ -233,16 +245,19 @@ const submit = () => {
                         <span>Bonafide Student</span>
                     </label>
                     <p v-if="errors.is_bonafide" class="text-red-500 text-sm mt-1">{{ errors.is_bonafide }}</p>
+                    
                     <label class="inline-flex items-center">
                         <input type="checkbox" v-model="form.is_not_academic_probation" class="mr-2" required>
                         <span>Not Under Academic Probation</span>
                     </label>
                     <p v-if="errors.is_not_academic_probation" class="text-red-500 text-sm mt-1">{{ errors.is_not_academic_probation }}</p>
+                    
                     <label class="inline-flex items-center">
                         <input type="checkbox" v-model="form.is_not_disciplinary_probation" class="mr-2" required>
                         <span>Not Under Disciplinary Probation</span>
                     </label>
                     <p v-if="errors.is_not_disciplinary_probation" class="text-red-500 text-sm mt-1">{{ errors.is_not_disciplinary_probation }}</p>
+                    
                     <label class="inline-flex items-center">
                         <input type="checkbox" v-model="form.has_position" class="mr-2" required>
                         <span>Has Position/Rank in Organization</span>
@@ -253,7 +268,9 @@ const submit = () => {
         </div>
 
         <div class="mt-6 text-center">
-            <button type="submit" @click="submit" class="bg-green-500 text-white px-4 py-2 rounded">Submit</button>
+            <button type="submit" @click="submit" class="bg-green-500 text-white px-4 py-2 rounded">
+                {{ props.isEdit ? 'Update' : 'Submit' }}
+            </button>
         </div>
     </div>
 

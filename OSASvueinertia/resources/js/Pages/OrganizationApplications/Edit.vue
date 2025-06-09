@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue';
-import { useForm } from '@inertiajs/vue3';
+import { useForm,router } from '@inertiajs/vue3';
 import StudentOrganizationForm from '@/Components/forms/StudentOrganizationForm.vue';
 import RenewalForm from '@/Components/forms/RenewalForm.vue';
 import CommitmentForm from '@/Components/forms/CommitmentForm.vue';
@@ -76,17 +76,17 @@ const initializeFormData = () => {
 const formData = ref(initializeFormData());
 
 const handleFormSubmitted = (data) => {
-  // Create a form instance using the updated data
-  const form = useForm({
-    ...data,
-    _method: 'PUT', // For method spoofing (PUT request)
-  });
+  console.log('Submitting update for application ID:', props.application.id);
+  console.log('Update data:', data);
   
-  // Submit the form to the update endpoint
-  form.put(`/applications/${props.application.id}`, {
+  // Use Inertia's router directly for the PUT request
+  router.put(`/applications/${props.application.id}`, data, {
     onSuccess: () => {
-      // Redirect or show success message
+      console.log('Update successful');
       window.location.href = '/applications';
+    },
+    onError: (errors) => {
+      console.log('Update errors:', errors);
     }
   });
 };

@@ -6,10 +6,48 @@ const props = defineProps({
   initialFormData: {
     type: Object,
     default: () => ({})
+  },
+  isEdit: {
+    type: Boolean,
+    default: false
   }
 });
 
-const initialActivities = props.initialFormData?.activities || [];
+const emit = defineEmits(['submitted']);
+
+// Initialize activities first, before the form
+const initializeActivities = () => {
+  if (props.initialFormData?.activities && props.initialFormData.activities.length > 0) {
+    // Copy activities from initialFormData
+    return [...props.initialFormData.activities];
+  } else {
+    // Add default empty activities
+    return Array(3).fill().map(() => ({
+      objective: '',
+      name: '',
+      description: '',
+      persons_involved: '',
+      target_date: '',
+      budget: 0
+    }));
+  }
+};
+
+const form = useForm({
+  form_type: 'LSPU-OSAS-SF-004',
+  organization_name: props.initialFormData.organization_name || '',
+  academic_year_start: props.initialFormData.academic_year_start || '',
+  academic_year_end: props.initialFormData.academic_year_end || '',
+  president_name: props.initialFormData.president_name || '',
+  secretary_name: props.initialFormData.secretary_name || '',
+  application_date: props.initialFormData.application_date || '',
+  adviser_name: props.initialFormData.adviser_name || '',
+  dean_name: props.initialFormData.dean_name || '',
+  coordinator_name: props.initialFormData.coordinator_name || '',
+  director_name: props.initialFormData.director_name || '',
+  activities: initializeActivities(),
+});
+
 // Add a function to add a new empty activity
 const addActivity = () => {
     form.activities.push({
@@ -24,36 +62,10 @@ const addActivity = () => {
 
 // Add a function to remove an activity
 const removeActivity = (index) => {
-    form.activities.splice(index, 1);
+    if (form.activities.length > 1) { // Prevent removing all activities
+        form.activities.splice(index, 1);
+    }
 };
-
-const emit = defineEmits(['submitted']);
-
-const form = useForm({
-  form_type: 'LSPU-OSAS-SF-004',
-  organization_name: props.initialFormData.organization_name || '',
-  academic_year_start:props.initialFormData.academic_year_start || '',
-  academic_year_end:props.initialFormData.academic_year_end || '',
-  president_name: props.initialFormData.president_name || '',
-  secretary_name:props.initialFormData.secretary_name || '',
-  application_date: props.initialFormData.application_date || '',
-  adviser_name: props.initialFormData.adviser_name || '',
-  dean_name: props.initialFormData.dean_name || '',
-  coordinator_name: props.initialFormData.coordinator_name || '',
-  director_name: props.initialFormData.director_name || '',
-  activities: [],
-});
-
-// Initialize with data from props if available
-if (props.initialFormData?.activities && props.initialFormData.activities.length > 0) {
-  // Copy activities from initialFormData
-  form.activities = [...props.initialFormData.activities];
-} else {
-  // Add default empty activities
-  for (let i = 0; i < 3; i++) {
-    addActivity();
-  }
-}
 
 // Add errors ref object
 const errors = ref({});
@@ -69,12 +81,12 @@ const validateForm = () => {
     isValid = false;
   }
 
-  if (!form.academic_year_start) {
+  if (!form.academic_year_start.trim()) {
     errors.value.academic_year_start = 'Academic Year Start is required';
     isValid = false;
   }
 
-  if (!form.academic_year_end) {
+  if (!form.academic_year_end.trim()) {
     errors.value.academic_year_end = 'Academic Year End is required';
     isValid = false;
   }
@@ -109,6 +121,12 @@ const validateForm = () => {
     isValid = false;
   }
 
+  // Validate that we have at least one activity
+  if (!form.activities || form.activities.length === 0) {
+    errors.value.activities_general = 'At least one activity is required';
+    isValid = false;
+  }
+
   // Check activities
   if (!errors.value.activities) {
     errors.value.activities = {};
@@ -119,22 +137,22 @@ const validateForm = () => {
       errors.value.activities[index] = {};
     }
 
-    if (!activity.objective.trim()) {
+    if (!activity.objective || !activity.objective.trim()) {
       errors.value.activities[index].objective = 'Objective is required';
       isValid = false;
     }
 
-    if (!activity.name.trim()) {
+    if (!activity.name || !activity.name.trim()) {
       errors.value.activities[index].name = 'Activity name is required';
       isValid = false;
     }
 
-    if (!activity.description.trim()) {
+    if (!activity.description || !activity.description.trim()) {
       errors.value.activities[index].description = 'Description is required';
       isValid = false;
     }
 
-    if (!activity.persons_involved.trim()) {
+    if (!activity.persons_involved || !activity.persons_involved.trim()) {
       errors.value.activities[index].persons_involved = 'Persons involved is required';
       isValid = false;
     }
@@ -144,7 +162,7 @@ const validateForm = () => {
       isValid = false;
     }
 
-    if (!activity.budget || activity.budget < 0) {
+    if (activity.budget === null || activity.budget === undefined || activity.budget < 0) {
       errors.value.activities[index].budget = 'Budget is required and must be 0 or greater';
       isValid = false;
     }
@@ -154,20 +172,29 @@ const validateForm = () => {
 };
 
 const submit = () => {
-  // Call validation before posting
   if (!validateForm()) {
+    console.log('Validation failed:', errors.value);
     return;
   }
-
-  form.post('/applications', {
-    onSuccess: () => {
-      alert('Form submitted successfully!');
-      emit('submitted', form.data());
-    },
-    onError: (errors) => {
-      console.error('Form submission errors:', errors);
-    }
-  });
+  
+  console.log('Submitting form data:', form.data());
+  
+  // Check if we're in edit mode
+  if (props.isEdit) {
+    // For edit mode, just emit the data - don't make HTTP request here
+    emit('submitted', form.data());
+  } else {
+    // For create mode, make the POST request
+    form.post('/applications', {
+      onSuccess: () => {
+        alert('Form submitted successfully!');
+        emit('submitted', form.data());
+      },
+      onError: (errors) => {
+        console.error('Form submission errors:', errors);
+      }
+    });
+  }
 };
 </script>
 
@@ -219,6 +246,12 @@ const submit = () => {
                     </div>
 
                     <div>
+                        <label class="block font-bold">Application Date</label>
+                        <input type="date" v-model="form.application_date" class="border p-2 w-full">
+                        <p v-if="errors.application_date" class="text-red-500 text-sm mt-1">{{ errors.application_date }}</p>
+                    </div>
+
+                    <div>
                         <label class="block font-bold">Adviser Name</label>
                         <input v-model="form.adviser_name" class="border p-2 w-full" required>
                         <p v-if="errors.adviser_name" class="text-red-500 text-sm mt-1">{{ errors.adviser_name }}</p>
@@ -245,60 +278,75 @@ const submit = () => {
 
                 <!-- Activities Table -->
                 <div class="mt-6">
-                    <h4 class="text-md font-bold mb-2">Activities</h4>
+                    <div class="flex justify-between items-center mb-2">
+                        <h4 class="text-md font-bold">Activities</h4>
+                        <button type="button" @click="addActivity" class="bg-blue-500 text-white px-3 py-1 rounded text-sm">
+                            Add Activity Row
+                        </button>
+                    </div>
                     
-                    <table class="w-full border-collapse border border-gray-300 mb-4">
-                        <thead>
-                            <tr class="bg-gray-100">
-                                <th class="border border-gray-300 p-2">OBJECTIVE</th>
-                                <th class="border border-gray-300 p-2">ACTIVITIES</th>
-                                <th class="border border-gray-300 p-2">BRIEF DESCRIPTION</th>
-                                <th class="border border-gray-300 p-2">PERSONS INVOLVED</th>
-                                <th class="border border-gray-300 p-2">TARGET DATE</th>
-                                <th class="border border-gray-300 p-2">BUDGET</th>
-                                <th class="border border-gray-300 p-2">ACTION</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="(activity, index) in form.activities" :key="index">
-                                <td class="border border-gray-300 p-2">
-                                    <input v-model="activity.objective" class="w-full p-1" required>
-                                    <p v-if="errors.activities?.[index]?.objective" class="text-red-500 text-xs mt-1">{{ errors.activities[index].objective }}</p>
-                                </td>
-                                <td class="border border-gray-300 p-2">
-                                    <input v-model="activity.name" class="w-full p-1" required>
-                                    <p v-if="errors.activities?.[index]?.name" class="text-red-500 text-xs mt-1">{{ errors.activities[index].name }}</p>
-                                </td>
-                                <td class="border border-gray-300 p-2">
-                                    <textarea v-model="activity.description" class="w-full p-1" rows="2" required></textarea>
-                                    <p v-if="errors.activities?.[index]?.description" class="text-red-500 text-xs mt-1">{{ errors.activities[index].description }}</p>
-                                </td>
-                                <td class="border border-gray-300 p-2">
-                                    <input v-model="activity.persons_involved" class="w-full p-1" required>
-                                    <p v-if="errors.activities?.[index]?.persons_involved" class="text-red-500 text-xs mt-1">{{ errors.activities[index].persons_involved }}</p>
-                                </td>
-                                <td class="border border-gray-300 p-2">
-                                    <input type="date" v-model="activity.target_date" class="w-full p-1" required>
-                                    <p v-if="errors.activities?.[index]?.target_date" class="text-red-500 text-xs mt-1">{{ errors.activities[index].target_date }}</p>
-                                </td>
-                                <td class="border border-gray-300 p-2">
-                                    <input type="number" v-model="activity.budget" step="0.01" min="0" class="w-full p-1" required>
-                                    <p v-if="errors.activities?.[index]?.budget" class="text-red-500 text-xs mt-1">{{ errors.activities[index].budget }}</p>
-                                </td>
-                                <td class="border border-gray-300 p-2">
-                                    <button type="button" @click="removeActivity(index)" class="bg-red-500 text-white px-2 py-1 rounded text-xs">Remove</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <p v-if="errors.activities_general" class="text-red-500 text-sm mb-2">{{ errors.activities_general }}</p>
                     
-                    <button type="button" @click="addActivity" class="bg-blue-500 text-white px-3 py-1 rounded mb-4">
-                        Add Activity Row
-                    </button>
+                    <div class="overflow-x-auto">
+                        <table class="w-full border-collapse border border-gray-300 mb-4 min-w-[1000px]">
+                            <thead>
+                                <tr class="bg-gray-100">
+                                    <th class="border border-gray-300 p-2 text-xs">OBJECTIVE</th>
+                                    <th class="border border-gray-300 p-2 text-xs">ACTIVITIES</th>
+                                    <th class="border border-gray-300 p-2 text-xs">BRIEF DESCRIPTION</th>
+                                    <th class="border border-gray-300 p-2 text-xs">PERSONS INVOLVED</th>
+                                    <th class="border border-gray-300 p-2 text-xs">TARGET DATE</th>
+                                    <th class="border border-gray-300 p-2 text-xs">BUDGET</th>
+                                    <th class="border border-gray-300 p-2 text-xs">ACTION</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(activity, index) in form.activities" :key="index">
+                                    <td class="border border-gray-300 p-2">
+                                        <input v-model="activity.objective" class="w-full p-1 text-sm" required>
+                                        <p v-if="errors.activities?.[index]?.objective" class="text-red-500 text-xs mt-1">{{ errors.activities[index].objective }}</p>
+                                    </td>
+                                    <td class="border border-gray-300 p-2">
+                                        <input v-model="activity.name" class="w-full p-1 text-sm" required>
+                                        <p v-if="errors.activities?.[index]?.name" class="text-red-500 text-xs mt-1">{{ errors.activities[index].name }}</p>
+                                    </td>
+                                    <td class="border border-gray-300 p-2">
+                                        <textarea v-model="activity.description" class="w-full p-1 text-sm" rows="2" required></textarea>
+                                        <p v-if="errors.activities?.[index]?.description" class="text-red-500 text-xs mt-1">{{ errors.activities[index].description }}</p>
+                                    </td>
+                                    <td class="border border-gray-300 p-2">
+                                        <input v-model="activity.persons_involved" class="w-full p-1 text-sm" required>
+                                        <p v-if="errors.activities?.[index]?.persons_involved" class="text-red-500 text-xs mt-1">{{ errors.activities[index].persons_involved }}</p>
+                                    </td>
+                                    <td class="border border-gray-300 p-2">
+                                        <input type="date" v-model="activity.target_date" class="w-full p-1 text-sm" required>
+                                        <p v-if="errors.activities?.[index]?.target_date" class="text-red-500 text-xs mt-1">{{ errors.activities[index].target_date }}</p>
+                                    </td>
+                                    <td class="border border-gray-300 p-2">
+                                        <input type="number" v-model.number="activity.budget" step="0.01" min="0" class="w-full p-1 text-sm" required>
+                                        <p v-if="errors.activities?.[index]?.budget" class="text-red-500 text-xs mt-1">{{ errors.activities[index].budget }}</p>
+                                    </td>
+                                    <td class="border border-gray-300 p-2 text-center">
+                                        <button 
+                                            type="button" 
+                                            @click="removeActivity(index)" 
+                                            class="bg-red-500 text-white px-2 py-1 rounded text-xs"
+                                            :disabled="form.activities.length <= 1"
+                                            :class="{ 'opacity-50 cursor-not-allowed': form.activities.length <= 1 }"
+                                        >
+                                            Remove
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
                 <div class="mt-6 text-center">
-                    <button type="submit" @click="submit" class="bg-green-500 text-white px-4 py-2 rounded">Submit</button>
+                    <button type="submit" @click="submit" class="bg-green-500 text-white px-4 py-2 rounded">
+                        {{ props.isEdit ? 'Update' : 'Submit' }}
+                    </button>
                 </div>
             </div>
 
@@ -308,5 +356,4 @@ const submit = () => {
                 <span>09 November 2020</span>
             </div>
         </div>
-
 </template>
