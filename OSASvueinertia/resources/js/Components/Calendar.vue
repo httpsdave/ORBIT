@@ -63,67 +63,137 @@
       </div>
     </div>
     
-    <!-- Upcoming Events panel (width changes based on admin status) -->
-    <div :class="isAdmin ? 'md:col-span-1' : 'md:col-span-2'" class="bg-white rounded-lg shadow-sm border border-gray-100 p-5">
-      <h2 class="text-lg font-semibold mb-4 text-gray-700">Upcoming Events</h2>
-      <ul class="divide-y divide-gray-100">
-        <li v-for="event in upcomingEvents" :key="event.id" class="py-4">
-          <div class="flex items-start space-x-4">
-            <div class="flex-shrink-0 bg-blue-50 rounded-lg p-3 text-center border-l-4 border-blue-500">
-              <span class="text-sm font-medium text-blue-500">{{ formatDate(event.start_date, 'MMM') }}</span>
-              <p class="text-xl font-bold text-gray-800">{{ formatDate(event.start_date, 'DD') }}</p>
-              <span class="text-xs text-blue-400">{{ formatDate(event.start_date, 'ddd') }}</span>
-            </div>
-            <div class="flex-1 min-w-0">
-              <p class="text-sm font-medium text-gray-900 truncate">{{ event.title }}</p>
-              <div class="flex items-center mt-1 text-xs text-gray-500">
-                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                {{ formatDate(event.start_date, 'h:mm A') }}
-                <span v-if="event.end_date && formatDate(event.start_date, 'YYYY-MM-DD') !== formatDate(event.end_date, 'YYYY-MM-DD')">
-                  - {{ formatDate(event.end_date, 'MMM DD, h:mm A') }}
-                </span>
-                <span v-else-if="event.end_date">
-                  - {{ formatDate(event.end_date, 'h:mm A') }}
-                </span>
-              </div>
-              <p v-if="event.description" class="text-xs text-gray-500 mt-1 line-clamp-2">{{ event.description }}</p>
-            </div>
-            <!-- Only show edit/delete buttons to admins -->
-            <div v-if="isAdmin" class="flex-shrink-0 flex space-x-2">
-              <button @click="editEvent(event)" class="text-blue-500 hover:text-blue-700 p-1 rounded transition-colors duration-200">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                </svg>
-              </button>
-              <button @click="deleteEvent(event.id)" class="text-red-500 hover:text-red-700 p-1 rounded transition-colors duration-200">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                </svg>
-              </button>
-            </div>
-            <!-- Show view details button to all users -->
-            <div v-else class="flex-shrink-0">
-              <button @click="viewEventDetails(event)" class="text-blue-500 hover:text-blue-700 p-1 rounded transition-colors duration-200">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                </svg>
-              </button>
-            </div>
+   <!-- Combined Today's and Upcoming Events panel -->
+<div :class="isAdmin ? 'md:col-span-1' : 'md:col-span-2'" class="bg-white rounded-lg shadow-sm border border-gray-100 p-5">
+  <h2 class="text-lg font-semibold mb-4 text-gray-700">
+    {{ todaysEvents.length > 0 ? "Today's Events" : "Upcoming Events" }}
+  </h2>
+  
+  <!-- Today's Events (if any) -->
+  <ul v-if="todaysEvents.length > 0" class="divide-y divide-gray-100 mb-6">
+    <li v-for="event in todaysEvents" :key="'today-' + event.id" class="py-4">
+      <div class="flex items-start space-x-4">
+        <div class="flex-shrink-0 bg-green-50 rounded-lg p-3 text-center border-l-4 border-green-500">
+          <span class="text-sm font-medium text-green-500">{{ formatDate(event.start_date, 'MMM') }}</span>
+          <p class="text-xl font-bold text-gray-800">{{ formatDate(event.start_date, 'DD') }}</p>
+          <span class="text-xs text-green-400">TODAY</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-medium text-gray-900 truncate">{{ event.title }}</p>
+          <div class="flex items-center mt-1 text-xs text-gray-500">
+            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            {{ formatDate(event.start_date, 'h:mm A') }}
+            <span v-if="event.end_date && formatDate(event.start_date, 'YYYY-MM-DD') !== formatDate(event.end_date, 'YYYY-MM-DD')">
+              - {{ formatDate(event.end_date, 'MMM DD, h:mm A') }}
+            </span>
+            <span v-else-if="event.end_date">
+              - {{ formatDate(event.end_date, 'h:mm A') }}
+            </span>
           </div>
-        </li>
-        <li v-if="upcomingEvents.length === 0" class="py-8 text-center text-gray-500">
-          <svg class="w-12 h-12 mx-auto text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
-          <p>No upcoming events</p>
-        </li>
-      </ul>
-    </div>
+          <p v-if="event.description" class="text-xs text-gray-500 mt-1 line-clamp-2">{{ event.description }}</p>
+        </div>
+        <!-- Admin/User action buttons (same as before) -->
+        <div v-if="isAdmin" class="flex-shrink-0 flex space-x-2">
+          <button @click="editEvent(event)" class="text-blue-500 hover:text-blue-700 p-1 rounded transition-colors duration-200">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+          </button>
+          <button @click="deleteEvent(event.id)" class="text-red-500 hover:text-red-700 p-1 rounded transition-colors duration-200">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+          </button>
+        </div>
+        <div v-else class="flex-shrink-0">
+          <button @click="viewEventDetails(event)" class="text-blue-500 hover:text-blue-700 p-1 rounded transition-colors duration-200">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </li>
+  </ul>
+  
+  <!-- Upcoming Events Section -->
+  <div v-if="todaysEvents.length > 0" class="border-t pt-4">
+    <h3 class="text-md font-medium mb-3 text-gray-600">Upcoming Events</h3>
   </div>
   
+  <ul class="divide-y divide-gray-100">
+    <li v-for="event in upcomingEventsFiltered" :key="event.id" class="py-3">
+      <div class="flex items-start space-x-3">
+        <div class="flex-shrink-0 bg-blue-50 rounded-md p-2 text-center border-l-3 border-blue-500">
+          <span class="text-xs font-medium text-blue-500">{{ formatDate(event.start_date, 'MMM') }}</span>
+          <p class="text-lg font-bold text-gray-800">{{ formatDate(event.start_date, 'DD') }}</p>
+          <span class="text-xs text-blue-400">{{ formatDate(event.start_date, 'ddd') }}</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-medium text-gray-900 truncate">{{ event.title }}</p>
+          <div class="flex items-center mt-1 text-xs text-gray-500">
+            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            {{ formatDate(event.start_date, 'h:mm A') }}
+            <span v-if="event.end_date && formatDate(event.start_date, 'YYYY-MM-DD') !== formatDate(event.end_date, 'YYYY-MM-DD')">
+              - {{ formatDate(event.end_date, 'MMM DD, h:mm A') }}
+            </span>
+            <span v-else-if="event.end_date">
+              - {{ formatDate(event.end_date, 'h:mm A') }}
+            </span>
+          </div>
+          <p v-if="event.description" class="text-xs text-gray-500 mt-1 line-clamp-2">{{ event.description }}</p>
+        </div>
+        <!-- Admin/User action buttons (same structure as today's events) -->
+        <div v-if="isAdmin" class="flex-shrink-0 flex space-x-2">
+          <button @click="editEvent(event)" class="text-blue-500 hover:text-blue-700 p-1 rounded transition-colors duration-200">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+          </button>
+          <button @click="deleteEvent(event.id)" class="text-red-500 hover:text-red-700 p-1 rounded transition-colors duration-200">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+          </button>
+        </div>
+        <div v-else class="flex-shrink-0">
+          <button @click="viewEventDetails(event)" class="text-blue-500 hover:text-blue-700 p-1 rounded transition-colors duration-200">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </li>
+    <li v-if="upcomingEventsFiltered.length === 0" class="py-6 text-center text-gray-500">
+      <svg class="w-10 h-10 mx-auto text-gray-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+      </svg>
+      <p class="text-sm">No upcoming events</p>
+    </li>
+  </ul>
+</div>
+</div>
+
+<!-- Event History Toggle -->
+<div class="flex justify-end mb-6">
+  <button 
+    @click="showPastEventsModal = true" 
+    class="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+  >
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+    </svg>
+    <span class="text-sm font-medium">View Past Events</span>
+  </button>
+</div>
+
   <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-5">
     <!-- Custom calendar header with your color scheme -->
     <div class="mb-6">
@@ -254,6 +324,90 @@
       </div>
     </div>
   </div>
+
+  <!-- Past Events Modal -->
+<div 
+  v-if="showPastEventsModal" 
+  class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+  @click.self="closePastEventsModal"
+>
+  <div class="bg-white rounded-lg shadow-lg max-w-2xl w-full mx-4 max-h-[80vh] overflow-hidden">
+    <div class="flex justify-between items-center p-6 border-b">
+      <h3 class="text-lg font-semibold text-gray-800 flex items-center">
+        <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        Event History
+      </h3>
+      <button @click="closePastEventsModal" class="text-gray-500 hover:text-gray-700">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    
+    <!-- Colored banner -->
+    <div class="flex w-full overflow-hidden">
+      <div class="w-1/4 h-1 bg-blue-500"></div>
+      <div class="w-1/4 h-1 bg-green-500"></div>
+      <div class="w-1/4 h-1 bg-yellow-500"></div>
+      <div class="w-1/4 h-1 bg-red-500"></div>
+    </div>
+    
+    <div class="p-6 overflow-y-auto max-h-[60vh]">
+      <ul class="divide-y divide-gray-100">
+        <li v-for="event in pastEvents" :key="'past-' + event.id" class="py-4">
+          <div class="flex items-start space-x-4">
+            <div class="flex-shrink-0 bg-gray-50 rounded-lg p-3 text-center border-l-4 border-gray-400">
+              <span class="text-sm font-medium text-gray-500">{{ formatDate(event.start_date, 'MMM') }}</span>
+              <p class="text-xl font-bold text-gray-600">{{ formatDate(event.start_date, 'DD') }}</p>
+              <span class="text-xs text-gray-400">{{ formatDate(event.start_date, 'YYYY') }}</span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-medium text-gray-700 truncate">{{ event.title }}</p>
+              <div class="flex items-center mt-1 text-xs text-gray-500">
+                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                {{ formatDate(event.start_date, 'MMM DD, YYYY h:mm A') }}
+                <span v-if="event.end_date && formatDate(event.start_date, 'YYYY-MM-DD') !== formatDate(event.end_date, 'YYYY-MM-DD')">
+                  - {{ formatDate(event.end_date, 'MMM DD, YYYY h:mm A') }}
+                </span>
+                <span v-else-if="event.end_date">
+                  - {{ formatDate(event.end_date, 'h:mm A') }}
+                </span>
+              </div>
+              <p v-if="event.description" class="text-xs text-gray-500 mt-1 line-clamp-2">{{ event.description }}</p>
+            </div>
+            <!-- Admin delete button for past events -->
+            <div v-if="isAdmin" class="flex-shrink-0">
+              <button @click="deletePastEvent(event.id)" class="text-red-500 hover:text-red-700 p-1 rounded transition-colors duration-200" title="Delete past event">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </button>
+            </div>
+            <!-- Non-admin view button -->
+            <div v-else class="flex-shrink-0">
+              <button @click="viewEventDetails(event); closePastEventsModal()" class="text-gray-500 hover:text-gray-700 p-1 rounded transition-colors duration-200">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </li>
+        <li v-if="pastEvents.length === 0" class="py-8 text-center text-gray-500">
+          <svg class="w-12 h-12 mx-auto text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <p>No past events</p>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
 </template>
 <style scoped>
     /* Custom FullCalendar styling to match your color scheme */
@@ -347,6 +501,7 @@ export default {
     const isEditing = ref(false);
     const currentEditId = ref(null);
     const checkEventsTimer = ref(null);
+    const showPastEventsModal = ref(false);
     
     // For event details modal (non-admin users)
     const showEventDetailsModal = ref(false);
@@ -450,6 +605,42 @@ export default {
         .filter(event => new Date(event.start_date) >= now)
         .sort((a, b) => new Date(a.start_date) - new Date(b.start_date))
         .slice(0, 5);
+    });
+
+      const todaysEvents = computed(() => {
+      const today = dayjs().format('YYYY-MM-DD');
+      return displayedEvents.value.filter(event => {
+        const eventStartDate = dayjs(event.start_date).format('YYYY-MM-DD');
+        const eventEndDate = event.end_date ? dayjs(event.end_date).format('YYYY-MM-DD') : eventStartDate;
+        
+        // Check if today falls within the event's date range
+        return today >= eventStartDate && today <= eventEndDate;
+      }).sort((a, b) => new Date(a.start_date) - new Date(b.start_date));
+    });
+
+    const upcomingEventsFiltered = computed(() => {
+  const now = new Date();
+  const today = dayjs().format('YYYY-MM-DD');
+  
+  return displayedEvents.value
+    .filter(event => {
+      const eventStartDate = dayjs(event.start_date).format('YYYY-MM-DD');
+      // Filter out today's events from upcoming events
+      return new Date(event.start_date) >= now && eventStartDate !== today;
+    })
+    .sort((a, b) => new Date(a.start_date) - new Date(b.start_date))
+    .slice(0, 5);
+});
+
+    const pastEvents = computed(() => {
+      const now = new Date();
+      return events.value
+        .filter(event => {
+          // Show events that have completely ended
+          const endDate = event.end_date ? new Date(event.end_date) : new Date(event.start_date);
+          return endDate < now;
+        })
+        .sort((a, b) => new Date(b.start_date) - new Date(a.start_date)); // Most recent first
     });
     
     function onFileChange(e) {
@@ -642,6 +833,31 @@ export default {
           });
       }
     }
+
+    function deletePastEvent(eventId) {
+      if (!props.isAdmin) return; // Safety check
+      
+      if (confirm('Are you sure you want to delete this past event? This action cannot be undone.')) {
+        axios.delete(`/api/events/${eventId}`)
+          .then(() => {
+            // Remove the event from the list
+            events.value = events.value.filter(event => event.id !== eventId);
+            filterExpiredEvents();
+            alert('Past event deleted successfully!');
+          })
+          .catch(error => {
+            if (error.response && error.response.status === 403) {
+              alert('Unauthorized: You do not have permission to perform this action.');
+            } else {
+              console.error('Error deleting past event:', error);
+              alert('Failed to delete past event. Please try again.');
+            }
+          });
+      }
+    }
+        function closePastEventsModal() {
+      showPastEventsModal.value = false;
+    }
     
     function handleEventDrop(info) {
       if (!props.isAdmin) {
@@ -707,6 +923,12 @@ export default {
 
 
     return {
+      showPastEventsModal,
+      upcomingEventsFiltered,
+      closePastEventsModal,
+      todaysEvents,
+      pastEvents,
+      deletePastEvent,
       events,
       displayedEvents,
       calendarOptions,
