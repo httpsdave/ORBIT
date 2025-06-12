@@ -12,7 +12,8 @@ import Modal from '@/Components/Modal.vue';
 
 const props = defineProps({
     users: Array,
-    roles: Array
+    roles: Array,
+    studentOrgs: Array,
 });
 
 const showingCreateModal = ref(false);
@@ -27,17 +28,39 @@ const form = useForm({
     password: '',
     password_confirmation: '',
     role_id: '',
+    student_org_id: '',
 });
 
 const editForm = useForm({
     name: '',
     email: '',
     role_id: '',
+    student_org_id: '',
     password: '',
     password_confirmation: '',
 });
 
 const deleteForm = useForm({});
+
+// Helper function to check if a role is admin
+const isAdminRole = (roleId) => {
+    if (!roleId) return false;
+    const role = props.roles.find(r => r.id == roleId);
+    return role && role.slug === 'admin';
+};
+
+// Watch for role changes and clear student_org_id if admin is selected
+const watchRoleChange = () => {
+    // For create form
+    if (isAdminRole(form.role_id)) {
+        form.student_org_id = '';
+    }
+    
+    // For edit form
+    if (isAdminRole(editForm.role_id)) {
+        editForm.student_org_id = '';
+    }
+};
 
 const createUser = () => {
     form.post(route('admin.users.store'), {
@@ -51,9 +74,13 @@ const createUser = () => {
 
 const confirmUserEdit = (user) => {
     userToEdit.value = user;
+    // Reset the form first to clear any previous state
+    editForm.reset();
+    // Then populate with user data
     editForm.name = user.name;
     editForm.email = user.email;
     editForm.role_id = user.role.id;
+    editForm.student_org_id = user.student_org ? user.student_org.id : '';
     editForm.password = '';
     editForm.password_confirmation = '';
     showingEditModal.value = true;
@@ -65,8 +92,24 @@ const updateUser = () => {
         onSuccess: () => {
             showingEditModal.value = false;
             userToEdit.value = null;
+            editForm.reset(); // Reset form after successful update
         },
     });
+};
+
+// Add a function to handle modal cancellation
+const cancelEdit = () => {
+    showingEditModal.value = false;
+    userToEdit.value = null;
+    editForm.reset(); // Reset form when canceling
+    editForm.clearErrors(); // Clear any validation errors
+};
+
+// Add a function to handle create modal cancellation
+const cancelCreate = () => {
+    showingCreateModal.value = false;
+    form.reset();
+    form.clearErrors();
 };
 
 const confirmUserDeletion = (user) => {
@@ -129,6 +172,7 @@ const deleteUser = () => {
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student Organization</th>
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                                     </tr>
                                 </thead>
@@ -141,6 +185,16 @@ const deleteUser = () => {
                                                   :class="user.role.slug === 'admin' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'">
                                                 {{ user.role.name }}
                                             </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <div v-if="user.student_org && user.role.slug !== 'admin'" class="flex items-center">
+                                                <span class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-md">
+                                                    {{ user.student_org.acronym }}
+                                                </span>
+                                                <span class="ml-2 text-gray-600">{{ user.student_org.name }}</span>
+                                            </div>
+                                            <span v-else-if="user.role.slug === 'admin'" class="text-gray-400 italic">Admin - No Organization</span>
+                                            <span v-else class="text-gray-400 italic">No Organization</span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm">
                                             <div class="flex space-x-3">
@@ -167,7 +221,7 @@ const deleteUser = () => {
                                         </td>
                                     </tr>
                                     <tr v-if="users.length === 0">
-                                        <td colspan="4" class="px-6 py-8 text-center text-gray-500">
+                                        <td colspan="5" class="px-6 py-8 text-center text-gray-500">
                                             No users found.
                                         </td>
                                     </tr>
@@ -180,7 +234,7 @@ const deleteUser = () => {
         </div>
 
         <!-- Create User Modal -->
-        <Modal :show="showingCreateModal" @close="showingCreateModal = false">
+        <Modal :show="showingCreateModal" @close="cancelCreate">
             <div class="p-6">
                 <div class="flex items-center mb-4">
                     <div class="bg-blue-500 p-2 rounded-lg mr-3">
@@ -253,6 +307,7 @@ const deleteUser = () => {
                             id="role"
                             class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                             v-model="form.role_id"
+                            @change="watchRoleChange"
                             required
                         >
                             <option value="">Select Role</option>
@@ -261,8 +316,23 @@ const deleteUser = () => {
                         <InputError class="mt-2" :message="form.errors.role_id" />
                     </div>
 
+                    <div v-if="!isAdminRole(form.role_id)">
+                        <InputLabel for="student_org" value="Student Organization" />
+                        <select
+                            id="student_org"
+                            class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                            v-model="form.student_org_id"
+                        >
+                            <option value="">Select Student Organization (Optional)</option>
+                            <optgroup v-for="org in studentOrgs" :key="org.id" :label="org.college ? org.college.name : 'No College'">
+                                <option :value="org.id">{{ org.acronym }} - {{ org.name }}</option>
+                            </optgroup>
+                        </select>
+                        <InputError class="mt-2" :message="form.errors.student_org_id" />
+                    </div>
+
                     <div class="flex items-center justify-end pt-4 border-t border-gray-100">
-                        <SecondaryButton @click="showingCreateModal = false" class="mr-2">
+                        <SecondaryButton @click="cancelCreate" class="mr-2">
                             Cancel
                         </SecondaryButton>
                         <PrimaryButton 
@@ -278,7 +348,7 @@ const deleteUser = () => {
         </Modal>
 
         <!-- Edit User Modal -->
-        <Modal :show="showingEditModal" @close="showingEditModal = false">
+        <Modal :show="showingEditModal" @close="cancelEdit">
             <div class="p-6">
                 <div class="flex items-center mb-4">
                     <div class="bg-blue-500 p-2 rounded-lg mr-3">
@@ -323,12 +393,28 @@ const deleteUser = () => {
                             id="edit_role"
                             class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                             v-model="editForm.role_id"
+                            @change="watchRoleChange"
                             required
                         >
                             <option value="">Select Role</option>
                             <option v-for="role in roles" :key="role.id" :value="role.id">{{ role.name }}</option>
                         </select>
                         <InputError class="mt-2" :message="editForm.errors.role_id" />
+                    </div>
+
+                    <div v-if="!isAdminRole(editForm.role_id)">
+                        <InputLabel for="edit_student_org" value="Student Organization" />
+                        <select
+                            id="edit_student_org"
+                            class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                            v-model="editForm.student_org_id"
+                        >
+                            <option value="">Select Student Organization (Optional)</option>
+                            <optgroup v-for="org in studentOrgs" :key="org.id" :label="org.college ? org.college.name : 'No College'">
+                                <option :value="org.id">{{ org.acronym }} - {{ org.name }}</option>
+                            </optgroup>
+                        </select>
+                        <InputError class="mt-2" :message="editForm.errors.student_org_id" />
                     </div>
 
                     <div>
@@ -356,7 +442,7 @@ const deleteUser = () => {
                     </div>
 
                     <div class="flex items-center justify-end pt-4 border-t border-gray-100">
-                        <SecondaryButton @click="showingEditModal = false" class="mr-2">
+                        <SecondaryButton @click="cancelEdit" class="mr-2">
                             Cancel
                         </SecondaryButton>
                         <PrimaryButton 
@@ -393,6 +479,7 @@ const deleteUser = () => {
                     <p class="mb-1"><span class="font-medium text-gray-700">Name:</span> {{ userToDelete.name }}</p>
                     <p class="mb-1"><span class="font-medium text-gray-700">Email:</span> {{ userToDelete.email }}</p>
                     <p v-if="userToDelete.role"><span class="font-medium text-gray-700">Role:</span> {{ userToDelete.role.name }}</p>
+                    <p v-if="userToDelete.student_org"><span class="font-medium text-gray-700">Student Organization:</span> {{ userToDelete.student_org.name }}</p>
                 </div>
 
                 <div class="mt-6 flex justify-end">

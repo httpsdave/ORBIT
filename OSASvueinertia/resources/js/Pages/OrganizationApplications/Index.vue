@@ -11,8 +11,14 @@ const props = defineProps({
   applications: Array,
   successMessage: String,
   userId: Number,
-  isAdmin: Boolean
+  isAdmin: Boolean,
+  studentOrgs: Array, // Add this
+  selectedStudentOrgId: [String, Number] // Add this
 });
+
+// Add these after the existing refs
+const selectedStudentOrgId = ref(props.selectedStudentOrgId || '');
+const studentOrgs = ref(props.studentOrgs || []);
 
 const message = ref(props.successMessage || null);
 const showMessage = ref(!!props.successMessage);
@@ -41,6 +47,23 @@ const filterApplications = () => {
     app.form_type.toLowerCase().includes(query) ||
     app.status.toLowerCase().includes(query)
   );
+};
+
+// Add this method after filterApplications
+const filterByStudentOrg = () => {
+  const params = new URLSearchParams();
+  if (selectedStudentOrgId.value) {
+    params.append('student_org_id', selectedStudentOrgId.value);
+  }
+  
+  const url = selectedStudentOrgId.value 
+    ? `/applications?${params.toString()}`
+    : '/applications';
+    
+  router.get(url, {}, {
+    preserveState: true,
+    preserveScroll: true
+  });
 };
 
 // Initialize filtered applications
@@ -313,6 +336,8 @@ const refreshApplications = () => {
         </div>
       </div>
     </div>
+
+    
 
     <!-- In parent component -->
     <div class="relative">

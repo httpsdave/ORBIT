@@ -25,4 +25,11 @@ class StudentOrg extends Model
     {
         return $this->belongsTo(College::class);
     }
+    /**
+     * Get the users that belong to this student organization.
+     */
+    public function users()
+    {
+        return $this->hasMany(User::class);
+    }
 }
