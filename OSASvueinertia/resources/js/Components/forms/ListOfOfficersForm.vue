@@ -175,16 +175,14 @@ const submit = () => {
     <h2 class="text-lg font-bold mb-4">List of Officers Form</h2>
     
     <!-- Officer list preview -->
-    <div class="preview-section border p-4 mb-6">
-      <div class="header text-center mb-4">
-        <div class="text-center font-bold">
-          Republic of the Philippines<br>
-          Laguna State Polytechnic University<br>
-          Province of Laguna<br>
-          <br>
-          OFFICE OF STUDENT AFFAIRS AND SERVICES
-        </div>
-      </div>
+    <div class="mt-6 form-content">
+    <div class="header text-center relative">
+        <img src="/images/lspu-logo.png" alt="LSPU Logo" class="absolute top-[-0.5cm] left-[-2cm] w-[250px] h-auto">
+        <p class="text-sm font-bold mb-0">Republic of the Philippines</p>
+        <p class="text-base font-bold university-name mb-0">Laguna State Polytechnic University</p>
+        <p class="text-sm mb-0">Province of Laguna</p>
+        <p class="text-sm mb-0">Office of Student Affairs and Services</p>
+    </div>
       
       <div class="organization-details text-center mb-4">
         <p>Name of Organization: <span class="border-b border-black px-2">{{ form.organization_name }}</span></p>
@@ -334,3 +332,24 @@ const submit = () => {
     </div>
   </div>
 </template>
+
+<style scoped>
+.form-container {
+  font-family: "Times New Roman", Times, serif;
+}
+
+/* You can also add specific styling for the form content if needed */
+.form-content {
+  font-family: "Times New Roman", Times, serif;
+}
+
+/* Make sure input fields also use Times New Roman */
+input, textarea, select {
+  font-family: "Times New Roman", Times, serif;
+}
+
+/* Make sure buttons also use Times New Roman */
+button {
+  font-family: "Times New Roman", Times, serif;
+}
+</style>

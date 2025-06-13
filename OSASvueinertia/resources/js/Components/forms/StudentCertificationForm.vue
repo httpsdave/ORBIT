@@ -22,7 +22,7 @@ const form = useForm({
   application_date: props.initialFormData.application_date || '',
   adviser_name: props.initialFormData.adviser_name || '',
   dean_name: props.initialFormData.dean_name || '',
-  coordinator_name: props.initialFormData.coordinator_name || '',
+ 
   director_name: props.initialFormData.director_name || '',
 
   // Fixed: Convert boolean values properly for checkboxes
@@ -62,9 +62,7 @@ const validateForm = () => {
     errors.value.dean_name = 'Dean/Assoc. Dean Name is required';
   }
   
-  if (!form.coordinator_name.trim()) {
-    errors.value.coordinator_name = 'Coordinator Name is required';
-  }
+  
   
   if (!form.organization_name.trim()) {
     errors.value.organization_name = 'Organization Name is required';
@@ -219,11 +217,7 @@ const submit = () => {
                 <p v-if="errors.dean_name" class="text-red-500 text-sm mt-1">{{ errors.dean_name }}</p>
             </div>
 
-            <div>
-                <label class="block font-bold">Coordinator Name</label>
-                <input v-model="form.coordinator_name" class="border p-2 w-full" required>
-                <p v-if="errors.coordinator_name" class="text-red-500 text-sm mt-1">{{ errors.coordinator_name }}</p>
-            </div>
+            
 
             <div>
                 <label class="block font-bold">Organization Name</label>

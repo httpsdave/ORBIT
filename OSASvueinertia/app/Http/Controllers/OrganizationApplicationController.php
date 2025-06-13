@@ -118,6 +118,7 @@ class OrganizationApplicationController extends Controller
                 'is_not_academic_probation' => 'required|boolean',
                 'is_not_disciplinary_probation' => 'required|boolean',
                 'has_position' => 'required|boolean',
+                'coordinator_name' => 'nullable|string|max:255',
             ]);
             
         }elseif ($request->form_type === 'LSPU-OSAS-SF-007') {
