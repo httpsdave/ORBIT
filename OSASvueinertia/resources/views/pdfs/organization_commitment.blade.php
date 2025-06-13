@@ -186,36 +186,53 @@
             width: 50%;
         }
         
-        /* Modified signature section - moved 50px to the left */
+        /* Modified signature section - moved 30px more to the right */
         .signature-section {
             margin-top: 20px;
             float: right;
             width: 45%;
-            margin-right: 90px; /* Decreased from original value to move left by 50px */
+            margin-right: 30px; /* Reduced from 90px to 60px to move 30px to the right */
         }
 
-        /* Use table layout for better alignment control */
+        /* Fixed signature section styling for tight alignment */
         .signature-section p {
             margin: 0;
             padding: 2px 0; /* Reduced from 4px to 2px */
-            display: table;
-            width: 100%;
             clear: both;
         }
 
-        /* Make label and value behave like table cells */
+        /* Updated signature field styles - individual control for each underline */
+        .signature-field {
+            margin: 2px 0;
+            display: table;
+            width: 100%;
+        }
+
         .signature-label {
             display: table-cell;
-            width: 120px;
-            text-align: left;
-            vertical-align: middle;
+            vertical-align: bottom;
+            padding-right: 5px;
+            white-space: nowrap;
+            width: 1%;
         }
 
         .signature-value {
             display: table-cell;
-            vertical-align: middle;
-            padding-left: 5px;
+            border-bottom: 1px solid black;
+            padding-bottom: 2px;
+            text-align: left;
+            min-height: 14px;
+            vertical-align: bottom;
         }
+
+        /* Individual width controls for each signature field */
+        .sig-name { width: 230px; }
+        .sig-signature { width: 205px; }
+        .sig-college { width: 220px; }
+        .sig-rank { width: 165px; }
+        .sig-address { width: 170px; }
+        .sig-contact { width: 143px; }
+        .sig-date { width: 234px; }
 
         /* Restore paragraph styling for the title */
         .signature-section p:first-child {
@@ -224,7 +241,7 @@
         }
 
         /* Add extra space before the date field */
-        .signature-section p:last-child {
+        .signature-section .signature-field:last-child {
             padding-top: 6px; /* Reduced from 10px to 6px */
         }
         
@@ -283,68 +300,68 @@
             attached to the organization application for recognition.</p>
         </div>
 
-        <!-- Modified signature section with left-aligned labels -->
+        <!-- Updated signature section with individual underline length controls -->
         <div class="signature-section">
             <p><strong>Very respectfully yours,</strong></p>
-            <p>
+            <div class="signature-field">
                 <span class="signature-label">Name:</span>
-                <span class="signature-value underline">{{ $application->adviser_name ?? '_______________________________' }}</span>
-            </p>
-            <p>
+                <span class="signature-value sig-name">{{ $application->adviser_name ?? '' }}</span>
+            </div>
+            <div class="signature-field">
                 <span class="signature-label">Signature:</span>
-                <span class="signature-value underline">{{ $application->adviser_signature ?? '' }}</span>
-            </p>
-            <p>
+                <span class="signature-value sig-signature">{{ $application->adviser_signature ?? '' }}</span>
+            </div>
+            <div class="signature-field">
                 <span class="signature-label">College:</span>
-                <span class="signature-value underline">{{ $application->adviser_college ?? '_______________________________' }}</span>
-            </p>
-            <p>
+                <span class="signature-value sig-college">{{ $application->adviser_college ?? '' }}</span>
+            </div>
+            <div class="signature-field">
                 <span class="signature-label">Academic Rank:</span>
-                <span class="signature-value underline">{{ $application->adviser_rank ?? '_______________________________' }}</span>
-            </p>
-            <p>
+                <span class="signature-value sig-rank">{{ $application->adviser_rank ?? '' }}</span>
+            </div>
+            <div class="signature-field">
                 <span class="signature-label">Home Address:</span>
-                <span class="signature-value underline">{{ $application->adviser_address ?? '_______________________________' }}</span>
-            </p>
-            <p>
+                <span class="signature-value sig-address">{{ $application->adviser_address ?? '' }}</span>
+            </div>
+            <div class="signature-field">
                 <span class="signature-label">Contact Number(s):</span>
-                <span class="signature-value underline">{{ $application->adviser_contact ?? '_______________________________' }}</span>
-            </p>
-            <p>
+                <span class="signature-value sig-contact">{{ $application->adviser_contact ?? '' }}</span>
+            </div>
+            <div class="signature-field">
                 <span class="signature-label">Date:</span>
-                <span class="signature-value underline">{{ \Carbon\Carbon::parse($application->form_date)->format('F d, Y') ?? '_______________________________' }}</span>
-            </p>
-        </div>
-    </div>
-
-    <!-- Noted section repositioned higher and more to the right -->
-<div class="noted-section" style="bottom: 300px;">
-    <p style="margin-bottom: 25px;">Noted:</p>
-    <div style="margin-left: 70px;"> <!-- Shift these elements 50px to the left -->
-        <p><span class="underline">{{ $application->dean_name ?? '_______________________________' }}</span></p>
-        <p>Dean/Assoc. Dean of College</p>
-    </div>
-</div>
-
-    <!-- Bottom sections positioned at bottom center -->
-    <div class="bottom-sections">
-        <div class="approval-section" style="margin-bottom: 25px;"> <!-- Spacing between sections -->
-            <p style="margin-bottom: 20px;">Recommending Approval:</p> <!-- Added 20px spacing under this text -->
-            <p><strong><span class="underline">{{ $application->coordinator_name ?? '_______________________________' }}</span></strong></p>
-            <p>Coordinator, Student Organization Unit</p>
+                <span class="signature-value sig-date">{{ \Carbon\Carbon::parse($application->form_date)->format('F d, Y') ?? '' }}</span>
+            </div>
         </div>
 
-        <div class="approval-section">
-            <p style="margin-bottom: 20px;">Approved / Disapproved:</p> <!-- Added 20px spacing under this text -->
-            <p><strong><span class="underline">{{ $application->director_name ?? '_______________________________' }}</span></trong></p>
-            <p>Director, Office of Student Affairs and Services</p>
+        <!-- Noted section repositioned higher and more to the right -->
+        <div class="noted-section" style="bottom: 300px;">
+            <p style="margin-bottom: 25px;">Noted:</p>
+            <div style="margin-left: 70px;"> <!-- Shift these elements 50px to the left -->
+                <p><span class="underline">{{ $application->dean_name ?? '_______________________________' }}</span></p>
+                <p>Dean/Assoc. Dean of College</p>
+            </div>
         </div>
-    </div>
 
-    <div class="doc-footer">
-        <div class="footer-left">LSPU-OSAS-SF-003</div>
-        <div class="footer-center">Rev. 1</div>
-        <div class="footer-right">09 November 2020</div>
+        <!-- Bottom sections positioned at bottom center -->
+        <div class="bottom-sections">
+            <div class="approval-section" style="margin-bottom: 25px;"> <!-- Spacing between sections -->
+                <p style="margin-bottom: 20px;">Recommending Approval:</p> <!-- Added 20px spacing under this text -->
+                <p><strong><span class="underline">{{ $application->coordinator_name ?? '_______________________________' }}</span></strong></p>
+                <p>Coordinator, Student Organization Unit</p>
+            </div>
+
+            <div class="approval-section">
+                <p style="margin-bottom: 20px;">Approved / Disapproved:</p> <!-- Added 20px spacing under this text -->
+                <p><strong><span class="underline">{{ $application->director_name ?? '_______________________________' }}</span></strong></p>
+                <p>Director, Office of Student Affairs and Services</p>
+            </div>
+        </div>
+
+        <div class="doc-footer">
+            <div class="footer-left">LSPU-OSAS-SF-003</div>
+            <div class="footer-center">Rev. 1</div>
+            <div class="footer-right">09 November 2020</div>
+        </div>
     </div>
 
 </body>
