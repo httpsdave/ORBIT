@@ -176,50 +176,50 @@ const submit = () => {
     
     <!-- Officer list preview -->
     <div class="mt-6 form-content">
-    <div class="header text-center relative">
-        <img src="/images/lspu-logo.png" alt="LSPU Logo" class="absolute top-[-0.5cm] left-[-2cm] w-[250px] h-auto">
-        <p class="text-sm font-bold mb-0">Republic of the Philippines</p>
+      <div class="header text-center relative">
+        <img src="/images/lspu-logo.png" alt="LSPU Logo" class="absolute top-[-0.5rem] left-[-2rem] w-[250px] h-auto">
+        <p class="text-sm font-normal mb-0">Republic of the Philippines</p>
         <p class="text-base font-bold university-name mb-0">Laguna State Polytechnic University</p>
         <p class="text-sm mb-0">Province of Laguna</p>
-        <p class="text-sm mb-0">Office of Student Affairs and Services</p>
-    </div>
-      
-      <div class="organization-details text-center mb-4">
-        <p>Name of Organization: <span class="border-b border-black px-2">{{ form.organization_name }}</span></p>
-        <p>A.Y. {{ form.academic_year_start }}-{{ form.academic_year_end }}</p>
+        <p class="text-sm font-bold mb-0">OFFICE OF STUDENT AFFAIRS AND SERVICES</p>
       </div>
       
-      <div class="list-title text-center font-bold mb-4">LIST OF OFFICERS</div>
+      <div class="organization-details text-center mt-2 mb-4">
+        <p class="mb-1">Name of Organization: {{ form.organization_name }}</p>
+        <p class="mb-0">A.Y. {{ form.academic_year_start }}-{{ form.academic_year_end }}</p>
+      </div>
+      
+      <div class="list-title text-center font-bold mb-4 text-lg">LIST OF OFFICERS</div>
       
       <!-- Officers list -->
-      <div v-for="(officer, index) in form.officers" :key="index" class="officer-row flex mb-6">
-        <div class="photo-box border border-black w-16 h-16 flex items-center justify-center mr-4 text-xs">
+      <div v-for="(officer, index) in form.officers" :key="index" class="officer-row mb-8 clearfix">
+        <div class="photo-box border border-black float-left mr-4 flex items-center justify-center text-xs">
           <img v-if="getPhotoPreview(officer)" 
                :src="getPhotoPreview(officer)" 
                alt="Officer Photo" 
                class="w-full h-full object-cover">
-          <span v-else>2X2</span>
+          <span v-else class="text-gray-500">2X2</span>
         </div>
-        <div class="officer-details flex-1">
-          <div class="field-row flex mb-2">
-            <div class="field-label w-24">Name</div>
-            <div class="field-colon w-2 mr-1">:</div>
-            <div class="field-value flex-1 border-b border-black">{{ officer.student_name || '' }}</div>
+        <div class="officer-details float-left pt-2">
+          <div class="field-row mb-4">
+            <span class="field-label">Name</span>
+            <span class="field-colon">:</span>
+            <span class="field-value">{{ officer.student_name || '' }}</span>
           </div>
-          <div class="field-row flex mb-2">
-            <div class="field-label w-24">Position</div>
-            <div class="field-colon w-2 mr-1">:</div>
-            <div class="field-value flex-1 border-b border-black">{{ officer.position || '' }}</div>
+          <div class="field-row mb-4">
+            <span class="field-label">Position</span>
+            <span class="field-colon">:</span>
+            <span class="field-value">{{ officer.position || '' }}</span>
           </div>
-          <div class="field-row flex mb-2">
-            <div class="field-label w-24">Student I.D. No.</div>
-            <div class="field-colon w-2 mr-1">:</div>
-            <div class="field-value flex-1 border-b border-black">{{ officer.student_number || '' }}</div>
+          <div class="field-row mb-4">
+            <span class="field-label">Student I.D. No.</span>
+            <span class="field-colon">:</span>
+            <span class="field-value">{{ officer.student_number || '' }}</span>
           </div>
-          <div class="field-row flex mb-2">
-            <div class="field-label w-24">Signature</div>
-            <div class="field-colon w-2 mr-1">:</div>
-            <div class="field-value flex-1 border-b border-black"></div>
+          <div class="field-row mb-4">
+            <span class="field-label">Signature</span>
+            <span class="field-colon">:</span>
+            <span class="field-value"></span>
           </div>
         </div>
       </div>
@@ -338,18 +338,58 @@ const submit = () => {
   font-family: "Times New Roman", Times, serif;
 }
 
-/* You can also add specific styling for the form content if needed */
 .form-content {
   font-family: "Times New Roman", Times, serif;
 }
 
-/* Make sure input fields also use Times New Roman */
 input, textarea, select {
   font-family: "Times New Roman", Times, serif;
 }
 
-/* Make sure buttons also use Times New Roman */
 button {
   font-family: "Times New Roman", Times, serif;
+}
+
+.photo-box {
+  width: 2in;
+  height: 2in;
+}
+
+.officer-details {
+  padding-top: 0.4cm;
+}
+
+.field-label {
+  display: inline-block;
+  width: 120px;
+}
+
+.field-colon {
+  display: inline-block;
+  width: 10px;
+  margin-right: 10px;
+}
+
+.field-value {
+  display: inline-block;
+  min-width: 200px;
+}
+
+.clearfix::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+.officer-row {
+  height: 5.2cm;
+  clear: both;
+}
+
+.university-name {
+  max-width: 60%;
+  height: auto;
+  margin: 4px 0;
+  display: inline-block;
 }
 </style>
