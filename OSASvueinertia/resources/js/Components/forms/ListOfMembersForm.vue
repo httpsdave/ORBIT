@@ -189,11 +189,11 @@ const submit = () => {
   <div class="mt-6 form-content">
     <div class="header text-center relative">
         <img src="/images/lspu-logo.png" alt="LSPU Logo" class="absolute top-[-0.5cm] left-[-2cm] w-[250px] h-auto">
-        <p class="text-sm font-bold mb-0">Republic of the Philippines</p>
+        <p class="text-sm font-normal mb-0">Republic of the Philippines</p>
         <p class="text-base font-bold university-name mb-0">Laguna State Polytechnic University</p>
         <p class="text-sm mb-0">Province of Laguna</p>
-        <p class="text-sm font-bold mb-0">OFFICE OF STUDENT AFFAIRS AND SERVICES</p>
-        <p class="text-sm font-bold mt-4 mb-0">List of Members</p>
+        <p class="text-sm font-bold mb-0 mt-3">OFFICE OF STUDENT AFFAIRS AND SERVICES</p>
+        <p class="text-sm font-bold mt-2 mb-0">List of Members</p>
     </div>
 
     <div class="semester-section text-center mt-4">
@@ -216,60 +216,60 @@ const submit = () => {
 
     <!-- Member list preview -->
     <div class="member-section mt-6">
-        <div v-for="(pair, pairIndex) in Array.from({ length: Math.ceil(form.members.length / 2) })" :key="pairIndex" class="flex mt-4 mb-8">
+        <div v-for="(pair, pairIndex) in Array.from({ length: Math.ceil(form.members.length / 2) })" :key="pairIndex" class="flex mt-4 mb-12">
             <!-- Left member -->
-            <div v-if="pairIndex * 2 < form.members.length" class="w-1/2 flex">
-                <div class="photo-box border border-black w-[70px] h-[70px] flex items-center justify-center mr-2 text-xs">
+            <div v-if="pairIndex * 2 < form.members.length" class="w-1/2 flex pr-4">
+                <div class="photo-box border border-black w-[96px] h-[96px] flex items-center justify-center mr-3 text-xs flex-shrink-0">
                     <img v-if="getPhotoPreview(form.members[pairIndex * 2])" 
                         :src="getPhotoPreview(form.members[pairIndex * 2])" 
                         alt="Member Photo" 
-                        class="w-[68px] h-[68px] object-cover">
-                    <span v-else>1 x 1 PICTURE</span>
+                        class="w-[94px] h-[94px] object-cover">
+                    <span v-else class="text-center leading-tight">1 x 1<br>PICTURE</span>
                 </div>
-                <div class="member-info flex-1 flex flex-col justify-between">
-                    <div class="member-line border-b border-black mb-1 min-h-[20px]">
+                <div class="member-info flex-1 flex flex-col justify-center text-center">
+                    <div class="member-line mb-1 min-h-[20px] py-1">
                         {{ form.members[pairIndex * 2].student_name || '' }}
                     </div>
-                    <div class="member-line border-b border-black mb-1 min-h-[20px]">
-                        ({{ form.members[pairIndex * 2].student_number || '' }})
+                    <div class="member-line mb-1 min-h-[20px] py-1">
+                        {{ form.members[pairIndex * 2].student_number || '' }}
                     </div>
-                    <div class="member-line border-b border-black mb-1 min-h-[20px]">
-                        ({{ form.members[pairIndex * 2].course_year_section || '' }})
+                    <div class="member-line mb-1 min-h-[20px] py-1">
+                        {{ form.members[pairIndex * 2].course_year_section || '' }}
                     </div>
                 </div>
             </div>
             
             <!-- Right member -->
-            <div v-if="pairIndex * 2 + 1 < form.members.length" class="w-1/2 flex">
-                <div class="photo-box border border-black w-[70px] h-[70px] flex items-center justify-center mr-2 text-xs">
+            <div v-if="pairIndex * 2 + 1 < form.members.length" class="w-1/2 flex pl-4">
+                <div class="photo-box border border-black w-[96px] h-[96px] flex items-center justify-center mr-3 text-xs flex-shrink-0">
                     <img v-if="getPhotoPreview(form.members[pairIndex * 2 + 1])" 
                         :src="getPhotoPreview(form.members[pairIndex * 2 + 1])" 
                         alt="Member Photo" 
-                        class="w-[68px] h-[68px] object-cover">
-                    <span v-else>1 x 1 PICTURE</span>
+                        class="w-[94px] h-[94px] object-cover">
+                    <span v-else class="text-center leading-tight">1 x 1<br>PICTURE</span>
                 </div>
-                <div class="member-info flex-1 flex flex-col justify-between">
-                    <div class="member-line border-b border-black mb-1 min-h-[20px]">
+                <div class="member-info flex-1 flex flex-col justify-center text-center">
+                    <div class="member-line mb-1 min-h-[20px] py-1">
                         {{ form.members[pairIndex * 2 + 1].student_name || '' }}
                     </div>
-                    <div class="member-line border-b border-black mb-1 min-h-[20px]">
-                        ({{ form.members[pairIndex * 2 + 1].student_number || '' }})
+                    <div class="member-line mb-1 min-h-[20px] py-1">
+                        {{ form.members[pairIndex * 2 + 1].student_number || '' }}
                     </div>
-                    <div class="member-line border-b border-black mb-1 min-h-[20px]">
-                        ({{ form.members[pairIndex * 2 + 1].course_year_section || '' }})
+                    <div class="member-line mb-1 min-h-[20px] py-1">
+                        {{ form.members[pairIndex * 2 + 1].course_year_section || '' }}
                     </div>
                 </div>
             </div>
             
             <!-- Empty placeholder for right side if odd number of members -->
-            <div v-else-if="pairIndex * 2 < form.members.length" class="w-1/2 flex">
-                <div class="photo-box border border-black w-[70px] h-[70px] flex items-center justify-center mr-2 text-xs">
-                    1 x 1 PICTURE
+            <div v-else-if="pairIndex * 2 < form.members.length" class="w-1/2 flex pl-4">
+                <div class="photo-box border border-black w-[96px] h-[96px] flex items-center justify-center mr-3 text-xs flex-shrink-0">
+                    <span class="text-center leading-tight">1 x 1<br>PICTURE</span>
                 </div>
-                <div class="member-info flex-1 flex flex-col justify-between">
-                    <div class="member-line border-b border-black mb-1 min-h-[20px]"></div>
-                    <div class="member-line border-b border-black mb-1 min-h-[20px]">(Student Number)</div>
-                    <div class="member-line border-b border-black mb-1 min-h-[20px]">(Course - Year Section)</div>
+                <div class="member-info flex-1 flex flex-col justify-center text-center">
+                    <div class="member-line mb-1 min-h-[20px] py-1"></div>
+                    <div class="member-line mb-1 min-h-[20px] py-1">Student Number</div>
+                    <div class="member-line mb-1 min-h-[20px] py-1">Course - Year Section</div>
                 </div>
             </div>
         </div>

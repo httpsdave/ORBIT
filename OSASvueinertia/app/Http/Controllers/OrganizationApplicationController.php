@@ -93,7 +93,7 @@ class OrganizationApplicationController extends Controller
                 'activities.*.description' => 'required|string|max:1000',
                 'activities.*.persons_involved' => 'required|string|max:255',
                 'activities.*.target_date' => 'required|date',
-                'activities.*.budget' => 'required|numeric|min:0',
+                'activities.*.budget' => 'required|numeric|min:0|max:9999999999999.99',
             ]);
         }
         elseif ($request->form_type === 'LSPU-OSAS-SF-005') {

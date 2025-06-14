@@ -97,7 +97,7 @@ onMounted(() => {
   <!-- Navigation Links - Wrap in overflow container -->
   <div class="flex-grow overflow-y-auto custom-scrollbar flex flex-col">
     <!-- Main navigation section -->
-    <nav class="mt-4 px-2 space-y-1 flex-grow" aria-label="Main navigation">
+    <nav class="mt-4 px-2 space-y-4 flex-grow" aria-label="Main navigation">
       <!-- Navigation items based on role -->
       <template v-for="(item, index) in navItems" :key="`nav-item-${index}`">
         <NavigationItem 

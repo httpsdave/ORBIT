@@ -162,8 +162,11 @@ const validateForm = () => {
       isValid = false;
     }
 
-    if (activity.budget === null || activity.budget === undefined || activity.budget < 0) {
+   if (activity.budget === null || activity.budget === undefined || activity.budget < 0) {
       errors.value.activities[index].budget = 'Budget is required and must be 0 or greater';
+      isValid = false;
+    } else if (activity.budget > 9999999999999.99) {
+      errors.value.activities[index].budget = 'Budget cannot exceed 9,999,999,999,999.99';
       isValid = false;
     }
   });
@@ -323,7 +326,7 @@ const submit = () => {
                                         <p v-if="errors.activities?.[index]?.target_date" class="text-red-500 text-xs mt-1">{{ errors.activities[index].target_date }}</p>
                                     </td>
                                     <td class="border border-gray-300 p-2">
-                                        <input type="number" v-model.number="activity.budget" step="0.01" min="0" class="w-full p-1 text-sm" required>
+                                        <input type="number" v-model.number="activity.budget" step="0.01" min="0" max="9999999999999.99" class="w-full p-1 text-sm" required>
                                         <p v-if="errors.activities?.[index]?.budget" class="text-red-500 text-xs mt-1">{{ errors.activities[index].budget }}</p>
                                     </td>
                                     <td class="border border-gray-300 p-2 text-center">
