@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { Link, router } from '@inertiajs/vue3';
 import { Head } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
@@ -12,20 +12,21 @@ const props = defineProps({
   successMessage: String,
   userId: Number,
   isAdmin: Boolean,
-  studentOrgs: Array, // Add this
-  selectedStudentOrgId: [String, Number] // Add this
+  users: Array,
+  currentUserFilter: String,
 });
 
-// Add these after the existing refs
-const selectedStudentOrgId = ref(props.selectedStudentOrgId || '');
-const studentOrgs = ref(props.studentOrgs || []);
+const selectedUser = ref(props.currentUserFilter || '');
+const isFiltering = ref(false);
 
 const message = ref(props.successMessage || null);
 const showMessage = ref(!!props.successMessage);
+
+// Combined search and filter states
 const searchQuery = ref('');
+const searchType = ref('all'); // all, organization, president, form_type, status
 const filteredApplications = ref([]);
 const formElement = ref(null);
-// Fix #1: Add the missing activeDropdown ref
 const activeDropdown = ref(null);
 
 // Status update variables
@@ -33,7 +34,40 @@ const showStatusModal = ref(false);
 const selectedApplication = ref(null);
 const isSubmitting = ref(false);
 
-// Filter applications based on search query
+// Search type options for admins
+const searchTypeOptions = computed(() => {
+  const baseOptions = [
+    { value: 'all', label: 'All Fields' },
+   
+    { value: 'president', label: 'President' },
+    { value: 'form_type', label: 'Form Type' },
+    { value: 'status', label: 'Status' }
+  ];
+  
+  // Regular users only see "All Fields" option
+  return props.isAdmin ? baseOptions : [{ value: 'all', label: 'Search Applications' }];
+});
+
+// Get placeholder text based on search type
+const searchPlaceholder = computed(() => {
+  if (!props.isAdmin) {
+    return 'Search applications by president, form type, or status...';
+  }
+  
+  switch (searchType.value) {
+    
+    case 'president':
+      return 'Search by president name...';
+    case 'form_type':
+      return 'Search by form type...';
+    case 'status':
+      return 'Search by status...';
+    default:
+      return 'Search applications by any field...';
+  }
+});
+
+// Combined filter function
 const filterApplications = () => {
   if (!searchQuery.value) {
     filteredApplications.value = props.applications;
@@ -41,29 +75,55 @@ const filterApplications = () => {
   }
   
   const query = searchQuery.value.toLowerCase();
-  filteredApplications.value = props.applications.filter(app => 
-    app.organization_name.toLowerCase().includes(query) ||
-    app.president_name.toLowerCase().includes(query) ||
-    app.form_type.toLowerCase().includes(query) ||
-    app.status.toLowerCase().includes(query)
-  );
+  
+  filteredApplications.value = props.applications.filter(app => {
+    switch (searchType.value) {
+      case 'organization':
+        return app.organization_name.toLowerCase().includes(query);
+      case 'president':
+        return app.president_name.toLowerCase().includes(query);
+      case 'form_type':
+        return app.form_type.toLowerCase().includes(query);
+      case 'status':
+        return app.status.toLowerCase().includes(query);
+      default: // 'all'
+        return app.organization_name.toLowerCase().includes(query) ||
+               app.president_name.toLowerCase().includes(query) ||
+               app.form_type.toLowerCase().includes(query) ||
+               app.status.toLowerCase().includes(query);
+    }
+  });
 };
 
-// Add this method after filterApplications
-const filterByStudentOrg = () => {
-  const params = new URLSearchParams();
-  if (selectedStudentOrgId.value) {
-    params.append('student_org_id', selectedStudentOrgId.value);
-  }
-  
-  const url = selectedStudentOrgId.value 
-    ? `/applications?${params.toString()}`
-    : '/applications';
+// Organization filter function (admin only)
+const filterByUser = () => {
+    isFiltering.value = true;
     
-  router.get(url, {}, {
-    preserveState: true,
-    preserveScroll: true
-  });
+    const url = new URL(window.location);
+    
+    if (selectedUser.value) {
+        url.searchParams.set('user_filter', selectedUser.value);
+    } else {
+        url.searchParams.delete('user_filter');
+    }
+    
+    router.visit(url.toString(), {
+        preserveScroll: true,
+        onFinish: () => {
+            isFiltering.value = false;
+        }
+    });
+};
+
+const clearUserFilter = () => {
+    selectedUser.value = '';
+    filterByUser();
+};
+
+const clearSearch = () => {
+    searchQuery.value = '';
+    searchType.value = 'all';
+    filterApplications();
 };
 
 // Initialize filtered applications
@@ -81,22 +141,17 @@ onMounted(() => {
   if (formElement.value) {
     formElement.value.classList.add('opacity-100');
   }
-  
-  
 });
 
 const deleteApplication = (id) => {
   if (confirm('Are you sure you want to delete this application? This action cannot be undone.')) {
     router.delete(`/applications/${id}`, {
       onSuccess: () => {
-        // Update the local applications array by removing the deleted item
         filteredApplications.value = filteredApplications.value.filter(app => app.id !== id);
         
-        // Show success message
         message.value = "Application deleted successfully!";
         showMessage.value = true;
         
-        // Auto-hide message after 5 seconds
         setTimeout(() => {
           showMessage.value = false;
         }, 5000);
@@ -109,46 +164,39 @@ const deleteApplication = (id) => {
   }
 };
 
-// Open status update modal
 const openStatusModal = (app) => {
   selectedApplication.value = app;
   showStatusModal.value = true;
 };
 
-// Close status update modal
 const closeStatusModal = () => {
   showStatusModal.value = false;
   selectedApplication.value = null;
 };
 
-// Update application status
 const updateApplicationStatus = (statusData) => {
   if (!selectedApplication.value) return;
   
   isSubmitting.value = true;
   
-  // Check if we're using Inertia - if so, use Inertia methods
   if (typeof router !== 'undefined' && router.post) {
     router.post(`/applications/${selectedApplication.value.id}/update-status`, {
       status: statusData.status,
       feedback: statusData.feedback
     }, {
       onSuccess: () => {
-        // Update the application in the local array
         const index = filteredApplications.value.findIndex(app => app.id === selectedApplication.value.id);
         if (index !== -1) {
           filteredApplications.value[index].status = statusData.status;
           filteredApplications.value[index].feedback = statusData.feedback;
         }
         
-        // Close modal and show success message
         closeStatusModal();
         isSubmitting.value = false;
         
         message.value = "Application status updated successfully!";
         showMessage.value = true;
         
-        // Auto-hide message after 5 seconds
         setTimeout(() => {
           showMessage.value = false;
         }, 5000);
@@ -160,7 +208,6 @@ const updateApplicationStatus = (statusData) => {
       }
     });
   } else {
-    // Fallback to standard fetch API if Inertia isn't available
     fetch(`/applications/${selectedApplication.value.id}/update-status`, {
       method: 'POST',
       headers: {
@@ -177,21 +224,18 @@ const updateApplicationStatus = (statusData) => {
       return response.json();
     })
     .then(data => {
-      // Update the application in the local array
       const index = filteredApplications.value.findIndex(app => app.id === selectedApplication.value.id);
       if (index !== -1) {
         filteredApplications.value[index].status = statusData.status;
         filteredApplications.value[index].feedback = statusData.feedback;
       }
       
-      // Close modal and show success message
       closeStatusModal();
       isSubmitting.value = false;
       
       message.value = "Application status updated successfully!";
       showMessage.value = true;
       
-      // Auto-hide message after 5 seconds
       setTimeout(() => {
         showMessage.value = false;
       }, 5000);
@@ -204,26 +248,18 @@ const updateApplicationStatus = (statusData) => {
   }
 };
 
-
-
-// Fix #2: Add the missing handleDocumentUpload method
 const handleDocumentUpload = (applicationId, formData) => {
-  // Set loading state if needed
   message.value = "Uploading document...";
   showMessage.value = true;
   
-  // Use Inertia for the upload if available
   if (typeof router !== 'undefined' && router.post) {
     router.post(`/applications/${applicationId}/upload-document`, formData, {
       onSuccess: () => {
-        // Show success message
         message.value = "Document uploaded successfully!";
         showMessage.value = true;
         
-        // Refresh applications list or update specific application
         refreshApplications();
         
-        // Auto-hide message after 5 seconds
         setTimeout(() => {
           showMessage.value = false;
         }, 5000);
@@ -234,11 +270,9 @@ const handleDocumentUpload = (applicationId, formData) => {
       }
     });
   } else {
-    // Fallback to standard fetch API if Inertia isn't available
     fetch(`/applications/${applicationId}/upload-document`, {
       method: 'POST',
       body: formData,
-      // No need to set Content-Type as FormData will set it with boundary
       headers: {
         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
       }
@@ -248,14 +282,11 @@ const handleDocumentUpload = (applicationId, formData) => {
       return response.json();
     })
     .then(data => {
-      // Show success message
       message.value = "Document uploaded successfully!";
       showMessage.value = true;
       
-      // Refresh applications list
       refreshApplications();
       
-      // Auto-hide message after 5 seconds
       setTimeout(() => {
         showMessage.value = false;
       }, 5000);
@@ -267,9 +298,7 @@ const handleDocumentUpload = (applicationId, formData) => {
   }
 };
 
-// Add to parent component
 const refreshApplications = () => {
-  // You might want to fetch fresh data here, or just use what you have
   filteredApplications.value = [...props.applications];
 };
 </script>
@@ -312,34 +341,108 @@ const refreshApplications = () => {
       </div>
     </div>
 
-    <!-- Search Box -->
-    <div class="mb-6">
-      <div class="relative rounded-xl shadow-sm">
-        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
+    <!-- Combined Search and Filter Section -->
+    <div class="mb-6 flex flex-col lg:flex-row gap-4">
+      <!-- Search Section -->
+      <div class="flex-1">
+        <div class="flex rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <!-- Search Type Selector (Admin Only) -->
+          <div v-if="isAdmin" class="relative">
+            <select
+              v-model="searchType"
+              @change="filterApplications"
+              class="h-full py-4 pl-4 pr-8 border-0 border-r border-gray-200 bg-gray-50 text-gray-700 focus:ring-0 focus:border-gray-200 text-sm font-medium min-w-32"
+            >
+              <option v-for="option in searchTypeOptions" :key="option.value" :value="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+          
+          <!-- Search Input -->
+          <div class="flex-1 relative">
+            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <input
+              type="text"
+              v-model="searchQuery"
+              @input="filterApplications"
+              class="block w-full pl-12 pr-12 py-4 border-0 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-150"
+              :placeholder="searchPlaceholder"
+            />
+            <div v-if="searchQuery" class="absolute inset-y-0 right-0 pr-4 flex items-center">
+              <button @click="clearSearch" class="text-gray-400 hover:text-gray-600">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                </svg>
+              </button>
+            </div>
+          </div>
         </div>
-        <input
-          type="text"
-          v-model="searchQuery"
-          @input="filterApplications"
-          class="form-input block w-full pl-12 pr-12 py-4 rounded-xl border-gray-200 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 transition duration-150"
-          placeholder="Search applications by organization, president, form type, or status..."
-        />
-        <div v-if="searchQuery" class="absolute inset-y-0 right-0 pr-4 flex items-center">
-          <button @click="searchQuery = ''; filterApplications()" class="text-gray-400 hover:text-gray-600">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-            </svg>
-          </button>
+      </div>
+
+      <!-- Organization Filter Section (Admin Only) -->
+      <div v-if="isAdmin && users.length > 0" class="lg:w-80">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+          <div class="flex items-center gap-3">
+            <div class="flex-1">
+              <label for="user-filter" class="block text-sm font-medium text-gray-700 mb-2">
+                Filter by Organization
+              </label>
+              <select 
+                id="user-filter"
+                v-model="selectedUser"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
+                :disabled="isFiltering"
+              >
+                <option value="">All Organizations</option>
+                <option 
+                  v-for="user in users" 
+                  :key="user.id" 
+                  :value="user.id"
+                >
+                  {{ user.name }}
+                </option>
+              </select>
+            </div>
+            <div class="flex gap-2 mt-6">
+              <button
+                @click="filterByUser"
+                :disabled="isFiltering"
+                class="px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 transition duration-200 text-sm font-medium"
+              >
+                <span v-if="isFiltering">...</span>
+                <span v-else>Apply</span>
+              </button>
+              <button
+                v-if="selectedUser"
+                @click="clearUserFilter"
+                :disabled="isFiltering"
+                class="px-3 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-50 transition duration-200 text-sm font-medium"
+              >
+                Clear
+              </button>
+            </div>
+          </div>
+          
+          <!-- Current Filter Status -->
+          <div v-if="currentUserFilter" class="mt-3 pt-3 border-t border-gray-100">
+            <div class="flex items-center text-sm text-gray-600">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z" />
+              </svg>
+              <span class="font-medium">Showing:</span>
+              <span class="ml-1">{{ users.find(u => u.id == currentUserFilter)?.name }}</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    
-
-    <!-- In parent component -->
+    <!-- Applications Table -->
     <div class="relative">
       <ApplicationsTable 
         v-if="filteredApplications.length > 0" 

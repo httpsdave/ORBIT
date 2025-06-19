@@ -305,7 +305,7 @@ const closeDropdowns = (event) => {
               <div class="text-xs text-gray-500 mt-1">{{ app.form_type }}</div>
             </td>
             <td class="px-6 py-5">
-              <div class="text-sm font-medium text-gray-800">{{ app.organization_name }}</div>
+              <div class="text-sm font-medium text-gray-800">{{ app.user.name }}</div>
             </td>
             <td class="px-6 py-5">
               <div class="text-sm text-gray-600">{{ app.president_name }}</div>

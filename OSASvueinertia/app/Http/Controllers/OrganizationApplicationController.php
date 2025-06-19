@@ -12,29 +12,44 @@ use Illuminate\Support\Facades\Storage;
 
 class OrganizationApplicationController extends Controller
 {
-    public function index()
-    {
-        // If user is admin, show all applications
-        if (auth()->user()->isAdmin()) {
-            $applications = OrganizationApplication::orderBy('created_at', 'asc')->get();
-        } else {
-            // For regular users, only show their own applications
-            $applications = OrganizationApplication::where('user_id', auth()->id())->orderBy('created_at', 'desc')->get();
-                    
-           
-            if ($applications->isEmpty()) {
-                // For testing, you might want to see all applications if none are found
-                // $applications = OrganizationApplication::all();
-            }
+    public function index(Request $request)
+{
+    $query = OrganizationApplication::query();
+    
+    // If user is admin, show all applications or filter by user
+    if (auth()->user()->isAdmin()) {
+        // Apply user filter if provided
+        if ($request->filled('user_filter')) {
+            $query->where('user_id', $request->user_filter);
         }
         
-        return Inertia::render('OrganizationApplications/Index', [
-            'applications' => $applications,
-            'userId' => auth()->id(), // Send user ID to the frontend for debugging
-            'isAdmin' => auth()->user()->isAdmin() // Send admin status to frontend
-        ]);
+        $applications = $query->with('user')
+            ->orderBy('created_at', 'asc')
+            ->get();
+        
+        // Get all users who have submitted applications for the filter dropdown
+        $users = \App\Models\User::whereHas('organizationApplications')
+            ->select('id', 'name', 'student_org_id')
+            ->orderBy('name')
+            ->get();
+            
+    } else {
+        // For regular users, only show their own applications
+        $applications = $query->where('user_id', auth()->id())
+            ->with('user')
+            ->orderBy('created_at', 'desc')
+            ->get();
+        $users = collect(); // Empty collection for non-admins
     }
-
+    
+    return Inertia::render('OrganizationApplications/Index', [
+        'applications' => $applications,
+        'users' => $users,
+        'currentUserFilter' => $request->user_filter,
+        'userId' => auth()->id(),
+        'isAdmin' => auth()->user()->isAdmin()
+    ]);
+}
     public function create()
     {
         return Inertia::render('OrganizationApplications/Create');

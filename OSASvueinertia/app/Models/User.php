@@ -58,6 +58,11 @@ class User extends Authenticatable
         return $this->hasMany(OrganizationApplication::class);
     }
 
+    public function organizationApplications()
+    {
+        return $this->hasMany(OrganizationApplication::class);
+    }
+
     /**
      * Get the notifications for the user.
      */
