@@ -24,7 +24,7 @@ class OrganizationApplicationController extends Controller
         }
         
         $applications = $query->with('user')
-            ->orderBy('created_at', 'asc')
+            ->orderBy('created_at', 'desc')
             ->get();
         
         // Get all users who have submitted applications for the filter dropdown
