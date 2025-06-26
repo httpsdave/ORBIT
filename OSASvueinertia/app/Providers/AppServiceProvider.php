@@ -27,6 +27,10 @@ class AppServiceProvider extends ServiceProvider
             return new Role();
         });
         
+        // Force HTTPS in production
+        if ($this->app->environment('production')) {
+            URL::forceScheme('https');
+        }
 
         
     }
