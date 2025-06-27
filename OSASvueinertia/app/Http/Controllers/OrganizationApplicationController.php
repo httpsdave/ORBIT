@@ -81,7 +81,7 @@ class OrganizationApplicationController extends Controller
                 'college' => 'required|string|max:255',
                 'academic_year_start' => 'required|string|max:10',
                 'academic_year_end' => 'required|string|max:10',
-                'chairperson_name' => 'required|string|max:255',
+                'director_name' => 'required|string|max:255',
             ]);
         } elseif ($request->form_type === 'LSPU-OSAS-SF-003') {
             // Commitment form specific validation
@@ -171,7 +171,6 @@ class OrganizationApplicationController extends Controller
         if ($request->form_type === 'LSPU-OSAS-SF-002') 
         {
             $data['application_date'] = now(); // Use current date for renewal forms
-            $data['director_name'] = $data['chairperson_name']; // Use chairperson name for director
         }
         elseif ($request->form_type === 'LSPU-OSAS-SF-003') 
         {
@@ -286,7 +285,7 @@ class OrganizationApplicationController extends Controller
             'college' => 'required|string|max:255',
             'academic_year_start' => 'required|string|max:10',
             'academic_year_end' => 'required|string|max:10',
-            'chairperson_name' => 'required|string|max:255',
+            'director_name' => 'required|string|max:255',
         ]);
     } elseif ($application->form_type === 'LSPU-OSAS-SF-003') {
         $validationRules = array_merge($validationRules, [

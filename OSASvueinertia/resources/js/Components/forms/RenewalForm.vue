@@ -25,7 +25,7 @@ const form = useForm({
   adviser_name: props.initialFormData.adviser_name || '',
   dean_name: props.initialFormData.dean_name || '',
   coordinator_name: props.initialFormData.coordinator_name || '',
-  chairperson_name: props.initialFormData.chairperson_name || '',
+  director_name: props.initialFormData.director_name || '',
 });
 
 // Add errors ref object
@@ -77,8 +77,8 @@ const validateForm = () => {
     isValid = false;
   }
 
-  if (!form.chairperson_name.trim()) {
-    errors.value.chairperson_name = 'Chairperson Name is required';
+  if (!form.director_name.trim()) {
+    errors.value.director_name = 'Director Name is required';
     isValid = false;
   }
 
@@ -179,7 +179,7 @@ const submit = () => {
     <div class="section text-center">
         <p class="mb-1">Approved / Disapproved:</p>
         <div class="signature">
-            <p class="mb-0"><span class="signature-line text-center border-b border-black min-w-[250px] inline-block">{{ form.chairperson_name }}</span></p>
+            <p class="mb-0"><span class="signature-line text-center border-b border-black min-w-[250px] inline-block">{{ form.director_name }}</span></p>
             <p class="mb-0">Chairperson, Office of Student Affairs and Services</p>
         </div>
     </div>
@@ -239,8 +239,8 @@ const submit = () => {
 
             <div>
                 <label class="block font-bold">Chairperson Name</label>
-                <input v-model="form.chairperson_name" class="border p-2 w-full" required>
-                <p v-if="errors.chairperson_name" class="text-red-500 text-sm mt-1">{{ errors.chairperson_name }}</p>
+                <input v-model="form.director_name" class="border p-2 w-full" required>
+                <p v-if="errors.director_name" class="text-red-500 text-sm mt-1">{{ errors.director_name }}</p>
             </div>
         </div>
 

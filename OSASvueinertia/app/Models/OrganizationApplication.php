@@ -24,7 +24,6 @@ class OrganizationApplication extends Model
         'college',
         'academic_year_start',
         'academic_year_end',
-        'chairperson_name',
         'application_date',
         'director_name',
 

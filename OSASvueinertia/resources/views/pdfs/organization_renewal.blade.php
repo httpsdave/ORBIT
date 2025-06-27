@@ -288,7 +288,7 @@
         <div class="section center-align">
             <p>Approved / Disapproved:</p>
             <div class="signature">
-                <p><span class="signature-line"><strong>{{ $application->chairperson_name }}</strong></span></p>
+                <p><span class="signature-line"><strong>{{ $application->director_name }}</strong></span></p>
                 <p>Chairperson, Office of Student Affairs and Services</p>
             </div>
         </div>
