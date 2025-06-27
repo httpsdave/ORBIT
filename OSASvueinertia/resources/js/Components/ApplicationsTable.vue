@@ -39,7 +39,7 @@ const formTypeToName = (formType) => {
     case 'LSPU-OSAS-SF-003':
       return 'Commitment Form';
     case 'LSPU-OSAS-SF-004':
-      return 'Activity Plan';
+      return 'Plan of Activities';
     case 'LSPU-OSAS-SF-005':
       return 'Members List';
     case 'LSPU-OSAS-SF-006':
@@ -250,7 +250,7 @@ const closeDropdowns = (event) => {
       ref="fileInput"
       type="file" 
       @change="handleFileSelection"
-      accept=".pdf,.jpg,.jpeg,.png"
+      accept=".pdf"
       class="hidden"
     />
     
@@ -399,6 +399,7 @@ const closeDropdowns = (event) => {
                   
                   <!-- Upload document option -->
                   <button
+                    v-if="isAdmin || (!isAdmin && app.status !== 'Approved')"
                     @click="triggerFileUpload(app.id)"
                     class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200"
                   >
@@ -410,7 +411,7 @@ const closeDropdowns = (event) => {
 
                   <!-- Delete document option (only if document exists) -->
                   <button 
-                    v-if="app.signed_document_path"
+                    v-if="app.signed_document_path && (isAdmin || (!isAdmin && app.status !== 'Approved'))"
                     @click="deleteDocument(app.id)"
                     class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200"
                   >
@@ -436,6 +437,7 @@ const closeDropdowns = (event) => {
                   
                   <!-- Edit Application -->
                   <Link 
+                    v-if="isAdmin || (!isAdmin && app.status !== 'Approved')"
                     :href="`/applications/${app.id}/edit`" 
                     class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200"
                   >
@@ -458,6 +460,7 @@ const closeDropdowns = (event) => {
                   
                   <!-- Delete Application -->
                   <button 
+                    v-if="isAdmin || (!isAdmin && app.status !== 'Approved')"
                     @click="handleAction(app, 'delete')" 
                     class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 transition duration-200 border-t border-gray-100 mt-1 pt-1"
                   >

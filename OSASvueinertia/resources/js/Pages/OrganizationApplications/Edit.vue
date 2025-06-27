@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue';
-import { useForm,router } from '@inertiajs/vue3';
+import { useForm,router, usePage } from '@inertiajs/vue3';
 import StudentOrganizationForm from '@/Components/forms/StudentOrganizationForm.vue';
 import RenewalForm from '@/Components/forms/RenewalForm.vue';
 import CommitmentForm from '@/Components/forms/CommitmentForm.vue';
@@ -16,6 +16,9 @@ const props = defineProps({
     required: true
   }
 });
+
+const user = usePage().props.auth.user;
+const isAdmin = user && (user.role?.slug === 'admin' || user.is_admin || (typeof user.role === 'object' && user.role.id === 1));
 
 // Initialize form data based on the application type
 const initializeFormData = () => {
@@ -156,10 +159,10 @@ const deleteSignedDocument = () => {
     <div v-if="props.application.signed_document_path" class="mb-6 p-4 bg-gray-100 rounded">
       <h2 class="text-lg font-semibold">Signed Document</h2>
       <div class="flex items-center mt-2">
-        <button @click="downloadSignedDocument" class="bg-blue-500 text-white px-3 py-1 rounded mr-2">
+        <button v-if="props.application.signed_document_path" @click="downloadSignedDocument" class="bg-blue-500 text-white px-3 py-1 rounded mr-2">
           View Document
         </button>
-        <button @click="deleteSignedDocument" class="bg-red-500 text-white px-3 py-1 rounded">
+        <button v-if="props.application.signed_document_path && isAdmin" @click="deleteSignedDocument" class="bg-red-500 text-white px-3 py-1 rounded">
           Delete Document
         </button>
       </div>
@@ -178,7 +181,7 @@ const deleteSignedDocument = () => {
     </div>
     
     <!-- Display the appropriate form based on form_type -->
-    <div>
+    <div v-if="isAdmin || props.application.status !== 'Approved'">
       <!-- Student Organization Form -->
       <StudentOrganizationForm 
         v-if="props.application.form_type === 'LSPU-OSAS-SF-001'" 
@@ -247,6 +250,9 @@ const deleteSignedDocument = () => {
       <div v-else class="bg-red-100 p-4 rounded">
         <p>Unknown form type: {{ props.application.form_type }}</p>
       </div>
+    </div>
+    <div v-else class="bg-gray-50 p-4 rounded text-gray-500 text-center">
+      <p>This application has been approved and can no longer be edited. You may only view or download the application.</p>
     </div>
   </div>
 </template>
