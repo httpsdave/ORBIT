@@ -10,6 +10,7 @@ import NoApplicationsMessage from '@/Components/NoApplicationsMessage.vue';
 const props = defineProps({ 
   applications: Array,
   successMessage: String,
+  errorMessage: String,
   userId: Number,
   isAdmin: Boolean,
   users: Array,
@@ -19,8 +20,8 @@ const props = defineProps({
 const selectedUser = ref(props.currentUserFilter || '');
 const isFiltering = ref(false);
 
-const message = ref(props.successMessage || null);
-const showMessage = ref(!!props.successMessage);
+const message = ref(props.successMessage || props.errorMessage || null);
+const showMessage = ref(!!props.successMessage || !!props.errorMessage);
 
 // Combined search and filter states
 const searchQuery = ref('');
@@ -324,14 +325,17 @@ const refreshApplications = () => {
       </div>
     </template>
 
-    <!-- Success Message -->
+    <!-- Success/Error Message -->
     <div v-if="showMessage" class="mb-6 transition-opacity duration-500 ease-in-out">
-      <div class="bg-gradient-to-r from-green-500 to-emerald-500 text-white py-4 px-6 rounded-lg shadow-md flex items-center justify-between">
+      <div :class="props.successMessage ? 'bg-gradient-to-r from-green-500 to-emerald-500' : 'bg-gradient-to-r from-red-500 to-pink-500'" class="text-white py-4 px-6 rounded-lg shadow-md flex items-center justify-between">
         <div class="flex items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" viewBox="0 0 20 20" fill="currentColor">
+          <svg v-if="props.successMessage" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
           </svg>
-          <span>{{ message }}</span>
+          <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M18 10A8 8 0 11. . ." clip-rule="evenodd" />
+          </svg>
+          <span>{{ props.successMessage || props.errorMessage || message }}</span>
         </div>
         <button @click="showMessage = false" class="text-white hover:text-gray-100">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">

@@ -33,7 +33,7 @@ const getStatusColor = (status) => {
 const formTypeToName = (formType) => {
   switch(formType) {
     case 'LSPU-OSAS-SF-001':
-      return 'Organization Registration';
+      return 'Organization Recognition';
     case 'LSPU-OSAS-SF-002':
       return 'Renewal Application';
     case 'LSPU-OSAS-SF-003':

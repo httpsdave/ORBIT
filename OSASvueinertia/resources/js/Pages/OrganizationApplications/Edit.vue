@@ -78,14 +78,27 @@ const formData = ref(initializeFormData());
 const handleFormSubmitted = (data) => {
   console.log('Submitting update for application ID:', props.application.id);
   console.log('Update data:', data);
-  
+
   // Use Inertia's router directly for the PUT request
   router.put(`/applications/${props.application.id}`, data, {
+    preserveScroll: true,
     onSuccess: () => {
-      console.log('Update successful');
-      window.location.href = '/applications';
+      alert('Application updated successfully!');
+      // Use Inertia's visit to redirect and show flash message
+      router.visit('/applications', {
+        method: 'get',
+        data: {},
+        preserveScroll: true,
+        onSuccess: () => {
+          // Optionally, you can show a toast or flash message here
+          // e.g., use a global event or a flash message component
+        }
+      });
     },
     onError: (errors) => {
+      // Show errors to the user (e.g., via a toast, modal, or flash message)
+      // For now, use alert as a fallback
+      alert('Update failed. Please check your input.');
       console.log('Update errors:', errors);
     }
   });
@@ -112,6 +125,15 @@ const deleteSignedDocument = () => {
 
 <template>
   <div class="p-6 document">
+    <!-- Flash Messages -->
+    <div v-if="$page.props.flash && ($page.props.flash.success || $page.props.flash.error)" class="mb-4">
+      <div v-if="$page.props.flash.success" class="bg-green-100 text-green-800 px-4 py-2 rounded mb-2">
+        {{ $page.props.flash.success }}
+      </div>
+      <div v-if="$page.props.flash.error" class="bg-red-100 text-red-800 px-4 py-2 rounded mb-2">
+        {{ $page.props.flash.error }}
+      </div>
+    </div>
     <h1 class="text-2xl font-bold mb-6">Edit {{ props.application.organization_name }} Application</h1>
     
     <!-- Signed Document Section -->

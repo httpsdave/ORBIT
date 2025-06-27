@@ -95,22 +95,31 @@ const submit = () => {
   if (!validateForm()) {
     return;
   }
-  
-  // Fixed: Use appropriate HTTP method for edit vs create
-  const method = props.isEdit ? 'put' : 'post';
-  const url = props.isEdit ? `/applications/${props.initialFormData.id}` : '/applications';
-  
-  form[method](url, {
-    onSuccess: () => {
-      alert(props.isEdit ? 'Form updated successfully!' : 'Form submitted successfully!');
-      emit('submitted', form.data());
-    },
-    onError: (errors) => {
-      console.error('Form submission errors:', errors);
-      // Set server validation errors
-      errors.value = errors;
-    }
-  });
+
+  // Cast boolean fields to 1/0 for backend compatibility
+  const data = {
+    ...form.data(),
+    is_bonafide: form.is_bonafide ? 1 : 0,
+    is_not_academic_probation: form.is_not_academic_probation ? 1 : 0,
+    is_not_disciplinary_probation: form.is_not_disciplinary_probation ? 1 : 0,
+    has_position: form.has_position ? 1 : 0,
+  };
+
+  if (props.isEdit) {
+    emit('submitted', data);
+  } else {
+    form.post('/applications', {
+      data,
+      onSuccess: () => {
+        alert('Form submitted successfully!');
+        emit('submitted', data);
+      },
+      onError: (errors) => {
+        console.error('Form submission errors:', errors);
+        errors.value = errors;
+      }
+    });
+  }
 };
 </script>
 

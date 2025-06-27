@@ -249,9 +249,7 @@ const submit = () => {
         </div>
 
         <div class="mt-6 text-center">
-            <button type="submit" @click="submit" class="bg-green-500 text-white px-4 py-2 rounded">
-              {{ props.isEdit ? 'Update' : 'Submit' }}
-            </button>
+            <button type="submit" @click="submit" class="bg-green-500 text-white px-4 py-2 rounded">{{ props.isEdit ? 'Update' : 'Submit' }}</button>
             
             <!-- Auto-save indicator -->
             <div v-if="isAutoSaving" class="mt-2 text-sm text-gray-600">

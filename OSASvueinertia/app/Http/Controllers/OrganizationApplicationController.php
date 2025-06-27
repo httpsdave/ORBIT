@@ -48,7 +48,9 @@ class OrganizationApplicationController extends Controller
         'users' => $users,
         'currentUserFilter' => $request->user_filter,
         'userId' => auth()->id(),
-        'isAdmin' => auth()->user()->isAdmin()
+        'isAdmin' => auth()->user()->isAdmin(),
+        'successMessage' => session('success'),
+        'errorMessage' => session('error'),
     ]);
 }
     public function create()
@@ -279,7 +281,7 @@ class OrganizationApplicationController extends Controller
         'president_name' => 'required|string|max:255',
         'adviser_name' => 'required|string|max:255',
         'dean_name' => 'required|string|max:255',
-        'coordinator_name' => 'required|string|max:255',
+        'coordinator_name' => $application->form_type === 'LSPU-OSAS-SF-006' ? 'nullable|string|max:255' : 'required|string|max:255',
         'signed_document' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
     ];
     
