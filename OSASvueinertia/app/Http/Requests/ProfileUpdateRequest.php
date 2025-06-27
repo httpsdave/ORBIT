@@ -18,9 +18,14 @@ class ProfileUpdateRequest extends FormRequest
         $user = $this->user();
         $isAdmin = $user && ($user->role === 'admin' || (is_object($user->role) && (isset($user->role->name) && $user->role->name === 'admin' || isset($user->role->slug) && $user->role->slug === 'admin' || isset($user->role->id) && $user->role->id === 1)));
 
-        $rules = [
-            'profile_photo' => ['nullable', 'image', 'mimes:jpeg,png,webp', 'max:2048'], // 2MB
-        ];
+        $rules = [];
+
+        // Dynamically build the profile_photo rule
+        if ($this->input('profile_photo') !== '__REMOVE__') {
+            $rules['profile_photo'] = ['nullable', 'image', 'mimes:jpeg,png,webp', 'max:2048'];
+        } else {
+            $rules['profile_photo'] = ['nullable'];
+        }
 
         if ($isAdmin) {
             $rules['name'] = ['required', 'string', 'max:255'];

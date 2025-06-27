@@ -3,7 +3,7 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
-import { Link, useForm, usePage } from '@inertiajs/vue3';
+import { Link, useForm, usePage, router } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
 
 defineProps({
@@ -45,7 +45,7 @@ function handlePhotoChange(e) {
 
 function handleRemovePhoto() {
     removeProfilePhoto.value = true;
-    form.profile_photo = null;
+    form.profile_photo = '__REMOVE__';
     photoPreview.value = null;
 }
 
@@ -53,6 +53,7 @@ function submit() {
     const data = { ...form.data() };
     if (removeProfilePhoto.value) {
         data.remove_profile_photo = true;
+        data.profile_photo = null;
     }
     form.post(route('profile.update'), {
         data,
@@ -60,6 +61,9 @@ function submit() {
         forceFormData: true,
         onSuccess: () => {
             removeProfilePhoto.value = false;
+            form.reset();
+            photoPreview.value = usePage().props.auth.user.profile_photo_url;
+            router.reload({ only: ['auth'] });
         },
         _method: 'patch',
     });

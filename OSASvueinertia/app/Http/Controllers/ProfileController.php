@@ -32,8 +32,8 @@ class ProfileController extends Controller
         $user = $request->user();
         $data = $request->validated();
 
-        // Handle profile photo removal
-        if ($request->input('remove_profile_photo')) {
+        // Handle special value for removing profile photo
+        if ($request->input('profile_photo') === '__REMOVE__') {
             if ($user->profile_photo_path && \Storage::disk('public')->exists($user->profile_photo_path)) {
                 \Storage::disk('public')->delete($user->profile_photo_path);
             }
