@@ -10,6 +10,14 @@ import StudentCertificationForm from '@/Components/forms/StudentCertificationFor
 import ListOfOfficersForm from '@/Components/forms/ListOfOfficersForm.vue';
 import ActivityAttendanceForm from '@/Components/forms/ActivityAttendanceForm.vue';
 
+// Get saved form data from props
+const props = defineProps({
+    savedFormData: {
+        type: Object,
+        default: () => ({})
+    }
+});
+
 const currentForm = ref('');
 const formData = ref({});
 
@@ -27,10 +35,18 @@ const formOptions = [
 const handleFormSelection = (formId) => {
     currentForm.value = formId;
     
-    // Initialize form data if needed
-    // For example, add default activities for Plan of Activities form
+    // Filter out array fields from saved data to prevent issues
+    const filteredSavedData = {};
+    Object.keys(props.savedFormData).forEach(key => {
+        if (!Array.isArray(props.savedFormData[key]) && typeof props.savedFormData[key] !== 'object') {
+            filteredSavedData[key] = props.savedFormData[key];
+        }
+    });
+    
+    // Initialize form data with saved data if available
     if (formId === 'LSPU-OSAS-SF-004') {
         formData.value = {
+            ...filteredSavedData,
             activities: Array(3).fill().map(() => ({
                 objective: '',
                 name: '',
@@ -44,6 +60,7 @@ const handleFormSelection = (formId) => {
     // Initialize members for List of Members form
     else if (formId === 'LSPU-OSAS-SF-005') {
         formData.value = {
+            ...filteredSavedData,
             members: Array(4).fill().map(() => ({
                 student_name: '',
                 student_number: '',
@@ -55,6 +72,7 @@ const handleFormSelection = (formId) => {
     // Initialize officers for List of Officers form
     else if (formId === 'LSPU-OSAS-SF-007') {
         formData.value = {
+            ...filteredSavedData,
             officers: Array(4).fill().map(() => ({
                 student_name: '',
                 position: '',
@@ -66,12 +84,17 @@ const handleFormSelection = (formId) => {
     // Initialize attendees for Student Activity Attendance Sheet
     else if (formId === 'LSPU-OSAS-SF-009') {
         formData.value = {
+            ...filteredSavedData,
             attendees: Array(10).fill().map(() => ({
                 name: '',
                 course_year_section: '',
                 signature: null
             }))
         };
+    }
+    // For other forms, just use saved data
+    else {
+        formData.value = { ...filteredSavedData };
     }
 };
 

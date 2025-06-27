@@ -75,6 +75,9 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/applications/{application}', [OrganizationApplicationController::class, 'destroy'])->name('applications.destroy');
     Route::post('/applications/{application}/update-status', [OrganizationApplicationController::class, 'updateStatus'])->name('applications.update-status');
 
+    // Auto-save form data route
+    Route::post('/auto-save-form-data', [OrganizationApplicationController::class, 'autoSaveFormData'])->name('auto-save-form-data');
+
     // PDF export routes
     Route::get('/applications/{application}/pdf', [OrganizationApplicationController::class, 'exportPdf'])->name('applications.pdf');
     Route::get('/applications/{application}/export-renewal', [OrganizationApplicationController::class, 'exportRenewalPdf'])->name('applications.export-renewal');

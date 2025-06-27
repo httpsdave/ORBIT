@@ -82,4 +82,12 @@ class User extends Authenticatable
             ->wherePivot('is_read', false)
             ->count();
     }
+
+    /**
+     * Get the user's saved form data.
+     */
+    public function userFormData()
+    {
+        return $this->hasMany(UserFormData::class);
+    }
 }

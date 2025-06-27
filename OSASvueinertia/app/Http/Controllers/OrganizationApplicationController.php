@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\OrganizationApplication;
+use App\Services\FormDataService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -52,7 +53,12 @@ class OrganizationApplicationController extends Controller
 }
     public function create()
     {
-        return Inertia::render('OrganizationApplications/Create');
+        // Get saved form data for auto-fill
+        $savedFormData = FormDataService::getSavedFormData();
+        
+        return Inertia::render('OrganizationApplications/Create', [
+            'savedFormData' => $savedFormData
+        ]);
     }
 
     public function store(Request $request)
@@ -226,6 +232,9 @@ class OrganizationApplicationController extends Controller
         
         $application = OrganizationApplication::create($data);
 
+        // Save form data for auto-fill functionality
+        FormDataService::saveFormData($data);
+
         // Save activities if this is the Plan of Activities form
         if ($request->form_type === 'LSPU-OSAS-SF-004' && $request->has('activities')) {
             foreach ($request->activities as $activityData) {
@@ -358,6 +367,9 @@ class OrganizationApplicationController extends Controller
     
     // Update the application with validated data
     $application->update($validatedData);
+    
+    // Save form data for auto-fill functionality
+    FormDataService::saveFormData($validatedData);
     
     // Handle form-specific related data updates
     if ($application->form_type === 'LSPU-OSAS-SF-004' && $request->has('activities')) {
@@ -658,5 +670,21 @@ class OrganizationApplicationController extends Controller
         }
         
         return $pdf->download('Attendance_' . $application->activity_name . '.pdf');
+    }
+
+    /**
+     * Auto-save form data for the authenticated user
+     */
+    public function autoSaveFormData(Request $request)
+    {
+        $request->validate([
+            'form_data' => 'required|array',
+        ]);
+
+        // Save form data for auto-fill functionality
+        FormDataService::saveFormData($request->form_data);
+
+        // Return Inertia response instead of JSON
+        return back()->with('success', 'Form data saved successfully');
     }
 }
