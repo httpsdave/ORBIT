@@ -77,6 +77,10 @@ const getPhotoPreview = (officer) => {
     if (officer.photo_path && typeof officer.photo_path === 'object') {
         return URL.createObjectURL(officer.photo_path);
     }
+    // If photo_path is a string (already saved), return the storage URL
+    if (officer.photo_path && typeof officer.photo_path === 'string') {
+        return `/storage/${officer.photo_path}`;
+    }
     return null;
 };
 

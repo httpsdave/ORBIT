@@ -129,7 +129,7 @@ class OrganizationApplicationController extends Controller
                 'members.*.student_name' => 'required|string|max:255',
                 'members.*.student_number' => 'required|string|max:50',
                 'members.*.course_year_section' => 'required|string|max:255',
-                'members.*.photo_path' => 'nullable|file|image|max:2048',
+                'members.*.photo_path' => 'nullable',
             ]);
         }
         elseif ($request->form_type === 'LSPU-OSAS-SF-006') {
@@ -152,7 +152,7 @@ class OrganizationApplicationController extends Controller
                 'officers.*.student_name' => 'required|string|max:255',
                 'officers.*.position' => 'required|string|max:255',
                 'officers.*.student_number' => 'required|string|max:50',
-                'officers.*.photo_path' => 'nullable|file|image|max:2048',
+                'officers.*.photo_path' => 'nullable',
             ]);
         }elseif ($request->form_type === 'LSPU-OSAS-SF-009') {
             $validationRules = array_merge($validationRules, [
@@ -270,6 +270,8 @@ class OrganizationApplicationController extends Controller
 
     public function edit(OrganizationApplication $application)
     {
+        // Eager load all possible related models for editing
+        $application->load('activities', 'members', 'officers', 'attendees');
         return Inertia::render('OrganizationApplications/Edit', ['application' => $application]);
     }
 

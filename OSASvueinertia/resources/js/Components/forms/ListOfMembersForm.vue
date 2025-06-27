@@ -88,6 +88,10 @@ const getPhotoPreview = (member) => {
     if (member.photo_path && typeof member.photo_path === 'object') {
         return URL.createObjectURL(member.photo_path);
     }
+    // If photo_path is a string (already saved), return the storage URL
+    if (member.photo_path && typeof member.photo_path === 'string') {
+        return `/storage/${member.photo_path}`;
+    }
     return null;
 };
 

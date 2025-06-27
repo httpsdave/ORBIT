@@ -79,25 +79,41 @@ const handleFormSubmitted = (data) => {
   console.log('Submitting update for application ID:', props.application.id);
   console.log('Update data:', data);
 
-  // Use Inertia's router directly for the PUT request
-  router.put(`/applications/${props.application.id}`, data, {
+  // Convert to FormData for file uploads
+  const formData = new FormData();
+  for (const key in data) {
+    if (Array.isArray(data[key])) {
+      data[key].forEach((item, idx) => {
+        for (const subKey in item) {
+          if (item[subKey] !== null && item[subKey] !== undefined) {
+            formData.append(`${key}[${idx}][${subKey}]`, item[subKey]);
+          }
+        }
+      });
+    } else {
+      if (data[key] !== null && data[key] !== undefined) {
+        formData.append(key, data[key]);
+      }
+    }
+  }
+  // Add _method=PUT for Laravel method spoofing
+  formData.append('_method', 'PUT');
+
+  router.post(`/applications/${props.application.id}`, formData, {
+    forceFormData: true,
     preserveScroll: true,
     onSuccess: () => {
       alert('Application updated successfully!');
-      // Use Inertia's visit to redirect and show flash message
       router.visit('/applications', {
         method: 'get',
         data: {},
         preserveScroll: true,
         onSuccess: () => {
           // Optionally, you can show a toast or flash message here
-          // e.g., use a global event or a flash message component
         }
       });
     },
     onError: (errors) => {
-      // Show errors to the user (e.g., via a toast, modal, or flash message)
-      // For now, use alert as a fallback
       alert('Update failed. Please check your input.');
       console.log('Update errors:', errors);
     }
