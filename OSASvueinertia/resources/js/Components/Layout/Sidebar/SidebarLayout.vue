@@ -307,8 +307,19 @@ onUnmounted(() => {
               aria-haspopup="true"
               :aria-expanded="isDropdownOpen"
             >
-              <div class="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-green-400 flex items-center justify-center text-white font-medium shadow-sm group-hover:shadow-md transition-all duration-300">
-                {{ user.name?.charAt(0)?.toUpperCase() || '?' }}
+              <div>
+                <img
+                  v-if="user.profile_photo_url"
+                  :src="user.profile_photo_url"
+                  alt="Profile Photo"
+                  class="h-10 w-10 rounded-full object-cover border border-gray-200 shadow-inner"
+                />
+                <div
+                  v-else
+                  class="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-green-400 flex items-center justify-center text-white font-medium shadow-sm group-hover:shadow-md transition-all duration-300"
+                >
+                  {{ user.name?.charAt(0)?.toUpperCase() || '?' }}
+                </div>
               </div>
               <div class="ml-2 hidden sm:block">
                 <div class="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-300">

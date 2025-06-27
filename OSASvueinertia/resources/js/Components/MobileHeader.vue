@@ -55,8 +55,19 @@ const toggleSidebar = () => {
           :href="route('profile.edit')"
           class="flex items-center space-x-1"
         >
-          <div class="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-green-400 flex items-center justify-center text-white font-medium shadow-inner">
-            {{ $page.props.auth.user.name.charAt(0).toUpperCase() }}
+          <div>
+            <img
+              v-if="$page.props.auth.user.profile_photo_url"
+              :src="$page.props.auth.user.profile_photo_url"
+              alt="Profile Photo"
+              class="h-10 w-10 rounded-full object-cover border border-gray-200 shadow-inner"
+            />
+            <div
+              v-else
+              class="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-green-400 flex items-center justify-center text-white font-medium shadow-inner"
+            >
+              {{ $page.props.auth.user.name.charAt(0).toUpperCase() }}
+            </div>
           </div>
           <div v-if="isAdmin" class="hidden sm:block">
             <span class="px-2 py-0.5 text-xs font-medium bg-indigo-100 text-indigo-700 rounded-full border border-indigo-200 shadow-inner">

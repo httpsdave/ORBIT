@@ -36,6 +36,7 @@ class HandleInertiaRequests extends Middleware
                     'name' => $request->user()->name,
                     'email' => $request->user()->email,
                     'role' => $request->user()->role,  // Make sure this includes the role relationship
+                    'profile_photo_url' => $request->user()->profile_photo_url,
                 ] : null,
             ],
             // ... other shared data ...

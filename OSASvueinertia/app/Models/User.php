@@ -18,6 +18,7 @@ class User extends Authenticatable
         'password',
         'role_id',
         'student_org_id', // Add this
+        'profile_photo_path', // Add this
     ];
 
     protected $hidden = [
@@ -89,5 +90,15 @@ class User extends Authenticatable
     public function userFormData()
     {
         return $this->hasMany(UserFormData::class);
+    }
+
+    /**
+     * Get the URL for the user's profile photo.
+     */
+    public function getProfilePhotoUrlAttribute()
+    {
+        return $this->profile_photo_path
+            ? asset('storage/' . $this->profile_photo_path)
+            : null;
     }
 }

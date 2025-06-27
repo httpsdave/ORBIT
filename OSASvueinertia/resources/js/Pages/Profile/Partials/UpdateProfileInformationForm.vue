@@ -4,6 +4,7 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Link, useForm, usePage } from '@inertiajs/vue3';
+import { ref, watch } from 'vue';
 
 defineProps({
     mustVerifyEmail: {
@@ -28,7 +29,41 @@ console.log('Is admin:', isAdmin);
 const form = useForm({
     name: user.name,
     email: user.email,
+    profile_photo: null,
 });
+
+const photoPreview = ref(user.profile_photo_url);
+const removeProfilePhoto = ref(false);
+
+function handlePhotoChange(e) {
+    const file = e.target.files[0];
+    if (file) {
+        form.profile_photo = file;
+        photoPreview.value = URL.createObjectURL(file);
+    }
+}
+
+function handleRemovePhoto() {
+    removeProfilePhoto.value = true;
+    form.profile_photo = null;
+    photoPreview.value = null;
+}
+
+function submit() {
+    const data = { ...form.data() };
+    if (removeProfilePhoto.value) {
+        data.remove_profile_photo = true;
+    }
+    form.post(route('profile.update'), {
+        data,
+        preserveScroll: true,
+        forceFormData: true,
+        onSuccess: () => {
+            removeProfilePhoto.value = false;
+        },
+        _method: 'patch',
+    });
+}
 </script>
 
 <template>
@@ -39,12 +74,7 @@ const form = useForm({
                 Profile Information
             </h2>
             <p class="mt-1 text-sm text-gray-600">
-                <template v-if="isAdmin">
-                    Update your account's profile information and email address.
-                </template>
-                <template v-else>
-                    Your account's profile information.
-                </template>
+                Update your account's profile photo. <span v-if="isAdmin">You can also update your name and email address.</span>
             </p>
         </div>
 
@@ -63,7 +93,6 @@ const form = useForm({
                     <p class="text-sm text-yellow-700">
                         Your email address is unverified.
                         <Link
-                            v-if="isAdmin"
                             :href="route('verification.send')"
                             method="post"
                             as="button"
@@ -82,12 +111,7 @@ const form = useForm({
             </div>
         </div>
 
-        <!-- Admin version - editable form -->
-        <form
-            v-if="isAdmin"
-            @submit.prevent="form.patch(route('profile.update'))"
-            class="space-y-6"
-        >
+        <form @submit.prevent="submit" class="space-y-6">
             <div class="grid md:grid-cols-2 gap-6">
                 <div>
                     <InputLabel for="name" value="Name" class="text-gray-700 font-medium" />
@@ -96,6 +120,8 @@ const form = useForm({
                         type="text"
                         class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 rounded-md shadow-sm"
                         v-model="form.name"
+                        :disabled="!isAdmin"
+                        :class="!isAdmin ? 'bg-gray-100 text-gray-400 cursor-not-allowed select-none pointer-events-none' : ''"
                         required
                         autofocus
                         autocomplete="name"
@@ -110,11 +136,34 @@ const form = useForm({
                         type="email"
                         class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 rounded-md shadow-sm"
                         v-model="form.email"
+                        :disabled="!isAdmin"
+                        :class="!isAdmin ? 'bg-gray-100 text-gray-400 cursor-not-allowed select-none pointer-events-none' : ''"
                         required
                         autocomplete="username"
                     />
                     <InputError class="mt-2" :message="form.errors.email" />
                 </div>
+            </div>
+
+            <div>
+                <InputLabel value="Profile Photo" />
+                <div class="flex items-center gap-6 mt-2">
+                    <img :src="photoPreview" class="w-24 h-24 rounded-full object-cover border-2 border-blue-200 shadow" />
+                    <div class="flex flex-col gap-2">
+                        <label class="inline-block">
+                            <input type="file" accept="image/*" @change="handlePhotoChange" class="block text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition" />
+                        </label>
+                        <button
+                            v-if="user.profile_photo_url || photoPreview"
+                            type="button"
+                            @click="handleRemovePhoto"
+                            class="px-3 py-1 bg-gray-100 text-gray-500 border border-gray-200 rounded hover:bg-red-100 hover:text-red-600 transition text-xs font-semibold shadow-sm mt-1"
+                        >
+                            Remove Photo
+                        </button>
+                    </div>
+                </div>
+                <InputError :message="form.errors.profile_photo" />
             </div>
 
             <div class="flex items-center pt-4 border-t border-gray-100">
@@ -143,33 +192,5 @@ const form = useForm({
                 </Transition>
             </div>
         </form>
-
-        <!-- Regular user version - read-only view -->
-        <div v-else class="space-y-6">
-            <div class="grid md:grid-cols-2 gap-6">
-                <div>
-                    <InputLabel for="name" value="Name" class="text-gray-700 font-medium" />
-                    <div class="mt-1 p-3 block w-full bg-gray-50 border border-gray-200 rounded-md text-gray-700">
-                        {{ user.name }}
-                    </div>
-                </div>
-
-                <div>
-                    <InputLabel for="email" value="Email" class="text-gray-700 font-medium" />
-                    <div class="mt-1 p-3 block w-full bg-gray-50 border border-gray-200 rounded-md text-gray-700">
-                        {{ user.email }}
-                    </div>
-                </div>
-            </div>
-            
-            <div class="flex items-center pt-4 border-t border-gray-100">
-                <div class="px-3 py-2 text-sm text-gray-500 bg-gray-50 rounded-md inline-flex items-center">
-                    <svg class="w-4 h-4 mr-1 text-blue-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z" clip-rule="evenodd" />
-                    </svg>
-                    Contact an administrator to update your profile
-                </div>
-            </div>
-        </div>
     </section>
 </template>

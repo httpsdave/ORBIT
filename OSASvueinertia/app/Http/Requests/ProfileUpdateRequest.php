@@ -15,16 +15,25 @@ class ProfileUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => [
+        $user = $this->user();
+        $isAdmin = $user && ($user->role === 'admin' || (is_object($user->role) && (isset($user->role->name) && $user->role->name === 'admin' || isset($user->role->slug) && $user->role->slug === 'admin' || isset($user->role->id) && $user->role->id === 1)));
+
+        $rules = [
+            'profile_photo' => ['nullable', 'image', 'mimes:jpeg,png,webp', 'max:2048'], // 2MB
+        ];
+
+        if ($isAdmin) {
+            $rules['name'] = ['required', 'string', 'max:255'];
+            $rules['email'] = [
                 'required',
                 'string',
                 'lowercase',
                 'email',
                 'max:255',
-                Rule::unique(User::class)->ignore($this->user()->id),
-            ],
-        ];
+                Rule::unique(User::class)->ignore($user->id),
+            ];
+        }
+
+        return $rules;
     }
 }
