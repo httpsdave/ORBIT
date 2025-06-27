@@ -150,24 +150,72 @@ function submit() {
             </div>
 
             <div>
-                <InputLabel value="Profile Photo" />
-                <div class="flex items-center gap-6 mt-2">
-                    <img :src="photoPreview" class="w-24 h-24 rounded-full object-cover border-2 border-blue-200 shadow" />
-                    <div class="flex flex-col gap-2">
-                        <label class="inline-block">
-                            <input type="file" accept="image/*" @change="handlePhotoChange" class="block text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition" />
-                        </label>
-                        <button
-                            v-if="user.profile_photo_url || photoPreview"
-                            type="button"
-                            @click="handleRemovePhoto"
-                            class="px-3 py-1 bg-gray-100 text-gray-500 border border-gray-200 rounded hover:bg-red-100 hover:text-red-600 transition text-xs font-semibold shadow-sm mt-1"
-                        >
-                            Remove Photo
-                        </button>
+                <InputLabel value="Profile Photo" class="text-gray-700 font-medium" />
+                <div class="mt-2 p-4 border border-gray-300 rounded-md bg-gray-50">
+                    <div class="flex items-center gap-6">
+                        <!-- Profile Photo Preview -->
+                        <div class="flex-shrink-0">
+                            <div class="relative group">
+                                <img 
+                                    :src="photoPreview || '/images/default-avatar.png'" 
+                                    class="w-24 h-24 rounded-full object-cover border-4 border-blue-200 shadow-md transition-all duration-200 group-hover:border-blue-300" 
+                                />
+                                <div 
+                                    v-if="photoPreview"
+                                    class="absolute inset-0 bg-black bg-opacity-40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center"
+                                >
+                                    <svg class="w-6 h-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Photo Controls -->
+                        <div class="flex-1 space-y-3">
+                            <!-- Choose Photo Button -->
+                            <div class="relative">
+                                <input 
+                                    type="file" 
+                                    accept="image/*" 
+                                    @change="handlePhotoChange" 
+                                    class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                    id="profile-photo-input"
+                                />
+                                <label 
+                                    for="profile-photo-input"
+                                    class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-sm font-medium text-white rounded-xl shadow-md hover:shadow-blue-300/30 hover:from-blue-400 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:from-blue-600 active:to-blue-700 transition-all duration-300 relative overflow-hidden group cursor-pointer"
+                                >
+                                    <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
+                                    <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                    </svg>
+                                    Choose Photo
+                                </label>
+                            </div>
+
+                            <!-- Remove Photo Button -->
+                            <button
+                                v-if="user.profile_photo_url || photoPreview"
+                                type="button"
+                                @click="handleRemovePhoto"
+                                class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 hover:border-red-300 hover:text-red-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150"
+                            >
+                                <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                                Remove Photo
+                            </button>
+
+                            <!-- Photo Guidelines -->
+                            <p class="text-xs text-gray-500 mt-2">
+                                Recommended: Square image, at least 200x200 pixels. Maximum file size: 2MB.
+                            </p>
+                        </div>
                     </div>
                 </div>
-                <InputError :message="form.errors.profile_photo" />
+                <InputError class="mt-2" :message="form.errors.profile_photo" />
             </div>
 
             <div class="flex items-center pt-4 border-t border-gray-100">
