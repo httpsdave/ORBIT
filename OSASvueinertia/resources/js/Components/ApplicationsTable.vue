@@ -118,34 +118,28 @@ async function updateDropdownPosition() {
   if (!dropdownButtonEl.value) return;
   const rect = dropdownButtonEl.value.getBoundingClientRect();
   let dropdownWidth = window.innerWidth < 640 ? Math.min(window.innerWidth - 32, 320) : 256;
-  let left = rect.right + window.scrollX - dropdownWidth;
+  let left = rect.right - dropdownWidth;
   if (left + dropdownWidth > window.innerWidth) left = window.innerWidth - dropdownWidth - 16;
   if (left < 16) left = 16;
 
-  // 1. Render dropdown offscreen to measure height
   await nextTick();
   let dropdownHeight = dropdownRef.value ? dropdownRef.value.offsetHeight : 320;
 
-  // 2. Calculate available space
   const spaceBelow = window.innerHeight - rect.bottom;
   const spaceAbove = rect.top;
 
   let top;
   if (spaceBelow >= dropdownHeight + 16) {
-    // Enough space below
-    top = rect.bottom + window.scrollY + 6;
+    top = rect.bottom + 6;
     dropdownDirection.value = 'down';
   } else if (spaceAbove >= dropdownHeight + 16) {
-    // Enough space above
-    top = rect.top + window.scrollY - dropdownHeight - 6;
+    top = rect.top - dropdownHeight - 6;
     dropdownDirection.value = 'up';
   } else if (spaceBelow >= spaceAbove) {
-    // Not enough space, but more below
-    top = rect.bottom + window.scrollY + 6;
+    top = rect.bottom + 6;
     dropdownDirection.value = 'down';
   } else {
-    // Not enough space, but more above
-    top = Math.max(8, rect.top + window.scrollY - dropdownHeight - 6);
+    top = Math.max(8, rect.top - dropdownHeight - 6);
     dropdownDirection.value = 'up';
   }
 
