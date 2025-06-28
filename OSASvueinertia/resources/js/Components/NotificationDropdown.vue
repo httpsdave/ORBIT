@@ -257,8 +257,12 @@ const handleNotificationClick = (notificationId) => {
     console.error('Error in handleNotificationClick:', error);
     // Fallback: just navigate to notifications page
     closeDropdown();
-    const fallbackUrl = props.isAdmin ? '/admin/notifications' : '/notifications';
-    window.location.href = fallbackUrl;
+    try {
+      const fallbackUrl = props.isAdmin ? '/admin/notifications' : '/notifications';
+      window.location.href = fallbackUrl;
+    } catch (fallbackError) {
+      console.error('Fallback navigation also failed:', fallbackError);
+    }
   }
 };
 
@@ -292,7 +296,11 @@ const viewAllNotifications = () => {
   } catch (error) {
     console.error('Error navigating to notifications:', error);
     // Fallback to direct navigation
-    window.location.href = props.isAdmin ? '/admin/notifications' : '/notifications';
+    try {
+      window.location.href = props.isAdmin ? '/admin/notifications' : '/notifications';
+    } catch (fallbackError) {
+      console.error('Fallback navigation also failed:', fallbackError);
+    }
   }
 };
 

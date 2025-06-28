@@ -155,7 +155,7 @@ const timeUntilNext = computed(() => {
                   </div>
                 </div>
                 <div class="ml-4">
-                  <h2 class="text-2xl font-semibold text-gray-800">{{ greeting }}, {{ $page.props.auth.user.name }}!</h2>
+                  <h2 class="text-2xl font-semibold text-gray-800">{{ greeting }}, {{ $page.props.auth?.user?.name || 'User' }}!</h2>
                   <p class="mt-1 text-gray-600">Welcome to orbit. Here's your latest activity and important updates.</p>
                 </div>
               </div>

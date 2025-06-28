@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Inertia\Middleware;
+use Illuminate\Support\Facades\DB;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -29,15 +30,28 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $user = $request->user();
+        $unreadCount = 0;
+        
+        if ($user) {
+            $unreadCount = DB::table('user_notifications')
+                ->join('notifications', 'user_notifications.notification_id', '=', 'notifications.id')
+                ->where('user_notifications.user_id', $user->id)
+                ->where('user_notifications.is_read', false)
+                ->where('notifications.is_active', true)
+                ->count();
+        }
+        
         return array_merge(parent::share($request), [
             'auth' => [
-                'user' => $request->user() ? [
-                    'id' => $request->user()->id,
-                    'name' => $request->user()->name,
-                    'email' => $request->user()->email,
-                    'role' => $request->user()->role,  // Make sure this includes the role relationship
-                    'profile_photo_url' => $request->user()->profile_photo_url,
+                'user' => $user ? [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role' => $user->role,  // Make sure this includes the role relationship
+                    'profile_photo_url' => $user->profile_photo_url,
                 ] : null,
+                'unreadNotificationsCount' => $unreadCount,
             ],
             // ... other shared data ...
         ]);
