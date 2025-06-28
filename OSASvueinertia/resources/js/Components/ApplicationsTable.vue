@@ -15,7 +15,11 @@ const fileInput = ref(null);
 const isUploading = ref(false);
 const uploadProgress = ref(0);
 const isDeleting = ref(false);
-const activeDropdown = ref(null);
+const activeDropdownApp = ref(null);
+const dropdownPosition = ref({ top: 0, left: 0 });
+const dropdownButtonEl = ref(null);
+const dropdownRef = ref(null);
+const dropdownDirection = ref('down'); // 'down' or 'up'
 
 const getStatusColor = (status) => {
   switch(status.toLowerCase()) {
@@ -97,20 +101,70 @@ const getPdfRoute = (app, action = 'download') => {
 };
 
 // Toggle action dropdown
-const toggleDropdown = (appId) => {
-  if (activeDropdown.value === appId) {
-    activeDropdown.value = null;
+const toggleDropdown = (app, event) => {
+  if (activeDropdownApp.value && activeDropdownApp.value.id === app.id) {
+    activeDropdownApp.value = null;
+    dropdownButtonEl.value = null;
+    removeDropdownListeners();
   } else {
-    activeDropdown.value = appId;
+    activeDropdownApp.value = app;
+    dropdownButtonEl.value = event.currentTarget;
+    updateDropdownPosition();
+    addDropdownListeners();
   }
 };
 
+async function updateDropdownPosition() {
+  if (!dropdownButtonEl.value) return;
+  const rect = dropdownButtonEl.value.getBoundingClientRect();
+  let dropdownWidth = window.innerWidth < 640 ? Math.min(window.innerWidth - 32, 320) : 256;
+  let left = rect.right + window.scrollX - dropdownWidth;
+  if (left + dropdownWidth > window.innerWidth) left = window.innerWidth - dropdownWidth - 16;
+  if (left < 16) left = 16;
 
+  // 1. Render dropdown offscreen to measure height
+  await nextTick();
+  let dropdownHeight = dropdownRef.value ? dropdownRef.value.offsetHeight : 320;
+
+  // 2. Calculate available space
+  const spaceBelow = window.innerHeight - rect.bottom;
+  const spaceAbove = rect.top;
+
+  let top;
+  if (spaceBelow >= dropdownHeight + 16) {
+    // Enough space below
+    top = rect.bottom + window.scrollY + 6;
+    dropdownDirection.value = 'down';
+  } else if (spaceAbove >= dropdownHeight + 16) {
+    // Enough space above
+    top = rect.top + window.scrollY - dropdownHeight - 6;
+    dropdownDirection.value = 'up';
+  } else if (spaceBelow >= spaceAbove) {
+    // Not enough space, but more below
+    top = rect.bottom + window.scrollY + 6;
+    dropdownDirection.value = 'down';
+  } else {
+    // Not enough space, but more above
+    top = Math.max(8, rect.top + window.scrollY - dropdownHeight - 6);
+    dropdownDirection.value = 'up';
+  }
+
+  dropdownPosition.value = { top, left };
+}
+
+function addDropdownListeners() {
+  window.addEventListener('scroll', updateDropdownPosition, true);
+  window.addEventListener('resize', updateDropdownPosition);
+}
+function removeDropdownListeners() {
+  window.removeEventListener('scroll', updateDropdownPosition, true);
+  window.removeEventListener('resize', updateDropdownPosition);
+}
 
 // Function to trigger file input click
 const triggerFileUpload = (appId) => {
   selectedApplicationId.value = appId;
-  activeDropdown.value = null;
+  activeDropdownApp.value = null;
   nextTick(() => {
     fileInput.value.click();
   });
@@ -181,7 +235,7 @@ const uploadDocument = (file) => {
 const deleteDocument = (appId) => {
   if (confirm('Are you sure you want to delete this signed document?')) {
     isDeleting.value = true;
-    activeDropdown.value = null;
+    activeDropdownApp.value = null;
     
     router.delete(`/applications/${appId}/delete-document`, {}, {
       onSuccess: () => {
@@ -212,7 +266,7 @@ const deleteDocument = (appId) => {
 // Handle other actions
 const handleAction = (app, action) => {
   // Close dropdown
-  activeDropdown.value = null;
+  activeDropdownApp.value = null;
   
   // Handle specific actions
   switch(action) {
@@ -232,12 +286,13 @@ onMounted(() => {
 
 onUnmounted(() => {
   document.removeEventListener('click', closeDropdowns);
+  removeDropdownListeners();
 });
 
 // Update the closeDropdowns function
 const closeDropdowns = (event) => {
   if (!event.target.closest('.dropdown-container')) {
-    activeDropdown.value = null;
+    activeDropdownApp.value = null;
   }
 };
 
@@ -366,7 +421,7 @@ const closeDropdowns = (event) => {
                   
                   <!-- Add data-dropdown-trigger attribute -->
                     <button 
-                      @click.stop="toggleDropdown(app.id)"
+                      @click.stop="toggleDropdown(app, $event)"
                       class="bg-blue-600 hover:bg-blue-500 text-white p-2.5 rounded-lg transition duration-300 relative overflow-hidden group shadow-sm"
                       title="More Actions"
                       :data-dropdown-trigger="app.id"
@@ -377,104 +432,101 @@ const closeDropdowns = (event) => {
                     </svg>
                   </button>
                 </div>
-                
-                <!-- Replace the current dropdown div with this -->
-                <div 
-                  v-if="activeDropdown === app.id"
-                  class="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50 py-1"
-                  @click.stop
-                >
-                  <!-- Admin-only Status Update Option -->
-                  <button 
-                    v-if="isAdmin"
-                    @click="handleAction(app, 'updateStatus')"
-                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-600" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3-9a1 1 0 10-2 0v4a1 1 0 102 0V9z" clip-rule="evenodd" />
-                      <path d="M10 6a1 1 0 100 2 1 1 0 000-2z" />
-                    </svg>
-                    Update Status
-                  </button>
-                  
-                  <!-- Upload document option -->
-                  <button
-                    v-if="isAdmin || (!isAdmin && app.status !== 'Approved')"
-                    @click="triggerFileUpload(app.id)"
-                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-600" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-                    </svg>
-                    Upload Document
-                  </button>
-
-                  <!-- Delete document option (only if document exists) -->
-                  <button 
-                    v-if="app.signed_document_path && (isAdmin || (!isAdmin && app.status !== 'Approved'))"
-                    @click="deleteDocument(app.id)"
-                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-orange-600" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zm3 8a1 1 0 11-2 0 1 1 0 012 0zm-8 2a1 1 0 100 2h10a1 1 0 100-2H4z" clip-rule="evenodd" />
-                    </svg>
-                    Delete Document
-                  </button>
-                  
-                  <!-- View signed document option (only if document exists) -->
-                  <a 
-                    v-if="app.signed_document_path"
-                    :href="`/applications/${app.id}/view-document`" 
-                    target="_blank" 
-                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-teal-600" viewBox="0 0 20 20" fill="currentColor">
-                      <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2h-1.528A6 6 0 004 9.528V4z" />
-                      <path fill-rule="evenodd" d="M8 10a4 4 0 00-3.446 6.032l-1.261 1.26a1 1 0 101.415 1.415l1.261-1.261A4 4 0 006 10z" clip-rule="evenodd" />
-                    </svg>
-                    View Document
-                  </a>
-                  
-                  <!-- Edit Application -->
-                  <Link 
-                    v-if="isAdmin || (!isAdmin && app.status !== 'Approved')"
-                    :href="`/applications/${app.id}/edit`" 
-                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-500" viewBox="0 0 20 20" fill="currentColor">
-                      <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                    </svg>
-                    Edit Application
-                  </Link>
-                  
-                  <!-- Download PDF -->
-                  <a 
-                    :href="getPdfRoute(app)" 
-                   class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
-                    </svg>
-                    Download PDF
-                  </a>
-                  
-                  <!-- Delete Application -->
-                  <button 
-                    v-if="isAdmin || (!isAdmin && app.status !== 'Approved')"
-                    @click="handleAction(app, 'delete')" 
-                    class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 transition duration-200 border-t border-gray-100 mt-1 pt-1"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                    </svg>
-                    Delete Application
-                  </button>
-                </div>
               </div>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
+    <!-- Render the dropdown only once, outside the table -->
+    <Teleport to="body">
+      <div 
+        ref="dropdownRef"
+        v-if="activeDropdownApp"
+        class="fixed z-50 bg-white rounded-lg shadow-lg border border-gray-200 py-1 w-48 max-w-xs w-full sm:w-64"
+        :style="{ top: `${dropdownPosition.top}px`, left: `${dropdownPosition.left}px`, visibility: activeDropdownApp ? 'visible' : 'hidden' }"
+        @click.stop
+      >
+        <!-- Admin-only Status Update Option -->
+        <button 
+          v-if="isAdmin"
+          @click="handleAction(activeDropdownApp, 'updateStatus')"
+          class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-600" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3-9a1 1 0 10-2 0v4a1 1 0 102 0V9z" clip-rule="evenodd" />
+            <path d="M10 6a1 1 0 100 2 1 1 0 000-2z" />
+          </svg>
+          Update Status
+        </button>
+        <!-- Upload document option -->
+        <button
+          v-if="isAdmin || (!isAdmin && activeDropdownApp.status !== 'Approved')"
+          @click="triggerFileUpload(activeDropdownApp.id)"
+          class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-600" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+          </svg>
+          Upload Document
+        </button>
+        <!-- Delete document option (only if document exists) -->
+        <button 
+          v-if="activeDropdownApp.signed_document_path && (isAdmin || (!isAdmin && activeDropdownApp.status !== 'Approved'))"
+          @click="deleteDocument(activeDropdownApp.id)"
+          class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-orange-600" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zm3 8a1 1 0 11-2 0 1 1 0 012 0zm-8 2a1 1 0 100 2h10a1 1 0 100-2H4z" clip-rule="evenodd" />
+          </svg>
+          Delete Document
+        </button>
+        <!-- View signed document option (only if document exists) -->
+        <a 
+          v-if="activeDropdownApp.signed_document_path"
+          :href="`/applications/${activeDropdownApp.id}/view-document`" 
+          target="_blank" 
+          class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-teal-600" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2h-1.528A6 6 0 004 9.528V4z" />
+            <path fill-rule="evenodd" d="M8 10a4 4 0 00-3.446 6.032l-1.261 1.26a1 1 0 101.415 1.415l1.261-1.261A4 4 0 006 10z" clip-rule="evenodd" />
+          </svg>
+          View Document
+        </a>
+        <!-- Edit Application -->
+        <Link 
+          v-if="isAdmin || (!isAdmin && activeDropdownApp.status !== 'Approved')"
+          :href="`/applications/${activeDropdownApp.id}/edit`" 
+          class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-500" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+          </svg>
+          Edit Application
+        </Link>
+        <!-- Download PDF -->
+        <a 
+          :href="getPdfRoute(activeDropdownApp)" 
+         class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+          </svg>
+          Download PDF
+        </a>
+        <!-- Delete Application -->
+        <button 
+          v-if="isAdmin || (!isAdmin && activeDropdownApp.status !== 'Approved')"
+          @click="handleAction(activeDropdownApp, 'delete')" 
+          class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 transition duration-200 border-t border-gray-100 mt-1 pt-1"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+          </svg>
+          Delete Application
+        </button>
+      </div>
+    </Teleport>
   </div>
 </template>
