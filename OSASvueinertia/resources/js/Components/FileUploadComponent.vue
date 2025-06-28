@@ -42,32 +42,32 @@
         </div>
 
         <!-- File Preview Container -->
-        <div class="relative bg-gray-900 overflow-hidden" style="min-height: 400px; max-height: calc(90vh - 120px);">
+        <div class="relative bg-white overflow-hidden" style="min-height: 400px; max-height: calc(90vh - 120px);">
           <!-- File Preview -->
           <div v-if="!showExtractedText && !isExtracting" class="relative h-full">
             <img 
               v-if="filePreview && fileType === 'image'" 
               :src="filePreview" 
               alt="File preview"
-              class="w-full h-full object-contain bg-gray-800 transition-opacity duration-300 opacity-70"
+              class="w-full h-full object-contain bg-gray-50 transition-opacity duration-300"
             />
             <div 
               v-else-if="fileType === 'pdf'"
-              class="w-full h-full bg-gray-800 flex items-center justify-center transition-opacity duration-300 opacity-70"
+              class="w-full h-full bg-gray-50 flex items-center justify-center transition-opacity duration-300"
               style="min-height: 400px;"
             >
-              <div class="text-center text-white">
-                <svg class="w-24 h-24 sm:w-32 sm:h-32 mx-auto mb-6 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+              <div class="text-center text-gray-700">
+                <svg class="w-24 h-24 sm:w-32 sm:h-32 mx-auto mb-6 text-red-500" fill="currentColor" viewBox="0 0 20 20">
                   <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd" />
                 </svg>
-                <p class="text-2xl font-medium mb-2">{{ selectedFile.name }}</p>
-                <p class="text-lg text-gray-300">PDF Document</p>
-                <p class="text-sm text-gray-400 mt-2">{{ formatFileSize(selectedFile.size) }}</p>
+                <p class="text-2xl font-medium mb-2 text-gray-800">{{ selectedFile.name }}</p>
+                <p class="text-lg text-gray-600">PDF Document</p>
+                <p class="text-sm text-gray-500 mt-2">{{ formatFileSize(selectedFile.size) }}</p>
               </div>
             </div>
             
             <!-- Scanning overlay -->
-            <div class="absolute inset-0 bg-black bg-opacity-30 pointer-events-none">
+            <div class="absolute inset-0 bg-blue-50 bg-opacity-50 pointer-events-none">
               <!-- Scanning line -->
               <div 
                 class="absolute left-0 right-0 h-1 sm:h-2 bg-gradient-to-r from-transparent via-blue-400 to-transparent shadow-lg scan-line"
@@ -77,24 +77,24 @@
           </div>
           
           <!-- Extracting Animation -->
-          <div v-if="isExtracting" class="relative h-full bg-gray-800 flex items-center justify-center">
-            <div class="text-center text-white">
+          <div v-if="isExtracting" class="relative h-full bg-white flex items-center justify-center">
+            <div class="text-center text-gray-700">
               <div class="mb-8">
-                <svg class="w-24 h-24 sm:w-32 sm:h-32 mx-auto mb-6 text-blue-400 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-24 h-24 sm:w-32 sm:h-32 mx-auto mb-6 text-blue-500 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
               
               <!-- Extracting line -->
               <div 
-                class="w-full h-1 bg-gradient-to-r from-transparent via-green-400 to-transparent shadow-lg scan-line"
+                class="w-full h-1 bg-gradient-to-r from-transparent via-green-500 to-transparent shadow-lg scan-line"
                 style="box-shadow: 0 0 30px rgba(34, 197, 94, 0.9), 0 0 60px rgba(34, 197, 94, 0.5);"
               ></div>
               
               <div class="mt-8">
-                <h4 class="text-2xl font-semibold mb-4">Extracting Event Details</h4>
-                <p class="text-lg text-gray-300 mb-2">Analyzing extracted text...</p>
-                <p class="text-sm text-gray-400">Identifying dates, times, and event information</p>
+                <h4 class="text-2xl font-semibold mb-4 text-gray-800">Extracting Event Details</h4>
+                <p class="text-lg text-gray-600 mb-2">Analyzing extracted text...</p>
+                <p class="text-sm text-gray-500">Identifying dates, times, and event information</p>
               </div>
             </div>
           </div>
@@ -127,22 +127,22 @@
           </div>
           
           <!-- Processing indicator overlay -->
-          <div v-if="!showExtractedText && !isExtracting" class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/70 to-transparent p-6">
-            <div class="flex items-center justify-between text-white">
+          <div v-if="!showExtractedText && !isExtracting" class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-white via-white/90 to-transparent p-6">
+            <div class="flex items-center justify-between text-gray-700">
               <div class="flex items-center space-x-4">
                 <div class="flex space-x-2">
-                  <div class="w-3 h-3 bg-blue-400 rounded-full animate-pulse"></div>
-                  <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse" style="animation-delay: 0.2s;"></div>
-                  <div class="w-3 h-3 bg-yellow-400 rounded-full animate-pulse" style="animation-delay: 0.4s;"></div>
+                  <div class="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+                  <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse" style="animation-delay: 0.2s;"></div>
+                  <div class="w-3 h-3 bg-yellow-500 rounded-full animate-pulse" style="animation-delay: 0.4s;"></div>
                 </div>
                 <div>
-                  <p class="text-lg font-medium">Analyzing document content...</p>
-                  <p class="text-sm text-gray-300">Extracting text from document</p>
+                  <p class="text-lg font-medium text-gray-800">Analyzing document content...</p>
+                  <p class="text-sm text-gray-600">Extracting text from document</p>
                 </div>
               </div>
               <div class="text-right">
-                <p class="text-sm text-gray-300">{{ selectedFile.name }}</p>
-                <p class="text-xs text-gray-400">{{ formatFileSize(selectedFile.size) }}</p>
+                <p class="text-sm text-gray-600">{{ selectedFile.name }}</p>
+                <p class="text-xs text-gray-500">{{ formatFileSize(selectedFile.size) }}</p>
               </div>
             </div>
           </div>
