@@ -19,7 +19,9 @@
               <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse" style="animation-delay: 0.2s;"></div>
               <div class="w-2 h-2 bg-yellow-400 rounded-full animate-pulse" style="animation-delay: 0.4s;"></div>
             </div>
-            <h3 class="text-lg font-semibold text-gray-800">Scanning Document</h3>
+            <h3 class="text-lg font-semibold text-gray-800">
+              {{ showExtractedText ? 'Extracted Text' : isExtracting ? 'Extracting Event Details' : 'Scanning Document' }}
+            </h3>
           </div>
           <button 
             @click="closeScanningModal" 
@@ -42,7 +44,7 @@
         <!-- File Preview Container -->
         <div class="relative bg-gray-900 overflow-hidden" style="min-height: 400px; max-height: calc(90vh - 120px);">
           <!-- File Preview -->
-          <div class="relative h-full">
+          <div v-if="!showExtractedText && !isExtracting" class="relative h-full">
             <img 
               v-if="filePreview && fileType === 'image'" 
               :src="filePreview" 
@@ -74,8 +76,58 @@
             </div>
           </div>
           
+          <!-- Extracting Animation -->
+          <div v-if="isExtracting" class="relative h-full bg-gray-800 flex items-center justify-center">
+            <div class="text-center text-white">
+              <div class="mb-8">
+                <svg class="w-24 h-24 sm:w-32 sm:h-32 mx-auto mb-6 text-blue-400 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              
+              <!-- Extracting line -->
+              <div 
+                class="w-full h-1 bg-gradient-to-r from-transparent via-green-400 to-transparent shadow-lg scan-line"
+                style="box-shadow: 0 0 30px rgba(34, 197, 94, 0.9), 0 0 60px rgba(34, 197, 94, 0.5);"
+              ></div>
+              
+              <div class="mt-8">
+                <h4 class="text-2xl font-semibold mb-4">Extracting Event Details</h4>
+                <p class="text-lg text-gray-300 mb-2">Analyzing extracted text...</p>
+                <p class="text-sm text-gray-400">Identifying dates, times, and event information</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Extracted Text Display -->
+          <div v-if="showExtractedText && !isExtracting" class="h-full bg-white p-6 overflow-y-auto">
+            <div class="mb-4">
+              <h4 class="text-lg font-semibold text-gray-800 mb-2">Extracted Text from Document</h4>
+              <p class="text-sm text-gray-600 mb-4">Review the extracted text before proceeding to event extraction:</p>
+            </div>
+            
+            <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 max-h-96 overflow-y-auto">
+              <pre class="text-sm text-gray-700 whitespace-pre-wrap font-mono">{{ extractedText }}</pre>
+            </div>
+            
+            <div class="mt-6 flex justify-end space-x-3">
+              <button 
+                @click="cancelExtraction"
+                class="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200"
+              >
+                Cancel
+              </button>
+              <button 
+                @click="proceedToEventExtraction"
+                class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
+              >
+                Extract Event Details
+              </button>
+            </div>
+          </div>
+          
           <!-- Processing indicator overlay -->
-          <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/70 to-transparent p-6">
+          <div v-if="!showExtractedText && !isExtracting" class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/70 to-transparent p-6">
             <div class="flex items-center justify-between text-white">
               <div class="flex items-center space-x-4">
                 <div class="flex space-x-2">
@@ -85,7 +137,7 @@
                 </div>
                 <div>
                   <p class="text-lg font-medium">Analyzing document content...</p>
-                  <p class="text-sm text-gray-300">Extracting event information</p>
+                  <p class="text-sm text-gray-300">Extracting text from document</p>
                 </div>
               </div>
               <div class="text-right">
@@ -238,6 +290,10 @@ export default {
     const selectedFile = ref(null);
     const filePreview = ref(null);
     const fileType = ref(null);
+    const showExtractedText = ref(false);
+    const extractedText = ref('');
+    const extractedData = ref(null);
+    const isExtracting = ref(false);
     
     function onFileChange(e) {
       const file = e.target.files[0];
@@ -293,11 +349,17 @@ export default {
       formData.append('document', file);
       
       isProcessing.value = true;
+      showExtractedText.value = false;
+      isExtracting.value = false;
       
       axios.post('/api/extract-event-info', formData)
         .then(response => {
-          emit('file-processed', response.data);
-          resetFileState();
+          // Store the extracted text and data
+          extractedText.value = response.data.raw_text || 'No text extracted';
+          extractedData.value = response.data;
+          
+          // Show the extracted text step
+          showExtractedText.value = true;
         })
         .catch(error => {
           console.error('Error processing document:', error);
@@ -311,6 +373,10 @@ export default {
       selectedFile.value = null;
       filePreview.value = null;
       fileType.value = null;
+      showExtractedText.value = false;
+      extractedText.value = '';
+      extractedData.value = null;
+      isExtracting.value = false;
       if (fileInput.value) {
         fileInput.value.value = '';
       }
@@ -333,6 +399,25 @@ export default {
       return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
     
+    function cancelExtraction() {
+      resetFileState();
+    }
+    
+    function proceedToEventExtraction() {
+      // Show extracting animation
+      isExtracting.value = true;
+      showExtractedText.value = false;
+      
+      // Simulate extraction time (2 seconds)
+      setTimeout(() => {
+        // Emit the extracted data to parent component for event creation
+        if (extractedData.value) {
+          emit('file-processed', extractedData.value);
+        }
+        resetFileState();
+      }, 2000);
+    }
+    
     return {
       isDragging,
       isProcessing,
@@ -340,11 +425,16 @@ export default {
       selectedFile,
       filePreview,
       fileType,
+      showExtractedText,
+      extractedText,
       onFileChange,
       onFileDrop,
       createNewEvent,
       closeScanningModal,
-      formatFileSize
+      formatFileSize,
+      cancelExtraction,
+      proceedToEventExtraction,
+      isExtracting
     };
   }
 };

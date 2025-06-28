@@ -138,8 +138,9 @@ class EventController extends Controller
         // Extract event information from the text using the service
         $extractedInfo = $this->eventExtractionService->parseEventInformation($text);
         
-        // Add the file path to the response
+        // Add the file path and raw text to the response
         $extractedInfo['source_document'] = $filePath;
+        $extractedInfo['raw_text'] = $text;
 
         return response()->json($extractedInfo);
     }
