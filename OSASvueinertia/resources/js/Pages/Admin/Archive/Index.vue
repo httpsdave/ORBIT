@@ -1,0 +1,328 @@
+<script setup>
+import { Head, Link, router } from '@inertiajs/vue3';
+import { ref, computed } from 'vue';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import SelectInput from '@/Components/SelectInput.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
+import Modal from '@/Components/Modal.vue';
+
+const props = defineProps({
+    archivedApplications: {
+        type: Array,
+        default: () => [],
+    },
+    users: {
+        type: Array,
+        default: () => [],
+    },
+    academicYears: {
+        type: Array,
+        default: () => [],
+    },
+    currentUserFilter: {
+        type: String,
+        default: '',
+    },
+    currentAcademicYearFilter: {
+        type: String,
+        default: '',
+    },
+    successMessage: {
+        type: String,
+        default: '',
+    },
+    errorMessage: {
+        type: String,
+        default: '',
+    },
+});
+
+const showRestoreModal = ref(false);
+const applicationToRestore = ref(null);
+
+const filterForm = ref({
+    user_filter: props.currentUserFilter,
+    academic_year_filter: props.currentAcademicYearFilter,
+});
+
+const applyFilters = () => {
+    router.get(route('admin.archive.index'), filterForm.value, {
+        preserveState: true,
+        preserveScroll: true,
+    });
+};
+
+const clearFilters = () => {
+    filterForm.value = {
+        user_filter: '',
+        academic_year_filter: '',
+    };
+    applyFilters();
+};
+
+const confirmRestore = (application) => {
+    applicationToRestore.value = application;
+    showRestoreModal.value = true;
+};
+
+const restoreApplication = () => {
+    if (applicationToRestore.value) {
+        router.patch(route('admin.archive.restore', applicationToRestore.value.id), {}, {
+            onSuccess: () => {
+                showRestoreModal.value = false;
+                applicationToRestore.value = null;
+            },
+        });
+    }
+};
+
+const formatDate = (dateString) => {
+    if (!dateString) return '';
+    return new Date(dateString).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+    });
+};
+
+const getStatusColor = (status) => {
+    switch (status?.toLowerCase()) {
+        case 'approved':
+            return 'bg-green-100 text-green-800';
+        case 'disapproved':
+            return 'bg-red-100 text-red-800';
+        case 'pending':
+            return 'bg-yellow-100 text-yellow-800';
+        default:
+            return 'bg-gray-100 text-gray-800';
+    }
+};
+
+const getFormTypeLabel = (formType) => {
+    const formTypes = {
+        'LSPU-OSAS-SF-001': 'Student Organization Application',
+        'LSPU-OSAS-SF-002': 'Student Organization Renewal',
+        'LSPU-OSAS-SF-003': 'Commitment Form',
+        'LSPU-OSAS-SF-004': 'Plan of Activities',
+        'LSPU-OSAS-SF-005': 'List of Members',
+        'LSPU-OSAS-SF-006': 'Student Certification',
+        'LSPU-OSAS-SF-007': 'List of Officers',
+        'LSPU-OSAS-SF-009': 'Activity Attendance Sheet',
+    };
+    return formTypes[formType] || formType;
+};
+</script>
+
+<template>
+    <Head title="Archive Management" />
+
+    <AuthenticatedLayout>
+        <template #header>
+            <!-- Segmented Animated Color Banner for Consistency -->
+            <div class="flex w-full overflow-hidden shadow-md rounded-t-lg mb-2">
+              <div class="w-1/4 h-1.5 bg-blue-600 animate-pulse" style="animation-delay: 0.2s;"></div>
+              <div class="w-1/4 h-1.5 bg-green-500 animate-pulse" style="animation-delay: 0.4s;"></div>
+              <div class="w-1/4 h-1.5 bg-amber-500 animate-pulse" style="animation-delay: 0.6s;"></div>
+              <div class="w-1/4 h-1.5 bg-red-500 animate-pulse" style="animation-delay: 0.8s;"></div>
+            </div>
+            <div class="flex items-center justify-between">
+                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                    Archive Management
+                </h2>
+                <Link
+                    :href="route('applications.index')"
+                    class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-sm font-medium rounded-md shadow hover:from-purple-500 hover:to-indigo-500 transition"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    Back to Applications
+                </Link>
+            </div>
+        </template>
+
+        <!-- Success/Error Messages -->
+        <div v-if="successMessage" class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
+            {{ successMessage }}
+        </div>
+        <div v-if="errorMessage" class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+            {{ errorMessage }}
+        </div>
+
+        <!-- Filters -->
+        <div class="bg-white overflow-hidden shadow-sm rounded-lg mb-6">
+            <div class="p-6">
+                <h3 class="text-lg font-medium text-gray-800 mb-4">Filters</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">User</label>
+                        <SelectInput
+                            v-model="filterForm.user_filter"
+                            :options="[
+                                { value: '', label: 'All Users' },
+                                ...users.map(user => ({ value: user.id.toString(), label: user.name }))
+                            ]"
+                            class="w-full"
+                        />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Academic Year</label>
+                        <SelectInput
+                            v-model="filterForm.academic_year_filter"
+                            :options="[
+                                { value: '', label: 'All Years' },
+                                ...academicYears.map(year => ({ value: year, label: year }))
+                            ]"
+                            class="w-full"
+                        />
+                    </div>
+                    <div class="flex items-end space-x-2">
+                        <PrimaryButton @click="applyFilters" class="flex-1">
+                            Apply Filters
+                        </PrimaryButton>
+                        <SecondaryButton @click="clearFilters">
+                            Clear
+                        </SecondaryButton>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Archived Applications Table -->
+        <div class="bg-white overflow-hidden shadow-sm rounded-lg">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-medium text-gray-800">
+                        Archived Applications ({{ archivedApplications.length }})
+                    </h3>
+                </div>
+
+                <div v-if="archivedApplications.length === 0" class="text-center py-8">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                    </svg>
+                    <p class="mt-4 text-gray-600">No archived applications found.</p>
+                </div>
+
+                <div v-else class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Application
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    User
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Status
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Academic Year
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Archived By
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Archived At
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Actions
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <tr v-for="application in archivedApplications" :key="application.id">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-900">
+                                            {{ application.organization_name }}
+                                        </div>
+                                        <div class="text-sm text-gray-500">
+                                            {{ getFormTypeLabel(application.form_type) }}
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">
+                                        {{ application.user?.name || 'N/A' }}
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span
+                                        :class="[
+                                            'inline-flex px-2 py-1 text-xs font-semibold rounded-full',
+                                            getStatusColor(application.status)
+                                        ]"
+                                    >
+                                        {{ application.status }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {{ application.academic_year_archived || 'N/A' }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {{ application.archived_by_user?.name || 'N/A' }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {{ formatDate(application.archived_at) }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <div class="flex space-x-2">
+                                        <a
+                                            :href="route('applications.pdf', application.id) + '?action=view'"
+                                            class="text-blue-600 hover:text-blue-900"
+                                            target="_blank"
+                                        >
+                                            View PDF
+                                        </a>
+                                        <button
+                                            @click="confirmRestore(application)"
+                                            class="text-green-600 hover:text-green-900"
+                                        >
+                                            Restore
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Restore Confirmation Modal -->
+        <Modal :show="showRestoreModal" @close="showRestoreModal = false">
+            <div class="p-6">
+                <div class="flex items-center mb-4">
+                    <div class="flex-shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="text-lg font-medium text-gray-900">
+                            Restore Application
+                        </h3>
+                    </div>
+                </div>
+                <div class="mt-2">
+                    <p class="text-sm text-gray-500">
+                        Are you sure you want to restore this application? It will become active again and users will be able to edit it.
+                    </p>
+                </div>
+                <div class="mt-4 flex justify-end space-x-3">
+                    <SecondaryButton @click="showRestoreModal = false">
+                        Cancel
+                    </SecondaryButton>
+                    <PrimaryButton @click="restoreApplication" class="bg-green-600 hover:bg-green-700">
+                        Restore
+                    </PrimaryButton>
+                </div>
+            </div>
+        </Modal>
+    </AuthenticatedLayout>
+</template> 

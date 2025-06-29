@@ -6,6 +6,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import ApplicationsTable from '@/Components/ApplicationsTable.vue';
 import StatusModal from '@/Components/StatusModal.vue';
 import NoApplicationsMessage from '@/Components/NoApplicationsMessage.vue';
+import Modal from '@/Components/Modal.vue';
 
 const props = defineProps({ 
   applications: Array,
@@ -34,6 +35,13 @@ const activeDropdown = ref(null);
 const showStatusModal = ref(false);
 const selectedApplication = ref(null);
 const isSubmitting = ref(false);
+
+// Add End the Year logic and modal for admins only, matching the dashboard implementation
+const showEndYearModal = ref(false);
+const endYearForm = ref({
+  academic_year: '',
+  confirmation: ''
+});
 
 // Search type options for admins
 const searchTypeOptions = computed(() => {
@@ -302,6 +310,27 @@ const handleDocumentUpload = (applicationId, formData) => {
 const refreshApplications = () => {
   filteredApplications.value = [...props.applications];
 };
+
+const openEndYearModal = () => {
+  const currentYear = new Date().getFullYear();
+  endYearForm.value.academic_year = `${currentYear}-${currentYear + 1}`;
+  endYearForm.value.confirmation = '';
+  showEndYearModal.value = true;
+};
+
+const endYear = () => {
+  if (endYearForm.value.confirmation !== 'END_YEAR') {
+    return;
+  }
+  router.post(route('admin.archive.end-year'), endYearForm.value, {
+    onSuccess: () => {
+      showEndYearModal.value = false;
+      endYearForm.value = { academic_year: '', confirmation: '' };
+      // Force refresh to ensure changes are visible
+      window.location.reload();
+    },
+  });
+};
 </script>
 
 <template>
@@ -313,15 +342,27 @@ const refreshApplications = () => {
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
           {{ isAdmin ? 'Manage Applications' : 'Your Applications' }}
         </h2>
-        <Link
-          href="/applications/create"
-          class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white px-5 py-2.5 rounded-lg shadow inline-flex items-center transition duration-300 text-sm font-medium"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
-          </svg>
-          New Application
-        </Link>
+        <div class="flex gap-3">
+          <Link
+            href="/applications/create"
+            class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white px-5 py-2.5 rounded-lg shadow inline-flex items-center transition duration-300 text-sm font-medium"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+            </svg>
+            New Application
+          </Link>
+          <button
+            v-if="isAdmin"
+            @click="openEndYearModal"
+            class="bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-lg shadow inline-flex items-center transition duration-300 text-sm font-medium"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+            </svg>
+            End the Year
+          </button>
+        </div>
       </div>
     </template>
 
@@ -469,6 +510,81 @@ const refreshApplications = () => {
       @close="closeStatusModal"
       @updateStatus="updateApplicationStatus"
     />
+
+    <!-- End Year Confirmation Modal -->
+    <Modal :show="showEndYearModal" @close="showEndYearModal = false">
+      <div class="p-6">
+        <div class="flex items-center mb-4">
+          <div class="flex-shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+          </div>
+          <div class="ml-3">
+            <h3 class="text-lg font-medium text-gray-900">
+              End the Academic Year
+            </h3>
+          </div>
+        </div>
+        <div class="mt-2">
+          <p class="text-sm text-gray-500 mb-4">
+            This action will archive all current applications and end the academic year. This process cannot be undone easily.
+          </p>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Academic Year</label>
+              <input
+                v-model="endYearForm.academic_year"
+                type="text"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                placeholder="e.g., 2024-2025"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Confirmation</label>
+              <input
+                v-model="endYearForm.confirmation"
+                type="text"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                placeholder="Type 'END_YEAR' to confirm"
+              />
+              <p class="text-xs text-gray-500 mt-1">
+                Type <strong>END_YEAR</strong> to confirm this action
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="mt-6 flex justify-end space-x-3">
+          <button
+            @click="showEndYearModal = false"
+            class="px-4 py-2 bg-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-400 transition"
+          >
+            Cancel
+          </button>
+          <button
+            @click="endYear"
+            :disabled="endYearForm.confirmation !== 'END_YEAR'"
+            class="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            End the Year
+          </button>
+        </div>
+      </div>
+    </Modal>
+
+    <!-- Add a subtle, center-aligned archive link at the bottom -->
+    <div class="flex justify-center mt-10 mb-6">
+      <a
+        :href="isAdmin ? route('admin.archive.index') : route('archive.index')"
+        class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg shadow-sm transition duration-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2"
+        aria-label="View Archive"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+        </svg>
+        <span>{{ isAdmin ? 'Archive Management' : 'View Archive' }}</span>
+      </a>
+    </div>
   </AuthenticatedLayout>
 </template>
 

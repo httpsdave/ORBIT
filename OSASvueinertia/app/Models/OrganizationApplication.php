@@ -21,6 +21,10 @@ class OrganizationApplication extends Model
         'dean_name',
         'coordinator_name',
         'status',
+        'is_archived',
+        'archived_at',
+        'archived_by',
+        'academic_year_archived',
         'college',
         'academic_year_start',
         'academic_year_end',
@@ -60,6 +64,11 @@ class OrganizationApplication extends Model
 
     ];
 
+    protected $casts = [
+        'is_archived' => 'boolean',
+        'archived_at' => 'datetime',
+    ];
+
     public function activities()
     {
         return $this->hasMany(Activity::class);
@@ -84,6 +93,23 @@ class OrganizationApplication extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function archivedBy()
+    {
+        return $this->belongsTo(User::class, 'archived_by');
+    }
+
+    // Scope to get only non-archived applications
+    public function scopeActive($query)
+    {
+        return $query->where('is_archived', false);
+    }
+
+    // Scope to get only archived applications
+    public function scopeArchived($query)
+    {
+        return $query->where('is_archived', true);
     }
 
 }

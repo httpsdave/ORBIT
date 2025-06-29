@@ -35,8 +35,14 @@ class DashboardController extends Controller
                 ->first();
         }
         
-        // Get pending applications count
-        $pendingApplications = OrganizationApplication::where('status', 'pending')->count();
+        // Get pending applications count (only active applications)
+        $pendingApplications = OrganizationApplication::active()->where('status', 'pending')->count();
+        
+        // Get archive statistics
+        $totalArchived = OrganizationApplication::archived()->count();
+        $recentlyArchived = OrganizationApplication::archived()
+            ->where('archived_at', '>=', now()->subDays(30))
+            ->count();
         
         // Get the authenticated user's name
         $userName = auth()->user()->name;
@@ -47,6 +53,8 @@ class DashboardController extends Controller
             'upcomingEvent' => $upcomingEvent,
             'totalStudentOrgs' => $totalStudentOrgs,
             'pendingApplications' => $pendingApplications,
+            'totalArchived' => $totalArchived,
+            'recentlyArchived' => $recentlyArchived,
             'userName' => $userName,
         ]);
     }

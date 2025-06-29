@@ -18,6 +18,7 @@ use App\Http\Controllers\UserNotificationController;
 use App\Http\Middleware\CheckRole;
 use App\Models\User;
 use App\Models\Role;
+use App\Http\Controllers\ArchiveController;
 
 // Authentication routes (login, register, password reset)
 require __DIR__.'/auth.php';
@@ -75,6 +76,9 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/applications/{application}', [OrganizationApplicationController::class, 'update'])->name('applications.update');
     Route::delete('/applications/{application}', [OrganizationApplicationController::class, 'destroy'])->name('applications.destroy');
     Route::post('/applications/{application}/update-status', [OrganizationApplicationController::class, 'updateStatus'])->name('applications.update-status');
+
+    // Archive routes for regular users
+    Route::get('/archive', [ArchiveController::class, 'index'])->name('archive.index');
 
     // Auto-save form data route
     Route::post('/auto-save-form-data', [OrganizationApplicationController::class, 'autoSaveFormData'])->name('auto-save-form-data');
@@ -156,6 +160,12 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy'])->name('admin.notifications.destroy');
         Route::patch('/notifications/{notification}/toggle-active', [NotificationController::class, 'toggleActive'])->name('admin.notifications.toggle-active');
         Route::patch('/notifications/{id}/mark-read', [NotificationController::class, 'markAsRead']);
+
+        // Admin Archive Management Routes
+        Route::get('/archive', [\App\Http\Controllers\Admin\ArchiveController::class, 'index'])->name('admin.archive.index');
+        Route::post('/archive/end-year', [\App\Http\Controllers\Admin\ArchiveController::class, 'endYear'])->name('admin.archive.end-year');
+        Route::patch('/archive/{application}/restore', [\App\Http\Controllers\Admin\ArchiveController::class, 'restore'])->name('admin.archive.restore');
+        Route::get('/archive/stats', [\App\Http\Controllers\Admin\ArchiveController::class, 'getArchiveStats'])->name('admin.archive.stats');
 
     });
 });

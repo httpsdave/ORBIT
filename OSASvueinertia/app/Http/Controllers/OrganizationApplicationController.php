@@ -17,6 +17,17 @@ class OrganizationApplicationController extends Controller
 {
     $query = OrganizationApplication::query();
     
+    // Filter by archive status
+    if ($request->filled('archive_filter')) {
+        if ($request->archive_filter === 'archived') {
+            $query->archived();
+        } else {
+            $query->active(); // Default to active applications
+        }
+    } else {
+        $query->active(); // Default to active applications
+    }
+    
     // If user is admin, show all applications or filter by user
     if (auth()->user()->isAdmin()) {
         // Apply user filter if provided
@@ -47,6 +58,7 @@ class OrganizationApplicationController extends Controller
         'applications' => $applications,
         'users' => $users,
         'currentUserFilter' => $request->user_filter,
+        'currentArchiveFilter' => $request->archive_filter ?? 'active',
         'userId' => auth()->id(),
         'isAdmin' => auth()->user()->isAdmin(),
         'successMessage' => session('success'),
@@ -118,8 +130,7 @@ class OrganizationApplicationController extends Controller
                 'activities.*.target_date' => 'required|date',
                 'activities.*.budget' => 'required|numeric|min:0|max:9999999999999.99',
             ]);
-        }
-        elseif ($request->form_type === 'LSPU-OSAS-SF-005') {
+        } elseif ($request->form_type === 'LSPU-OSAS-SF-005') {
             $validationRules = array_merge($validationRules, [
                 'semester' => 'required|string|in:1st,2nd,Summer',
                 'academic_year_start' => 'required|string|max:10',
@@ -131,8 +142,7 @@ class OrganizationApplicationController extends Controller
                 'members.*.course_year_section' => 'required|string|max:255',
                 'members.*.photo_path' => 'nullable',
             ]);
-        }
-        elseif ($request->form_type === 'LSPU-OSAS-SF-006') {
+        } elseif ($request->form_type === 'LSPU-OSAS-SF-006') {
             $validationRules = array_merge($validationRules, [
                 'student_name' => 'required|string|max:255',
                 'course_year_section' => 'required|string|max:255',
@@ -270,10 +280,16 @@ class OrganizationApplicationController extends Controller
 
     public function edit(OrganizationApplication $application)
     {
+        // Check if application is archived - only admins can edit archived applications
+        if ($application->is_archived && !auth()->user()->isAdmin()) {
+            return redirect()->route('applications.index')->with('error', 'You cannot edit an archived application.');
+        }
+        
         // Only allow editing if not approved or user is admin
         if (!$application->user || (!auth()->user()->isAdmin() && $application->status === 'Approved')) {
             return redirect()->route('applications.index')->with('error', 'You cannot edit an approved application.');
         }
+        
         // Eager load all possible related models for editing
         $application->load('activities', 'members', 'officers', 'attendees');
         return Inertia::render('OrganizationApplications/Edit', ['application' => $application]);
@@ -281,6 +297,11 @@ class OrganizationApplicationController extends Controller
 
     public function update(Request $request, OrganizationApplication $application)
     {
+        // Check if application is archived - only admins can update archived applications
+        if ($application->is_archived && !auth()->user()->isAdmin()) {
+            return redirect()->route('applications.index')->with('error', 'You cannot update an archived application.');
+        }
+        
         // Only allow updating if not approved or user is admin
         if (!auth()->user()->isAdmin() && $application->status === 'Approved') {
             return redirect()->route('applications.index')->with('error', 'You cannot update an approved application.');
