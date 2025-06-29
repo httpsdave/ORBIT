@@ -520,7 +520,7 @@
                         </div>
                         <p style="text-align: left; padding-left: 10px; margin-top: 0;">Date: <span class="date-signature-line">{{ now()->format('F d, Y') }}</span></p>
                     </td>
-                    <td style="width: 50%; vertical-align: top; text-align: center; padding-top: 15px;">
+                    <td style="width: 50%; vertical-align: top; text-align: center; padding-top: 0;">
                         <div style="width: 200px; margin: 0 auto;">
                             <p style="margin-bottom: 0;">
                                 <span class="date-signature-line" style="display: block; min-width: 200px; text-align: center;">{{ $application->second_adviser ?? '' }}</span>
