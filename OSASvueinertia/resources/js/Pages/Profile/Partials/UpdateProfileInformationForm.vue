@@ -157,7 +157,7 @@ function submit() {
                         <div class="flex-shrink-0">
                             <div class="relative group">
                                 <img 
-                                    :src="photoPreview || '/images/default-avatar.png'" 
+                                    :src="photoPreview || '/images/lspu_logo_better.png'" 
                                     class="w-24 h-24 rounded-full object-cover border-4 border-blue-200 shadow-md transition-all duration-200 group-hover:border-blue-300" 
                                 />
                                 <div 

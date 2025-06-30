@@ -230,10 +230,15 @@ const getFormTypeLabel = (formType) => {
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <a
                                         :href="route('applications.pdf', application.id) + '?action=view'"
-                                        class="text-blue-600 hover:text-blue-900"
+                                        class="bg-green-500 hover:bg-green-400 text-white p-2.5 rounded-lg transition duration-300 relative overflow-hidden group shadow-sm"
                                         target="_blank"
+                                        title="View PDF"
                                     >
-                                        View PDF
+                                        <span class="absolute w-0 h-0 transition-all duration-300 ease-out bg-white rounded-full group-hover:w-16 group-hover:h-16 opacity-10"></span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                            <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                                            <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                                        </svg>
                                     </a>
                                 </td>
                             </tr>

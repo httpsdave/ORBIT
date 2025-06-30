@@ -56,7 +56,7 @@ class UserNotificationController extends Controller
                         'message' => $notification->message,
                         'type' => $notification->type,
                         'is_read' => (bool) $notification->is_read,
-                        'created_at' => \Carbon\Carbon::parse($notification->created_at)->diffForHumans(),
+                        'created_at' => $notification->created_at,
                     ];
                 });
 
@@ -77,7 +77,7 @@ class UserNotificationController extends Controller
                     'message' => $notification->message,
                     'type' => $notification->type,
                     'is_read' => (bool) $notification->is_read,
-                    'created_at' => \Carbon\Carbon::parse($notification->created_at)->diffForHumans(),
+                    'created_at' => $notification->created_at,
                 ];
             });
 
@@ -116,7 +116,7 @@ class UserNotificationController extends Controller
                     'message' => $notification->message,
                     'type' => $notification->type,
                     'is_read' => (bool) $notification->is_read,
-                    'created_at' => \Carbon\Carbon::parse($notification->created_at)->diffForHumans(),
+                    'created_at' => $notification->created_at,
                 ];
             });
 
