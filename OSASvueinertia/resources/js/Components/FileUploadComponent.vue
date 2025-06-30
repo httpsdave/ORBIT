@@ -110,6 +110,11 @@
               <pre class="text-sm text-gray-700 whitespace-pre-wrap font-mono">{{ extractedText }}</pre>
             </div>
             
+            <!-- Countdown timer centered below extracted text -->
+            <div v-if="countdown > 0" class="w-full flex justify-center my-4">
+              <span class="text-sm text-gray-500">Proceeding in {{ countdown }} second<span v-if="countdown !== 1">s</span>...</span>
+            </div>
+            
             <div class="mt-6 flex justify-end space-x-3">
               <button 
                 @click="cancelExtraction"
@@ -275,7 +280,7 @@
 </style>
 
 <script>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import axios from 'axios';
 
 export default {
@@ -294,6 +299,8 @@ export default {
     const extractedText = ref('');
     const extractedData = ref(null);
     const isExtracting = ref(false);
+    let autoExtractTimer = null;
+    const countdown = ref(5);
     
     function onFileChange(e) {
       const file = e.target.files[0];
@@ -380,6 +387,8 @@ export default {
       if (fileInput.value) {
         fileInput.value.value = '';
       }
+      clearInterval(autoExtractTimer);
+      countdown.value = 5;
     }
     
     function createNewEvent() {
@@ -400,14 +409,15 @@ export default {
     }
     
     function cancelExtraction() {
+      clearInterval(autoExtractTimer);
       resetFileState();
     }
     
     function proceedToEventExtraction() {
+      clearInterval(autoExtractTimer);
       // Show extracting animation
       isExtracting.value = true;
       showExtractedText.value = false;
-      
       // Simulate extraction time (2 seconds)
       setTimeout(() => {
         // Emit the extracted data to parent component for event creation
@@ -417,6 +427,23 @@ export default {
         resetFileState();
       }, 2000);
     }
+    
+    // --- Add watcher for auto-extract logic ---
+    watch(showExtractedText, (val) => {
+      if (val) {
+        countdown.value = 5;
+        autoExtractTimer = setInterval(() => {
+          if (countdown.value > 1) {
+            countdown.value--;
+          } else {
+            clearInterval(autoExtractTimer);
+            proceedToEventExtraction();
+          }
+        }, 1000);
+      } else {
+        clearInterval(autoExtractTimer);
+      }
+    });
     
     return {
       isDragging,
@@ -434,7 +461,8 @@ export default {
       formatFileSize,
       cancelExtraction,
       proceedToEventExtraction,
-      isExtracting
+      isExtracting,
+      countdown
     };
   }
 };
