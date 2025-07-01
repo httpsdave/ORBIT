@@ -106,4 +106,11 @@ class User extends Authenticatable
     {
         return $this->hasOne(OrganizationApplication::class)->latestOfMany();
     }
+
+    public function latestApprovedApplication()
+    {
+        return $this->hasOne(OrganizationApplication::class)
+            ->where('status', 'Approved')
+            ->latestOfMany();
+    }
 }

@@ -47,32 +47,22 @@ class DashboardController extends Controller
         // Get the authenticated user's name
         $userName = auth()->user()->name;
 
-        // Get advisers data: organization name (user name), adviser_name, second_adviser from latest application
-        $advisersData = \App\Models\User::whereHas('organizationApplications', function($q) {
-                $q->where('status', 'Approved');
-            })
-            ->with(['latestApplication' => function($q) {
-                $q->where('status', 'Approved')
-                  ->select(
-                      'organization_applications.id',
-                      'organization_applications.user_id',
-                      'organization_applications.adviser_name',
-                      'organization_applications.second_adviser',
-                      'organization_applications.status'
-                  );
-            }])
-            ->get()
-            ->filter(function($user) {
-                return $user->latestApplication !== null;
-            })
-            ->map(function($user) {
-                return [
-                    'organization' => $user->name,
-                    'adviser_name' => $user->latestApplication->adviser_name ?? null,
-                    'second_adviser' => $user->latestApplication->second_adviser ?? null,
-                ];
-            })
-            ->values();
+        // Get advisers data: organization name (user name), adviser_name, second_adviser from latest approved application
+        $users = \App\Models\User::all();
+        $advisersData = $users->map(function($user) {
+            $latestApproved = \App\Models\OrganizationApplication::where('user_id', $user->id)
+                ->where('status', 'Approved')
+                ->orderByDesc('created_at')
+                ->first();
+            if (!$latestApproved) {
+                return null;
+            }
+            return [
+                'organization' => $user->name,
+                'adviser_name' => $latestApproved->adviser_name,
+                'second_adviser' => $latestApproved->second_adviser,
+            ];
+        })->filter()->values();
 
         return Inertia::render('Admin/Dashboard', [
             'collegesData' => $colleges,
