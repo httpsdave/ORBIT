@@ -13,11 +13,26 @@
           </svg>
           Event History
         </h3>
-        <button @click="closeModal" class="text-gray-500 hover:text-gray-700">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
+        <div class="flex items-center space-x-2">
+          <button 
+            @click="$emit('export-csv', pastEvents)" 
+            class="flex items-center px-4 py-2 rounded-md font-medium text-xs transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-400
+              bg-green-500 text-white hover:bg-green-600
+              disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed disabled:opacity-60"
+            :disabled="pastEvents.length === 0"
+            title="Export past events as CSV"
+          >
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Export as CSV
+          </button>
+          <button @click="closeModal" class="text-gray-500 hover:text-gray-700">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
       </div>
       
       <!-- Colored banner -->
@@ -106,7 +121,7 @@ export default {
     }
   },
   
-  emits: ['close', 'view-event-details', 'event-deleted'],
+  emits: ['close', 'view-event-details', 'event-deleted', 'export-csv'],
   
   setup(props, { emit }) {
     const pastEvents = computed(() => {

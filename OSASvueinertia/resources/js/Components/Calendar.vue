@@ -181,6 +181,7 @@
   @close="closePastEventsModal"
   @view-event-details="viewEventDetails"
   @event-deleted="handleEventDeleted"
+  @export-csv="exportPastEventsCsv"
 />
   
 </template>
@@ -614,6 +615,41 @@ export default {
   eventForm.end_time = data.end_time || '';
   eventForm.description = data.description || '';
 }
+
+function exportPastEventsCsv(pastEvents) {
+  if (!pastEvents || !pastEvents.length) return;
+  // Define the fields to export
+  const fields = [
+    'id', 'title', 'start_date', 'end_date', 'description'
+  ];
+  // Create CSV header
+  const csvRows = [fields.join(',')];
+  // Add event rows
+  for (const event of pastEvents) {
+    const row = fields.map(field => {
+      let value = event[field] !== undefined ? event[field] : '';
+      // Escape quotes and commas
+      if (typeof value === 'string') {
+        value = '"' + value.replace(/"/g, '""') + '"';
+      }
+      return value;
+    });
+    csvRows.push(row.join(','));
+  }
+  // Create CSV blob
+  const csvContent = csvRows.join('\r\n');
+  const blob = new Blob([csvContent], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  // Create a temporary link to trigger download
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'past_events.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
     return {
       showPastEventsModal,
       closePastEventsModal,
@@ -637,7 +673,8 @@ export default {
       viewEventDetails,
       closeEventDetailsModal,
       createNewEvent,
-      handleFileProcessed
+      handleFileProcessed,
+      exportPastEventsCsv
     };
   }
 };
