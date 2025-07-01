@@ -395,13 +395,15 @@ onUnmounted(() => {
    <aside
       id="sidebar"
       :class="[
-        'z-30 transition-all duration-300 ease-in-out border-r border-gray-200 bg-white shadow-lg shadow-blue-200/20 flex flex-col',
+        'z-30 transition-all duration-300 ease-out border-r border-gray-200 bg-white shadow-lg shadow-blue-200/20 flex flex-col',
         // Desktop positioning logic - always fixed positioned
         'md:fixed md:left-0 md:pt-16 md:h-screen',
         // Width logic - hover overlays, expanded overlays but appears to push content
         sidebarExpanded || isSidebarHovering ? 'md:w-64' : 'md:w-20',
-        // Mobile positioning
-        showingSidebar ? 'fixed left-0 w-64 h-full pt-16' : 'fixed -left-64'
+        // Mobile positioning - use transform for smooth animation
+        'fixed left-0 w-64 h-full pt-16 md:transform-none',
+        // Mobile transform for smooth slide animation
+        showingSidebar ? 'transform translate-x-0' : 'transform -translate-x-full'
       ]"
       aria-label="Navigation sidebar"
       @click="handleSidebarClick"
@@ -414,7 +416,6 @@ onUnmounted(() => {
         :sidebar-expanded="sidebarExpanded || isSidebarHovering" 
         :showing-sidebar="showingSidebar"
         @toggle-sidebar-expanded="toggleSidebarExpanded"
-        @close-sidebar="closeSidebar"
       />
       
       <!-- Navigation Links -->
@@ -450,7 +451,7 @@ onUnmounted(() => {
     <div 
       v-if="showingSidebar" 
       @click="closeSidebar" 
-      class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-35 md:hidden animate-fadeIn"
+      class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-20 md:hidden animate-fadeIn"
       aria-hidden="true"
     ></div>
   </div>
@@ -476,6 +477,15 @@ a:focus, button:focus {
 @media (min-width: 768px) {
   aside:not(.md\:w-64) {
     cursor: pointer;
+  }
+}
+
+/* Mobile sidebar animation improvements */
+@media (max-width: 767px) {
+  #sidebar {
+    will-change: transform;
+    backface-visibility: hidden;
+    transform-style: preserve-3d;
   }
 }
 

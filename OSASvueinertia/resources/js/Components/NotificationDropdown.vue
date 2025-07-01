@@ -271,7 +271,6 @@ const markAllAsRead = () => {
     router.post(route('notifications.mark-all-read'), {}, {
       preserveScroll: true,
       preserveState: true,
-      only: ['auth.unreadNotificationsCount'],
       onSuccess: () => {
         // Update all local notifications to read
         recentNotifications.value.forEach(notification => {
