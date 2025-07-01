@@ -439,6 +439,8 @@ function exportAdvisersToCSV() {
                         <button
                             @click="exportAdvisersToCSV"
                             class="mb-4 p-2 bg-green-500 text-white rounded-full hover:bg-green-600 transition flex items-center"
+                            :class="{ 'opacity-60 pointer-events-none bg-gray-200 text-gray-400': !props.advisersData.length }"
+                            :disabled="!props.advisersData.length"
                             title="Export as CSV"
                             aria-label="Export as CSV"
                         >

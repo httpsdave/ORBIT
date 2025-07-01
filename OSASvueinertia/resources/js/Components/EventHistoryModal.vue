@@ -15,17 +15,16 @@
         </h3>
         <div class="flex items-center space-x-2">
           <button 
-            @click="$emit('export-csv', pastEvents)" 
-            class="flex items-center px-4 py-2 rounded-md font-medium text-xs transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-400
-              bg-green-500 text-white hover:bg-green-600
-              disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed disabled:opacity-60"
+            @click="$emit('export-csv', pastEvents)"
+            class="p-2 bg-green-500 text-white rounded-full hover:bg-green-600 transition flex items-center"
+            :class="{ 'opacity-60 pointer-events-none bg-gray-200 text-gray-400': pastEvents.length === 0 }"
             :disabled="pastEvents.length === 0"
-            title="Export past events as CSV"
+            title="Export as CSV"
+            aria-label="Export as CSV"
           >
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" />
             </svg>
-            Export as CSV
           </button>
           <button @click="closeModal" class="text-gray-500 hover:text-gray-700">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
