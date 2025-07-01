@@ -101,4 +101,9 @@ class User extends Authenticatable
             ? asset('storage/' . $this->profile_photo_path)
             : null;
     }
+
+    public function latestApplication()
+    {
+        return $this->hasOne(OrganizationApplication::class)->latestOfMany();
+    }
 }

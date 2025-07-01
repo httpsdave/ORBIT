@@ -34,6 +34,10 @@ const props = defineProps({
     userName: {
         type: String,
         default: '',
+    },
+    advisersData: {
+        type: Array,
+        default: () => [],
     }
 });
 
@@ -279,6 +283,26 @@ const statsCards = computed(() => [
         color: 'yellow'
     }
 ]);
+
+function exportAdvisersToCSV() {
+    if (!props.advisersData.length) return;
+    const headers = ['Organization', 'Adviser', 'Second Adviser'];
+    const rows = props.advisersData.map(row => [
+        `"${row.organization || ''}"`,
+        `"${row.adviser_name || ''}"`,
+        `"${row.second_adviser || ''}"`
+    ]);
+    const csvContent = [headers, ...rows].map(e => e.join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'advisers.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+}
 </script>
 
 <template>
@@ -376,7 +400,7 @@ const statsCards = computed(() => [
                             <button 
                                 @click="activeChart = 'pie'" 
                                 :class="[
-                                    'px-4 py-2 text-sm font-medium rounded-r-md border border-gray-200 border-l-0', 
+                                    'px-4 py-2 text-sm font-medium border border-gray-200 border-l-0', 
                                     activeChart === 'pie' 
                                         ? 'bg-blue-500 text-white border-blue-500' 
                                         : 'bg-white text-gray-700 hover:bg-gray-50'
@@ -384,21 +408,60 @@ const statsCards = computed(() => [
                             >
                                 Pie
                             </button>
+                            <button 
+                                @click="activeChart = 'advisers'" 
+                                :class="[
+                                    'px-4 py-2 text-sm font-medium rounded-r-md border border-gray-200 border-l-0', 
+                                    activeChart === 'advisers' 
+                                        ? 'bg-blue-500 text-white border-blue-500' 
+                                        : 'bg-white text-gray-700 hover:bg-gray-50'
+                                ]"
+                            >
+                                Advisers
+                            </button>
                         </div>
                     </div>
                     
-                    <div class="h-80" v-if="activeChart === 'pie'">
+                    <div v-if="activeChart === 'pie'" class="h-80">
                         <Pie 
                             :data="pieChartData" 
                             :options="pieChartOptions" 
                         />
                     </div>
                     
-                    <div class="h-80" v-else>
+                    <div v-else-if="activeChart === 'bar'" class="h-80">
                         <Bar 
                             :data="barChartData" 
                             :options="barChartOptions" 
                         />
+                    </div>
+                    <div v-else-if="activeChart === 'advisers'" class="overflow-x-auto">
+                        <button
+                            @click="exportAdvisersToCSV"
+                            class="mb-4 p-2 bg-green-500 text-white rounded-full hover:bg-green-600 transition flex items-center"
+                            title="Export as CSV"
+                            aria-label="Export as CSV"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" />
+                            </svg>
+                        </button>
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead>
+                                <tr>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Organization</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Adviser</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Second Adviser</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-100">
+                                <tr v-for="(row, idx) in props.advisersData" :key="idx">
+                                    <td class="px-4 py-2 text-sm text-gray-700">{{ row.organization }}</td>
+                                    <td class="px-4 py-2 text-sm text-gray-700">{{ row.adviser_name || '—' }}</td>
+                                    <td class="px-4 py-2 text-sm text-gray-700">{{ row.second_adviser || '—' }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>

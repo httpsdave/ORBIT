@@ -46,7 +46,34 @@ class DashboardController extends Controller
         
         // Get the authenticated user's name
         $userName = auth()->user()->name;
-        
+
+        // Get advisers data: organization name (user name), adviser_name, second_adviser from latest application
+        $advisersData = \App\Models\User::whereHas('organizationApplications', function($q) {
+                $q->where('status', 'Approved');
+            })
+            ->with(['latestApplication' => function($q) {
+                $q->where('status', 'Approved')
+                  ->select(
+                      'organization_applications.id',
+                      'organization_applications.user_id',
+                      'organization_applications.adviser_name',
+                      'organization_applications.second_adviser',
+                      'organization_applications.status'
+                  );
+            }])
+            ->get()
+            ->filter(function($user) {
+                return $user->latestApplication !== null;
+            })
+            ->map(function($user) {
+                return [
+                    'organization' => $user->name,
+                    'adviser_name' => $user->latestApplication->adviser_name ?? null,
+                    'second_adviser' => $user->latestApplication->second_adviser ?? null,
+                ];
+            })
+            ->values();
+
         return Inertia::render('Admin/Dashboard', [
             'collegesData' => $colleges,
             'todayEvent' => $todayEvent,
@@ -56,6 +83,7 @@ class DashboardController extends Controller
             'totalArchived' => $totalArchived,
             'recentlyArchived' => $recentlyArchived,
             'userName' => $userName,
+            'advisersData' => $advisersData,
         ]);
     }
 }
