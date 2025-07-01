@@ -60,7 +60,6 @@ const markAsRead = (notificationId) => {
   router.patch(route('notifications.mark-read', notificationId), {}, {
     preserveScroll: true,
     preserveState: true,
-    only: ['notifications', 'auth.unreadNotificationsCount'],
     onSuccess: () => {
       // If you need to do anything after success
     },
