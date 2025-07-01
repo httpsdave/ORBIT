@@ -264,14 +264,8 @@ onUnmounted(() => {
             </div>
             <!-- Company name text with bolder, wider font -->
             <span 
-              class="ml-2 font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-green-500 tracking-wider uppercase"
-              :class="{
-                'text-lg': props.logoSize === 'default',
-                'text-xl': props.logoSize === 'medium',
-                'text-2xl': props.logoSize === 'large',
-                'text-3xl': props.logoSize === 'extra-large'
-              }"
-              style="font-family: 'Century Gothic',  sans-serif; letter-spacing: -0.01em"
+              class="ml-6 font-black text-3xl text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-green-500 uppercase select-none"
+              style="font-family: 'Montserrat SemiCondensed', 'Inter Tight', 'Arial Narrow', 'Montserrat', 'Inter', 'Poppins', 'Segoe UI', 'Arial', sans-serif; letter-spacing: -0.08em; font-stretch: condensed; transform: scaleX(1.35); display: inline-block;"
             >
               ORBIT
             </span>

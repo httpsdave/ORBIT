@@ -43,7 +43,7 @@ const toggleSidebar = () => {
             <div class="absolute inset-0 bg-blue-500 opacity-20 blur-sm rounded-lg transform rotate-45 animate-pulse"></div>
             <ApplicationLogo class="block h-8 w-auto filter drop-shadow" alt="ORBIT logo" />
           </div>
-          <span class="ml-2 font-semibold text-lg text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-green-500">
+          <span class="ml-2 font-extrabold tracking-wider text-xl text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-green-500 select-none" style="font-family: 'Montserrat', 'Inter', 'Poppins', 'Segoe UI', 'Arial', sans-serif; letter-spacing: 0.04em;">
             ORBIT
           </span>
         </Link>

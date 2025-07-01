@@ -203,13 +203,20 @@ onBeforeUnmount(() => {
                 <div class="mb-6">
                     <!-- Logo and banner (shown only on larger screens) -->
                     <div class="hidden md:flex justify-center items-center mb-6">
-                        <div class="relative mr-4">
+                        <div class="relative mr-8">
                             <header class="flex items-center">
                                 <ApplicationLogo class="w-20 h-15 scale-150" />
                             </header>
                         </div>
                         <h1 class="text-2xl md:text-3xl font-bold" :class="isDarkMode ? 'text-white' : 'text-gray-800'">
-                            <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-green-500">LSPU</span><span class="text-transparent bg-clip-text bg-gradient-to-r from-green-500 to-blue-500"> ORBIT</span>
+                            <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-green-500 font-black text-4xl uppercase select-none"
+                                style="font-family: 'Montserrat SemiCondensed', 'Inter Tight', 'Arial Narrow', 'Montserrat', 'Inter', 'Poppins', 'Segoe UI', 'Arial', sans-serif; letter-spacing: -0.08em; font-stretch: condensed; transform: scaleX(1.35); display: inline-block;">
+                                LSPU
+                            </span>
+                            <span class="ml-10 text-transparent bg-clip-text bg-gradient-to-r from-green-500 to-blue-500 font-black text-4xl uppercase select-none"
+                                style="font-family: 'Montserrat SemiCondensed', 'Inter Tight', 'Arial Narrow', 'Montserrat', 'Inter', 'Poppins', 'Segoe UI', 'Arial', sans-serif; letter-spacing: -0.08em; font-stretch: condensed; transform: scaleX(1.35); display: inline-block;">
+                                ORBIT
+                            </span>
                         </h1>
                     </div>
 
