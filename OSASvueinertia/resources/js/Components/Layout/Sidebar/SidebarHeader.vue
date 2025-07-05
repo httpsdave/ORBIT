@@ -16,14 +16,6 @@ defineProps({
     required: true
   }
 });
-
-// Add toggleSidebarExpanded to emits
-const emit = defineEmits(['toggle-sidebar-expanded']);
-
-// Add a function to handle toggling sidebar
-const toggleSidebar = () => {
-  emit('toggle-sidebar-expanded');
-};
 </script>
 
 <template>

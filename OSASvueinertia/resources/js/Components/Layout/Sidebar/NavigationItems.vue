@@ -91,6 +91,11 @@ onMounted(() => {
     navElementsVisible.value = true;
   }, 300);
 });
+
+// Prevent event bubbling when clicking on action buttons
+const handleActionClick = (event) => {
+  event.stopPropagation();
+};
 </script>
 
 <template>
@@ -110,6 +115,7 @@ onMounted(() => {
         <div v-if="isAdmin && item.route === 'admin.colleges.index'" class="py-2">
           <Link
             :href="route('applications.index')"
+            @click="handleActionClick"
             class="w-full flex justify-center items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 text-white text-base font-medium rounded-xl shadow-md hover:shadow-blue-300/70 transition-all duration-300 relative overflow-hidden group focus:outline-none focus:ring-2 focus:ring-blue-500"
             :class="{'px-2': !sidebarExpanded && !showingSidebar}"
           >
@@ -126,6 +132,7 @@ onMounted(() => {
         <div v-if="!isAdmin && item.route === 'student-orgs.index'" class="py-2">
           <Link
             :href="route('applications.index')"
+            @click="handleActionClick"
             class="w-full flex justify-center items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 text-white text-base font-medium rounded-xl shadow-md hover:shadow-blue-300/70 transition-all duration-300 relative overflow-hidden group focus:outline-none focus:ring-2 focus:ring-blue-500"
             :class="{'px-2': !sidebarExpanded && !showingSidebar}"
           >

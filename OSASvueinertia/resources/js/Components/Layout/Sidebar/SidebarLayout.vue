@@ -42,7 +42,6 @@ const unreadNotificationsCount = computed(() => {
 // State management
 const showingSidebar = ref(false);
 const sidebarExpanded = ref(true);
-const isSidebarHovering = ref(false); // New state for hover effect
 const windowWidth = ref(window.innerWidth); // Track window width
 
 // User profile dropdown state
@@ -110,20 +109,15 @@ const toggleSidebarExpanded = () => {
 const handleSidebarClick = (event) => {
   // Only toggle if sidebar is collapsed and we're on desktop
   if (!sidebarExpanded.value && window.innerWidth >= 768) {
-    toggleSidebarExpanded();
-  }
-};
-
-// Handle sidebar hover (Google Classroom style)
-const handleSidebarMouseEnter = () => {
-  if (!sidebarExpanded.value && windowWidth.value >= 768) {
-    isSidebarHovering.value = true;
-  }
-};
-
-const handleSidebarMouseLeave = () => {
-  if (!sidebarExpanded.value && windowWidth.value >= 768) {
-    isSidebarHovering.value = false;
+    // Check if the click is on a navigation item or its children
+    const isNavigationClick = event.target.closest('a[href]') || 
+                             event.target.closest('button') ||
+                             event.target.closest('[role="button"]');
+    
+    // Only toggle if it's not a navigation click
+    if (!isNavigationClick) {
+      toggleSidebarExpanded();
+    }
   }
 };
 
@@ -142,10 +136,11 @@ const closeSidebarOnClickOutside = (event) => {
   } else if (window.innerWidth >= 768 && sidebarExpanded.value) {
     // For desktop mode, check if click is outside the sidebar to collapse it
     const sidebarElement = document.getElementById('sidebar');
+    const desktopToggleButton = event.target.closest('button[aria-label="Toggle sidebar"]');
     
-    if (sidebarElement && !sidebarElement.contains(event.target)) {
+    // Don't collapse if clicking on the desktop toggle button
+    if (sidebarElement && !sidebarElement.contains(event.target) && !desktopToggleButton) {
       sidebarExpanded.value = false;
-      isSidebarHovering.value = false; // Reset hover state when collapsing
       try {
         localStorage.setItem('sidebarExpanded', 'false');
       } catch (e) {
@@ -169,7 +164,6 @@ const checkWindowSize = () => {
   if (window.innerWidth < 768) {
     sidebarExpanded.value = false;
     showingSidebar.value = false;
-    isSidebarHovering.value = false;
   } else if (window.innerWidth >= 768) {
     // Only restore the saved preference when on desktop
     try {
@@ -199,7 +193,6 @@ const handleKeyDown = (event) => {
     } else if (sidebarExpanded.value && window.innerWidth >= 768) {
       // Collapse sidebar with Escape key on desktop
       sidebarExpanded.value = false;
-      isSidebarHovering.value = false; // Reset hover state when collapsing
       try {
         localStorage.setItem('sidebarExpanded', 'false');
       } catch (e) {
@@ -238,6 +231,19 @@ onUnmounted(() => {
     <header class="fixed top-0 left-0 right-0 bg-white border-b border-gray-200 shadow-sm z-40 h-16">
       <div class="px-4 sm:px-6 h-full flex items-center justify-between">
         <div class="flex items-center">
+          <!-- Desktop sidebar toggle button - visible only on desktop -->
+          <button
+            @click="toggleSidebarExpanded"
+            class="hidden md:inline-flex items-center justify-center p-2 rounded-md text-gray-500 hover:text-blue-600 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300 mr-2"
+            aria-label="Toggle sidebar"
+            :aria-expanded="sidebarExpanded"
+            style="z-index: 50;"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+          
           <!-- Mobile menu button - visible only on mobile -->
           <button
             @click="toggleSidebar"
@@ -393,7 +399,7 @@ onUnmounted(() => {
         // Desktop positioning logic - always fixed positioned
         'md:fixed md:left-0 md:pt-16 md:h-screen',
         // Width logic - hover overlays, expanded overlays but appears to push content
-        sidebarExpanded || isSidebarHovering ? 'md:w-64' : 'md:w-20',
+        sidebarExpanded ? 'md:w-64' : 'md:w-20',
         // Mobile positioning - use transform for smooth animation
         'fixed left-0 w-64 h-full pt-16 md:transform-none',
         // Mobile transform for smooth slide animation
@@ -401,27 +407,24 @@ onUnmounted(() => {
       ]"
       aria-label="Navigation sidebar"
       @click="handleSidebarClick"
-      @mouseenter="handleSidebarMouseEnter"
-      @mouseleave="handleSidebarMouseLeave"
     >
       <!-- Sidebar Header -->
       <SidebarHeader 
         :is-admin="isAdmin" 
-        :sidebar-expanded="sidebarExpanded || isSidebarHovering" 
+        :sidebar-expanded="sidebarExpanded"
         :showing-sidebar="showingSidebar"
-        @toggle-sidebar-expanded="toggleSidebarExpanded"
       />
       
       <!-- Navigation Links -->
       <NavigationItems 
         :is-admin="isAdmin" 
-        :sidebar-expanded="sidebarExpanded || isSidebarHovering" 
+        :sidebar-expanded="sidebarExpanded" 
         :showing-sidebar="showingSidebar"
       />
       
       <!-- Bottom Actions (Empty for future implementation) -->
       <SidebarFooter 
-        :sidebar-expanded="sidebarExpanded || isSidebarHovering" 
+        :sidebar-expanded="sidebarExpanded" 
         :showing-sidebar="showingSidebar"
       />
     </aside>

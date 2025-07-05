@@ -28,12 +28,18 @@ const isRouteActive = (routeName, exactMatch = true, checkStartsWith = false) =>
   
   return route().current(routeName);
 };
+
+// Prevent event bubbling when clicking on navigation items
+const handleNavigationClick = (event) => {
+  event.stopPropagation();
+};
 </script>
 
 <template>
   <Link 
     v-if="item && item.route"
     :href="route(item.route)" 
+    @click="handleNavigationClick"
     class="flex items-center px-4 py-2 text-gray-600 font-medium hover:text-blue-600 transition-all duration-300 rounded-lg hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-400"
     :class="[
       ((item.exactMatch === false && item.checkStartsWith && isRouteActive(item.route, false, true)) ||
