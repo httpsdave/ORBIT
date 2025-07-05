@@ -108,15 +108,13 @@ onBeforeUnmount(() => {
         <!-- Content wrapper -->
         <div 
             ref="formElement" 
-            class="w-full max-w-4xl flex flex-col md:flex-row gap-4 relative opacity-0 transition-all duration-700 z-20"
+            class="w-full max-w-[880px] h-[600px] flex flex-col md:flex-row items-start relative opacity-0 transition-all duration-700 z-20"
             :class="isDarkMode ? 'text-white' : 'text-gray-800'"
         >
             <!-- Left side panel -->
             <div 
-                class="hidden md:flex md:w-2/5 lg:w-2/5 flex-col items-center justify-center relative rounded-2xl overflow-hidden transition-all duration-300 shadow-xl z-10"
-                :class="isDarkMode 
-                    ? 'bg-gradient-to-br from-blue-500/80 via-green-500/70 to-yellow-500/60 hover:shadow-blue-500/20' 
-                    : 'bg-gradient-to-br from-blue-500/70 via-green-500/60 to-yellow-500/50 hover:shadow-blue-300/30'"
+                class="hidden md:flex md:w-[370px] lg:w-[370px] h-full flex-col items-center justify-center relative rounded-lg overflow-hidden transition-all duration-300 shadow-xl z-10"
+                :class="isDarkMode ? 'bg-gradient-to-r from-green-300 via-green-200 to-blue-300 hover:shadow-blue-500/20' : 'bg-gradient-to-r from-green-300 via-green-200 to-blue-300 hover:shadow-blue-300/30'"
             >
                 <!-- Background image with overlay -->
                 <div class="absolute inset-0">
@@ -145,14 +143,14 @@ onBeforeUnmount(() => {
                         <img src="/images/lspu_logo_better.png" alt="LSPU Logo" class="w-24 h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 object-cover filter drop-shadow-lg">
                     </div>
                     
-                    <div class="text-center mb-8">
-                        <h2 class="text-lg md:text-xl font-bold mb-2 text-white tracking-wider font-sans">WELCOME TO</h2>
-                        <h1 class="text-2xl md:text-3xl lg:text-4xl font-extrabold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-white to-blue-100 font-sans tracking-wide">ORBIT</h1>
-                        <div class="h-1 w-32 bg-white opacity-70 mx-auto mb-6 rounded-full"></div>
-                        <p class="text-white text-opacity-90 text-sm max-w-xs mx-auto leading-relaxed font-sans tracking-wide backdrop-blur-sm bg-white/5 p-3 rounded-lg shadow-inner">
-                            🚀 <span class="font-medium">Organized Records for Better Institutional Tracking.</span> 
-                            <span class="block mt-2">Streamline creation, submission, and tracking of organizational documents while delivering real-time updates on campus events.</span>
-                        </p>
+                    <div class="text-left mb-8">
+                        <h1 class="text-2xl md:text-3xl lg:text-4xl font-bold mb-1 text-transparent bg-clip-text bg-gradient-to-r from-white to-blue-100 font-sans tracking-wide">
+                            WELCOME TO
+                        </h1>
+                        <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-white to-blue-100 font-sans tracking-wide">
+                            ORBIT
+                        </h1>
+                        <div class="h-1 w-32 bg-white opacity-70 rounded-full"></div>
                     </div>
                 </div>
 
@@ -185,7 +183,7 @@ onBeforeUnmount(() => {
             
             <!-- Right side panel with login form -->
             <div 
-                class="w-full md:w-3/5 lg:w-3/5 p-5 md:p-8 rounded-2xl shadow-xl transition-all duration-300 border backdrop-filter backdrop-blur-md"
+                class="w-full md:w-[570px] lg:w-[600px] h-[580px] p-5 md:p-8 rounded-lg md:rounded-r-lg md:rounded-l-none shadow-xl transition-all duration-300 border backdrop-filter backdrop-blur-md self-center"
                 :class="isDarkMode 
                     ? 'bg-gray-900 bg-opacity-70 border-gray-800' 
                     : 'bg-white bg-opacity-60 border-white border-opacity-40'"
@@ -376,23 +374,6 @@ onBeforeUnmount(() => {
                     <p class="text-xs" :class="isDarkMode ? 'text-gray-500' : 'text-gray-400'">
                         © 2025 Laguna State Polytechnic University
                     </p>
-                    <div class="mt-1 flex justify-center space-x-3">
-                        <a 
-                            href="#" 
-                            class="text-xs hover:text-gray-700 transition-colors duration-300" 
-                            :class="isDarkMode ? 'text-gray-500 hover:text-gray-400' : 'text-gray-500'"
-                        >
-                            Privacy Policy
-                        </a>
-                        <span :class="isDarkMode ? 'text-gray-700' : 'text-gray-400'">•</span>
-                        <a 
-                            href="#" 
-                            class="text-xs hover:text-gray-700 transition-colors duration-300" 
-                            :class="isDarkMode ? 'text-gray-500 hover:text-gray-400' : 'text-gray-500'"
-                        >
-                            Terms of Service
-                        </a>
-                    </div>
                 </div>
             </div>
         </div>
