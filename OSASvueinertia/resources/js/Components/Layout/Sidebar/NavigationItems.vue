@@ -2,6 +2,7 @@
 import { computed, ref, onMounted } from 'vue';
 import { Link } from '@inertiajs/vue3';
 import NavigationItem from './NavigationItem.vue';
+import SidebarTooltipButton from './SidebarTooltipButton.vue';
 
 const props = defineProps({
   isAdmin: {
@@ -75,13 +76,6 @@ const userNavItems = [
   }
 ];
 
-// Applications item for admin quick action button
-const adminApplicationsItem = {
-  name: 'Applications',
-  route: 'applications.index',
-  icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'
-};
-
 // Current navigation items based on user role
 const navItems = computed(() => props.isAdmin ? adminNavItems : userNavItems);
 
@@ -113,52 +107,48 @@ const handleActionClick = (event) => {
         
         <!-- Place Applications button directly after Colleges (last item in admin navigation) -->
         <div v-if="isAdmin && item.route === 'admin.colleges.index'" class="py-2">
-          <Link
-            :href="route('applications.index')"
-            @click="handleActionClick"
-            class="w-full flex justify-center items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 text-white text-base font-medium rounded-xl shadow-md hover:shadow-blue-300/70 transition-all duration-300 relative overflow-hidden group focus:outline-none focus:ring-2 focus:ring-blue-500"
-            :class="{'px-2': !sidebarExpanded && !showingSidebar}"
+          <SidebarTooltipButton
+            :tooltip="'All Applications'"
+            :sidebar-expanded="sidebarExpanded"
+            :showing-sidebar="showingSidebar"
           >
-            <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" :class="{'mr-0': !sidebarExpanded && !showingSidebar, 'mr-2': sidebarExpanded || showingSidebar}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            <span v-if="sidebarExpanded || showingSidebar"> All Applications</span>
-            <span v-else class="sr-only">Applications</span>
-            
-            <!-- Tooltip - only show when sidebar is collapsed on desktop -->
-            <span 
-              v-if="!sidebarExpanded && !showingSidebar"
-              class="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-50"
+            <Link
+              :href="route('applications.index')"
+              @click="handleActionClick"
+              class="w-full flex justify-center items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 text-white text-base font-medium rounded-xl shadow-md hover:shadow-blue-300/70 transition-all duration-300 relative overflow-hidden group focus:outline-none focus:ring-2 focus:ring-blue-500"
+              :class="{'px-2': !sidebarExpanded && !showingSidebar}"
             >
-              All Applications
-            </span>
-          </Link>
+              <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" :class="{'mr-0': !sidebarExpanded && !showingSidebar, 'mr-2': sidebarExpanded || showingSidebar}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <span v-if="sidebarExpanded || showingSidebar"> All Applications</span>
+              <span v-else class="sr-only">Applications</span>
+            </Link>
+          </SidebarTooltipButton>
         </div>
         
         <!-- Place New Application button directly after Organizations for regular users -->
         <div v-if="!isAdmin && item.route === 'student-orgs.index'" class="py-2">
-          <Link
-            :href="route('applications.index')"
-            @click="handleActionClick"
-            class="w-full flex justify-center items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 text-white text-base font-medium rounded-xl shadow-md hover:shadow-blue-300/70 transition-all duration-300 relative overflow-hidden group focus:outline-none focus:ring-2 focus:ring-blue-500"
-            :class="{'px-2': !sidebarExpanded && !showingSidebar}"
+          <SidebarTooltipButton
+            :tooltip="'New Application'"
+            :sidebar-expanded="sidebarExpanded"
+            :showing-sidebar="showingSidebar"
           >
-            <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" :class="{'mr-0': !sidebarExpanded && !showingSidebar, 'mr-2': sidebarExpanded || showingSidebar}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-            </svg>
-            <span v-if="sidebarExpanded || showingSidebar">New Application</span>
-            <span v-else class="sr-only">New Application</span>
-            
-            <!-- Tooltip - only show when sidebar is collapsed on desktop -->
-            <span 
-              v-if="!sidebarExpanded && !showingSidebar"
-              class="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-50"
+            <Link
+              :href="route('applications.index')"
+              @click="handleActionClick"
+              class="w-full flex justify-center items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 text-white text-base font-medium rounded-xl shadow-md hover:shadow-blue-300/70 transition-all duration-300 relative overflow-hidden group focus:outline-none focus:ring-2 focus:ring-blue-500"
+              :class="{'px-2': !sidebarExpanded && !showingSidebar}"
             >
-              New Application
-            </span>
-          </Link>
+              <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" :class="{'mr-0': !sidebarExpanded && !showingSidebar, 'mr-2': sidebarExpanded || showingSidebar}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              </svg>
+              <span v-if="sidebarExpanded || showingSidebar">New Application</span>
+              <span v-else class="sr-only">New Application</span>
+            </Link>
+          </SidebarTooltipButton>
         </div>
       </template>
     </nav>
