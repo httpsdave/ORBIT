@@ -30,6 +30,8 @@ const formElement = ref(null);
 const isDarkMode = ref(true);
 const activeSlide = ref(0);
 const slideInterval = ref(null);
+const gradientIndex = ref(0);
+const gradientInterval = ref(null);
 
 // Slideshow images
 const slideshowImages = [
@@ -38,6 +40,8 @@ const slideshowImages = [
     '/images/LSPU3.jpg',
     '/images/LSPU6.jpg',
     '/images/LSPU5.jpg',
+    '/images/LSPU7.jpg',
+    
 ];
 
 const togglePasswordVisibility = () => {
@@ -66,6 +70,12 @@ const startSlideshow = () => {
     }, 10000);
 };
 
+const startGradientAnimation = () => {
+    gradientInterval.value = setInterval(() => {
+        gradientIndex.value = (gradientIndex.value + 1) % 2;
+    }, 30000); // 30 seconds
+};
+
 onMounted(() => {
     // Fade in animation on page load
     if (formElement.value) {
@@ -74,12 +84,20 @@ onMounted(() => {
     
     // Start slideshow
     startSlideshow();
+    
+    // Start gradient animation
+    startGradientAnimation();
 });
 
 onBeforeUnmount(() => {
     // Clear slideshow interval when component is unmounted
     if (slideInterval.value) {
         clearInterval(slideInterval.value);
+    }
+    
+    // Clear gradient interval when component is unmounted
+    if (gradientInterval.value) {
+        clearInterval(gradientInterval.value);
     }
 });
 </script>
@@ -113,8 +131,16 @@ onBeforeUnmount(() => {
         >
             <!-- Left side panel -->
             <div 
-                class="hidden md:flex md:w-[370px] lg:w-[370px] h-full flex-col items-center justify-center relative rounded-lg overflow-hidden transition-all duration-300 shadow-xl z-10"
-                :class="isDarkMode ? 'bg-gradient-to-r from-green-300 via-green-200 to-blue-300 hover:shadow-blue-500/20' : 'bg-gradient-to-r from-green-300 via-green-200 to-blue-300 hover:shadow-blue-300/30'"
+                class="hidden md:flex md:w-[370px] lg:w-[370px] h-full flex-col items-center justify-center relative rounded-lg overflow-hidden transition-all duration-1000 ease-in-out shadow-xl z-10"
+                :class="[
+                    isDarkMode 
+                        ? gradientIndex === 0 
+                            ? 'bg-gradient-to-r from-green-300 via-green-200 to-blue-300 hover:shadow-blue-500/20' 
+                            : 'bg-gradient-to-r from-red-300 via-red-200 to-blue-300 hover:shadow-blue-500/20'
+                        : gradientIndex === 0 
+                            ? 'bg-gradient-to-r from-green-300 via-green-200 to-blue-300 hover:shadow-blue-300/30' 
+                            : 'bg-gradient-to-r from-red-300 via-red-200 to-blue-300 hover:shadow-blue-300/30'
+                ]"
             >
                 <!-- Background image with overlay -->
                 <div class="absolute inset-0">
@@ -124,10 +150,16 @@ onBeforeUnmount(() => {
                         class="w-full h-full object-cover object-center transition-opacity duration-1000"
                     />
                     <!-- Gradient overlay on top of the image -->
-                    <div class="absolute inset-0" 
-                        :class="isDarkMode 
-                            ? 'bg-gradient-to-br from-blue-500/80 via-green-500/70 to-yellow-500/60' 
-                            : 'bg-gradient-to-br from-blue-500/70 via-green-500/60 to-yellow-500/50'">
+                    <div class="absolute inset-0 transition-all duration-1000 ease-in-out" 
+                        :class="[
+                            isDarkMode 
+                                ? gradientIndex === 0 
+                                    ? 'bg-gradient-to-br from-blue-500/80 via-green-500/70 to-yellow-500/60' 
+                                    : 'bg-gradient-to-br from-blue-500/80 via-red-500/70 to-yellow-500/60'
+                                : gradientIndex === 0 
+                                    ? 'bg-gradient-to-br from-blue-500/70 via-green-500/60 to-yellow-500/50' 
+                                    : 'bg-gradient-to-br from-blue-500/70 via-red-500/60 to-yellow-500/50'
+                        ]">
                     </div>
                 </div>
                 
@@ -159,26 +191,18 @@ onBeforeUnmount(() => {
                 <!-- Decorative elements -->
                 <div class="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-black opacity-30"></div>
                 
-                <!-- Social links with hover effect -->
-                <div class="absolute bottom-4 left-0 right-0 flex justify-center space-x-3">
-                    <a href="#" class="bg-white bg-opacity-10 backdrop-blur-sm hover:bg-opacity-30 p-2 rounded-full transition-all duration-300 hover:scale-110 hover:shadow-lg" aria-label="Facebook">
+                <!-- Facebook link with hover effect -->
+                <div class="absolute bottom-4 left-0 right-0 flex justify-center">
+                    <a href="https://www.facebook.com/SPCC.OSAS" target="_blank" rel="noopener noreferrer" class="bg-white bg-opacity-10 backdrop-blur-sm hover:bg-opacity-30 p-2 rounded-full transition-all duration-300 hover:scale-110 hover:shadow-lg" aria-label="Facebook">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white">
                             <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
                         </svg>
                     </a>
-                    <a href="#" class="bg-white bg-opacity-10 backdrop-blur-sm hover:bg-opacity-30 p-2 rounded-full transition-all duration-300 hover:scale-110 hover:shadow-lg" aria-label="Instagram">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white">
-                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-                        </svg>
-                    </a>
-                    <a href="#" class="bg-white bg-opacity-10 backdrop-blur-sm hover:bg-opacity-30 p-2 rounded-full transition-all duration-300 hover:scale-110 hover:shadow-lg" aria-label="Twitter">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white">
-                            <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path>
-                        </svg>
-                    </a>
                 </div>
+                
+                <!-- Debug indicator (temporary) -->
+                <div class="absolute top-4 right-4 w-3 h-3 rounded-full transition-all duration-1000 ease-in-out" 
+                     :class="gradientIndex === 0 ? 'bg-green-400' : 'bg-red-400'"></div>
             </div>
             
             <!-- Right side panel with login form -->
