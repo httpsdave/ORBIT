@@ -154,36 +154,66 @@ const submit = () => {
         attached to the organization application for recognition.</p>
     </div>
 
-    <div class="section">
-        <p class="mb-1">Very respectfully yours,</p>
-    </div>
-
-    <div class="section mt-4">
-        <p class="mb-1">Name: <span class="blank-line text-center border-b border-black min-w-[200px] inline-block">{{ form.adviser_name }}</span></p>
-        <p class="mb-1">Signature: <span class="blank-line text-center border-b border-black min-w-[200px] inline-block">{{ form.adviser_signature }}</span></p>
-        <p class="mb-1">College: <span class="blank-line text-center border-b border-black min-w-[200px] inline-block">{{ form.adviser_college }}</span></p>
-        <p class="mb-1">Academic Rank: <span class="blank-line text-center border-b border-black min-w-[200px] inline-block">{{ form.adviser_rank }}</span></p>
-        <p class="mb-1">Home Address: <span class="blank-line text-center border-b border-black min-w-[200px] inline-block">{{ form.adviser_address }}</span></p>
-        <p class="mb-1">Contact Number(s): <span class="blank-line text-center border-b border-black min-w-[200px] inline-block">{{ form.adviser_contact }}</span></p>
-        <p class="mb-1">Date: <span class="blank-line text-center border-b border-black min-w-[200px] inline-block">{{ form.form_date }}</span></p>
-    </div>
-
-    <div class="section mt-4">
-        <p class="mb-1">Noted:</p>
-        <p class="mb-0"><span class="blank-line text-center border-b border-black min-w-[200px] inline-block">{{ form.dean_name }}</span></p>
-        <p class="mb-0">Dean/Assoc. Dean of College</p>
-    </div>
-
-    <div class="section mt-4">
-        <p class="mb-1">Recommending Approval:</p>
-        <p class="mb-0"><span class="blank-line text-center border-b border-black min-w-[200px] inline-block">{{ form.coordinator_name }}</span></p>
-        <p class="mb-0">Coordinator, Student Organization Unit</p>
-    </div>
-
-    <div class="section mt-4">
-        <p class="mb-1">Approved / Disapproved:</p>
-        <p class="mb-0"><span class="blank-line text-center border-b border-black min-w-[200px] inline-block">{{ form.director_name }}</span></p>
-        <p class="mb-0">Director, Office of Student Affairs and Services</p>
+    <!-- Noted, Approval, and Signature Section in Flex Layout -->
+    <div class="flex flex-row justify-between mt-12 mb-8">
+      <!-- Left column: Noted, Recommending Approval, Approved/Disapproved -->
+      <div class="flex flex-col items-center flex-1">
+        <div class="mb-12 text-center">
+          <p class="mb-1">Noted:</p>
+          <div class="mt-6">
+            <span class="blank-line text-center border-b border-black min-w-[200px] inline-block">{{ form.dean_name }}</span>
+            <p class="mb-0">Dean/Assoc. Dean of College</p>
+          </div>
+        </div>
+        <div class="mb-12 text-center">
+          <p class="mb-1">Recommending Approval:</p>
+          <div class="mt-6">
+            <span class="blank-line text-center border-b border-black min-w-[200px] inline-block">{{ form.coordinator_name }}</span>
+            <p class="mb-0">Coordinator, Student Organization Unit</p>
+          </div>
+        </div>
+        <div class="text-center">
+          <p class="mb-1">Approved / Disapproved:</p>
+          <div class="mt-6">
+            <span class="blank-line text-center border-b border-black min-w-[200px] inline-block">{{ form.director_name }}</span>
+            <p class="mb-0">Director, Office of Student Affairs and Services</p>
+          </div>
+        </div>
+      </div>
+      <!-- Right column: Signature block -->
+      <div class="flex flex-col items-end flex-1">
+        <div class="signature-section w-full max-w-[400px]">
+          <p class="mb-4"><strong>Very respectfully yours,</strong></p>
+          <div class="signature-field">
+            <span class="signature-label">Name:</span>
+            <span class="signature-value sig-name">{{ form.adviser_name }}</span>
+          </div>
+          <div class="signature-field">
+            <span class="signature-label">Signature:</span>
+            <span class="signature-value sig-signature">{{ form.adviser_signature || '' }}</span>
+          </div>
+          <div class="signature-field">
+            <span class="signature-label">College:</span>
+            <span class="signature-value sig-college">{{ form.adviser_college }}</span>
+          </div>
+          <div class="signature-field">
+            <span class="signature-label">Academic Rank:</span>
+            <span class="signature-value sig-rank">{{ form.adviser_rank }}</span>
+          </div>
+          <div class="signature-field">
+            <span class="signature-label">Home Address:</span>
+            <span class="signature-value sig-address">{{ form.adviser_address }}</span>
+          </div>
+          <div class="signature-field">
+            <span class="signature-label">Contact Number(s):</span>
+            <span class="signature-value sig-contact">{{ form.adviser_contact }}</span>
+          </div>
+          <div class="signature-field">
+            <span class="signature-label">Date:</span>
+            <span class="signature-value sig-date">{{ form.form_date }}</span>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Form inputs -->
@@ -214,11 +244,6 @@ const submit = () => {
                 <input v-model="form.adviser_name" class="border p-2 w-full" required>
                 <p v-if="errors.adviser_name" class="text-red-500 text-sm mt-1">{{ errors.adviser_name }}</p>
             </div>
-
-           <!-- <div>
-                <label class="block font-bold">Adviser Signature</label>
-                <input v-model="form.adviser_signature" class="border p-2 w-full" required>
-            </div>-->
 
             <div>
                 <label class="block font-bold">Adviser College</label>
@@ -286,5 +311,88 @@ const submit = () => {
         <span>09 November 2020</span>
     </div>
 </div>
-
 </template>
+
+<style scoped>
+/* Signature section styling to match blade template */
+.signature-section {
+    margin-top: 0;
+    float: none;
+    width: 100%;
+    margin-right: 0;
+}
+
+.signature-field {
+    margin: 2px 0;
+    display: table;
+    width: 100%;
+}
+
+.signature-label {
+    display: table-cell;
+    vertical-align: bottom;
+    padding-right: 5px;
+    white-space: nowrap;
+    width: 1%;
+}
+
+.signature-value {
+    display: table-cell;
+    border-bottom: 1px solid black;
+    padding-bottom: 2px;
+    text-align: left;
+    min-height: 14px;
+    vertical-align: bottom;
+}
+
+/* Individual width controls for each signature field */
+.sig-name { width: 230px; }
+.sig-signature { width: 205px; }
+.sig-college { width: 220px; }
+.sig-rank { width: 165px; }
+.sig-address { width: 170px; }
+.sig-contact { width: 143px; }
+.sig-date { width: 234px; }
+
+/* Signature styling for other sections */
+.signature {
+    margin-top: 10px;
+}
+
+.signature-line {
+    display: inline-block;
+    min-width: 250px;
+    border-bottom: 1px solid black;
+    padding-bottom: 2px;
+    text-align: center;
+}
+
+/* General form styling */
+.indented {
+    text-indent: 1.27cm;
+}
+
+.thru-line {
+    margin-bottom: 15px;
+    padding-left: 1.27cm;
+    text-indent: 0;
+}
+
+.blank-line {
+    display: inline-block;
+    min-width: 200px;
+    border-bottom: 1px solid black;
+    padding-bottom: 2px;
+    text-align: center;
+}
+
+.section {
+    margin-bottom: 3px;
+}
+
+.section p {
+    margin: 2px 0;
+    word-wrap: break-word;
+    line-height: 1.1;
+}
+</style>
