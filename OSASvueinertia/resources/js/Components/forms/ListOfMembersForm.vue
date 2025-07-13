@@ -35,6 +35,10 @@ const addMember = () => {
 
 // Add a function to remove a member
 const removeMember = (index) => {
+    // Prevent removing the last member
+    if (form.members.length <= 1) {
+        return;
+    }
     // Clean up object URL if it exists
     if (form.members[index].photo_preview) {
         URL.revokeObjectURL(form.members[index].photo_preview);
@@ -495,7 +499,17 @@ const submit = () => {
             <div v-for="(member, index) in form.members" :key="index" class="mt-4 p-4 border rounded">
                 <div class="flex justify-between items-center mb-2">
                     <h4 class="font-bold">Member #{{ index + 1 }}</h4>
-                    <button @click="removeMember(index)" type="button" class="text-red-500">
+                    <button 
+                        @click="removeMember(index)" 
+                        type="button" 
+                        :disabled="form.members.length <= 1"
+                        :class="[
+                            'px-2 py-1 rounded text-sm font-medium transition-colors',
+                            form.members.length <= 1 
+                                ? 'text-gray-400 bg-gray-100 cursor-not-allowed' 
+                                : 'text-red-500 hover:text-red-700 hover:bg-red-50'
+                        ]"
+                    >
                         Remove
                     </button>
                 </div>
