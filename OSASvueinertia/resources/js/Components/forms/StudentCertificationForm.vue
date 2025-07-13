@@ -155,7 +155,7 @@ const submit = () => {
         </span>
         <span>, a</span>
       </div>
-      <div class="flex items-center flex-wrap mt-2">
+      <div class="flex items-center flex-wrap mt-6">
         <span class="relative inline-block align-middle mx-2">
           <span class="border-b border-black min-w-[300px] px-2 text-center inline-block">{{ form.course_year_section }}</span>
           <span class="absolute left-1/2 -translate-x-1/2 top-full text-xs font-bold mt-[-2px] whitespace-nowrap">course/year and section</span>
