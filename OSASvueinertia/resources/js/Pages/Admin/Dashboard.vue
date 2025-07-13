@@ -5,6 +5,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title } from 'chart.js';
 import { Pie, Bar } from 'vue-chartjs';
 import Modal from '@/Components/Modal.vue';
+import { Link } from '@inertiajs/vue3';
 
 // Register Chart.js components
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title);
@@ -482,25 +483,27 @@ function exportAdvisersToCSV() {
                         </h3>
                     </div>
                     
-                    <div v-if="displayEvent" class="border rounded-lg p-4 bg-white shadow-sm">
+                    <div v-if="displayEvent" class="border rounded-lg p-4 bg-white shadow-sm cursor-pointer hover:bg-blue-50 transition">
+                      <Link :href="route('calendar')" class="block">
                         <h4 class="font-medium text-lg text-gray-800 mb-3">{{ displayEvent.title }}</h4>
                         <div class="text-sm text-gray-600 mt-2 space-y-2">
-                            <div class="flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
-                                <span>Start: {{ formatDate(displayEvent.start_date) }}</span>
-                            </div>
-                            <div class="flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                <span>End: {{ formatDate(displayEvent.end_date) }}</span>
-                            </div>
+                          <div class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <span>Start: {{ formatDate(displayEvent.start_date) }}</span>
+                          </div>
+                          <div class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span>End: {{ formatDate(displayEvent.end_date) }}</span>
+                          </div>
                         </div>
                         <div class="mt-4 border-t border-gray-100 pt-3">
-                            <p class="text-sm text-gray-700">{{ displayEvent.description }}</p>
+                          <p class="text-sm text-gray-700">{{ displayEvent.description }}</p>
                         </div>
+                      </Link>
                     </div>
                     
                     <div v-else class="border rounded-lg p-6 bg-gray-50 text-center">

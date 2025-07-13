@@ -308,42 +308,46 @@ const timeUntilNext = computed(() => {
                   <h3 class="text-lg font-medium text-gray-800">Upcoming Events</h3>
                 </div>
                 
-                <div v-if="props.todayEvent" class="mb-6 border rounded-lg p-4 bg-white shadow-sm">
-                  <div class="flex justify-between items-center mb-2">
-                    <span class="bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-md">TODAY</span>
-                    <span class="text-xs text-gray-600">{{ formatTime(props.todayEvent.start_date) }}</span>
-                  </div>
-                  <h4 class="font-medium text-lg text-gray-800">{{ props.todayEvent.title }}</h4>
-                  <div class="text-sm text-gray-600 mt-2 space-y-2">
-                    <div class="flex items-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                      <span>{{ formatDate(props.todayEvent.start_date) }}</span>
+                <div v-if="props.todayEvent" class="mb-6 border rounded-lg p-4 bg-white shadow-sm cursor-pointer hover:bg-blue-50 transition" >
+                  <Link :href="route('calendar')" class="block">
+                    <div class="flex justify-between items-center mb-2">
+                      <span class="bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-md">TODAY</span>
+                      <span class="text-xs text-gray-600">{{ formatTime(props.todayEvent.start_date) }}</span>
                     </div>
-                  </div>
+                    <h4 class="font-medium text-lg text-gray-800">{{ props.todayEvent.title }}</h4>
+                    <div class="text-sm text-gray-600 mt-2 space-y-2">
+                      <div class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <span>{{ formatDate(props.todayEvent.start_date) }}</span>
+                      </div>
+                    </div>
+                  </Link>
                 </div>
                 
                 <div v-if="props.upcomingEvents && props.upcomingEvents.length > 0" class="space-y-4">
                   <div v-for="(event, index) in props.upcomingEvents.slice(0, 3)" :key="event.id" 
-                    class="border rounded-lg p-4 bg-white shadow-sm">
-                    <div class="flex">
-                      <div class="mr-4 flex-shrink-0">
-                        <div class="h-12 w-12 rounded-md bg-green-100 flex flex-col items-center justify-center">
-                          <span class="text-xs font-medium text-green-600">{{ formatDateOnly(event.start_date).split(' ')[0] }}</span>
-                          <span class="text-lg font-bold text-green-800">{{ formatDateOnly(event.start_date).split(' ')[1] }}</span>
+                    class="border rounded-lg p-4 bg-white shadow-sm cursor-pointer hover:bg-blue-50 transition">
+                    <Link :href="route('calendar')" class="block">
+                      <div class="flex">
+                        <div class="mr-4 flex-shrink-0">
+                          <div class="h-12 w-12 rounded-md bg-green-100 flex flex-col items-center justify-center">
+                            <span class="text-xs font-medium text-green-600">{{ formatDateOnly(event.start_date).split(' ')[0] }}</span>
+                            <span class="text-lg font-bold text-green-800">{{ formatDateOnly(event.start_date).split(' ')[1] }}</span>
+                          </div>
+                        </div>
+                        <div>
+                          <h4 class="font-medium text-gray-800">{{ event.title }}</h4>
+                          <div class="flex items-center text-xs text-gray-500 mt-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            {{ formatTime(event.start_date) }}
+                          </div>
                         </div>
                       </div>
-                      <div>
-                        <h4 class="font-medium text-gray-800">{{ event.title }}</h4>
-                        <div class="flex items-center text-xs text-gray-500 mt-1">
-                          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
-                          {{ formatTime(event.start_date) }}
-                        </div>
-                      </div>
-                    </div>
+                    </Link>
                   </div>
                   
                   <div class="text-center pt-4" v-if="props.upcomingEvents.length > 3">
