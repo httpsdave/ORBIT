@@ -220,95 +220,138 @@ const submit = () => {
 
     <!-- Member list preview -->
     <div class="member-section mt-6">
-        <div v-for="(pair, pairIndex) in Array.from({ length: Math.ceil(form.members.length / 2) })" :key="pairIndex" class="flex mt-4 mb-12">
-            <!-- Left member -->
-            <div v-if="pairIndex * 2 < form.members.length" class="w-1/2 flex pr-4">
-                <div class="photo-box border border-black w-[96px] h-[96px] flex items-center justify-center mr-3 text-xs flex-shrink-0">
-                    <img v-if="getPhotoPreview(form.members[pairIndex * 2])" 
-                        :src="getPhotoPreview(form.members[pairIndex * 2])" 
-                        alt="Member Photo" 
-                        class="w-[94px] h-[94px] object-cover">
-                    <span v-else class="text-center leading-tight">1 x 1<br>PICTURE</span>
+        <!-- Calculate pages needed -->
+        <div v-for="pageIndex in Math.ceil(form.members.length / 10)" :key="pageIndex" class="mb-8">
+            <!-- Page header for additional pages -->
+            <div v-if="pageIndex > 1" class="page-break-header text-center mt-8 pt-8 border-t-2">
+                <p class="text-sm font-normal mb-0">Republic of the Philippines</p>
+                <p class="text-base font-bold university-name mb-0">Laguna State Polytechnic University</p>
+                <p class="text-sm mb-0">Province of Laguna</p>
+                <p class="text-sm font-bold mb-0 mt-3">OFFICE OF STUDENT AFFAIRS AND SERVICES</p>
+                <p class="text-sm font-bold mt-2 mb-0">List of Members</p>
+                <div class="semester-section text-center mt-4">
+                    <p class="mb-0">
+                        <span class="border p-1 mr-1">{{ form.semester || '--' }}</span> 
+                        Sem. / AY 
+                        <span class="border p-1 w-16 mx-1 inline-block">{{ form.academic_year_start || '20__' }}</span>-
+                        <span class="border p-1 w-16 mx-1 inline-block">{{ form.academic_year_end || '20__' }}</span>
+                    </p>
                 </div>
-                <div class="member-info flex-1 flex flex-col justify-center text-center">
-                    <div class="member-line mb-1 min-h-[20px] py-1">
-                        {{ form.members[pairIndex * 2].student_name || '' }}
+                <div class="section text-center mt-4">
+                    <p class="mb-0">Name of Organization: <span class="signature-line border-b border-black min-w-[250px] inline-block text-center">{{ form.organization_name }}</span></p>
+                </div>
+            </div>
+
+            <!-- Members for this page (10 per page: 5 rows × 2 columns) -->
+            <div class="flex mt-4">
+                <!-- Left Column -->
+                <div class="w-1/2 pr-4">
+                    <div v-for="rowIndex in 5" :key="`left-${rowIndex}`" class="flex mt-4 mb-12">
+                        <div v-if="(pageIndex - 1) * 10 + (rowIndex - 1) < form.members.length" class="w-full flex">
+                            <div class="photo-box border border-black w-[96px] h-[96px] flex items-center justify-center mr-3 text-xs flex-shrink-0">
+                                <img v-if="getPhotoPreview(form.members[(pageIndex - 1) * 10 + (rowIndex - 1)])" 
+                                    :src="getPhotoPreview(form.members[(pageIndex - 1) * 10 + (rowIndex - 1)])" 
+                                    alt="Member Photo" 
+                                    class="w-[94px] h-[94px] object-cover">
+                                <span v-else class="text-center leading-tight">1 x 1<br>PICTURE</span>
+                            </div>
+                            <div class="member-info flex-1 flex flex-col justify-center text-center">
+                                <div class="member-line mb-1 min-h-[20px] py-1">
+                                    {{ form.members[(pageIndex - 1) * 10 + (rowIndex - 1)].student_name || '' }}
+                                </div>
+                                <div class="member-line mb-1 min-h-[20px] py-1">
+                                    {{ form.members[(pageIndex - 1) * 10 + (rowIndex - 1)].student_number || '' }}
+                                </div>
+                                <div class="member-line mb-1 min-h-[20px] py-1">
+                                    {{ form.members[(pageIndex - 1) * 10 + (rowIndex - 1)].course_year_section || '' }}
+                                </div>
+                            </div>
+                        </div>
+                        <div v-else class="w-full flex">
+                            <div class="photo-box border border-black w-[96px] h-[96px] flex items-center justify-center mr-3 text-xs flex-shrink-0">
+                                <span class="text-center leading-tight">1 x 1<br>PICTURE</span>
+                            </div>
+                            <div class="member-info flex-1 flex flex-col justify-center text-center">
+                                <div class="member-line mb-1 min-h-[20px] py-1"></div>
+                                <div class="member-line mb-1 min-h-[20px] py-1">Student Number</div>
+                                <div class="member-line mb-1 min-h-[20px] py-1">Course - Year Section</div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="member-line mb-1 min-h-[20px] py-1">
-                        {{ form.members[pairIndex * 2].student_number || '' }}
-                    </div>
-                    <div class="member-line mb-1 min-h-[20px] py-1">
-                        {{ form.members[pairIndex * 2].course_year_section || '' }}
+                </div>
+
+                <!-- Right Column -->
+                <div class="w-1/2 pl-4">
+                    <div v-for="rowIndex in 5" :key="`right-${rowIndex}`" class="flex mt-4 mb-12">
+                        <div v-if="(pageIndex - 1) * 10 + (rowIndex - 1) + 5 < form.members.length" class="w-full flex">
+                            <div class="photo-box border border-black w-[96px] h-[96px] flex items-center justify-center mr-3 text-xs flex-shrink-0">
+                                <img v-if="getPhotoPreview(form.members[(pageIndex - 1) * 10 + (rowIndex - 1) + 5])" 
+                                    :src="getPhotoPreview(form.members[(pageIndex - 1) * 10 + (rowIndex - 1) + 5])" 
+                                    alt="Member Photo" 
+                                    class="w-[94px] h-[94px] object-cover">
+                                <span v-else class="text-center leading-tight">1 x 1<br>PICTURE</span>
+                            </div>
+                            <div class="member-info flex-1 flex flex-col justify-center text-center">
+                                <div class="member-line mb-1 min-h-[20px] py-1">
+                                    {{ form.members[(pageIndex - 1) * 10 + (rowIndex - 1) + 5].student_name || '' }}
+                                </div>
+                                <div class="member-line mb-1 min-h-[20px] py-1">
+                                    {{ form.members[(pageIndex - 1) * 10 + (rowIndex - 1) + 5].student_number || '' }}
+                                </div>
+                                <div class="member-line mb-1 min-h-[20px] py-1">
+                                    {{ form.members[(pageIndex - 1) * 10 + (rowIndex - 1) + 5].course_year_section || '' }}
+                                </div>
+                            </div>
+                        </div>
+                        <div v-else class="w-full flex">
+                            <div class="photo-box border border-black w-[96px] h-[96px] flex items-center justify-center mr-3 text-xs flex-shrink-0">
+                                <span class="text-center leading-tight">1 x 1<br>PICTURE</span>
+                            </div>
+                            <div class="member-info flex-1 flex flex-col justify-center text-center">
+                                <div class="member-line mb-1 min-h-[20px] py-1"></div>
+                                <div class="member-line mb-1 min-h-[20px] py-1">Student Number</div>
+                                <div class="member-line mb-1 min-h-[20px] py-1">Course - Year Section</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            
-            <!-- Right member -->
-            <div v-if="pairIndex * 2 + 1 < form.members.length" class="w-1/2 flex pl-4">
-                <div class="photo-box border border-black w-[96px] h-[96px] flex items-center justify-center mr-3 text-xs flex-shrink-0">
-                    <img v-if="getPhotoPreview(form.members[pairIndex * 2 + 1])" 
-                        :src="getPhotoPreview(form.members[pairIndex * 2 + 1])" 
-                        alt="Member Photo" 
-                        class="w-[94px] h-[94px] object-cover">
-                    <span v-else class="text-center leading-tight">1 x 1<br>PICTURE</span>
+
+            <!-- Signatures only on the last page -->
+            <div v-if="pageIndex === Math.ceil(form.members.length / 10) && form.members.length > 0" class="signature-section flex justify-between mt-10">
+                <div class="signature w-1/2 text-center">
+                    <p class="mb-0">
+                        <span class="signature-line border-b border-black min-w-[200px] inline-block text-center">{{ form.adviser_name }}</span>
+                    </p>
+                    <p class="mb-0 font-bold">Faculty Adviser</p>
+                    <p class="mb-0">
+                        <span>Date:</span>
+                        <span class="signature-line border-b border-black min-w-[150px] inline-block text-center ml-2">{{ currentDate }}</span>
+                    </p>
                 </div>
-                <div class="member-info flex-1 flex flex-col justify-center text-center">
-                    <div class="member-line mb-1 min-h-[20px] py-1">
-                        {{ form.members[pairIndex * 2 + 1].student_name || '' }}
-                    </div>
-                    <div class="member-line mb-1 min-h-[20px] py-1">
-                        {{ form.members[pairIndex * 2 + 1].student_number || '' }}
-                    </div>
-                    <div class="member-line mb-1 min-h-[20px] py-1">
-                        {{ form.members[pairIndex * 2 + 1].course_year_section || '' }}
-                    </div>
+                <div class="signature w-1/2 text-center">
+                    <p class="mb-0">
+                        <span class="signature-line border-b border-black min-w-[200px] inline-block text-center">{{ form.second_adviser }}</span>
+                    </p>
+                    <p class="mb-0 font-bold">Faculty Adviser</p>
+                    <p class="mb-0">
+                        <span>Date:</span>
+                        <span class="signature-line border-b border-black min-w-[150px] inline-block text-center ml-2">{{ currentDate }}</span>
+                    </p>
                 </div>
             </div>
-            
-            <!-- Empty placeholder for right side if odd number of members -->
-            <div v-else-if="pairIndex * 2 < form.members.length" class="w-1/2 flex pl-4">
-                <div class="photo-box border border-black w-[96px] h-[96px] flex items-center justify-center mr-3 text-xs flex-shrink-0">
-                    <span class="text-center leading-tight">1 x 1<br>PICTURE</span>
-                </div>
-                <div class="member-info flex-1 flex flex-col justify-center text-center">
-                    <div class="member-line mb-1 min-h-[20px] py-1"></div>
-                    <div class="member-line mb-1 min-h-[20px] py-1">Student Number</div>
-                    <div class="member-line mb-1 min-h-[20px] py-1">Course - Year Section</div>
+
+            <div v-if="pageIndex === Math.ceil(form.members.length / 10) && form.members.length > 0" class="section text-center mt-10">
+                <p class="mb-1"><strong>Noted:</strong></p>
+                <div class="signature text-center">
+                    <p class="mb-0"><span class="signature-line border-b border-black min-w-[250px] inline-block text-center">{{ form.dean_name }}</span></p>
+                    <p class="mb-0">Dean/Assoc. Dean of College</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="signature-section flex justify-between mt-10">
-        <div class="signature w-1/2 text-center">
-            <p class="mb-0">
-                <span class="signature-line border-b border-black min-w-[200px] inline-block text-center">{{ form.adviser_name }}</span>
-            </p>
-            <p class="mb-0 font-bold">Faculty Adviser</p>
-            <p class="mb-0">
-                <span>Date:</span>
-                <span class="signature-line border-b border-black min-w-[150px] inline-block text-center ml-2">{{ currentDate }}</span>
-            </p>
-        </div>
-        <div class="signature w-1/2 text-center">
-            <p class="mb-0">
-                <span class="signature-line border-b border-black min-w-[200px] inline-block text-center">{{ form.second_adviser }}</span>
-            </p>
-            <p class="mb-0 font-bold">Faculty Adviser</p>
-            <p class="mb-0">
-                <span>Date:</span>
-                <span class="signature-line border-b border-black min-w-[150px] inline-block text-center ml-2">{{ currentDate }}</span>
-            </p>
-        </div>
-    </div>
 
-    <div class="section text-center mt-10">
-        <p class="mb-1"><strong>Noted:</strong></p>
-        <div class="signature text-center">
-            <p class="mb-0"><span class="signature-line border-b border-black min-w-[250px] inline-block text-center">{{ form.dean_name }}</span></p>
-            <p class="mb-0">Dean/Assoc. Dean of College</p>
-        </div>
-    </div>
 
     <!-- Form inputs -->
     <div class="mt-8 border-t pt-6">
