@@ -226,7 +226,7 @@ const submit = () => {
       
       <div class="organization-details text-center mt-2 mb-4">
         <p class="mb-1">Name of Organization: {{ form.organization_name }}</p>
-        <p class="mb-0">A.Y. {{ form.academic_year_start }}-{{ form.academic_year_end }}</p>
+        <p class="mb-0">A.Y. 20{{ form.academic_year_start }}-20{{ form.academic_year_end }}</p>
       </div>
       
       <div class="list-title text-center font-bold mb-4 text-lg">LIST OF OFFICERS</div>
@@ -361,9 +361,6 @@ const submit = () => {
       <div class="mt-6">
         <div class="flex justify-between items-center">
           <h3 class="text-lg font-bold">Officers</h3>
-          <button @click="addOfficer" type="button" class="bg-blue-500 text-white px-3 py-1 rounded">
-            Add Officer
-          </button>
         </div>
 
         <div v-for="(officer, index) in form.officers" :key="index" class="mt-4 p-4 border rounded">
@@ -412,10 +409,17 @@ const submit = () => {
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="mt-6 text-center">
-        <button type="submit" @click="submit" class="bg-green-500 text-white px-4 py-2 rounded">Submit</button>
+        <!-- Add Officer Button (moved below officer list, left-aligned) -->
+        <div class="mt-4 flex justify-start">
+          <button @click="addOfficer" type="button" class="bg-blue-500 text-white px-3 py-1 rounded">
+            Add Officer
+          </button>
+        </div>
+
+        <div class="mt-6 text-center">
+          <button type="submit" @click="submit" class="bg-green-500 text-white px-4 py-2 rounded">Submit</button>
+        </div>
       </div>
     </div>
   </div>
