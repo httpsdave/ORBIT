@@ -480,8 +480,12 @@ class OrganizationApplicationController extends Controller
     {
         // Only allow upload if not approved or user is admin
         if (!auth()->user()->isAdmin() && $application->status === 'Approved') {
+            if ($request->expectsJson()) {
+                return response()->json(['error' => 'You cannot upload a signed document after approval.'], 403);
+            }
             return redirect()->back()->with('error', 'You cannot upload a signed document after approval.');
         }
+        
         // Only allow PDF
         $request->validate([
             'signed_document' => 'required|file|mimes:pdf|max:10240'
@@ -496,15 +500,23 @@ class OrganizationApplicationController extends Controller
         $application->signed_document_path = $path;
         $application->save();
         
+        if ($request->expectsJson()) {
+            return response()->json(['success' => true, 'message' => 'Signed document uploaded successfully']);
+        }
+        
         return redirect()->back()->with('success', 'Signed document uploaded successfully');
     }
 
-    public function deleteSignedDocument(OrganizationApplication $application)
+    public function deleteSignedDocument(Request $request, OrganizationApplication $application)
     {
         // Only allow delete if not approved or user is admin
         if (!auth()->user()->isAdmin() && $application->status === 'Approved') {
+            if ($request->expectsJson()) {
+                return response()->json(['error' => 'You cannot delete the signed document after approval.'], 403);
+            }
             return redirect()->back()->with('error', 'You cannot delete the signed document after approval.');
         }
+        
         // Check if document exists
         if ($application->signed_document_path) {
             // Delete file from storage
@@ -514,7 +526,15 @@ class OrganizationApplicationController extends Controller
             $application->signed_document_path = null;
             $application->save();
             
+            if ($request->expectsJson()) {
+                return response()->json(['success' => true, 'message' => 'Signed document deleted successfully']);
+            }
+            
             return redirect()->back()->with('success', 'Signed document deleted successfully');
+        }
+        
+        if ($request->expectsJson()) {
+            return response()->json(['error' => 'No signed document found'], 404);
         }
         
         return redirect()->back()->with('error', 'No signed document found');
