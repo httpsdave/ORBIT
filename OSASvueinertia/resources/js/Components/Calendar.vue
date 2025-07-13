@@ -136,7 +136,7 @@
   >
     <div class="bg-white rounded-lg shadow-lg p-6 max-w-md w-full mx-4">
       <div class="flex justify-between items-center mb-4">
-        <h3 class="text-lg font-semibold text-gray-800">{{selectedEvent.title}}</h3>
+        <h3 class="text-lg font-semibold text-gray-800 break-words overflow-wrap-anywhere max-w-[90%]">{{selectedEvent.title}}</h3>
         <button @click="closeEventDetailsModal" class="text-gray-500 hover:text-gray-700">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -159,16 +159,28 @@
             <p class="text-xl font-bold text-gray-800">{{ formatDate(selectedEvent.start_date, 'DD') }}</p>
           </div>
           <div>
-            <p class="font-medium text-gray-700">{{formatDate(selectedEvent.start_date, 'dddd, MMMM D, YYYY')}}</p>
-            <p class="text-gray-600">{{formatDate(selectedEvent.start_date, 'h:mm A')}} 
-              <span v-if="selectedEvent.end_date">- {{formatDate(selectedEvent.end_date, 'h:mm A')}}</span>
+            <p class="font-medium text-gray-700">
+              <template v-if="selectedEvent.end_date && formatDate(selectedEvent.start_date, 'YYYY-MM-DD') !== formatDate(selectedEvent.end_date, 'YYYY-MM-DD')">
+                {{ formatDate(selectedEvent.start_date, 'dddd, MMMM D, YYYY') }}<br>
+                <span class="text-gray-600">{{ formatDate(selectedEvent.start_date, 'h:mm A') }} - </span>
+                <br>
+                {{ formatDate(selectedEvent.end_date, 'dddd, MMMM D, YYYY') }}<br>
+                <span class="text-gray-600">{{ formatDate(selectedEvent.end_date, 'h:mm A') }}</span>
+              </template>
+              <template v-else>
+                {{ formatDate(selectedEvent.start_date, 'dddd, MMMM D, YYYY') }}<br>
+                <span class="text-gray-600">{{ formatDate(selectedEvent.start_date, 'h:mm A') }} - {{ formatDate(selectedEvent.end_date || selectedEvent.start_date, 'h:mm A') }}</span>
+              </template>
             </p>
           </div>
         </div>
-        
-        <div v-if="selectedEvent.description" class="mt-4 bg-gray-50 p-4 rounded-lg">
+        <div v-if="selectedEvent.description" class="mt-4 bg-gray-50 p-4 rounded-lg max-h-40 overflow-y-auto">
           <p class="text-sm text-gray-600 font-medium mb-2">Description:</p>
-          <p class="text-gray-700 whitespace-pre-line">{{selectedEvent.description}}</p>
+          <p class="text-gray-700 whitespace-pre-line break-words overflow-wrap-anywhere">{{selectedEvent.description}}</p>
+        </div>
+        <div v-if="isAdmin" class="flex justify-end space-x-2 mt-4">
+          <button @click="editEvent(selectedEvent)" class="px-3 py-1 bg-yellow-400 text-white rounded hover:bg-yellow-500">Edit</button>
+          <button @click="deleteEvent(selectedEvent.id)" class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600">Delete</button>
         </div>
       </div>
     </div>
@@ -232,6 +244,24 @@
       font-weight: 500;
       color: #4B5563; /* gray-600 */
     }
+
+    :deep(.fc-custom-event) {
+      background: #3B82F6;
+      color: #fff;
+      border-radius: 0.5rem;
+      padding: 0.25rem 0.5rem;
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
+      cursor: pointer;
+      transition: box-shadow 0.2s, background 0.2s;
+      font-size: 0.95em;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    :deep(.fc-custom-event:hover) {
+      background: #2563EB;
+      box-shadow: 0 4px 16px rgba(37, 99, 235, 0.25);
+    }
     
     /* Responsive adjustments */
     @media (max-width: 768px) {
@@ -243,6 +273,12 @@
       :deep(.fc .fc-toolbar-title) {
         font-size: 1rem;
       }
+    }
+    .break-words {
+      word-break: break-word;
+    }
+    .overflow-wrap-anywhere {
+      overflow-wrap: anywhere;
     }
     </style>
 <script>
@@ -360,25 +396,26 @@ export default {
           description: event.description
         }));
       }),
+      eventContent: function(arg) {
+        // Custom rendering for calendar events
+        return {
+          html: `
+            <div class="fc-custom-event">
+              <span class="font-bold">${arg.event.title}</span>
+              <span class="block text-xs">${dayjs(arg.event.start).format('h:mm A')}</span>
+            </div>
+          `
+        };
+      },
       eventClick: info => {
         const eventId = parseInt(info.event.id);
         const event = events.value.find(e => e.id === eventId);
-        
-        if (props.isAdmin) {
-          // Show event details with option to edit for admins
-          const shouldEdit = confirm(`Event: ${info.event.title}\nTime: ${dayjs(info.event.start).format('YYYY-MM-DD HH:mm')}\n\nWould you like to edit this event?`);
-          if (shouldEdit && event) {
-            editEvent(event);
-          }
-        } else {
-          // Show event details modal for non-admins
-          if (event) {
-            viewEventDetails(event);
-          }
+        if (event) {
+          viewEventDetails(event); // Always show modal
         }
       },
-      editable: props.isAdmin, // Only allow dragging for admins
-      eventDrop: handleEventDrop
+      editable: false, // Disable dragging events
+      // eventDrop: handleEventDrop (no longer needed)
     });
     
     const upcomingEvents = computed(() => {
@@ -430,29 +467,26 @@ export default {
     
     function editEvent(event) {
       if (!props.isAdmin) return; // Safety check
-      
+      // Close the event details modal if open
+      closeEventDetailsModal();
       // Switch to edit mode
       isEditing.value = true;
       currentEditId.value = event.id;
       extractedData.value = null;
-      
       // Parse the date and times from the event
       const eventDate = dayjs(event.start_date);
       const eventEndDate = event.end_date ? dayjs(event.end_date) : null;
-      
       // Fill the form with the event data
       eventForm.title = event.title;
       eventForm.date = eventDate.format('YYYY-MM-DD');
       eventForm.start_time = eventDate.format('HH:mm');
-      
       if (eventEndDate) {
-        eventForm.end_date = eventEndDate.format('YYYY-MM-DD');
+        eventForm.end_date = eventEndDate.format('YYYY-MM-DD'); // Default to same day
         eventForm.end_time = eventEndDate.format('HH:mm');
       } else {
-        eventForm.end_date = eventDate.format('YYYY-MM-DD'); // Default to same day
+        eventForm.end_date = eventDate.format('YYYY-MM-DD');
         eventForm.end_time = '';
       }
-      
       eventForm.description = event.description || '';
     }
     
@@ -523,7 +557,8 @@ export default {
             if (currentEditId.value === eventId) {
               resetForm();
             }
-            
+            // Close the event details modal if open
+            closeEventDetailsModal();
             alert('Event deleted successfully!');
           })
           .catch(error => {
