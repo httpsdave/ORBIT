@@ -124,66 +124,79 @@ const submit = () => {
 </script>
 
 <template>
-  <div class="mt-6 form-content">
-    <div class="header text-center relative">
-        <img src="/images/lspu-logo.png" alt="LSPU Logo" class="absolute top-[-0.5cm] left-[-2cm] w-[250px] h-auto">
-        <p class="text-sm font-bold mb-0">Republic of the Philippines</p>
-        <p class="text-base font-bold university-name mb-0">Laguna State Polytechnic University</p>
-        <p class="text-sm mb-0">Province of Laguna</p>
-        <p class="text-sm mb-0">Office of Student Affairs and Services</p>
+  <div class="mt-6 form-content relative font-[Times_New_Roman]">
+    <!-- Header -->
+    <div class="header text-center relative mb-2">
+      <img src="/images/lspu-logo.png" alt="LSPU Logo" class="absolute top-[-0.5cm] left-[-2cm] w-[250px] h-auto">
+      <div class="font-[Calibri] text-base mb-0">Republic of the Philippines</div>
+      <div class="text-xl font-bold university-name mb-0">Laguna State Polytechnic University</div>
+      <div class="font-[Calibri] text-base mb-0">Province of Laguna</div>
+      <div class="text-xl font-bold mt-4 mb-0">OFFICE OF STUDENT AFFAIRS AND SERVICES</div>
     </div>
 
-    <div class="mt-6 text-right">
-        <!-- Fixed: Use certification_date instead of formatted_date -->
-        <p class="mb-0"><span class="signature-line text-center border-b border-black min-w-[200px] inline-block">{{ form.certification_date }}</span></p>
-        <p class="mb-0">DATE</p>
+    <!-- Date line -->
+    <div class="date-line text-right mt-6 mb-2 pr-2">
+      <div>
+        <span class="inline-block border-b border-black min-w-[200px] text-center">{{ form.certification_date }}</span>
+      </div>
+      <div class="text-right pr-2">DATE</div>
     </div>
 
-    <div class="section text-center mt-4">
-        <p class="text-xl font-bold mb-4 underline">CERTIFICATION</p>
+    <!-- Certification Title -->
+    <div class="cert-title text-center text-2xl font-bold my-8">CERTIFICATION</div>
+
+    <!-- Certification Content: Two lines, long underlines, labels below, left-aligned -->
+    <div class="px-10 mb-2">
+      <div class="flex items-center flex-wrap">
+        <span>This&nbsp;certifies&nbsp;that</span>
+        <span class="relative inline-block align-middle mx-2">
+          <span class="border-b border-black min-w-[300px] px-2 text-center inline-block">{{ form.student_name }}</span>
+          <span class="absolute left-1/2 -translate-x-1/2 top-full text-xs font-bold mt-[-2px] whitespace-nowrap">student name</span>
+        </span>
+        <span>, a</span>
+      </div>
+      <div class="flex items-center flex-wrap mt-2">
+        <span class="relative inline-block align-middle mx-2">
+          <span class="border-b border-black min-w-[300px] px-2 text-center inline-block">{{ form.course_year_section }}</span>
+          <span class="absolute left-1/2 -translate-x-1/2 top-full text-xs font-bold mt-[-2px] whitespace-nowrap">course/year and section</span>
+        </span>
+        <span>.</span>
+      </div>
     </div>
 
-    <div class="section mt-6">
-        <p class="mb-4">This certifies that <span class="blank-line text-center border-b border-black min-w-[300px] inline-block">{{ form.student_name }}</span>, a 
-        <span class="blank-line text-center border-b border-black min-w-[300px] inline-block">{{ form.course_year_section }}</span>,</p>
-        
-        <p class="mb-4">student of this College is:</p>
-        
-        <div class="mt-4">
-            <p class="mb-2">
-                <input type="checkbox" v-model="form.is_bonafide" class="mr-2">
-                a bonafide student;
-            </p>
-            <p class="mb-2">
-                <input type="checkbox" v-model="form.is_not_academic_probation" class="mr-2">
-                not under academic probation;
-            </p>
-            <p class="mb-2">
-                <input type="checkbox" v-model="form.is_not_disciplinary_probation" class="mr-2">
-                not under disciplinary probation;
-            </p>
-            <p class="mb-2">
-                <input type="checkbox" v-model="form.has_position" class="mr-2">
-                position/rank in the organization <span class="blank-line text-center border-b border-black min-w-[200px] inline-block">{{ form.position_rank }}</span>;
-            </p>
+    <!-- 'student of this College is:' line -->
+    <div class="college-is-text px-10 my-8 leading-[1.5]">student of this College is:</div>
+
+    <!-- Checkboxes as text-based -->
+    <div class="checkbox-container mt-10 px-10">
+      <div class="checkbox-item my-4">
+        <span class="inline-block w-6 text-center">({{ form.is_bonafide ? '/' : ' ' }})</span> a bonafide student;
+      </div>
+      <div class="checkbox-item my-4">
+        <span class="inline-block w-6 text-center">({{ form.is_not_academic_probation ? '/' : ' ' }})</span> not under academic probation;
+      </div>
+      <div class="checkbox-item my-4">
+        <span class="inline-block w-6 text-center">({{ form.is_not_disciplinary_probation ? '/' : ' ' }})</span> not under disciplinary probation;
+      </div>
+      <div class="checkbox-item my-4">
+        <span class="inline-block w-6 text-center">({{ form.has_position ? '/' : ' ' }})</span> position/rank in the organization
+        <span class="border-b border-black min-w-[150px] inline-block text-center mx-2">{{ form.position_rank }}</span>;
+      </div>
+    </div>
+
+    <!-- Noted and Signatures -->
+    <div class="signature-section relative mt-24">
+      <div class="noted-section pl-20 mb-10">
+        <p class="font-bold mb-8">Noted:</p>
+        <div class="faculty-adviser-signature mt-[-15px]">
+          <div class="border-b border-black w-[200px] text-center ml-[-40px]">{{ form.adviser_name }}</div>
+          <div class="text-left text-base mt-1 ml-2">Faculty Adviser(s)</div>
         </div>
-    </div>
-
-    <div class="section mt-6">
-        <p class="mb-2">Noted:</p>
-    </div>
-
-    <div class="section mt-6">
-        <div class="signature-line mt-6 mb-1 text-center">
-            <!-- Fixed: Use adviser_name instead of faculty_adviser -->
-            <p class="mb-0"><span class="text-center border-b border-black min-w-[250px] inline-block">{{ form.adviser_name }}</span></p>
-            <p class="mb-1 text-center">Faculty Adviser(s)</p>
-        </div>
-        
-        <div class="signature-line mt-6 mb-1 text-center">
-            <p class="mb-0"><span class="text-center border-b border-black min-w-[250px] inline-block">{{ form.dean_name }}</span></p>
-            <p class="mb-1 text-center">Dean/Assoc. Dean of College</p>
-        </div>
+      </div>
+      <div class="dean-signature-section text-center mt-24 mb-8">
+        <div class="border-b border-black w-[200px] mx-auto">{{ form.dean_name }}</div>
+        <div class="text-center text-base mt-1">Dean/Assoc. Dean of College</div>
+      </div>
     </div>
 
     <!-- Form inputs -->

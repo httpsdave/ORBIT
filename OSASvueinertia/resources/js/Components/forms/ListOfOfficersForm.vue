@@ -29,6 +29,10 @@ const addOfficer = () => {
 
 // Add a function to remove an officer
 const removeOfficer = (index) => {
+    // Prevent removing the last officer
+    if (form.officers.length <= 1) {
+        return;
+    }
     // Clean up object URL if it exists
     if (form.officers[index].photo_preview) {
         URL.revokeObjectURL(form.officers[index].photo_preview);
@@ -37,6 +41,37 @@ const removeOfficer = (index) => {
 };
 
 const emit = defineEmits(['submitted']);
+
+// Add pagination state
+const currentPage = ref(1);
+const officersPerPage = 5;
+
+// Pagination computed properties
+const totalPages = computed(() => Math.ceil(form.officers.length / officersPerPage));
+const startIndex = computed(() => (currentPage.value - 1) * officersPerPage);
+const endIndex = computed(() => Math.min(startIndex.value + officersPerPage, form.officers.length));
+const currentPageOfficers = computed(() => {
+    return form.officers.slice(startIndex.value, endIndex.value);
+});
+
+// Navigation functions
+const goToPage = (page) => {
+    if (page >= 1 && page <= totalPages.value) {
+        currentPage.value = page;
+    }
+};
+
+const nextPage = () => {
+    if (currentPage.value < totalPages.value) {
+        currentPage.value++;
+    }
+};
+
+const prevPage = () => {
+    if (currentPage.value > 1) {
+        currentPage.value--;
+    }
+};
 
 const form = useForm({
   form_type: 'LSPU-OSAS-SF-007',
@@ -176,7 +211,8 @@ const submit = () => {
 
 <template>
   <div class="form-container">
-    <h2 class="text-lg font-bold mb-4">List of Officers Form</h2>
+    <!-- Remove the List of Officers Form heading above the logo -->
+    <!-- <h2 class="text-lg font-bold mb-4">List of Officers Form</h2> -->
     
     <!-- Officer list preview -->
     <div class="mt-6 form-content">
@@ -195,8 +231,8 @@ const submit = () => {
       
       <div class="list-title text-center font-bold mb-4 text-lg">LIST OF OFFICERS</div>
       
-      <!-- Officers list -->
-      <div v-for="(officer, index) in form.officers" :key="index" class="officer-row mb-8 clearfix">
+      <!-- Officers list with pagination -->
+      <div v-for="(officer, index) in currentPageOfficers" :key="startIndex + index" class="officer-row mb-8 clearfix">
         <div class="photo-box border border-black float-left mr-4 flex items-center justify-center text-xs">
           <img v-if="getPhotoPreview(officer)" 
                :src="getPhotoPreview(officer)" 
@@ -226,6 +262,44 @@ const submit = () => {
             <span class="field-value"></span>
           </div>
         </div>
+      </div>
+
+      <!-- Pagination Controls -->
+      <div v-if="totalPages > 1" class="pagination-controls flex justify-center items-center mt-8 gap-4">
+        <button 
+          @click="prevPage" 
+          :disabled="currentPage === 1"
+          class="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed">
+          Previous
+        </button>
+        
+        <div class="flex gap-2">
+          <button 
+            v-for="page in totalPages" 
+            :key="page"
+            @click="goToPage(page)"
+            :class="[
+              'px-3 py-1 rounded',
+              currentPage === page 
+                ? 'bg-blue-600 text-white' 
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            ]">
+            {{ page }}
+          </button>
+        </div>
+        
+        <button 
+          @click="nextPage" 
+          :disabled="currentPage === totalPages"
+          class="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed">
+          Next
+        </button>
+      </div>
+
+      <!-- Page Info -->
+      <div v-if="totalPages > 1" class="text-center mt-4 text-sm text-gray-600">
+        Page {{ currentPage }} of {{ totalPages }} 
+        (Showing officers {{ startIndex + 1 }}-{{ endIndex }} of {{ form.officers.length }})
       </div>
       
       <div class="footer mt-8 text-xs flex justify-between">
@@ -295,7 +369,17 @@ const submit = () => {
         <div v-for="(officer, index) in form.officers" :key="index" class="mt-4 p-4 border rounded">
           <div class="flex justify-between items-center mb-2">
             <h4 class="font-bold">Officer #{{ index + 1 }}</h4>
-            <button @click="removeOfficer(index)" type="button" class="text-red-500">
+            <button 
+              @click="removeOfficer(index)" 
+              type="button" 
+              :disabled="form.officers.length <= 1"
+              :class="[
+                'px-2 py-1 rounded text-sm font-medium transition-colors',
+                form.officers.length <= 1 
+                  ? 'text-gray-400 bg-gray-100 cursor-not-allowed' 
+                  : 'text-red-500 hover:text-red-700 hover:bg-red-50'
+              ]"
+            >
               Remove
             </button>
           </div>
