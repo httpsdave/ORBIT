@@ -280,16 +280,25 @@ const submit = () => {
     </div>
 
     <div class="signature-section flex justify-between mt-10">
-        <div class="signature text-left">
-            <p class="mb-0"><span class="signature-line border-b border-black min-w-[200px] inline-block text-center">{{ form.adviser_name }}</span></p>
-            <p class="mb-0">Faculty Adviser</p>
-            <p class="mb-0">Date: <span class="signature-line border-b border-black min-w-[150px] inline-block text-center">{{ currentDate }}</span></p>
+        <div class="signature w-1/2 text-center">
+            <p class="mb-0">
+                <span class="signature-line border-b border-black min-w-[200px] inline-block text-center">{{ form.adviser_name }}</span>
+            </p>
+            <p class="mb-0 font-bold">Faculty Adviser</p>
+            <p class="mb-0">
+                <span>Date:</span>
+                <span class="signature-line border-b border-black min-w-[150px] inline-block text-center ml-2">{{ currentDate }}</span>
+            </p>
         </div>
-
-        <div class="signature text-right">
-            <p class="mb-0"><span class="signature-line border-b border-black min-w-[200px] inline-block text-center">{{ form.second_adviser }}</span></p>
-            <p class="mb-0">Faculty Adviser</p>
-            <p class="mb-0">Date: <span class="signature-line border-b border-black min-w-[150px] inline-block text-center">{{ currentDate }}</span></p>
+        <div class="signature w-1/2 text-center">
+            <p class="mb-0">
+                <span class="signature-line border-b border-black min-w-[200px] inline-block text-center">{{ form.second_adviser }}</span>
+            </p>
+            <p class="mb-0 font-bold">Faculty Adviser</p>
+            <p class="mb-0">
+                <span>Date:</span>
+                <span class="signature-line border-b border-black min-w-[150px] inline-block text-center ml-2">{{ currentDate }}</span>
+            </p>
         </div>
     </div>
 
