@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, nextTick } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 
 const props = defineProps({
@@ -14,6 +14,11 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['submitted']);
+
+// Rich text editor state
+const showToolbar = ref(false);
+const toolbarPosition = ref({ x: 0, y: 0 });
+const activeField = ref(null);
 
 // Initialize activities first, before the form
 const initializeActivities = () => {
@@ -47,6 +52,131 @@ const form = useForm({
   director_name: props.initialFormData.director_name || '',
   activities: initializeActivities(),
 });
+
+// Rich text editor functions
+
+// Debounce utility
+function debounce(fn, delay) {
+  let timer = null;
+  return function(...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn.apply(this, args), delay);
+  };
+}
+
+// Helper to find if selection is inside a contenteditable field and which one
+const getActiveFieldFromSelection = () => {
+  const selection = window.getSelection();
+  if (!selection.rangeCount) return null;
+  const range = selection.getRangeAt(0);
+  let node = range.startContainer;
+  // Traverse up until we find a node with data-field
+  while (node && node.nodeType !== 9) { // 9 = DOCUMENT_NODE
+    if (node.nodeType === 1 && node.hasAttribute && node.hasAttribute('data-field')) {
+      const dataField = node.getAttribute('data-field');
+      const match = dataField.match(/^(\w+)-(\d+)$/);
+      if (match) {
+        return { fieldType: match[1], activityIndex: parseInt(match[2], 10), node };
+      }
+    }
+    node = node.parentNode;
+  }
+  return null;
+};
+
+const showToolbarForSelection = () => {
+  const selection = window.getSelection();
+  if (!selection || !selection.toString().length) {
+    hideToolbar();
+    return;
+  }
+  const active = getActiveFieldFromSelection();
+  if (active) {
+    const range = selection.getRangeAt(0);
+    const rect = range.getBoundingClientRect();
+    toolbarPosition.value = {
+      x: rect.left + (rect.width / 2) - 100,
+      y: rect.top - 50
+    };
+    activeField.value = { fieldType: active.fieldType, activityIndex: active.activityIndex };
+    showToolbar.value = true;
+  } else {
+    hideToolbar();
+  }
+};
+
+const debouncedShowToolbarForSelection = debounce(showToolbarForSelection, 30);
+
+// Mouseup handler for contenteditable fields
+const handleMouseUp = () => {
+  setTimeout(showToolbarForSelection, 0); // Let selection update first
+};
+
+const hideToolbar = () => {
+  showToolbar.value = false;
+  activeField.value = null;
+};
+
+const applyFormat = (command, value = null) => {
+  if (!activeField.value) return;
+  
+  const { fieldType, activityIndex } = activeField.value;
+  const field = document.querySelector(`[data-field="${fieldType}-${activityIndex}"]`);
+  
+  if (field) {
+    field.focus();
+    document.execCommand(command, false, value);
+    
+    // Update the form data with the formatted content
+    const formattedContent = field.innerHTML;
+    if (fieldType === 'objective') {
+      form.activities[activityIndex].objective = formattedContent;
+    } else if (fieldType === 'name') {
+      form.activities[activityIndex].name = formattedContent;
+    } else if (fieldType === 'description') {
+      form.activities[activityIndex].description = formattedContent;
+    } else if (fieldType === 'persons_involved') {
+      form.activities[activityIndex].persons_involved = formattedContent;
+    }
+  }
+  
+  hideToolbar();
+};
+
+const insertList = (type) => {
+  if (!activeField.value) return;
+  
+  const { fieldType, activityIndex } = activeField.value;
+  const field = document.querySelector(`[data-field="${fieldType}-${activityIndex}"]`);
+  
+  if (field) {
+    field.focus();
+    const selection = window.getSelection();
+    const selectedText = selection.toString();
+    
+    if (selectedText) {
+      const listItem = type === 'ul' ? `<li>${selectedText}</li>` : `<ol><li>${selectedText}</li></ol>`;
+      document.execCommand('insertHTML', false, listItem);
+    } else {
+      const listItem = type === 'ul' ? '<li></li>' : '<ol><li></li></ol>';
+      document.execCommand('insertHTML', false, listItem);
+    }
+    
+    // Update form data
+    const formattedContent = field.innerHTML;
+    if (fieldType === 'objective') {
+      form.activities[activityIndex].objective = formattedContent;
+    } else if (fieldType === 'name') {
+      form.activities[activityIndex].name = formattedContent;
+    } else if (fieldType === 'description') {
+      form.activities[activityIndex].description = formattedContent;
+    } else if (fieldType === 'persons_involved') {
+      form.activities[activityIndex].persons_involved = formattedContent;
+    }
+  }
+  
+  hideToolbar();
+};
 
 // Add a function to add a new empty activity
 const addActivity = () => {
@@ -137,22 +267,29 @@ const validateForm = () => {
       errors.value.activities[index] = {};
     }
 
-    if (!activity.objective || !activity.objective.trim()) {
+    // Strip HTML tags for validation
+    const stripHtml = (html) => {
+      const tmp = document.createElement('div');
+      tmp.innerHTML = html;
+      return tmp.textContent || tmp.innerText || '';
+    };
+
+    if (!activity.objective || !stripHtml(activity.objective).trim()) {
       errors.value.activities[index].objective = 'Objective is required';
       isValid = false;
     }
 
-    if (!activity.name || !activity.name.trim()) {
+    if (!activity.name || !stripHtml(activity.name).trim()) {
       errors.value.activities[index].name = 'Activity name is required';
       isValid = false;
     }
 
-    if (!activity.description || !activity.description.trim()) {
+    if (!activity.description || !stripHtml(activity.description).trim()) {
       errors.value.activities[index].description = 'Description is required';
       isValid = false;
     }
 
-    if (!activity.persons_involved || !activity.persons_involved.trim()) {
+    if (!activity.persons_involved || !stripHtml(activity.persons_involved).trim()) {
       errors.value.activities[index].persons_involved = 'Persons involved is required';
       isValid = false;
     }
@@ -199,10 +336,120 @@ const submit = () => {
     });
   }
 };
+
+// Hide toolbar when clicking outside
+const handleClickOutside = (event) => {
+  if (!event.target.closest('.rich-text-toolbar') && !event.target.closest('[contenteditable]')) {
+    hideToolbar();
+  }
+};
+
+// Add event listeners
+nextTick(() => {
+  document.addEventListener('click', handleClickOutside);
+  document.addEventListener('selectionchange', debouncedShowToolbarForSelection);
+});
 </script>
 
 <template>
   <div class="mt-6 form-content">
+    <!-- Rich Text Toolbar -->
+    <div 
+      v-if="showToolbar" 
+      class="rich-text-toolbar fixed z-50 bg-white border border-gray-300 rounded-lg shadow-lg p-2 flex items-center gap-1"
+      :style="{ 
+        left: toolbarPosition.x + 'px', 
+        top: toolbarPosition.y + 'px' 
+      }"
+    >
+      <!-- Bold -->
+      <button 
+        @click="applyFormat('bold')" 
+        class="p-2 hover:bg-gray-100 rounded"
+        title="Bold"
+      >
+        <strong>B</strong>
+      </button>
+      
+      <!-- Italic -->
+      <button 
+        @click="applyFormat('italic')" 
+        class="p-2 hover:bg-gray-100 rounded"
+        title="Italic"
+      >
+        <em>I</em>
+      </button>
+      
+      <!-- Underline -->
+      <button 
+        @click="applyFormat('underline')" 
+        class="p-2 hover:bg-gray-100 rounded border-b-2 border-black"
+        title="Underline"
+      >
+        U
+      </button>
+      
+      <!-- Divider -->
+      <div class="w-px h-6 bg-gray-300 mx-1"></div>
+      
+      <!-- Bullet List -->
+      <button 
+        @click="insertList('ul')" 
+        class="p-2 hover:bg-gray-100 rounded"
+        title="Bullet List"
+      >
+        •
+      </button>
+      
+      <!-- Numbered List -->
+      <button 
+        @click="insertList('ol')" 
+        class="p-2 hover:bg-gray-100 rounded"
+        title="Numbered List"
+      >
+        1.
+      </button>
+      
+      <!-- Divider -->
+      <div class="w-px h-6 bg-gray-300 mx-1"></div>
+      
+      <!-- Left Align -->
+      <button 
+        @click="applyFormat('justifyLeft')" 
+        class="p-2 hover:bg-gray-100 rounded"
+        title="Left Align"
+      >
+        ⬅
+      </button>
+      
+      <!-- Center Align -->
+      <button 
+        @click="applyFormat('justifyCenter')" 
+        class="p-2 hover:bg-gray-100 rounded"
+        title="Center Align"
+      >
+        ↔
+      </button>
+      
+      <!-- Right Align -->
+      <button 
+        @click="applyFormat('justifyRight')" 
+        class="p-2 hover:bg-gray-100 rounded"
+        title="Right Align"
+      >
+        ➡
+      </button>
+      
+      <!-- Justify -->
+      <button 
+        @click="applyFormat('justifyFull')" 
+        class="p-2 hover:bg-gray-100 rounded"
+        title="Justify"
+      >
+        ⬌
+      </button>
+    </div>
+
     <div class="header text-center relative">
                 <img src="/images/lspu-logo.png" alt="LSPU Logo" class="absolute top-[-0.5cm] left-[-2cm] w-[250px] h-auto">
                 <p class="text-sm font-bold mb-0">Republic of the Philippines</p>
@@ -306,19 +553,47 @@ const submit = () => {
                             <tbody>
                                 <tr v-for="(activity, index) in form.activities" :key="index">
                                     <td class="border border-gray-300 p-2">
-                                        <input v-model="activity.objective" class="w-full p-1 text-sm" required>
+                                        <div 
+                                            :data-field="`objective-${index}`"
+                                            contenteditable="true"
+                                            @input="activity.objective = $event.target.innerHTML"
+                                            @mouseup="handleMouseUp"
+                                            class="w-full p-1 text-sm min-h-[20px] focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                            placeholder="Enter objective..."
+                                        ></div>
                                         <p v-if="errors.activities?.[index]?.objective" class="text-red-500 text-xs mt-1">{{ errors.activities[index].objective }}</p>
                                     </td>
                                     <td class="border border-gray-300 p-2">
-                                        <input v-model="activity.name" class="w-full p-1 text-sm" required>
+                                        <div 
+                                            :data-field="`name-${index}`"
+                                            contenteditable="true"
+                                            @input="activity.name = $event.target.innerHTML"
+                                            @mouseup="handleMouseUp"
+                                            class="w-full p-1 text-sm min-h-[20px] focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                            placeholder="Enter activity name..."
+                                        ></div>
                                         <p v-if="errors.activities?.[index]?.name" class="text-red-500 text-xs mt-1">{{ errors.activities[index].name }}</p>
                                     </td>
                                     <td class="border border-gray-300 p-2">
-                                        <textarea v-model="activity.description" class="w-full p-1 text-sm" rows="2" required></textarea>
+                                        <div 
+                                            :data-field="`description-${index}`"
+                                            contenteditable="true"
+                                            @input="activity.description = $event.target.innerHTML"
+                                            @mouseup="handleMouseUp"
+                                            class="w-full p-1 text-sm min-h-[40px] focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                            placeholder="Enter description..."
+                                        ></div>
                                         <p v-if="errors.activities?.[index]?.description" class="text-red-500 text-xs mt-1">{{ errors.activities[index].description }}</p>
                                     </td>
                                     <td class="border border-gray-300 p-2">
-                                        <input v-model="activity.persons_involved" class="w-full p-1 text-sm" required>
+                                        <div 
+                                            :data-field="`persons_involved-${index}`"
+                                            contenteditable="true"
+                                            @input="activity.persons_involved = $event.target.innerHTML"
+                                            @mouseup="handleMouseUp"
+                                            class="w-full p-1 text-sm min-h-[20px] focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                            placeholder="Enter persons involved..."
+                                        ></div>
                                         <p v-if="errors.activities?.[index]?.persons_involved" class="text-red-500 text-xs mt-1">{{ errors.activities[index].persons_involved }}</p>
                                     </td>
                                     <td class="border border-gray-300 p-2">
@@ -360,3 +635,24 @@ const submit = () => {
             </div>
         </div>
 </template>
+
+<style scoped>
+[contenteditable]:empty:before {
+  content: attr(placeholder);
+  color: #9ca3af;
+  pointer-events: none;
+}
+
+[contenteditable]:focus {
+  outline: none;
+}
+
+.rich-text-toolbar button {
+  font-size: 12px;
+  min-width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+</style>
