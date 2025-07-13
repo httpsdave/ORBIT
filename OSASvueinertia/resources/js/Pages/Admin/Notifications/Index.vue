@@ -88,13 +88,14 @@ const formatType = (type) => {
               </Link>
             </div>
 
-            <!-- Notifications Table -->
-            <div class="overflow-hidden border border-gray-100 rounded-lg shadow-sm">
+            <!-- Responsive Notifications List -->
+            <div class="hidden md:block overflow-x-auto">
               <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                   <tr>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Target Audience</th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
                     <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
@@ -102,7 +103,7 @@ const formatType = (type) => {
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                   <tr v-if="notifications.data.length === 0">
-                    <td colspan="5" class="px-6 py-8 text-center text-gray-500">
+                    <td colspan="6" class="px-6 py-8 text-center text-gray-500">
                       <div class="flex flex-col items-center justify-center space-y-2">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
@@ -120,6 +121,11 @@ const formatType = (type) => {
                       <span class="px-2.5 py-1 inline-flex text-xs leading-4 font-medium rounded-full" :class="getBadgeClass(notification.type)">
                         {{ formatType(notification.type) }}
                       </span>
+                    </td>
+                    <td class="px-6 py-4">
+                      <div class="text-sm text-gray-900">
+                        <span class="font-medium">{{ notification.target_audience }}</span>
+                      </div>
                     </td>
                     <td class="px-6 py-4">
                       <button @click="toggleActive(notification)" class="group relative flex items-center">
@@ -163,6 +169,60 @@ const formatType = (type) => {
                   </tr>
                 </tbody>
               </table>
+            </div>
+
+            <!-- Mobile/Tablet Responsive Cards -->
+            <div class="md:hidden flex flex-col gap-4">
+              <div v-if="notifications.data.length === 0" class="text-center text-gray-500 py-8">
+                <span>No notifications found</span>
+              </div>
+              <div v-for="notification in notifications.data" :key="notification.id" class="bg-white rounded-lg shadow border border-gray-100 p-4 flex flex-col gap-2">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <div class="text-base font-semibold text-gray-900">{{ notification.title }}</div>
+                    <div class="text-sm text-gray-500">{{ notification.message }}</div>
+                  </div>
+                  <span class="px-2.5 py-1 inline-flex text-xs leading-4 font-medium rounded-full h-fit" :class="getBadgeClass(notification.type)">
+                    {{ formatType(notification.type) }}
+                  </span>
+                </div>
+                <div class="flex flex-wrap gap-2 text-xs text-gray-600 mt-1">
+                  <span><b>Audience:</b> {{ notification.target_audience }}</span>
+                  <span><b>Status:</b> <span :class="notification.is_active ? 'text-blue-600' : 'text-gray-400'">{{ notification.is_active ? 'Active' : 'Inactive' }}</span></span>
+                  <span><b>Created:</b> {{ notification.created_at }}</span>
+                </div>
+                <div class="flex items-center gap-3 mt-2">
+                  <button @click="toggleActive(notification)" class="group relative flex items-center">
+                    <span 
+                      class="w-8 h-4 flex items-center flex-shrink-0 p-0.5 rounded-full duration-200 ease-in-out"
+                      :class="{ 'bg-blue-500': notification.is_active, 'bg-gray-200': !notification.is_active }"
+                    >
+                      <span 
+                        class="bg-white w-3 h-3 rounded-full shadow-sm transform duration-200 ease-in-out"
+                        :class="{ 'translate-x-4': notification.is_active, 'translate-x-0': !notification.is_active }"
+                      ></span>
+                    </span>
+                  </button>
+                  <Link 
+                    :href="route('admin.notifications.edit', notification.id)" 
+                    class="text-gray-500 hover:text-blue-500 transition-colors duration-150"
+                    title="Edit"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                  </Link>
+                  <button 
+                    @click="confirmDelete(notification)" 
+                    class="text-gray-500 hover:text-red-500 transition-colors duration-150"
+                    title="Delete"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
             </div>
 
             <!-- Pagination -->

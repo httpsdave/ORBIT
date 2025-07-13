@@ -21,6 +21,15 @@ class NotificationController extends Controller
         $notifications = Notification::latest()
             ->paginate(10)
             ->through(function ($notification) {
+                // Get user count for this notification
+                $userCount = \DB::table('user_notifications')
+                    ->where('notification_id', $notification->id)
+                    ->count();
+                
+                // Determine if it was sent to all users or specific users
+                $totalUsers = User::count();
+                $targetAudience = $userCount === $totalUsers ? 'All Users' : "Specific Users ({$userCount})";
+                
                 return [
                     'id' => $notification->id,
                     'title' => $notification->title,
@@ -28,6 +37,8 @@ class NotificationController extends Controller
                     'type' => $notification->type,
                     'is_active' => $notification->is_active,
                     'created_at' => $notification->created_at->diffForHumans(),
+                    'target_audience' => $targetAudience,
+                    'user_count' => $userCount,
                 ];
             });
 
@@ -171,7 +182,14 @@ class NotificationController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Admin/Notifications/Create');
+        $users = User::select('id', 'name', 'email')
+            ->where('role_id', '!=', 1) // Exclude admin users from the list
+            ->orderBy('name')
+            ->get();
+
+        return Inertia::render('Admin/Notifications/Create', [
+            'users' => $users
+        ]);
     }
 
     /**
@@ -189,7 +207,13 @@ class NotificationController extends Controller
             'is_active' => 'boolean',
             'target_audience' => 'required|in:all,specific',
             'user_ids' => 'array|required_if:target_audience,specific',
+            'user_ids.*' => 'integer|exists:users,id',
         ]);
+
+        // Additional validation for user_ids
+        if ($validated['target_audience'] === 'specific' && empty($validated['user_ids'])) {
+            return back()->withErrors(['user_ids' => 'Please select at least one user when targeting specific users.']);
+        }
 
         // Create the notification
         $notification = Notification::create([
@@ -200,21 +224,28 @@ class NotificationController extends Controller
         ]);
 
         // Handle user notification associations
+        $userCount = 0;
         if ($validated['target_audience'] === 'all') {
             // Create user notifications for all users
             $users = User::all();
             foreach ($users as $user) {
                 $this->createUserNotification($user->id, $notification->id);
             }
+            $userCount = $users->count();
         } else {
             // Create user notifications for specific users
             foreach ($validated['user_ids'] as $userId) {
                 $this->createUserNotification($userId, $notification->id);
             }
+            $userCount = count($validated['user_ids']);
         }
 
+        $message = $validated['target_audience'] === 'all' 
+            ? "Notification created successfully and sent to all {$userCount} users."
+            : "Notification created successfully and sent to {$userCount} selected user" . ($userCount !== 1 ? 's' : '') . ".";
+
         return redirect()->route('admin.notifications.index')
-            ->with('success', 'Notification created successfully.');
+            ->with('success', $message);
     }
 
     /**
