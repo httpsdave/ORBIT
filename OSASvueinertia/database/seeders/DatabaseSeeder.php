@@ -37,7 +37,7 @@ class DatabaseSeeder extends Seeder
         
         // Create an admin user
         User::create([
-            'name' => 'Admin User',
+            'name' => 'SOU',
             'email' => 'admin@example.com',
             'password' => Hash::make('password'),
             'role_id' => 1, // Admin role
@@ -58,7 +58,7 @@ class DatabaseSeeder extends Seeder
         // Create welcome notification
         $welcomeNotification = Notification::create([
             'title' => 'Welcome to ORBIT',
-            'message' => 'Welcome to ORBIT - Your Student Organization Management System',
+            'message' => 'Welcome to ORBIT - Your Student Organization Unit Information System',
             'type' => 'success',
             'is_active' => true,
         ]);
