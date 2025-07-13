@@ -173,7 +173,6 @@ const submit = () => {
                     <th class="border border-gray-300 p-2 w-10">NO.</th>
                     <th class="border border-gray-300 p-2 w-1/2">NAME</th>
                     <th class="border border-gray-300 p-2 w-1/4">COURSE/YEAR & SECTION</th>
-                    <th class="border border-gray-300 p-2 w-1/4">SIGNATURE</th>
                     <th class="border border-gray-300 p-2 w-16">ACTION</th>
                 </tr>
             </thead>
@@ -187,10 +186,6 @@ const submit = () => {
                     </td>
                     <td class="border border-gray-300 p-2">
                         <input v-model="attendee.course_year_section" class="w-full p-1">
-                    </td>
-                    <td class="border border-gray-300 p-2 text-center">
-                        <!-- Placeholder for signature - in a real app this would be handled differently -->
-                        <div class="h-8 border border-dashed border-gray-400 w-full"></div>
                     </td>
                     <td class="border border-gray-300 p-2">
                         <button type="button" @click="removeAttendee(index)" class="bg-red-500 text-white px-2 py-1 rounded text-xs">Remove</button>

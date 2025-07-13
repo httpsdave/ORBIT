@@ -491,9 +491,6 @@ const submit = () => {
         <div class="mt-6">
             <div class="flex justify-between items-center">
                 <h3 class="text-lg font-bold">Members</h3>
-                <button @click="addMember" type="button" class="bg-blue-500 text-white px-3 py-1 rounded">
-                    Add Member
-                </button>
             </div>
 
             <div v-for="(member, index) in form.members" :key="index" class="mt-4 p-4 border rounded">
@@ -542,6 +539,13 @@ const submit = () => {
                     </div>
                 </div>
             </div>
+        </div>
+
+        <!-- Add Member Button (moved below member list, left-aligned) -->
+        <div class="mt-4 flex justify-start">
+            <button @click="addMember" type="button" class="bg-blue-500 text-white px-3 py-1 rounded">
+                Add Member
+            </button>
         </div>
 
         <div class="mt-6 text-center">
