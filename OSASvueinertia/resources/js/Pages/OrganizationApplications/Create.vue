@@ -22,7 +22,7 @@ const currentForm = ref('');
 const formData = ref({});
 
 const formOptions = [
-    { value: 'LSPU-OSAS-SF-001', label: 'Student Organization Recognition Form' },
+    { value: 'LSPU-OSAS-SF-001', label: 'Recognition Form' },
     { value: 'LSPU-OSAS-SF-002', label: 'Renewal Form' },
     { value: 'LSPU-OSAS-SF-003', label: 'Commitment Form' },
     { value: 'LSPU-OSAS-SF-004', label: 'Plan of Activities' },
