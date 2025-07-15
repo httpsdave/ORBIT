@@ -52,6 +52,8 @@ const formTypeToName = (formType) => {
       return 'Officers List';
     case 'LSPU-OSAS-SF-009':
       return 'Student Activity Attendance Sheet';
+    case 'LSPU-OSAS-SF-EVAL':
+      return 'Evaluation Summary';
     default:
       return formType;
   }
