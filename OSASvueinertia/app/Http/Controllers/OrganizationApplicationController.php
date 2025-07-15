@@ -174,6 +174,12 @@ class OrganizationApplicationController extends Controller
                 'attendees.*.course_year_section' => 'nullable|string|max:255',
                 'attendees.*.signature' => 'nullable',
             ]);
+        } elseif ($request->form_type === 'LSPU-OSAS-SF-EVAL') {
+            // Validation for evaluation form
+            $validationRules = array_merge($validationRules, [
+                'ratings' => 'required|array|size:15',
+                'ratings.*' => 'nullable|in:1,2,3,4,5',
+            ]);
         }
         
         
@@ -232,6 +238,8 @@ class OrganizationApplicationController extends Controller
                 }
             }elseif ($request->form_type === 'LSPU-OSAS-SF-009') {
                 $data['application_date'] = now(); // Use current date for attendance sheet
+            } elseif ($request->form_type === 'LSPU-OSAS-SF-EVAL') {
+                $data['application_date'] = now(); // Use current date for evaluation form
             }
         
         // Handle signed document upload
@@ -382,6 +390,12 @@ class OrganizationApplicationController extends Controller
             ]);
             
             // Special handling for attendees below
+        } elseif ($application->form_type === 'LSPU-OSAS-SF-EVAL') {
+            // Validation for evaluation form
+            $validationRules = array_merge($validationRules, [
+                'ratings' => 'required|array|size:15',
+                'ratings.*' => 'nullable|in:1,2,3,4,5',
+            ]);
         }
         
         // Validate the request data
@@ -716,6 +730,20 @@ class OrganizationApplicationController extends Controller
         }
         
         return $pdf->download('Attendance_' . $application->activity_name . '.pdf');
+    }
+
+    public function exportEvaluationPdf(OrganizationApplication $application, Request $request)
+    {
+        $pdf = Pdf::loadView('pdfs.organization_evaluation', compact('application'))
+                ->setPaper('A4', 'portrait');
+        
+        $action = $request->query('action', 'download');
+        
+        if ($action === 'view') {
+            return $pdf->stream('Evaluation_' . $application->organization_name . '.pdf');
+        }
+        
+        return $pdf->download('Evaluation_' . $application->organization_name . '.pdf');
     }
 
     /**

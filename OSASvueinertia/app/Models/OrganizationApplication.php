@@ -59,14 +59,24 @@ class OrganizationApplication extends Model
          // Student Activity Attendance Sheet fields
          'activity_name',
          'activity_date',
+         'activity_title',
+         'venue',
+         'date',
+         'time',
+         'ratings',
 
-
+         // New date and time range fields for evaluation form
+         'date_start',
+         'date_end',
+         'time_start',
+         'time_end',
 
     ];
 
     protected $casts = [
         'is_archived' => 'boolean',
         'archived_at' => 'datetime',
+        'ratings' => 'array',
     ];
 
     public function activities()

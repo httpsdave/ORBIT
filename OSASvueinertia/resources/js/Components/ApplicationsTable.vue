@@ -93,6 +93,8 @@ const getPdfRoute = (app, action = 'download') => {
     return `/applications/${app.id}/export-officers${queryParams}`;
   } else if (app.form_type === 'LSPU-OSAS-SF-009') {
     return `/applications/${app.id}/export-attendance${queryParams}`;
+  } else if (app.form_type === 'LSPU-OSAS-SF-EVAL') {
+    return `/applications/${app.id}/export-evaluation${queryParams}`;
   } else {
     // Default case
     console.warn('Unknown form type:', app.form_type);

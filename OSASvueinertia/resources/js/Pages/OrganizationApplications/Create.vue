@@ -9,6 +9,7 @@ import ListOfMembersForm from '@/Components/forms/ListOfMembersForm.vue';
 import StudentCertificationForm from '@/Components/forms/StudentCertificationForm.vue';
 import ListOfOfficersForm from '@/Components/forms/ListOfOfficersForm.vue';
 import ActivityAttendanceForm from '@/Components/forms/ActivityAttendanceForm.vue';
+import EvaluationForm from '@/Components/forms/EvaluationForm.vue';
 
 // Get saved form data from props
 const props = defineProps({
@@ -30,6 +31,7 @@ const formOptions = [
     { value: 'LSPU-OSAS-SF-006', label: 'Student Certification' },
     { value: 'LSPU-OSAS-SF-007', label: 'List of Officers' }, 
     { value: 'LSPU-OSAS-SF-009', label: 'Student Activity Attendance Sheet' },
+    { value: 'LSPU-OSAS-SF-EVAL', label: 'Evaluation Form' },
 ];
 
 const handleFormSelection = (formId) => {
@@ -170,6 +172,12 @@ const handleFormSubmitted = (data) => {
       <!-- Student Activity Attendance Sheet -->
       <ActivityAttendanceForm 
         v-else-if="currentForm === 'LSPU-OSAS-SF-009'" 
+        :initialFormData="formData"
+        @submitted="handleFormSubmitted"
+      />
+      <!-- Evaluation Form -->
+      <EvaluationForm 
+        v-else-if="currentForm === 'LSPU-OSAS-SF-EVAL'" 
         :initialFormData="formData"
         @submitted="handleFormSubmitted"
       />
