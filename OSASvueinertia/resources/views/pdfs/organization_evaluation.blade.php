@@ -103,6 +103,14 @@
             text-align: center !important;
             padding-right: 0;
         }
+        .comments-list {
+            margin-top: 8px;
+            margin-bottom: 0;
+            padding-left: 24px;
+        }
+        .comment-item {
+            margin-bottom: 16px;
+        }
     </style>
 </head>
 <body>
@@ -233,13 +241,19 @@
             </tbody>
         </table>
         @if(!empty($application->comments_suggestions))
+            <div style="page-break-before: always;"></div>
+            <div class="header">
+                <img src="{{ public_path('images/lspu-logo.png') }}" alt="LSPU Logo" class="logo">
+                <p class="calibri-font" style="margin-bottom: 0;">Republic of the Philippines</p>
+                <img src="{{ public_path('images/lspu-name.png') }}" alt="Laguna State Polytechnic University" class="university-name"><br>
+                <p class="calibri-font" style="margin-top: 0;">Province of Laguna</p>
+                <br>
+            </div>
             <div style="margin-top: 24px;">
                 <strong>Comments & Suggestions:</strong>
-                <ul style="margin-top: 8px; margin-bottom: 0; padding-left: 24px;">
-                    @foreach(preg_split('/\r\n|\r|\n/', $application->comments_suggestions) as $line)
-                        @if(trim($line) !== '')
-                            <li>{{ $line }}</li>
-                        @endif
+                <ul class="comments-list">
+                    @foreach(array_filter(preg_split('/\r\n|\r|\n/', $application->comments_suggestions), function($line) { return trim($line) !== ''; }) as $line)
+                        <li class="comment-item">{{ $line }}</li>
                     @endforeach
                 </ul>
             </div>
