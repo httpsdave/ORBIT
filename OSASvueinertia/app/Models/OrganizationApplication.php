@@ -70,6 +70,7 @@ class OrganizationApplication extends Model
          'date_end',
          'time_start',
          'time_end',
+        'comments_suggestions',
 
     ];
 

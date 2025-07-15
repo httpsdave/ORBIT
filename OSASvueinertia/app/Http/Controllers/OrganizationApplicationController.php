@@ -179,6 +179,7 @@ class OrganizationApplicationController extends Controller
             $validationRules = array_merge($validationRules, [
                 'ratings' => 'required|array|size:15',
                 'ratings.*' => ['required', 'regex:/^(?:[1-4]\.[0-9]|5\.0)$/', 'numeric', 'min:1.0', 'max:5.0'],
+                'comments_suggestions' => 'nullable|string',
             ]);
         }
         
@@ -240,6 +241,7 @@ class OrganizationApplicationController extends Controller
                 $data['application_date'] = now(); // Use current date for attendance sheet
             } elseif ($request->form_type === 'LSPU-OSAS-SF-EVAL') {
                 $data['application_date'] = now(); // Use current date for evaluation form
+                // comments_suggestions is already included in $data
             }
         
         // Handle signed document upload
@@ -395,6 +397,7 @@ class OrganizationApplicationController extends Controller
             $validationRules = array_merge($validationRules, [
                 'ratings' => 'required|array|size:15',
                 'ratings.*' => ['required', 'regex:/^(?:[1-4]\.[0-9]|5\.0)$/', 'numeric', 'min:1.0', 'max:5.0'],
+                'comments_suggestions' => 'nullable|string',
             ]);
         }
         

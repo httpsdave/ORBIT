@@ -48,6 +48,7 @@ const form = useForm({
   ratings: Array.isArray(props.initialFormData.ratings) && props.initialFormData.ratings.length === statements.length
     ? [...props.initialFormData.ratings]
     : Array(statements.length).fill(''),
+  comments_suggestions: props.initialFormData.comments_suggestions || '',
 });
 
 const errors = ref({});
@@ -358,6 +359,17 @@ const onRatingKeyPress = (e, i) => {
           </tr>
         </tbody>
       </table>
+    </div>
+    <!-- Comments & Suggestions Section -->
+    <div class="mb-4">
+      <label class="block font-bold mb-1">Comments & Suggestions:</label>
+      <textarea
+        v-model="form.comments_suggestions"
+        class="border p-2 w-full"
+        rows="5"
+        placeholder="Enter each comment or suggestion on a new line. Each line will be a bullet point."
+      ></textarea>
+      <p class="text-gray-500 text-xs mt-1">Each line will be displayed as a separate bullet.</p>
     </div>
     <div class="flex justify-end mt-6">
       <button @click="submit" type="button" class="bg-green-500 text-white px-4 py-2 rounded mx-auto block">Submit</button>

@@ -232,6 +232,18 @@
                 @endforeach
             </tbody>
         </table>
+        @if(!empty($application->comments_suggestions))
+            <div style="margin-top: 24px;">
+                <strong>Comments & Suggestions:</strong>
+                <ul style="margin-top: 8px; margin-bottom: 0; padding-left: 24px;">
+                    @foreach(preg_split('/\r\n|\r|\n/', $application->comments_suggestions) as $line)
+                        @if(trim($line) !== '')
+                            <li>{{ $line }}</li>
+                        @endif
+                    @endforeach
+                </ul>
+            </div>
+        @endif
     </div>
 </body>
 </html> 
