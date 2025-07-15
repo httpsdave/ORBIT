@@ -172,11 +172,7 @@
             <thead>
                 <tr>
                     <th class="average-header" style="text-align: left;">&nbsp;</th>
-                    @if(isset($application->averages))
-                        <th class="average-header" style="width: 80px;">Average</th>
-                    @else
-                        <th class="average-header" style="width: 80px;">Rating</th>
-                    @endif
+                    <th class="average-header" style="width: 80px;">Average</th>
                 </tr>
             </thead>
             <tbody>
