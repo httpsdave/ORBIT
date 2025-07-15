@@ -226,7 +226,7 @@
                     @else
                         <td class="rating-cell">
                             @if(isset($ratings[$i]) && $ratings[$i] !== null && $ratings[$i] !== '')
-                                {{ $ratings[$i] }}
+                                {{ number_format((float)$ratings[$i], 1) }}
                             @else
                                 &mdash;
                             @endif

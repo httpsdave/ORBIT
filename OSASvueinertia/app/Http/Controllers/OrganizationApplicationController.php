@@ -178,7 +178,7 @@ class OrganizationApplicationController extends Controller
             // Validation for evaluation form
             $validationRules = array_merge($validationRules, [
                 'ratings' => 'required|array|size:15',
-                'ratings.*' => 'nullable|in:1,2,3,4,5',
+                'ratings.*' => ['required', 'regex:/^(?:[1-4]\.[0-9]|5\.0)$/', 'numeric', 'min:1.0', 'max:5.0'],
             ]);
         }
         
@@ -394,7 +394,7 @@ class OrganizationApplicationController extends Controller
             // Validation for evaluation form
             $validationRules = array_merge($validationRules, [
                 'ratings' => 'required|array|size:15',
-                'ratings.*' => 'nullable|in:1,2,3,4,5',
+                'ratings.*' => ['required', 'regex:/^(?:[1-4]\.[0-9]|5\.0)$/', 'numeric', 'min:1.0', 'max:5.0'],
             ]);
         }
         

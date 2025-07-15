@@ -38,6 +38,7 @@ const form = useForm({
 });
 
 const errors = ref({});
+const lastValidRatings = ref([...form.ratings]);
 
 // Computed properties to format date and time ranges for display
 const formattedDateRange = computed(() => {
@@ -121,6 +122,16 @@ const validateForm = () => {
     if (!r) {
       errors.value[`rating_${i}`] = 'Required';
       isValid = false;
+    } else {
+      let val = r;
+      if (/^[1-5]$/.test(val)) {
+        val = val + '.0';
+        form.ratings[i] = val;
+      }
+      if (!/^(?:[1-4]\.[0-9]|5\.0)$/.test(val)) {
+        errors.value[`rating_${i}`] = 'Must be from 1.0 to 5.0';
+        isValid = false;
+      }
     }
   });
   return isValid;
@@ -246,14 +257,33 @@ const submit = () => {
             <td class="border border-gray-400 px-2 py-1 text-center">{{ i + 1 }}</td>
             <td class="border border-gray-400 px-2 py-1">{{ statement }}</td>
             <td class="border border-gray-400 px-2 py-1 text-center">
-              <select v-model="form.ratings[i]" class="border p-1 w-20">
-                <option value="">-</option>
-                <option value="5">5</option>
-                <option value="4">4</option>
-                <option value="3">3</option>
-                <option value="2">2</option>
-                <option value="1">1</option>
-              </select>
+              <input
+                v-model="form.ratings[i]"
+                type="text"
+                inputmode="decimal"
+                maxlength="3"
+                class="border p-1 w-20 text-center"
+                @input="e => {
+                  let val = e.target.value;
+                  // If plain 1-5, convert to X.0
+                  if (/^[1-5]$/.test(val)) {
+                    val = val + '.0';
+                  }
+                  // If value starts with 5. and is not 5.0, revert
+                  if (val.startsWith('5.') && val !== '5.0') {
+                    form.ratings[i] = lastValidRatings.value[i] || '';
+                    return;
+                  }
+                  // Only allow 1.0-1.9, 2.0-2.9, 3.0-3.9, 4.0-4.9, 5.0
+                  if (/^(?:[1-4]\.[0-9]|5\.0)$/.test(val)) {
+                    lastValidRatings.value[i] = val;
+                    form.ratings[i] = val;
+                  } else {
+                    form.ratings[i] = lastValidRatings.value[i] || '';
+                  }
+                }"
+                required
+              >
               <span v-if="errors[`rating_${i}`]" class="text-red-500 text-xs block mt-1">{{ errors[`rating_${i}`] }}</span>
             </td>
           </tr>
