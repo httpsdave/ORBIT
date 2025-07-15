@@ -194,9 +194,9 @@ const onRatingKeyPress = (e, i) => {
 </script>
 
 <template>
-  <div class="mt-6 form-content max-w-3xl mx-auto bg-white p-8 rounded shadow">
+  <div class="mt-6 form-content">
     <div class="header text-center relative mb-6">
-      <img src="/images/lspu-logo.png" alt="LSPU Logo" class="absolute top-[-0.5cm] left-[-2cm] w-[120px] h-auto">
+      <img src="/images/lspu-logo.png" alt="LSPU Logo" class="absolute top-[-0.5cm] left-[-2cm] w-[250px] h-auto">
       <p class="text-sm font-bold mb-0">Republic of the Philippines</p>
       <p class="text-base font-bold university-name mb-0">Laguna State Polytechnic University</p>
       <p class="text-sm mb-0">Province of Laguna</p>
@@ -325,9 +325,7 @@ const onRatingKeyPress = (e, i) => {
       </table>
     </div>
     <div class="flex justify-end mt-6">
-      <button @click="submit" type="button" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded shadow">
-        Submit
-      </button>
+      <button @click="submit" type="button" class="bg-green-500 text-white px-4 py-2 rounded mx-auto block">Submit</button>
     </div>
   </div>
 </template>
