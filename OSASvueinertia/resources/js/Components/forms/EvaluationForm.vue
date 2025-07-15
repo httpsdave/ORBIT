@@ -158,6 +158,39 @@ const submit = () => {
     }
   });
 };
+
+const onRatingKeyPress = (e, i) => {
+  const val = e.target.value;
+  const char = e.key;
+
+  // Only allow 3 characters
+  if (val.length >= 3) {
+    e.preventDefault();
+    return;
+  }
+
+  // First character
+  if (val.length === 0) {
+    if (!/[1-5]/.test(char)) e.preventDefault();
+    return;
+  }
+
+  // Second character
+  if (val.length === 1) {
+    if (char !== '.') e.preventDefault();
+    return;
+  }
+
+  // Third character
+  if (val.length === 2) {
+    if (val[0] === '5') {
+      if (char !== '0') e.preventDefault();
+    } else {
+      if (!/[0-9]/.test(char)) e.preventDefault();
+    }
+    return;
+  }
+};
 </script>
 
 <template>
@@ -263,6 +296,7 @@ const submit = () => {
                 inputmode="decimal"
                 maxlength="3"
                 class="border p-1 w-20 text-center"
+                @keypress="e => onRatingKeyPress(e, i)"
                 @input="e => {
                   let val = e.target.value;
                   // If plain 1-5, convert to X.0
