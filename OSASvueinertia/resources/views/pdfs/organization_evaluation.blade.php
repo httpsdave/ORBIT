@@ -13,8 +13,8 @@
             margin-right: 2.54cm;
         }
         body {
-            font-family: 'Times New Roman', serif;
-            font-size: 11.5pt;
+            font-family: Calibri, Arial, sans-serif;
+            font-size: 11pt;
             line-height: 1.1;
             margin: 0;
             padding: 0;
@@ -25,10 +25,11 @@
         }
         .header {
             text-align: center;
-            font-size: 16px;
+            font-size: 11pt;
             margin: 0 0 2px 0;
             padding-top: 0.5cm;
             position: relative;
+            font-family: Calibri, Arial, sans-serif;
         }
         .logo {
             position: absolute;
@@ -38,8 +39,8 @@
             height: auto;
         }
         .university-name {
-            font-size: 16px;
-            font-family: 'Old English Text MT', 'Times New Roman', serif;
+            font-size: 11pt;
+            font-family: Calibri, Arial, sans-serif;
             font-weight: bold;
             max-width: 60%;
             height: auto;
@@ -47,9 +48,10 @@
             display: inline-block;
         }
         .form-title {
-            font-size: 16px;
+            font-size: 11pt;
             font-weight: bold;
             margin: 0;
+            font-family: Calibri, Arial, sans-serif;
         }
         .main-content {
             flex: 1;
@@ -65,10 +67,12 @@
         }
         .fields-table td {
             padding: 3px 8px;
-            font-size: 11.5pt;
+            font-size: 11pt;
+            font-family: Calibri, Arial, sans-serif;
         }
         .direction {
             margin-bottom: 4px;
+            font-size: 10.5pt;
         }
         .rating-scale {
             margin-bottom: 8px;
@@ -82,6 +86,7 @@
             border: 1px solid #444;
             padding: 4px 8px;
             font-size: 11pt;
+            font-family: Calibri, Arial, sans-serif;
         }
         .rating-table th {
             background: #f2f2f2;
@@ -89,7 +94,6 @@
         }
         .statement-cell {
             text-align: left;
-            padding-left: 8px;
         }
         .average-header {
             text-align: center;
@@ -108,16 +112,16 @@
         <img src="{{ public_path('images/lspu-name.png') }}" alt="Laguna State Polytechnic University" class="university-name"><br>
         <p class="calibri-font" style="margin-top: 0;">Province of Laguna</p>
         <br>
-        <p class="form-title">Evaluation Sheet for all Programs/Activities</p>
+        <p class="form-title" style="margin-bottom: 24px;">Evaluation Sheet for all Programs/Activities</p>
     </div>
     <div class="main-content">
         <div style="margin-bottom: 8px;">
             <span style="font-weight: bold;">Title of the Activity:</span>
-            <span style="display: inline-block; border-bottom: 2px solid #000; width: 420px; vertical-align: middle; margin-left: 2px;">&nbsp;{{ $application->activity_title ?? '' }}</span>
+            <span style="margin-left: 6px;">{{ $application->activity_title ?? '' }}</span>
         </div>
         <div style="margin-bottom: 8px;">
             <span style="font-weight: bold;">Venue:</span>
-            <span style="display: inline-block; border-bottom: 2px solid #000; width: 470px; vertical-align: middle; margin-left: 32px;">&nbsp;{{ $application->venue ?? '' }}</span>
+            <span style="margin-left: 6px;">{{ $application->venue ?? '' }}</span>
         </div>
         @php
             // Format date range
@@ -145,17 +149,18 @@
 
         <div style="margin-bottom: 8px;">
             <span style="font-weight: bold;">Date:</span>
-            <span style="display: inline-block; border-bottom: 2px solid #000; width: 480px; vertical-align: middle; margin-left: 48px;">&nbsp;{{ $dateDisplay }}</span>
+            <span style="margin-left: 6px;">{{ $dateDisplay }}</span>
         </div>
-        <div style="margin-bottom: 8px;">
+        <div style="margin-bottom: 24px;">
             <span style="font-weight: bold;">Time:</span>
-            <span style="display: inline-block; border-bottom: 2px solid #000; width: 480px; vertical-align: middle; margin-left: 46px;">&nbsp;{{ $timeDisplay }}</span>
+            <span style="margin-left: 6px;">{{ $timeDisplay }}</span>
         </div>
-        <div class="direction" style="margin-top: 18px;">
-            Direction: Please put a check (✓) at the following statements with the corresponding rating scale.
+        <div class="direction" style="margin-top: 18px; margin-bottom: 28px;">
+            Direction: Please put a check (<span style="font-family: 'DejaVu Sans', sans-serif;">&#10003;</span>) at the following statements with the corresponding rating scale.
         </div>
-        <div class="rating-scale">
-            <table style="margin-bottom: 0; margin-left: 32px;">
+        <div style="font-weight: normal; margin-bottom: 14px;">Rating Scale:</div>
+        <div class="rating-scale" style="margin-bottom: 18px;">
+            <table style="margin-bottom: 0; margin-left: 100px;">
                 <tr><td>Excellent</td><td style="padding-left: 20px;">5</td></tr>
                 <tr><td>Very Satisfactory</td><td style="padding-left: 20px;">4</td></tr>
                 <tr><td>Satisfactory</td><td style="padding-left: 20px;">3</td></tr>
@@ -187,18 +192,29 @@
                         'The activity venue is clean, orderly and properly ventilated.',
                         'The resource speakers/facilitator/s are competent.',
                         'The resource speakers are orderly in preparation.',
-                        'The resource speaker has successfully met the expectations and needs of the participants.',
+                        'The resource speaker has successfully met the expectations and<br><span style="display:inline-block; width: 22px;"></span>needs of the participants.',
                         'The speaker/s manifest rapport with the participants.',
                         'The various activity/ies is/are interesting and enjoyable.',
                         'The officers are professional in dealing with the participants.',
-                        'The officers and other participants are prompt and enthusiastic enough in attending the training.'
+                        'The officers and other participants are prompt and enthusiastic enough<br><span style="display:inline-block; width: 22px;"></span>in attending the training.'
                     ];
                     $ratings = $application->ratings ?? [];
                     $averages = $application->averages ?? null;
                 @endphp
                 @foreach($statements as $i => $statement)
                 <tr>
-                    <td class="statement-cell">{{ ($i + 1) . '. ' . $statement }}</td>
+                    <td class="statement-cell">
+                        <span style="display:inline-block; width: 22px;">{{ ($i + 1) . '.' }}</span>
+                        @if($i === 10)
+                            The resource speaker has successfully met the expectations and<br>
+                            <span style="display:inline-block; width: 28px;"></span>needs of the participants.
+                        @elseif($i === 14)
+                            The officers and other participants are prompt and enthusiastic enough<br>
+                            <span style="display:inline-block; width: 28px;"></span>in attending the training.
+                        @else
+                            {{ $statement }}
+                        @endif
+                    </td>
                     @if($averages)
                         <td class="rating-cell">
                             @if(isset($averages[$i]))
