@@ -9,6 +9,7 @@ import ListOfMembersForm from '@/Components/forms/ListOfMembersForm.vue';
 import StudentCertificationForm from '@/Components/forms/StudentCertificationForm.vue';
 import ListOfOfficersForm from '@/Components/forms/ListOfOfficersForm.vue';
 import ActivityAttendanceForm from '@/Components/forms/ActivityAttendanceForm.vue';
+import EvaluationForm from '@/Components/forms/EvaluationForm.vue';
 
 const props = defineProps({
   application: {
@@ -241,6 +242,14 @@ const deleteSignedDocument = () => {
       <!-- Student Activity Attendance Sheet -->
       <ActivityAttendanceForm 
         v-else-if="props.application.form_type === 'LSPU-OSAS-SF-009'" 
+        :initialFormData="formData"
+        :isEdit="true"
+        @submitted="handleFormSubmitted"
+      />
+      
+      <!-- Evaluation Form -->
+      <EvaluationForm
+        v-else-if="props.application.form_type === 'LSPU-OSAS-SF-EVAL'"
         :initialFormData="formData"
         :isEdit="true"
         @submitted="handleFormSubmitted"

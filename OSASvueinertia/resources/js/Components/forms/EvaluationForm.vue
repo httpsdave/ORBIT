@@ -1,6 +1,17 @@
 <script setup>
 import { useForm } from '@inertiajs/vue3';
-import { ref, computed } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
+
+const props = defineProps({
+  initialFormData: {
+    type: Object,
+    default: () => ({})
+  },
+  isEdit: {
+    type: Boolean,
+    default: false
+  }
+});
 
 const emit = defineEmits(['submitted']);
 
@@ -24,21 +35,41 @@ const statements = [
 
 const form = useForm({
   form_type: 'LSPU-OSAS-SF-EVAL',
-  organization_name: '', // required
-  president_name: '', // required
-  activity_title: '',
-  venue: '',
+  organization_name: props.initialFormData.organization_name || '',
+  president_name: props.initialFormData.president_name || '',
+  activity_title: props.initialFormData.activity_title || '',
+  venue: props.initialFormData.venue || '',
   // Date range fields
-  date_start: '',
-  date_end: '',
+  date_start: props.initialFormData.date_start || '',
+  date_end: props.initialFormData.date_end || '',
   // Time range fields
-  time_start: '',
-  time_end: '',
-  ratings: Array(statements.length).fill(''),
+  time_start: props.initialFormData.time_start || '',
+  time_end: props.initialFormData.time_end || '',
+  ratings: Array.isArray(props.initialFormData.ratings) && props.initialFormData.ratings.length === statements.length
+    ? [...props.initialFormData.ratings]
+    : Array(statements.length).fill(''),
 });
 
 const errors = ref({});
 const lastValidRatings = ref([...form.ratings]);
+
+// If in edit mode, update form when initialFormData changes
+watch(() => props.initialFormData, (newVal) => {
+  if (props.isEdit && newVal) {
+    form.organization_name = newVal.organization_name || '';
+    form.president_name = newVal.president_name || '';
+    form.activity_title = newVal.activity_title || '';
+    form.venue = newVal.venue || '';
+    form.date_start = newVal.date_start || '';
+    form.date_end = newVal.date_end || '';
+    form.time_start = newVal.time_start || '';
+    form.time_end = newVal.time_end || '';
+    form.ratings = Array.isArray(newVal.ratings) && newVal.ratings.length === statements.length
+      ? [...newVal.ratings]
+      : Array(statements.length).fill('');
+    lastValidRatings.value = [...form.ratings];
+  }
+}, { immediate: true });
 
 // Computed properties to format date and time ranges for display
 const formattedDateRange = computed(() => {
@@ -147,16 +178,20 @@ const submit = () => {
     time: formattedTimeRange.value,
   };
   
-  form.post('/applications', {
-    data: submitData,
-    onSuccess: () => {
-      alert('Form submitted successfully!');
-      emit('submitted', submitData);
-    },
-    onError: (errors) => {
-      console.error('Form submission errors:', errors);
-    }
-  });
+  if (props.isEdit) {
+    emit('submitted', submitData);
+  } else {
+    form.post('/applications', {
+      data: submitData,
+      onSuccess: () => {
+        alert('Form submitted successfully!');
+        emit('submitted', submitData);
+      },
+      onError: (errors) => {
+        console.error('Form submission errors:', errors);
+      }
+    });
+  }
 };
 
 const onRatingKeyPress = (e, i) => {
