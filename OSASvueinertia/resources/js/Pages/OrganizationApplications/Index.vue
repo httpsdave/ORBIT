@@ -257,53 +257,17 @@ const updateApplicationStatus = (statusData) => {
   }
 };
 
-const handleDocumentUpload = (applicationId, formData) => {
-  message.value = "Uploading document...";
-  showMessage.value = true;
-  
-  if (typeof router !== 'undefined' && router.post) {
-    router.post(`/applications/${applicationId}/upload-document`, formData, {
-      onSuccess: () => {
-        message.value = "Document uploaded successfully!";
-        showMessage.value = true;
-        
-        refreshApplications();
-        
-        setTimeout(() => {
-          showMessage.value = false;
-        }, 5000);
-      },
-      onError: (errors) => {
-        message.value = errors?.message || "Failed to upload document.";
-        showMessage.value = true;
-      }
-    });
+const handleDocumentUpload = (uploadResult) => {
+  if (uploadResult.success) {
+    message.value = uploadResult.message;
+    showMessage.value = true;
+    
+    setTimeout(() => {
+      showMessage.value = false;
+    }, 5000);
   } else {
-    fetch(`/applications/${applicationId}/upload-document`, {
-      method: 'POST',
-      body: formData,
-      headers: {
-        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
-      }
-    })
-    .then(response => {
-      if (!response.ok) throw new Error('Failed to upload document');
-      return response.json();
-    })
-    .then(data => {
-      message.value = "Document uploaded successfully!";
-      showMessage.value = true;
-      
-      refreshApplications();
-      
-      setTimeout(() => {
-        showMessage.value = false;
-      }, 5000);
-    })
-    .catch(error => {
-      message.value = error.message || "Failed to upload document.";
-      showMessage.value = true;
-    });
+    message.value = uploadResult.message;
+    showMessage.value = true;
   }
 };
 

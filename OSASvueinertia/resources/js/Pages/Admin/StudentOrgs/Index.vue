@@ -503,11 +503,11 @@ export default {
       });
     },
     updateOrg() {
-  this.form.post(route('admin.student-orgs.update', this.currentOrg.id), {
-    preserveScroll: true,
-    onSuccess: () => this.closeModal()
-  });
-},
+      this.form.put(route('admin.student-orgs.update', this.currentOrg.id), {
+        preserveScroll: true,
+        onSuccess: () => this.closeModal()
+      });
+    },
     confirmDelete(org) {
       this.currentOrg = org;
       this.showDeleteModal = true;
