@@ -1,0 +1,11 @@
+node_modules/
+vendor/
+.env
+storage/
+.git/
+.gitignore
+phpunit.xml
+composer.lock
+package-lock.json
+.DS_Store
+*.log 
