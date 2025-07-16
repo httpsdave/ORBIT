@@ -61,6 +61,11 @@ const currentPageMembers = computed(() => {
     return form.members.slice(startIndex.value, endIndex.value);
 });
 
+// Add computed for current page's member input forms
+const currentPageMemberInputs = computed(() => {
+    return form.members.slice(startIndex.value, endIndex.value);
+});
+
 // Navigation functions
 const goToPage = (page) => {
     if (page >= 1 && page <= totalPages.value) {
@@ -493,11 +498,11 @@ const submit = () => {
                 <h3 class="text-lg font-bold">Members</h3>
             </div>
 
-            <div v-for="(member, index) in form.members" :key="index" class="mt-4 p-4 border rounded">
+            <div v-for="(member, idx) in currentPageMemberInputs" :key="startIndex + idx" class="mt-4 p-4 border rounded">
                 <div class="flex justify-between items-center mb-2">
-                    <h4 class="font-bold">Member #{{ index + 1 }}</h4>
+                    <h4 class="font-bold">Member #{{ startIndex + idx + 1 }}</h4>
                     <button 
-                        @click="removeMember(index)" 
+                        @click="removeMember(startIndex + idx)" 
                         type="button" 
                         :disabled="form.members.length <= 1"
                         :class="[
@@ -515,37 +520,67 @@ const submit = () => {
                     <div>
                         <label class="block font-bold">Student Name</label>
                         <input v-model="member.student_name" class="border p-2 w-full" required>
-                        <div v-if="errors[`member_${index}_name`]" class="text-red-500 text-sm mt-1">{{ errors[`member_${index}_name`] }}</div>
+                        <div v-if="errors[`member_${startIndex + idx}_name`]" class="text-red-500 text-sm mt-1">{{ errors[`member_${startIndex + idx}_name`] }}</div>
                     </div>
 
                     <div>
                         <label class="block font-bold">Student Number</label>
                         <input v-model="member.student_number" class="border p-2 w-full" required>
-                        <div v-if="errors[`member_${index}_number`]" class="text-red-500 text-sm mt-1">{{ errors[`member_${index}_number`] }}</div>
+                        <div v-if="errors[`member_${startIndex + idx}_number`]" class="text-red-500 text-sm mt-1">{{ errors[`member_${startIndex + idx}_number`] }}</div>
                     </div>
 
                     <div>
                         <label class="block font-bold">Course - Year & Section</label>
                         <input v-model="member.course_year_section" class="border p-2 w-full" required>
-                        <div v-if="errors[`member_${index}_course`]" class="text-red-500 text-sm mt-1">{{ errors[`member_${index}_course`] }}</div>
+                        <div v-if="errors[`member_${startIndex + idx}_course`]" class="text-red-500 text-sm mt-1">{{ errors[`member_${startIndex + idx}_course`] }}</div>
                     </div>
 
                     <div>
                         <label class="block font-bold">1x1 Photo</label>
-                        <input type="file" @change="event => handlePhotoUpload(event, index)" class="border p-2 w-full" accept="image/*">
+                        <input type="file" @change="event => handlePhotoUpload(event, startIndex + idx)" class="border p-2 w-full" accept="image/*">
                         <div v-if="getPhotoPreview(member)" class="mt-2">
                             <img :src="getPhotoPreview(member)" alt="Preview" class="w-16 h-16 object-cover border">
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Add Member Button (moved below member list, left-aligned) -->
-        <div class="mt-4 flex justify-start">
-            <button @click="addMember" type="button" class="bg-blue-500 text-white px-3 py-1 rounded">
-                Add Member
-            </button>
+            <!-- Pagination Controls for Member Inputs -->
+            <div v-if="totalPages > 1" class="pagination-controls flex justify-center items-center mt-8 gap-4">
+                <button 
+                    @click="prevPage" 
+                    :disabled="currentPage === 1"
+                    class="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed">
+                    Previous
+                </button>
+                <div class="flex gap-2">
+                    <button 
+                        v-for="page in totalPages" 
+                        :key="page"
+                        @click="goToPage(page)"
+                        :class="[
+                            'px-3 py-1 rounded',
+                            currentPage === page 
+                                ? 'bg-blue-600 text-white' 
+                                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                        ]">
+                        {{ page }}
+                    </button>
+                </div>
+                <button 
+                    @click="nextPage" 
+                    :disabled="currentPage === totalPages"
+                    class="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed">
+                    Next
+                </button>
+            </div>
+
+            <!-- Add Member Button (moved below member list, left-aligned) -->
+            <div class="mt-4 flex justify-start">
+                <button @click="addMember" type="button" class="bg-blue-500 text-white px-3 py-1 rounded">
+                    Add Member
+                </button>
+            </div>
         </div>
 
         <div class="mt-6 text-center">
