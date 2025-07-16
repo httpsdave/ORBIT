@@ -185,7 +185,12 @@ const deleteUser = () => {
                                                         {{ user.name.charAt(0).toUpperCase() }}
                                                     </div>
                                                 </template>
-                                                <span class="ml-2">{{ user.name }}</span>
+                                                <span
+                                                    class="ml-2 truncate block cursor-pointer max-w-[60px] sm:max-w-[90px] md:max-w-[120px] lg:max-w-[160px] xl:max-w-[200px]"
+                                                    :title="user.name"
+                                                >
+                                                    {{ user.name }}
+                                                </span>
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ user.email }}</td>
