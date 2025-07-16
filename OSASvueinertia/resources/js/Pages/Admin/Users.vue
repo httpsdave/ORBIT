@@ -35,9 +35,7 @@ const editForm = useForm({
     name: '',
     email: '',
     role_id: '',
-    // student_org_id: '', // Removed
-    password: '',
-    password_confirmation: '',
+    // password and password_confirmation removed for privacy
 });
 
 const deleteForm = useForm({});
@@ -72,9 +70,7 @@ const confirmUserEdit = (user) => {
     editForm.name = user.name;
     editForm.email = user.email;
     editForm.role_id = user.role.id;
-    // editForm.student_org_id = user.student_org ? user.student_org.id : ''; // Removed
-    editForm.password = '';
-    editForm.password_confirmation = '';
+    // password fields removed
     showingEditModal.value = true;
 };
 
@@ -372,31 +368,7 @@ const deleteUser = () => {
                         <InputError class="mt-2" :message="editForm.errors.role_id" />
                     </div>
 
-                    <!-- Student Organization select removed -->
-
-                    <div>
-                        <InputLabel for="edit_password" value="Password (leave blank to keep current)" />
-                        <TextInput
-                            id="edit_password"
-                            type="password"
-                            class="mt-1 block w-full"
-                            v-model="editForm.password"
-                            placeholder="Enter new password or leave blank"
-                        />
-                        <InputError class="mt-2" :message="editForm.errors.password" />
-                    </div>
-
-                    <div>
-                        <InputLabel for="edit_password_confirmation" value="Confirm Password" />
-                        <TextInput
-                            id="edit_password_confirmation"
-                            type="password"
-                            class="mt-1 block w-full"
-                            v-model="editForm.password_confirmation"
-                            placeholder="Confirm new password"
-                        />
-                        <InputError class="mt-2" :message="editForm.errors.password_confirmation" />
-                    </div>
+                    <!-- Password fields removed for privacy -->
 
                     <div class="flex items-center justify-end pt-4 border-t border-gray-100">
                         <SecondaryButton @click="cancelEdit" class="mr-2">
