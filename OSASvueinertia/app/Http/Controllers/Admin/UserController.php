@@ -20,8 +20,17 @@ class UserController extends Controller
      */
     public function index()
     {
+        $users = User::with(['role'])->get()->map(function ($user) {
+            return [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $user->role,
+                'profile_photo_url' => $user->profile_photo_url,
+            ];
+        });
         return Inertia::render('Admin/Users', [
-            'users' => User::with(['role'])->get(),
+            'users' => $users,
             'roles' => Role::all(),
             'studentOrgs' => StudentOrg::with('college')->get()
         ]);

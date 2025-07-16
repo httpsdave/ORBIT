@@ -169,7 +169,25 @@ const deleteUser = () => {
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
                                     <tr v-for="user in users" :key="user.id" class="hover:bg-gray-50 transition-colors duration-150">
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ user.name }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                            <div class="flex items-center gap-2">
+                                                <template v-if="user.profile_photo_url">
+                                                    <img
+                                                        :src="user.profile_photo_url"
+                                                        alt="Avatar"
+                                                        class="w-10 h-10 rounded-full object-cover border-2 border-blue-200 shadow-sm"
+                                                    />
+                                                </template>
+                                                <template v-else>
+                                                    <div
+                                                        class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-green-400 flex items-center justify-center text-white font-medium shadow-inner"
+                                                    >
+                                                        {{ user.name.charAt(0).toUpperCase() }}
+                                                    </div>
+                                                </template>
+                                                <span class="ml-2">{{ user.name }}</span>
+                                            </div>
+                                        </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ user.email }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
