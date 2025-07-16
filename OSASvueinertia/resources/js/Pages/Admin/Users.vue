@@ -21,6 +21,7 @@ const showingEditModal = ref(false);
 const showingDeleteModal = ref(false);
 const userToDelete = ref(null);
 const userToEdit = ref(null);
+const deleteConfirmation = ref(''); // Add this line
 
 const form = useForm({
     name: '',
@@ -102,6 +103,7 @@ const cancelCreate = () => {
 
 const confirmUserDeletion = (user) => {
     userToDelete.value = user;
+    deleteConfirmation.value = ''; // Reset confirmation input
     showingDeleteModal.value = true;
 };
 
@@ -111,6 +113,7 @@ const deleteUser = () => {
         onSuccess: () => {
             showingDeleteModal.value = false;
             userToDelete.value = null;
+            deleteConfirmation.value = '';
         },
     });
 };
@@ -387,7 +390,7 @@ const deleteUser = () => {
         </Modal>
         
         <!-- Delete User Confirmation Modal -->
-        <Modal :show="showingDeleteModal" @close="showingDeleteModal = false">
+        <Modal :show="showingDeleteModal" @close="() => { showingDeleteModal = false; deleteConfirmation = ''; }">
             <div class="p-6">
                 <div class="flex items-center mb-4">
                     <div class="bg-red-500 p-2 rounded-lg mr-3">
@@ -408,17 +411,30 @@ const deleteUser = () => {
                     <p class="mb-1"><span class="font-medium text-gray-700">Name:</span> {{ userToDelete.name }}</p>
                     <p class="mb-1"><span class="font-medium text-gray-700">Email:</span> {{ userToDelete.email }}</p>
                     <p v-if="userToDelete.role"><span class="font-medium text-gray-700">Role:</span> {{ userToDelete.role.name }}</p>
-                    <!-- <p v-if="userToDelete.student_org"><span class="font-medium text-gray-700">Student Organization:</span> {{ userToDelete.student_org.name }}</p> -->
+                </div>
+
+                <!-- Confirmation input -->
+                <div class="mt-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Confirmation</label>
+                    <input
+                        v-model="deleteConfirmation"
+                        type="text"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                        :placeholder="userToDelete ? `Type '${userToDelete.email}' to confirm` : ''"
+                    />
+                    <p class="text-xs text-gray-500 mt-1">
+                        Type <strong>{{ userToDelete ? userToDelete.email : '' }}</strong> to confirm this action
+                    </p>
                 </div>
 
                 <div class="mt-6 flex justify-end">
-                    <SecondaryButton @click="showingDeleteModal = false" class="mr-2">
+                    <SecondaryButton @click="() => { showingDeleteModal = false; deleteConfirmation = ''; }" class="mr-2">
                         Cancel
                     </SecondaryButton>
                     <DangerButton
                         class="bg-red-500 hover:bg-red-600"
                         :class="{ 'opacity-25': deleteForm.processing }"
-                        :disabled="deleteForm.processing"
+                        :disabled="deleteForm.processing || deleteConfirmation !== (userToDelete ? userToDelete.email : '')"
                         @click="deleteUser"
                     >
                         Delete User
