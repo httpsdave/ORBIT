@@ -255,7 +255,7 @@
 
     <div class="signature right-align">
         <p><span class="signature-line">{{ $application->organization_name }}</span></p>
-        <p><span class="title-text">Organization Name</span></p>
+        <p><span class="title-text">Name of Organization</span></p>
     </div>
 
     <div class="section left-align">
