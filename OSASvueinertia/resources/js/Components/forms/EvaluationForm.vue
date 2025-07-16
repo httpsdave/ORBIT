@@ -37,18 +37,16 @@ const form = useForm({
   form_type: 'LSPU-OSAS-SF-EVAL',
   organization_name: props.initialFormData.organization_name || '',
   president_name: props.initialFormData.president_name || '',
-  activity_title: props.initialFormData.activity_title || '',
-  venue: props.initialFormData.venue || '',
+  activity_title: '',
+  venue: '',
   // Date range fields
-  date_start: props.initialFormData.date_start || '',
-  date_end: props.initialFormData.date_end || '',
+  date_start: '',
+  date_end: '',
   // Time range fields
-  time_start: props.initialFormData.time_start || '',
-  time_end: props.initialFormData.time_end || '',
-  ratings: Array.isArray(props.initialFormData.ratings) && props.initialFormData.ratings.length === statements.length
-    ? [...props.initialFormData.ratings]
-    : Array(statements.length).fill(''),
-  comments_suggestions: props.initialFormData.comments_suggestions || '',
+  time_start: '',
+  time_end: '',
+  ratings: Array(statements.length).fill(''),
+  comments_suggestions: '',
 });
 
 const errors = ref({});
@@ -56,19 +54,25 @@ const lastValidRatings = ref([...form.ratings]);
 
 // If in edit mode, update form when initialFormData changes
 watch(() => props.initialFormData, (newVal) => {
-  if (props.isEdit && newVal) {
+  if (newVal) {
+    // Always update organization name and president name from cached data
     form.organization_name = newVal.organization_name || '';
     form.president_name = newVal.president_name || '';
-    form.activity_title = newVal.activity_title || '';
-    form.venue = newVal.venue || '';
-    form.date_start = newVal.date_start || '';
-    form.date_end = newVal.date_end || '';
-    form.time_start = newVal.time_start || '';
-    form.time_end = newVal.time_end || '';
-    form.ratings = Array.isArray(newVal.ratings) && newVal.ratings.length === statements.length
-      ? [...newVal.ratings]
-      : Array(statements.length).fill('');
-    lastValidRatings.value = [...form.ratings];
+    
+    // Only populate activity-specific fields if we're in edit mode (editing an existing evaluation)
+    if (props.isEdit) {
+      form.activity_title = newVal.activity_title || '';
+      form.venue = newVal.venue || '';
+      form.date_start = newVal.date_start || '';
+      form.date_end = newVal.date_end || '';
+      form.time_start = newVal.time_start || '';
+      form.time_end = newVal.time_end || '';
+      form.ratings = Array.isArray(newVal.ratings) && newVal.ratings.length === statements.length
+        ? [...newVal.ratings]
+        : Array(statements.length).fill('');
+      form.comments_suggestions = newVal.comments_suggestions || '';
+      lastValidRatings.value = [...form.ratings];
+    }
   }
 }, { immediate: true });
 
