@@ -47,20 +47,36 @@ class DashboardController extends Controller
         // Get the authenticated user's name
         $userName = auth()->user()->name;
 
-        // Get advisers data: organization name (user name), adviser_name, second_adviser from latest approved application
+        // Get advisers data: organization name (user name), adviser_name, second_adviser, and member/officer counts from latest approved forms
         $users = \App\Models\User::all();
         $advisersData = $users->map(function($user) {
-            $latestApproved = \App\Models\OrganizationApplication::where('user_id', $user->id)
+            // Latest approved List of Members form
+            $latestMembersApp = \App\Models\OrganizationApplication::withCount(['members'])
+                ->where('user_id', $user->id)
                 ->where('status', 'Approved')
+                ->where('form_type', 'LSPU-OSAS-SF-005')
                 ->orderByDesc('created_at')
                 ->first();
-            if (!$latestApproved) {
+            // Latest approved List of Officers form
+            $latestOfficersApp = \App\Models\OrganizationApplication::withCount(['officers'])
+                ->where('user_id', $user->id)
+                ->where('status', 'Approved')
+                ->where('form_type', 'LSPU-OSAS-SF-007')
+                ->orderByDesc('created_at')
+                ->first();
+            // Use adviser/second adviser from the latest of either form (prefer members, fallback to officers)
+            $adviser_name = $latestMembersApp->adviser_name ?? $latestOfficersApp->adviser_name ?? null;
+            $second_adviser = $latestMembersApp->second_adviser ?? $latestOfficersApp->second_adviser ?? null;
+            // Only show if at least one count exists
+            if (!$latestMembersApp && !$latestOfficersApp) {
                 return null;
             }
             return [
                 'organization' => $user->name,
-                'adviser_name' => $latestApproved->adviser_name,
-                'second_adviser' => $latestApproved->second_adviser,
+                'adviser_name' => $adviser_name,
+                'second_adviser' => $second_adviser,
+                'members_count' => $latestMembersApp->members_count ?? null,
+                'officers_count' => $latestOfficersApp->officers_count ?? null,
             ];
         })->filter()->values();
 

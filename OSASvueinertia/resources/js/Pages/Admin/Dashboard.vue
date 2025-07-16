@@ -287,11 +287,13 @@ const statsCards = computed(() => [
 
 function exportAdvisersToCSV() {
     if (!props.advisersData.length) return;
-    const headers = ['Organization', 'Adviser', 'Second Adviser'];
+    const headers = ['Organization', 'Adviser', 'Second Adviser', 'Members Count', 'Officers Count'];
     const rows = props.advisersData.map(row => [
         `"${row.organization || ''}"`,
         `"${row.adviser_name || ''}"`,
-        `"${row.second_adviser || ''}"`
+        `"${row.second_adviser || ''}"`,
+        row.members_count ?? '',
+        row.officers_count ?? ''
     ]);
     const csvContent = [headers, ...rows].map(e => e.join(',')).join('\n');
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -455,6 +457,8 @@ function exportAdvisersToCSV() {
                                     <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Organization</th>
                                     <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Adviser</th>
                                     <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Second Adviser</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Members</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Officers</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-100">
@@ -462,6 +466,8 @@ function exportAdvisersToCSV() {
                                     <td class="px-4 py-2 text-sm text-gray-700">{{ row.organization }}</td>
                                     <td class="px-4 py-2 text-sm text-gray-700">{{ row.adviser_name || '—' }}</td>
                                     <td class="px-4 py-2 text-sm text-gray-700">{{ row.second_adviser || '—' }}</td>
+                                    <td class="px-4 py-2 text-sm text-gray-700 text-center">{{ row.members_count ?? '—' }}</td>
+                                    <td class="px-4 py-2 text-sm text-gray-700 text-center">{{ row.officers_count ?? '—' }}</td>
                                 </tr>
                             </tbody>
                         </table>
