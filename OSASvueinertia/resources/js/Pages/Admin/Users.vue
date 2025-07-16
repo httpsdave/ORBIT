@@ -13,7 +13,7 @@ import Modal from '@/Components/Modal.vue';
 const props = defineProps({
     users: Array,
     roles: Array,
-    studentOrgs: Array,
+    // studentOrgs: Array, // Removed
 });
 
 const showingCreateModal = ref(false);
@@ -28,14 +28,14 @@ const form = useForm({
     password: '',
     password_confirmation: '',
     role_id: '',
-    student_org_id: '',
+    // student_org_id: '', // Removed
 });
 
 const editForm = useForm({
     name: '',
     email: '',
     role_id: '',
-    student_org_id: '',
+    // student_org_id: '', // Removed
     password: '',
     password_confirmation: '',
 });
@@ -51,15 +51,7 @@ const isAdminRole = (roleId) => {
 
 // Watch for role changes and clear student_org_id if admin is selected
 const watchRoleChange = () => {
-    // For create form
-    if (isAdminRole(form.role_id)) {
-        form.student_org_id = '';
-    }
-    
-    // For edit form
-    if (isAdminRole(editForm.role_id)) {
-        editForm.student_org_id = '';
-    }
+    // No longer needed since student_org_id is removed
 };
 
 const createUser = () => {
@@ -80,7 +72,7 @@ const confirmUserEdit = (user) => {
     editForm.name = user.name;
     editForm.email = user.email;
     editForm.role_id = user.role.id;
-    editForm.student_org_id = user.student_org ? user.student_org.id : '';
+    // editForm.student_org_id = user.student_org ? user.student_org.id : ''; // Removed
     editForm.password = '';
     editForm.password_confirmation = '';
     showingEditModal.value = true;
@@ -172,7 +164,7 @@ const deleteUser = () => {
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student Organization</th>
+                                        <!-- <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student Organization</th> -->
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                                     </tr>
                                 </thead>
@@ -186,16 +178,7 @@ const deleteUser = () => {
                                                 {{ user.role.name }}
                                             </span>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            <div v-if="user.student_org && user.role.slug !== 'admin'" class="flex items-center">
-                                                <span class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-md">
-                                                    {{ user.student_org.acronym }}
-                                                </span>
-                                                <span class="ml-2 text-gray-600">{{ user.student_org.name }}</span>
-                                            </div>
-                                            <span v-else-if="user.role.slug === 'admin'" class="text-gray-400 italic">Admin - No Organization</span>
-                                            <span v-else class="text-gray-400 italic">No Organization</span>
-                                        </td>
+                                        <!-- Student Organization column removed -->
                                         <td class="px-6 py-4 whitespace-nowrap text-sm">
                                             <div class="flex space-x-3">
                                                 <button 
@@ -221,7 +204,7 @@ const deleteUser = () => {
                                         </td>
                                     </tr>
                                     <tr v-if="users.length === 0">
-                                        <td colspan="5" class="px-6 py-8 text-center text-gray-500">
+                                        <td colspan="4" class="px-6 py-8 text-center text-gray-500">
                                             No users found.
                                         </td>
                                     </tr>
@@ -316,20 +299,7 @@ const deleteUser = () => {
                         <InputError class="mt-2" :message="form.errors.role_id" />
                     </div>
 
-                    <div v-if="!isAdminRole(form.role_id)">
-                        <InputLabel for="student_org" value="Student Organization" />
-                        <select
-                            id="student_org"
-                            class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                            v-model="form.student_org_id"
-                        >
-                            <option value="">Select Student Organization (Optional)</option>
-                            <optgroup v-for="org in studentOrgs" :key="org.id" :label="org.college ? org.college.name : 'No College'">
-                                <option :value="org.id">{{ org.acronym }} - {{ org.name }}</option>
-                            </optgroup>
-                        </select>
-                        <InputError class="mt-2" :message="form.errors.student_org_id" />
-                    </div>
+                    <!-- Student Organization select removed -->
 
                     <div class="flex items-center justify-end pt-4 border-t border-gray-100">
                         <SecondaryButton @click="cancelCreate" class="mr-2">
@@ -402,20 +372,7 @@ const deleteUser = () => {
                         <InputError class="mt-2" :message="editForm.errors.role_id" />
                     </div>
 
-                    <div v-if="!isAdminRole(editForm.role_id)">
-                        <InputLabel for="edit_student_org" value="Student Organization" />
-                        <select
-                            id="edit_student_org"
-                            class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                            v-model="editForm.student_org_id"
-                        >
-                            <option value="">Select Student Organization (Optional)</option>
-                            <optgroup v-for="org in studentOrgs" :key="org.id" :label="org.college ? org.college.name : 'No College'">
-                                <option :value="org.id">{{ org.acronym }} - {{ org.name }}</option>
-                            </optgroup>
-                        </select>
-                        <InputError class="mt-2" :message="editForm.errors.student_org_id" />
-                    </div>
+                    <!-- Student Organization select removed -->
 
                     <div>
                         <InputLabel for="edit_password" value="Password (leave blank to keep current)" />
@@ -479,7 +436,7 @@ const deleteUser = () => {
                     <p class="mb-1"><span class="font-medium text-gray-700">Name:</span> {{ userToDelete.name }}</p>
                     <p class="mb-1"><span class="font-medium text-gray-700">Email:</span> {{ userToDelete.email }}</p>
                     <p v-if="userToDelete.role"><span class="font-medium text-gray-700">Role:</span> {{ userToDelete.role.name }}</p>
-                    <p v-if="userToDelete.student_org"><span class="font-medium text-gray-700">Student Organization:</span> {{ userToDelete.student_org.name }}</p>
+                    <!-- <p v-if="userToDelete.student_org"><span class="font-medium text-gray-700">Student Organization:</span> {{ userToDelete.student_org.name }}</p> -->
                 </div>
 
                 <div class="mt-6 flex justify-end">
