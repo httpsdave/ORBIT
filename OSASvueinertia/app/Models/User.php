@@ -17,8 +17,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role_id',
-        'student_org_id', // Add this
-        'profile_photo_path', // Add this
+        'profile_photo_path',
     ];
 
     protected $hidden = [
@@ -34,14 +33,6 @@ class User extends Authenticatable
     public function role()
     {
         return $this->belongsTo(Role::class);
-    }
-
-    /**
-     * Get the student organization that the user belongs to.
-     */
-    public function studentOrg()
-    {
-        return $this->belongsTo(StudentOrg::class);
     }
 
     public function hasRole($role)

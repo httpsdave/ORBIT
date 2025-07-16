@@ -41,7 +41,7 @@ class OrganizationApplicationController extends Controller
         
         // Get all users who have submitted applications for the filter dropdown
         $users = \App\Models\User::whereHas('organizationApplications')
-            ->select('id', 'name', 'student_org_id')
+            ->select('id', 'name'/*, 'student_org_id'*/)
             ->orderBy('name')
             ->get();
             

@@ -21,7 +21,7 @@ class UserController extends Controller
     public function index()
     {
         return Inertia::render('Admin/Users', [
-            'users' => User::with(['role', 'studentOrg.college'])->get(),
+            'users' => User::with(['role'])->get(),
             'roles' => Role::all(),
             'studentOrgs' => StudentOrg::with('college')->get()
         ]);
@@ -40,7 +40,6 @@ class UserController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'role_id' => 'required|exists:roles,id',
-            'student_org_id' => 'nullable|exists:student_orgs,id',
         ]);
 
         $user = User::create([
@@ -48,7 +47,6 @@ class UserController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role_id' => $request->role_id,
-            'student_org_id' => $request->student_org_id,
         ]);
 
         return redirect()->route('admin.users');
@@ -67,7 +65,6 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'role_id' => 'required|exists:roles,id',
-            'student_org_id' => 'nullable|exists:student_orgs,id',
         ];
 
         // Only validate password if it's provided
@@ -81,7 +78,6 @@ class UserController extends Controller
         $user->name = $request->name;
         $user->email = $request->email;
         $user->role_id = $request->role_id;
-        $user->student_org_id = $request->student_org_id;
         
         // Only update password if provided
         if ($request->filled('password')) {

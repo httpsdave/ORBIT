@@ -33,7 +33,7 @@ class ArchiveController extends Controller
         // Get all users who have archived applications for the filter dropdown
         $users = \App\Models\User::whereHas('organizationApplications', function($query) {
             $query->where('is_archived', true);
-        })->select('id', 'name', 'student_org_id')
+        })->select('id', 'name')
         ->orderBy('name')
         ->get();
 
