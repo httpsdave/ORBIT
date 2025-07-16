@@ -82,27 +82,58 @@ const pieChartData = ref({
     ]
 });
 
-const barChartData = ref({
+// Remove old barChartData and related logic, and replace with members per organization chart
+
+// Prepare chart data for members per organization
+const membersBarChartData = ref({
     labels: [],
     datasets: [
         {
-            label: 'Number of Organizations',
-            backgroundColor: '',
-            data: []
+            label: 'Number of Members',
+            backgroundColor: COLORS_WITH_OPACITY,
+            data: [],
+            borderRadius: 8
         }
     ]
 });
 
-// Sort colleges by number of orgs for better visualization
-const sortedColleges = computed(() => {
-    return [...(props.collegesData || [])].sort((a, b) => 
-        (b.student_orgs_count || 0) - (a.student_orgs_count || 0)
-    );
-});
+const updateMembersBarChartData = () => {
+    // Filter organizations with members_count > 0
+    const orgsWithMembers = (props.advisersData || []).filter(org => org.members_count && org.members_count > 0);
+    if (orgsWithMembers.length === 0) {
+        membersBarChartData.value = {
+            labels: ['No Data'],
+            datasets: [{
+                label: 'Number of Members',
+                backgroundColor: '#e0e0e0',
+                data: [0],
+                borderRadius: 8
+            }]
+        };
+        return;
+    }
+    membersBarChartData.value = {
+        labels: orgsWithMembers.map(org => org.organization || 'Unknown'),
+        datasets: [
+            {
+                label: 'Number of Members',
+                backgroundColor: COLORS_WITH_OPACITY,
+                data: orgsWithMembers.map(org => org.members_count),
+                borderRadius: 8
+            }
+        ]
+    };
+};
+
+// Watch for changes in advisersData
+watch(() => props.advisersData, () => {
+    updateMembersBarChartData();
+}, { deep: true });
 
 // Initialize chart data
 onMounted(() => {
-    updateChartData();
+    updateChartData(); // for pie
+    updateMembersBarChartData(); // for members bar
 });
 
 const updateChartData = () => {
@@ -133,19 +164,6 @@ const updateChartData = () => {
             }
         ]
     };
-    
-    // Bar chart data
-    barChartData.value = {
-        labels: collegesWithOrgs.map(college => college.name || 'Unknown College'),
-        datasets: [
-            {
-                label: 'Number of Organizations',
-                backgroundColor: COLORS_WITH_OPACITY,
-                data: collegesWithOrgs.map(college => college.student_orgs_count || 0),
-                borderRadius: 8
-            }
-        ]
-    };
 };
 
 // Helper function to set placeholder charts when no data is available
@@ -158,20 +176,19 @@ const setPlaceholderCharts = () => {
         }]
     };
     pieChartData.value = placeholder;
-    barChartData.value = {
-        labels: ['No Organizations'],
-        datasets: [{
-            label: 'Number of Organizations',
-            backgroundColor: '#e0e0e0',
-            data: [0]
-        }]
-    };
 };
 
 // Watch for changes in collegesData
 watch(() => props.collegesData, () => {
     updateChartData();
 }, { deep: true });
+
+// Restore sortedColleges for pie chart and updateChartData
+const sortedColleges = computed(() => {
+    return [...(props.collegesData || [])].sort((a, b) => 
+        (b.student_orgs_count || 0) - (a.student_orgs_count || 0)
+    );
+});
 
 // Chart options
 const pieChartOptions = ref({
@@ -203,6 +220,7 @@ const pieChartOptions = ref({
     }
 });
 
+// In the Bar chart options, update y-axis ticks to truncate long org names
 const barChartOptions = ref({
     responsive: true,
     maintainAspectRatio: false,
@@ -214,7 +232,11 @@ const barChartOptions = ref({
         tooltip: {
             callbacks: {
                 label: function(context) {
-                    return `${context.raw} organizations`;
+                    return `${context.raw} members`;
+                },
+                title: function(context) {
+                    // Show full org name in tooltip title
+                    return context[0].label;
                 }
             }
         }
@@ -226,7 +248,7 @@ const barChartOptions = ref({
             },
             title: {
                 display: true,
-                text: 'Number of Organizations',
+                text: 'Number of Members',
                 font: {
                     family: 'Inter, sans-serif',
                     size: 12
@@ -241,6 +263,11 @@ const barChartOptions = ref({
                 font: {
                     family: 'Inter, sans-serif',
                     size: 12
+                },
+                callback: function(value, index, ticks) {
+                    // Use the label from the chart data
+                    const label = this.getLabelForValue ? this.getLabelForValue(value) : value;
+                    return typeof label === 'string' && label.length > 20 ? label.slice(0, 20) + '…' : label;
                 }
             }
         }
@@ -387,7 +414,10 @@ function exportAdvisersToCSV() {
             <div class="lg:col-span-2 bg-white overflow-hidden shadow-sm rounded-lg">
                 <div class="p-6">
                     <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-lg font-medium text-gray-800">Student Organizations by College</h3>
+                        <h3 class="text-lg font-medium text-gray-800">
+                            <template v-if="activeChart === 'bar'">Members per Organization</template>
+                            <template v-else>Student Organizations by College</template>
+                        </h3>
                         <div class="inline-flex rounded-md shadow-sm">
                             <button 
                                 @click="activeChart = 'bar'" 
@@ -434,7 +464,7 @@ function exportAdvisersToCSV() {
                     
                     <div v-else-if="activeChart === 'bar'" class="h-80">
                         <Bar 
-                            :data="barChartData" 
+                            :data="membersBarChartData" 
                             :options="barChartOptions" 
                         />
                     </div>
