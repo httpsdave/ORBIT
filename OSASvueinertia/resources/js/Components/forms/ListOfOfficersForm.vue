@@ -54,6 +54,11 @@ const currentPageOfficers = computed(() => {
     return form.officers.slice(startIndex.value, endIndex.value);
 });
 
+// Add computed for current page's officer input forms
+const currentPageOfficerInputs = computed(() => {
+    return form.officers.slice(startIndex.value, endIndex.value);
+});
+
 // Navigation functions
 const goToPage = (page) => {
     if (page >= 1 && page <= totalPages.value) {
@@ -363,58 +368,88 @@ const submit = () => {
           <h3 class="text-lg font-bold">Officers</h3>
         </div>
 
-        <div v-for="(officer, index) in form.officers" :key="index" class="mt-4 p-4 border rounded">
-          <div class="flex justify-between items-center mb-2">
-            <h4 class="font-bold">Officer #{{ index + 1 }}</h4>
+        <div v-for="(officer, idx) in currentPageOfficerInputs" :key="startIndex + idx" class="mt-4 p-4 border rounded">
+            <div class="flex justify-between items-center mb-2">
+                <h4 class="font-bold">Officer #{{ startIndex + idx + 1 }}</h4>
+                <button 
+                    @click="removeOfficer(startIndex + idx)" 
+                    type="button" 
+                    :disabled="form.officers.length <= 1"
+                    :class="[
+                        'px-2 py-1 rounded text-sm font-medium transition-colors',
+                        form.officers.length <= 1 
+                            ? 'text-gray-400 bg-gray-100 cursor-not-allowed' 
+                            : 'text-red-500 hover:text-red-700 hover:bg-red-50'
+                    ]"
+                >
+                    Remove
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block font-bold">Name</label>
+                    <input v-model="officer.student_name" class="border p-2 w-full" required>
+                    <div v-if="errors[`officer_${startIndex + idx}_name`]" class="text-red-500 text-sm mt-1">{{ errors[`officer_${startIndex + idx}_name`] }}</div>
+                </div>
+
+                <div>
+                    <label class="block font-bold">Position</label>
+                    <input v-model="officer.position" class="border p-2 w-full" required>
+                    <div v-if="errors[`officer_${startIndex + idx}_position`]" class="text-red-500 text-sm mt-1">{{ errors[`officer_${startIndex + idx}_position`] }}</div>
+                </div>
+
+                <div>
+                    <label class="block font-bold">Student I.D. No.</label>
+                    <input v-model="officer.student_number" class="border p-2 w-full" required>
+                    <div v-if="errors[`officer_${startIndex + idx}_student_number`]" class="text-red-500 text-sm mt-1">{{ errors[`officer_${startIndex + idx}_student_number`] }}</div>
+                </div>
+
+                <div>
+                    <label class="block font-bold">2x2 Photo</label>
+                    <input type="file" @change="event => handlePhotoUpload(event, startIndex + idx, 'officers')" class="border p-2 w-full" accept="image/*">
+                    <div v-if="getPhotoPreview(officer)" class="mt-2">
+                        <img :src="getPhotoPreview(officer)" alt="Preview" class="w-16 h-16 object-cover border">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pagination Controls for Officer Inputs -->
+        <div v-if="totalPages > 1" class="pagination-controls flex justify-center items-center mt-8 gap-4">
             <button 
-              @click="removeOfficer(index)" 
-              type="button" 
-              :disabled="form.officers.length <= 1"
-              :class="[
-                'px-2 py-1 rounded text-sm font-medium transition-colors',
-                form.officers.length <= 1 
-                  ? 'text-gray-400 bg-gray-100 cursor-not-allowed' 
-                  : 'text-red-500 hover:text-red-700 hover:bg-red-50'
-              ]"
-            >
-              Remove
+                @click="prevPage" 
+                :disabled="currentPage === 1"
+                class="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed">
+                Previous
             </button>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label class="block font-bold">Name</label>
-              <input v-model="officer.student_name" class="border p-2 w-full" required>
-              <div v-if="errors[`officer_${index}_name`]" class="text-red-500 text-sm mt-1">{{ errors[`officer_${index}_name`] }}</div>
+            <div class="flex gap-2">
+                <button 
+                    v-for="page in totalPages" 
+                    :key="page"
+                    @click="goToPage(page)"
+                    :class="[
+                        'px-3 py-1 rounded',
+                        currentPage === page 
+                            ? 'bg-blue-600 text-white' 
+                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    ]">
+                    {{ page }}
+                </button>
             </div>
-
-            <div>
-              <label class="block font-bold">Position</label>
-              <input v-model="officer.position" class="border p-2 w-full" required>
-              <div v-if="errors[`officer_${index}_position`]" class="text-red-500 text-sm mt-1">{{ errors[`officer_${index}_position`] }}</div>
-            </div>
-
-            <div>
-              <label class="block font-bold">Student I.D. No.</label>
-              <input v-model="officer.student_number" class="border p-2 w-full" required>
-              <div v-if="errors[`officer_${index}_student_number`]" class="text-red-500 text-sm mt-1">{{ errors[`officer_${index}_student_number`] }}</div>
-            </div>
-
-            <div>
-              <label class="block font-bold">2x2 Photo</label>
-              <input type="file" @change="event => handlePhotoUpload(event, index, 'officers')" class="border p-2 w-full" accept="image/*">
-              <div v-if="getPhotoPreview(officer)" class="mt-2">
-                <img :src="getPhotoPreview(officer)" alt="Preview" class="w-16 h-16 object-cover border">
-              </div>
-            </div>
-          </div>
+            <button 
+                @click="nextPage" 
+                :disabled="currentPage === totalPages"
+                class="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed">
+                Next
+            </button>
         </div>
 
         <!-- Add Officer Button (moved below officer list, left-aligned) -->
         <div class="mt-4 flex justify-start">
-          <button @click="addOfficer" type="button" class="bg-blue-500 text-white px-3 py-1 rounded">
-            Add Officer
-          </button>
+            <button @click="addOfficer" type="button" class="bg-blue-500 text-white px-3 py-1 rounded">
+                Add Officer
+            </button>
         </div>
 
         <div class="mt-6 text-center">
