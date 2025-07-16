@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 
 const props = defineProps({
@@ -25,6 +25,17 @@ const form = useForm({
   coordinator_name: props.initialFormData.coordinator_name || '',
   director_name: props.initialFormData.director_name || '',
   status: props.initialFormData.status || 'Pending',
+});
+
+// Computed property to format the date
+const formattedDate = computed(() => {
+  if (!form.application_date) return '';
+  const date = new Date(form.application_date);
+  return date.toLocaleDateString('en-US', { 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  });
 });
 
 const errors = ref({});
@@ -98,8 +109,8 @@ const submit = () => {
     </div>
 
     <div class="mt-6 text-right">
-        <p class="mb-0"><span class="signature-line text-center border-b border-black min-w-[250px] inline-block">{{ form.formatted_date }}</span></p>
-        <p class="mb-0">Date</p>
+        <p class="mb-0"><span class="signature-line text-center border-b border-black min-w-[150px] inline-block">{{ formattedDate }}</span></p>
+        <p class="mb-0" style="text-align: center; width: 150px; display: inline-block;">Date</p>
     </div>
 
     <div class="section text-left mt-4">
@@ -132,10 +143,14 @@ const submit = () => {
     </div>
 
     <div class="section text-right mt-6">
-        <p class="mb-1">Respectfully yours,</p>
+        <p class="mb-1" style="text-align: left; margin-left: calc(100% - 250px);">Respectfully yours,</p>
         <div class="signature">
             <p class="mb-0"><span class="signature-line text-center border-b border-black min-w-[250px] inline-block">{{ form.president_name }}</span></p>
-            <p class="mb-0">Organization President</p>
+            <p class="mb-0" style="text-align: center; width: 250px; display: inline-block;">Organization President</p>
+        </div>
+        <div class="signature mt-2">
+            <p class="mb-0"><span class="signature-line text-center border-b border-black min-w-[250px] inline-block">{{ form.organization_name }}</span></p>
+            <p class="mb-0" style="text-align: center; width: 250px; display: inline-block;">Name of Organization</p>
         </div>
     </div>
 
@@ -143,14 +158,14 @@ const submit = () => {
         <p class="mb-1"><strong>Noted:</strong></p>
         <div class="signature">
             <p class="mb-0"><span class="signature-line text-center border-b border-black min-w-[250px] inline-block">{{ form.adviser_name }}</span></p>
-            <p class="mb-0">Adviser, Student Organization</p>
+            <p class="mb-0" style="text-align: center; width: 250px; display: inline-block;">Adviser, Student Organization</p>
         </div>
     </div>
 
     <div class="section text-right mt-6">
         <div class="signature">
             <p class="mb-0"><span class="signature-line text-center border-b border-black min-w-[250px] inline-block">{{ form.dean_name }}</span></p>
-            <p class="mb-0">Dean/Associate Dean</p>
+            <p class="mb-0" style="text-align: center; width: 250px; display: inline-block;">Dean/Associate Dean</p>
         </div>
     </div>
 
