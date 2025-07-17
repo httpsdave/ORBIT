@@ -15,10 +15,17 @@ class PublicStudentOrgController extends Controller
      */
     public function index()
     {
-        $colleges = College::with('studentOrgs')->get();
-        
+        // Get the admin role id
+        $adminRoleId = \App\Models\Role::where('slug', 'admin')->value('id');
+
+        // Get all users who are not admins and have a college_id set
+        $organizations = \App\Models\User::with('college')
+            ->where('role_id', '!=', $adminRoleId)
+            ->whereNotNull('college_id')
+            ->get();
+
         return Inertia::render('StudentOrgs/Index', [
-            'colleges' => $colleges
+            'organizations' => $organizations
         ]);
     }
 
