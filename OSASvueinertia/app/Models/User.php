@@ -18,6 +18,7 @@ class User extends Authenticatable
         'password',
         'role_id',
         'profile_photo_path',
+        'college_id',
     ];
 
     protected $hidden = [
@@ -53,6 +54,11 @@ class User extends Authenticatable
     public function organizationApplications()
     {
         return $this->hasMany(OrganizationApplication::class);
+    }
+
+    public function college()
+    {
+        return $this->belongsTo(College::class);
     }
 
     /**

@@ -22,4 +22,12 @@ class College extends Model
     {
         return $this->hasMany(StudentOrg::class);
     }
+
+    /**
+     * Get the users for the college.
+     */
+    public function users()
+    {
+        return $this->hasMany(User::class);
+    }
 }

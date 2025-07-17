@@ -65,7 +65,7 @@
                   Student Organizations by College
                 </h3>
                 <div class="text-sm text-gray-500">
-                  {{ getTotalOrganizationsCount() }} Total Organizations
+                  {{ getTotalUsersCount() }} Total Organizations
                 </div>
               </div>
 
@@ -85,8 +85,8 @@
                     </div>
                     <div class="flex items-center">
                       <span class="mr-2 text-sm font-medium px-2 py-1 rounded-full" 
-                            :class="college.student_orgs.length > 0 ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'">
-                        {{ college.student_orgs.length }} Organizations
+                            :class="college.users.length > 0 ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'">
+                        {{ college.users.length }} Organizations
                       </span>
                       <svg
                         :class="{'transform rotate-180': openColleges.includes(college.id)}"
@@ -106,16 +106,16 @@
                     </div>
                   </div>
 
-                  <!-- Student Organizations List -->
+                  <!-- Users List -->
                   <div v-if="openColleges.includes(college.id)" 
                       class="p-4 divide-y divide-gray-100 bg-white transition-all duration-300 ease-in-out">
-                    <div v-if="college.student_orgs.length === 0" class="text-center text-gray-500 py-8">
+                    <div v-if="college.users.length === 0" class="text-center text-gray-500 py-8">
                       <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                       </svg>
                       <p class="mt-2">No organizations found for this college</p>
                       <button
-                        @click="openCreateModalForCollege(college.id)"
+                        @click="openUserSelectionModal(college.id)"
                         class="mt-3 inline-flex items-center px-3 py-1.5 text-sm bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
                       >
                         Add Organization
@@ -129,10 +129,10 @@
                               Organization
                             </th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Acronym
+                              Email
                             </th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Status
+                              Role
                             </th>
                             <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                               Actions
@@ -140,58 +140,44 @@
                           </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
-                          <tr v-for="org in college.student_orgs" :key="org.id" class="hover:bg-gray-50 transition-colors">
+                          <tr v-for="user in college.users" :key="user.id" class="hover:bg-gray-50 transition-colors">
                             <td class="px-6 py-4 whitespace-nowrap">
                               <div class="flex items-center">
-                                <div v-if="org.logo_path" class="flex-shrink-0 h-10 w-10">
-                                  <img class="h-10 w-10 rounded-full object-cover border border-gray-200" :src="'/storage/' + org.logo_path" alt="" />
+                                <div v-if="user.profile_photo_url" class="flex-shrink-0 h-10 w-10">
+                                  <img class="h-10 w-10 rounded-full object-cover border border-gray-200" :src="user.profile_photo_url" alt="" />
                                 </div>
-                                <div v-else class="flex-shrink-0 h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-500">
-                                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-                                  </svg>
+                                <div v-else class="h-10 w-10 bg-gradient-to-br from-blue-500 to-green-400 rounded-full flex items-center justify-center text-white font-medium shadow-inner">
+                                  {{ user.name ? user.name.charAt(0).toUpperCase() : 'O' }}
                                 </div>
                                 <div class="ml-4">
                                   <div class="text-sm font-medium text-gray-900">
-                                    {{ org.name }}
-                                  </div>
-                                  <div v-if="org.description" class="text-xs text-gray-500 max-w-md truncate">
-                                    {{ org.description }}
+                                    {{ user.name || 'Unknown Organization' }}
                                   </div>
                                 </div>
                               </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                              <div class="text-sm text-gray-900">{{ org.acronym || '-' }}</div>
+                              <div class="text-sm text-gray-900">{{ user.email || 'No email' }}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                               <span
                                 :class="[
                                   'px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full',
-                                  org.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                                  user.role && user.role.slug === 'admin' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
                                 ]"
                               >
-                                {{ org.status }}
+                                {{ user.role ? user.role.name : 'No role' }}
                               </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                               <button
-                                @click="openEditModal(org)"
-                                class="inline-flex items-center text-blue-500 hover:text-blue-700 mr-3"
-                              >
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                </svg>
-                                Edit
-                              </button>
-                              <button
-                                @click="confirmDelete(org)"
+                                @click="removeUserFromCollege(user.id)"
                                 class="inline-flex items-center text-red-500 hover:text-red-700"
                               >
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                 </svg>
-                                Delete
+                                Remove
                               </button>
                             </td>
                           </tr>
@@ -206,156 +192,144 @@
         
       
 
-      <!-- Create/Edit Modal -->
-      <Modal :show="showModal" @close="closeModal" maxWidth="md">
+      <!-- User Selection Modal -->
+      <Modal :show="showUserSelectionModal" @close="closeUserSelectionModal" maxWidth="lg">
         <div class="p-6">
           <div class="flex items-center justify-between mb-5">
             <h2 class="text-lg font-medium text-gray-900">
-              {{ editMode ? 'Edit Student Organization' : 'Add New Student Organization' }}
+              Select Organization to Add to {{ selectedCollegeName }}
             </h2>
-            <button @click="closeModal" class="text-gray-400 hover:text-gray-500">
+            <button @click="closeUserSelectionModal" class="text-gray-400 hover:text-gray-500">
               <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
 
-          <form @submit.prevent="editMode ? updateOrg() : createOrg()" class="mt-6 space-y-6" enctype="multipart/form-data">
-            <!-- College Select -->
-            <div>
-              <InputLabel for="college_id" value="College" />
-              <select
-                id="college_id"
-                v-model="form.college_id"
-                class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+          <!-- Search Input -->
+          <div class="mb-4">
+            <input
+              v-model="searchQuery"
+              type="text"
+              placeholder="Search organizations by name or email..."
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+
+          <!-- Users List -->
+          <div class="max-h-96 overflow-y-auto">
+            <div v-if="filteredUsers.length === 0" class="text-center text-gray-500 py-8">
+              <p>No organizations found.</p>
+            </div>
+            <div v-else class="space-y-2">
+              <div
+                v-for="user in filteredUsers"
+                :key="user.id"
+                @click="toggleUserSelection(user)"
+                :class="['flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors', selectedUsers.some(u => u.id === user.id) ? 'bg-blue-50 border-blue-400' : '']"
               >
-                <option :value="null" disabled>Select a College</option>
-                <option v-for="college in colleges" :key="college.id" :value="college.id">
-                  {{ college.acronym }} - {{ college.name }}
-                </option>
-              </select>
-              <InputError :message="form.errors.college_id" class="mt-2" />
-            </div>
-
-            <!-- Organization Name -->
-            <div>
-              <InputLabel for="name" value="Organization Name" />
-              <TextInput
-                id="name"
-                type="text"
-                class="mt-1 block w-full"
-                v-model="form.name"
-                required
-                autofocus
-              />
-              <InputError :message="form.errors.name" class="mt-2" />
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <!-- Organization Acronym -->
-              <div>
-                <InputLabel for="acronym" value="Acronym (Optional)" />
-                <TextInput
-                  id="acronym"
-                  type="text"
-                  class="mt-1 block w-full"
-                  v-model="form.acronym"
-                />
-                <InputError :message="form.errors.acronym" class="mt-2" />
-              </div>
-
-              <!-- Organization Status -->
-              <div>
-                <InputLabel for="status" value="Status" />
-                <div class="mt-1 flex items-center space-x-4">
-                  <label class="inline-flex items-center">
-                    <input type="radio" v-model="form.status" value="active" class="form-radio text-blue-500 focus:ring-blue-500" />
-                    <span class="ml-2 text-gray-700">Active</span>
-                  </label>
-                  <label class="inline-flex items-center">
-                    <input type="radio" v-model="form.status" value="inactive" class="form-radio text-red-500 focus:ring-red-500" />
-                    <span class="ml-2 text-gray-700">Inactive</span>
-                  </label>
+                <input type="checkbox" :checked="selectedUsers.some(u => u.id === user.id)" @change.stop="toggleUserSelection(user)" class="mr-3" />
+                <!-- User Avatar -->
+                <div class="flex-shrink-0 mr-3">
+                  <div v-if="user.profile_photo_url" class="h-10 w-10">
+                    <img class="h-10 w-10 rounded-full object-cover border border-gray-200" :src="user.profile_photo_url" alt="" />
+                  </div>
+                  <div v-else class="h-10 w-10 bg-gradient-to-br from-blue-500 to-green-400 rounded-full flex items-center justify-center text-white font-medium shadow-inner">
+                    {{ user.name ? user.name.charAt(0).toUpperCase() : 'O' }}
+                  </div>
                 </div>
-                <InputError :message="form.errors.status" class="mt-2" />
-              </div>
-            </div>
-
-            <!-- Organization Description -->
-            <div>
-              <InputLabel for="description" value="Description (Optional)" />
-              <textarea
-                id="description"
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-                v-model="form.description"
-                rows="3"
-              ></textarea>
-              <InputError :message="form.errors.description" class="mt-2" />
-            </div>
-
-            <!-- Organization Logo -->
-            <div>
-              <InputLabel for="logo" value="Logo (Optional)" />
-              <div class="mt-1 flex items-center">
-                <div v-if="editMode && currentOrg.logo_path" class="mr-4">
-                  <img class="h-16 w-16 object-cover rounded-full border border-gray-200" :src="'/storage/' + currentOrg.logo_path" alt="Current logo" />
+                <!-- User Info -->
+                <div class="flex-1 min-w-0">
+                  <div class="text-sm font-medium text-gray-900 truncate">{{ user.name || 'Unknown Organization' }}</div>
+                  <div class="text-sm text-gray-500 truncate">{{ user.email || 'No email' }}</div>
                 </div>
-                <div class="flex-1">
-                  <input
-                    type="file"
-                    id="logo"
-                    @input="form.logo = $event.target.files[0]"
-                    class="block w-full text-sm text-gray-900 border border-gray-300 rounded-md cursor-pointer bg-gray-50 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                    accept="image/*"
-                  />
-                  <InputError :message="form.errors.logo" class="mt-2" />
+                <div class="text-sm text-gray-500 ml-3">
+                  {{ user.role ? user.role.name : 'No role' }}
                 </div>
               </div>
             </div>
+          </div>
 
-            <div class="flex items-center justify-end mt-6 pt-4 border-t border-gray-200">
-              <SecondaryButton @click="closeModal" class="mr-3" type="button">Cancel</SecondaryButton>
-              <PrimaryButton 
-                :class="{ 'opacity-25': form.processing }" 
-                :disabled="form.processing"
-                class="bg-blue-500 hover:bg-blue-600 focus:bg-blue-600 active:bg-blue-700"
-              >
-                {{ editMode ? 'Update Organization' : 'Create Organization' }}
-              </PrimaryButton>
-            </div>
-          </form>
+          <div class="flex items-center justify-end mt-6 pt-4 border-t border-gray-200">
+            <SecondaryButton @click="closeUserSelectionModal" class="mr-3" type="button">Cancel</SecondaryButton>
+            <button
+              class="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors disabled:opacity-50"
+              :disabled="selectedUsers.length === 0"
+              @click="openConfirmModal"
+              type="button"
+            >
+              Add Selected Organizations
+            </button>
+          </div>
         </div>
       </Modal>
 
-      <!-- Delete Confirmation Modal -->
-      <Modal :show="showDeleteModal" @close="closeDeleteModal" maxWidth="sm">
+      <!-- Confirmation Modal -->
+      <Modal :show="showConfirmModal" @close="closeConfirmModal" maxWidth="sm">
         <div class="p-6">
-          <div class="mb-5 text-center">
-            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 text-red-500">
-              <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-              </svg>
+          <h2 class="text-lg font-medium text-gray-900 mb-4">Confirm Add Organizations</h2>
+          <p class="mb-2">Are you sure you want to add the following organizations to <strong>{{ selectedCollegeName }}</strong>?</p>
+          <div class="max-h-64 overflow-y-auto space-y-3">
+            <div v-for="user in selectedUsers" :key="user.id" class="flex items-center p-3 border border-gray-200 rounded-lg bg-gray-50">
+              <!-- User Avatar -->
+              <div class="flex-shrink-0 mr-3">
+                <div v-if="user.profile_photo_url" class="h-10 w-10">
+                  <img class="h-10 w-10 rounded-full object-cover border border-gray-200" :src="user.profile_photo_url" alt="" />
+                </div>
+                <div v-else class="h-10 w-10 bg-gradient-to-br from-blue-500 to-green-400 rounded-full flex items-center justify-center text-white font-medium shadow-inner">
+                  {{ user.name ? user.name.charAt(0).toUpperCase() : 'O' }}
+                </div>
+              </div>
+              <!-- User Info -->
+              <div class="flex-1 min-w-0">
+                <div class="text-sm font-medium text-gray-900 truncate">{{ user.name || 'Unknown Organization' }}</div>
+                <div class="text-sm text-gray-500 truncate">{{ user.email || 'No email' }}</div>
+                <div class="text-xs text-gray-400">{{ user.role ? user.role.name : 'No role' }}</div>
+              </div>
             </div>
-            <h3 class="text-lg font-medium text-gray-900 mt-4">
-              Delete Student Organization
-            </h3>
-            <p class="mt-2 text-sm text-gray-600">
-              Are you sure you want to delete "{{ currentOrg.name }}"? This action cannot be undone.
-            </p>
           </div>
-
-          <div class="mt-6 flex justify-center space-x-4">
-            <SecondaryButton @click="closeDeleteModal" type="button">
-              Cancel
-            </SecondaryButton>
-            <DangerButton 
-              @click="deleteOrg" 
-              :class="{ 'opacity-25': deleting }" 
-              :disabled="deleting"
-              class="bg-red-500 hover:bg-red-600 focus:bg-red-600"
+          <div class="flex justify-end space-x-2 mt-6 pt-4 border-t border-gray-200">
+            <SecondaryButton @click="closeConfirmModal">Cancel</SecondaryButton>
+            <button
+              class="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+              @click="confirmAssignUsers"
+              type="button"
             >
-              Delete Organization
-            </DangerButton>
+              Confirm
+            </button>
+          </div>
+        </div>
+      </Modal>
+
+      <!-- Remove Confirmation Modal -->
+      <Modal :show="showRemoveConfirmModal" @close="closeRemoveConfirmModal" maxWidth="sm">
+        <div class="p-6">
+          <h2 class="text-lg font-medium text-gray-900 mb-4">Remove Organization</h2>
+          <p class="mb-4">Are you sure you want to remove the following organization from <strong>{{ selectedCollegeName }}</strong>?</p>
+          <div v-if="orgToRemove" class="flex items-center p-3 border border-gray-200 rounded-lg bg-gray-50 mb-4">
+            <div class="flex-shrink-0 mr-3">
+              <div v-if="orgToRemove.profile_photo_url" class="h-10 w-10">
+                <img class="h-10 w-10 rounded-full object-cover border border-gray-200" :src="orgToRemove.profile_photo_url" alt="" />
+              </div>
+              <div v-else class="h-10 w-10 bg-gradient-to-br from-blue-500 to-green-400 rounded-full flex items-center justify-center text-white font-medium shadow-inner">
+                {{ orgToRemove.name ? orgToRemove.name.charAt(0).toUpperCase() : 'O' }}
+              </div>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="text-sm font-medium text-gray-900 truncate">{{ orgToRemove.name || 'Unknown Organization' }}</div>
+              <div class="text-sm text-gray-500 truncate">{{ orgToRemove.email || 'No email' }}</div>
+              <div class="text-xs text-gray-400">{{ orgToRemove.role ? orgToRemove.role.name : 'No role' }}</div>
+            </div>
+          </div>
+          <div class="flex justify-end space-x-2 mt-6 pt-4 border-t border-gray-200">
+            <SecondaryButton @click="closeRemoveConfirmModal">Cancel</SecondaryButton>
+            <button
+              class="inline-flex items-center px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors"
+              @click="confirmRemoveOrg"
+              type="button"
+            >
+              Remove
+            </button>
           </div>
         </div>
       </Modal>
@@ -366,46 +340,58 @@
 <script>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Modal from '@/Components/Modal.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import TextInput from '@/Components/TextInput.vue';
-import InputError from '@/Components/InputError.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
-import DangerButton from '@/Components/DangerButton.vue';
 import { useForm } from '@inertiajs/vue3';
 
 export default {
   components: {
     AuthenticatedLayout,
     Modal,
-    InputLabel,
-    TextInput,
-    InputError,
-    PrimaryButton,
-    SecondaryButton,
-    DangerButton
+    SecondaryButton
   },
   props: {
-    colleges: Array
+    colleges: Array,
+    users: {
+      type: Array,
+      default: () => []
+    }
   },
   data() {
     return {
       openColleges: [],
-      showModal: false,
-      showDeleteModal: false,
-      editMode: false,
-      currentOrg: {},
-      deleting: false,
+      showUserSelectionModal: false,
+      showConfirmModal: false,
+      showRemoveConfirmModal: false,
+      orgToRemove: null,
+      selectedCollegeId: null,
+      selectedCollegeName: '',
+      searchQuery: '',
+      selectedUsers: [],
       clickOutsideHandler: null,
-      form: useForm({
-        college_id: null,
-        name: '',
-        acronym: '',
-        description: '',
-        logo: null,
-        status: 'active'
+      assignForm: useForm({
+        user_ids: [],
+        college_id: null
+      }),
+      removeForm: useForm({
+        user_id: null
       })
     };
+  },
+  computed: {
+    filteredUsers() {
+      if (!this.users || !Array.isArray(this.users)) {
+        return [];
+      }
+      
+      if (!this.searchQuery) {
+        return this.users.filter(user => !user.college_id);
+      }
+      return this.users.filter(user => 
+        !user.college_id && 
+        ((user.name && user.name.toLowerCase().includes(this.searchQuery.toLowerCase())) ||
+         (user.email && user.email.toLowerCase().includes(this.searchQuery.toLowerCase())))
+      );
+    }
   },
   mounted() {
     // Adding a global click handler to close dropdowns when clicking outside
@@ -460,79 +446,70 @@ export default {
         this.openColleges.push(collegeId);
       }
     },
-    openCreateModal() {
-      this.editMode = false;
-      this.form.reset();
-      this.form.clearErrors();
-      this.showModal = true;
+    openUserSelectionModal(collegeId) {
+      this.selectedCollegeId = collegeId;
+      const college = this.colleges.find(c => c.id === collegeId);
+      this.selectedCollegeName = college ? college.name : '';
+      this.searchQuery = '';
+      this.selectedUsers = [];
+      this.showUserSelectionModal = true;
     },
-    openCreateModalForCollege(collegeId) {
-      this.editMode = false;
-      this.form.reset();
-      this.form.clearErrors();
-      this.form.college_id = collegeId;
-      this.showModal = true;
+    closeUserSelectionModal() {
+      this.showUserSelectionModal = false;
+      this.selectedCollegeId = null;
+      this.selectedCollegeName = '';
+      this.searchQuery = '';
+      this.selectedUsers = [];
     },
-    openEditModal(org) {
-      this.editMode = true;
-      this.currentOrg = org;
-      this.form.clearErrors();
-      
-      this.form.college_id = org.college_id;
-      this.form.name = org.name;
-      this.form.acronym = org.acronym || '';
-      this.form.description = org.description || '';
-      this.form.logo = null; // Clear previous file
-      this.form.status = org.status;
-      
-      this.showModal = true;
+    toggleUserSelection(user) {
+      const idx = this.selectedUsers.findIndex(u => u.id === user.id);
+      if (idx === -1) {
+        this.selectedUsers.push(user);
+      } else {
+        this.selectedUsers.splice(idx, 1);
+      }
     },
-    closeModal() {
-      this.showModal = false;
-      setTimeout(() => {
-        this.editMode = false;
-        this.currentOrg = {};
-        this.form.reset();
-        this.form.clearErrors();
-      }, 300);
+    openConfirmModal() {
+      if (this.selectedUsers.length > 0) {
+        this.showConfirmModal = true;
+      }
     },
-    createOrg() {
-      this.form.post(route('admin.student-orgs.store'), {
-        preserveScroll: true,
-        onSuccess: () => this.closeModal()
-      });
+    closeConfirmModal() {
+      this.showConfirmModal = false;
     },
-    updateOrg() {
-      this.form.put(route('admin.student-orgs.update', this.currentOrg.id), {
-        preserveScroll: true,
-        onSuccess: () => this.closeModal()
-      });
-    },
-    confirmDelete(org) {
-      this.currentOrg = org;
-      this.showDeleteModal = true;
-    },
-    closeDeleteModal() {
-      this.showDeleteModal = false;
-      setTimeout(() => {
-        this.currentOrg = {};
-      }, 300);
-    },
-    deleteOrg() {
-      this.deleting = true;
-      this.$inertia.delete(route('admin.student-orgs.destroy', this.currentOrg.id), {
+    confirmAssignUsers() {
+      this.assignForm.user_ids = this.selectedUsers.map(u => u.id);
+      this.assignForm.college_id = this.selectedCollegeId;
+      this.assignForm.post(route('admin.student-orgs.assign-user'), {
         preserveScroll: true,
         onSuccess: () => {
-          this.closeDeleteModal();
-          this.deleting = false;
-        },
-        onError: () => {
-          this.deleting = false;
+          this.closeConfirmModal();
+          this.closeUserSelectionModal();
         }
       });
     },
-    getTotalOrganizationsCount() {
-      return this.colleges.reduce((total, college) => total + college.student_orgs.length, 0);
+    removeUserFromCollege(userId) {
+      const college = this.colleges.find(col => col.users.some(u => u.id === userId));
+      const org = college ? college.users.find(u => u.id === userId) : null;
+      this.orgToRemove = org;
+      this.selectedCollegeName = college ? college.name : '';
+      this.showRemoveConfirmModal = true;
+    },
+    closeRemoveConfirmModal() {
+      this.showRemoveConfirmModal = false;
+      this.orgToRemove = null;
+    },
+    confirmRemoveOrg() {
+      this.removeForm.user_id = this.orgToRemove.id;
+      this.removeForm.post(route('admin.student-orgs.remove-user'), {
+        preserveScroll: true,
+        onSuccess: () => {
+          this.closeRemoveConfirmModal();
+        }
+      });
+    },
+    getTotalUsersCount() {
+      return this.colleges.reduce((total, college) => total + college.users.length,0);
     }
   }
 };

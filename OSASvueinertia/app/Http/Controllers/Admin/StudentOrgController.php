@@ -4,105 +4,62 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\College;
-use App\Models\StudentOrg;
+use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class StudentOrgController extends Controller
 {
     /**
-     * Display the student organizations management page.
+     * Display the student organizations management page (now users per college).
      */
     public function index()
     {
-        $colleges = College::with('studentOrgs')->get();
-        
+        $colleges = College::with('users.role')->get();
+        $users = User::with('role')->get(); // For selection modal
         return Inertia::render('Admin/StudentOrgs/Index', [
-            'colleges' => $colleges
+            'colleges' => $colleges,
+            'users' => $users,
         ]);
     }
 
     /**
-     * Store a newly created student organization.
+     * Assign one or more users to a college (set college_id).
      */
-    public function store(Request $request)
+    public function assignUserToCollege(Request $request)
     {
         $validated = $request->validate([
+            'user_ids' => 'required|array|min:1',
+            'user_ids.*' => 'exists:users,id',
             'college_id' => 'required|exists:colleges,id',
-            'name' => 'required|string|max:255',
-            'acronym' => 'nullable|string|max:50',
-            'description' => 'nullable|string',
-            'logo' => 'nullable|image|max:2048',
-            'status' => 'nullable|string|in:active,inactive',
         ]);
 
-        // Handle logo upload if provided
-        if ($request->hasFile('logo')) {
-            $path = $request->file('logo')->store('logos', 'public');
-            $validated['logo_path'] = $path;
-        }
-
-        $studentOrg = StudentOrg::create($validated);
-
-        return redirect()->route('admin.student-orgs.index')
-            ->with('message', 'Student organization created successfully.');
-    }
-
-    /**
-     * Update the specified student organization.
-     */
-    public function update(Request $request, StudentOrg $studentOrg)
-    {
-        $validated = $request->validate([
-            'college_id' => 'required|exists:colleges,id',
-            'name' => 'required|string|max:255',
-            'acronym' => 'nullable|string|max:50',
-            'description' => 'nullable|string',
-            'logo' => 'nullable|image|max:2048',
-            'status' => 'nullable|string|in:active,inactive',
-        ]);
-
-        // Handle logo upload if provided
-        if ($request->hasFile('logo')) {
-            // Delete old logo if exists
-            if ($studentOrg->logo_path) {
-                Storage::disk('public')->delete($studentOrg->logo_path);
+        foreach ($validated['user_ids'] as $userId) {
+            $user = \App\Models\User::find($userId);
+            if ($user) {
+                $user->college_id = $validated['college_id'];
+                $user->save();
             }
-            
-            $path = $request->file('logo')->store('logos', 'public');
-            $validated['logo_path'] = $path;
         }
 
-        $studentOrg->update($validated);
-
         return redirect()->route('admin.student-orgs.index')
-            ->with('message', 'Student organization updated successfully.');
+            ->with('message', 'Users assigned to college successfully.');
     }
 
     /**
-     * Remove the specified student organization.
+     * Remove a user from a college (unset college_id).
      */
-    public function destroy(StudentOrg $studentOrg)
+    public function removeUserFromCollege(Request $request)
     {
-        // Delete logo if exists
-        if ($studentOrg->logo_path) {
-            Storage::disk('public')->delete($studentOrg->logo_path);
-        }
+        $validated = $request->validate([
+            'user_id' => 'required|exists:users,id',
+        ]);
 
-        $studentOrg->delete();
+        $user = User::findOrFail($validated['user_id']);
+        $user->college_id = null;
+        $user->save();
 
         return redirect()->route('admin.student-orgs.index')
-            ->with('message', 'Student organization deleted successfully.');
-    }
-
-    /**
-     * Get all student organizations grouped by college (for API).
-     */
-    public function getAll()
-    {
-        $colleges = College::with('studentOrgs')->get();
-        
-        return response()->json($colleges);
+            ->with('message', 'User removed from college successfully.');
     }
 }

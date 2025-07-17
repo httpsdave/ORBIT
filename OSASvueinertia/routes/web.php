@@ -140,9 +140,8 @@ Route::middleware(['auth'])->group(function () {
 
         // Student Organizations Management Routes
         Route::get('/student-orgs', [StudentOrgController::class, 'index'])->name('admin.student-orgs.index');
-        Route::post('/student-orgs', [StudentOrgController::class, 'store'])->name('admin.student-orgs.store');
-        Route::put('/student-orgs/{studentOrg}', [StudentOrgController::class, 'update'])->name('admin.student-orgs.update');
-        Route::delete('/student-orgs/{studentOrg}', [StudentOrgController::class, 'destroy'])->name('admin.student-orgs.destroy');
+        Route::post('/student-orgs/assign-user', [StudentOrgController::class, 'assignUserToCollege'])->name('admin.student-orgs.assign-user');
+        Route::post('/student-orgs/remove-user', [StudentOrgController::class, 'removeUserFromCollege'])->name('admin.student-orgs.remove-user');
         Route::get('/student-orgs/all', [StudentOrgController::class, 'getAll'])->name('admin.student-orgs.all');
          
         // College Management Routes
