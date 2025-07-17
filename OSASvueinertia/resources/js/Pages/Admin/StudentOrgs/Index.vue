@@ -17,7 +17,7 @@
           </h2>
           <button
             type="button"
-            @click="openCreateModal"
+            @click="openUserSelectionModalForNewOrg"
             class="inline-flex items-center px-4 py-2 bg-blue-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-600 active:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 transition ease-in-out duration-150 shadow-sm"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -115,13 +115,25 @@
                       </svg>
                       <p class="mt-2">No organizations found for this college</p>
                       <button
-                        @click="openUserSelectionModal(college.id)"
+                        @click="openUserSelectionModalForCollege(college.id)"
                         class="mt-3 inline-flex items-center px-3 py-1.5 text-sm bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
                       >
                         Add Organization
                       </button>
                     </div>
                     <div v-else class="overflow-x-auto -mx-4 sm:-mx-0">
+                      <div class="flex justify-between items-center mb-4 px-6">
+                        <h4 class="text-sm font-medium text-gray-700">Organizations in this college</h4>
+                        <button
+                          @click="openUserSelectionModalForCollege(college.id)"
+                          class="inline-flex items-center px-3 py-1.5 text-sm bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                          </svg>
+                          Add Organization
+                        </button>
+                      </div>
                       <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                           <tr>
@@ -197,7 +209,7 @@
         <div class="p-6">
           <div class="flex items-center justify-between mb-5">
             <h2 class="text-lg font-medium text-gray-900">
-              Select Organization to Add to {{ selectedCollegeName }}
+              Select Organization to Add to {{ selectedCollegeId ? selectedCollegeName : 'a College' }}
             </h2>
             <button @click="closeUserSelectionModal" class="text-gray-400 hover:text-gray-500">
               <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -214,6 +226,21 @@
               placeholder="Search organizations by name or email..."
               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
+          </div>
+
+          <!-- College Selection (always show to allow changing selection) -->
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Select College</label>
+            <select
+              v-model="selectedCollegeId"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              required
+            >
+              <option :value="null" disabled>Choose a college...</option>
+              <option v-for="college in colleges" :key="college.id" :value="college.id">
+                {{ college.acronym }} - {{ college.name }}
+              </option>
+            </select>
           </div>
 
           <!-- Users List -->
@@ -470,14 +497,27 @@ export default {
       }
     },
     openConfirmModal() {
-      if (this.selectedUsers.length > 0) {
-        this.showConfirmModal = true;
+      if (this.selectedUsers.length === 0) {
+        alert('Please select at least one organization to add.');
+        return;
       }
+      
+      // If no college is selected, show an alert
+      if (!this.selectedCollegeId) {
+        alert('Please select a college first.');
+        return;
+      }
+      
+      this.showConfirmModal = true;
     },
     closeConfirmModal() {
       this.showConfirmModal = false;
     },
     confirmAssignUsers() {
+      if (!this.selectedCollegeId) {
+        alert('Please select a college first.');
+        return;
+      }
       this.assignForm.user_ids = this.selectedUsers.map(u => u.id);
       this.assignForm.college_id = this.selectedCollegeId;
       this.assignForm.post(route('admin.student-orgs.assign-user'), {
@@ -510,6 +550,21 @@ export default {
     },
     getTotalUsersCount() {
       return this.colleges.reduce((total, college) => total + college.users.length,0);
+    },
+    openUserSelectionModalForNewOrg() {
+      this.selectedCollegeId = null;
+      this.selectedCollegeName = 'any college';
+      this.searchQuery = '';
+      this.selectedUsers = [];
+      this.showUserSelectionModal = true;
+    },
+    openUserSelectionModalForCollege(collegeId) {
+      this.selectedCollegeId = collegeId;
+      const college = this.colleges.find(c => c.id === collegeId);
+      this.selectedCollegeName = college ? college.name : '';
+      this.searchQuery = '';
+      this.selectedUsers = [];
+      this.showUserSelectionModal = true;
     }
   }
 };
