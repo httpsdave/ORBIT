@@ -19,6 +19,7 @@ class User extends Authenticatable
         'role_id',
         'profile_photo_path',
         'college_id',
+        'description',
     ];
 
     protected $appends = ['profile_photo_url'];

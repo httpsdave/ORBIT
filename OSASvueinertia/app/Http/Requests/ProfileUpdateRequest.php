@@ -27,6 +27,9 @@ class ProfileUpdateRequest extends FormRequest
             $rules['profile_photo'] = ['nullable'];
         }
 
+        // Description field validation
+        $rules['description'] = ['nullable', 'string', 'max:1000'];
+
         if ($isAdmin) {
             $rules['name'] = ['required', 'string', 'max:255'];
             $rules['email'] = [

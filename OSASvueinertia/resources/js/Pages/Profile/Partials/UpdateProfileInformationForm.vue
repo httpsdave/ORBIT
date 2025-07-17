@@ -30,6 +30,7 @@ const form = useForm({
     name: user.name,
     email: user.email,
     profile_photo: null,
+    description: user.description || '',
 });
 
 const photoPreview = ref(user.profile_photo_url);
@@ -61,13 +62,48 @@ function submit() {
         forceFormData: true,
         onSuccess: () => {
             removeProfilePhoto.value = false;
-            form.reset();
             photoPreview.value = usePage().props.auth.user.profile_photo_url;
             router.reload({ only: ['auth'] });
         },
         _method: 'patch',
     });
 }
+
+const isEditingDescription = ref(false);
+const originalDescription = ref(user.description || '');
+
+function startEditDescription() {
+    isEditingDescription.value = true;
+}
+
+function cancelEditDescription() {
+    form.description = originalDescription.value;
+    isEditingDescription.value = false;
+}
+
+function saveDescription() {
+    // Only submit the description field
+    form.post(route('profile.update'), {
+        data: { description: form.description },
+        preserveScroll: true,
+        forceFormData: true,
+        onSuccess: () => {
+            originalDescription.value = form.description;
+            isEditingDescription.value = false;
+        },
+        _method: 'patch',
+    });
+}
+
+watch(
+  () => user.description,
+  (newVal) => {
+    originalDescription.value = newVal || '';
+    if (!isEditingDescription.value) {
+      form.description = newVal || '';
+    }
+  }
+);
 </script>
 
 <template>
@@ -146,6 +182,35 @@ function submit() {
                         autocomplete="username"
                     />
                     <InputError class="mt-2" :message="form.errors.email" />
+                </div>
+            </div>
+
+            <div>
+                <InputLabel for="description" value="Organization Description" class="text-gray-700 font-medium" />
+                <div v-if="!isEditingDescription" class="flex items-center justify-between group">
+                    <div class="text-gray-800 min-h-[2.5rem]">
+                        <span v-if="form.description">{{ form.description }}</span>
+                        <span v-else class="italic text-gray-400">No description available</span>
+                    </div>
+                    <button type="button" @click="startEditDescription" class="ml-2 text-blue-500 hover:text-blue-700 opacity-70 group-hover:opacity-100 transition p-1 rounded-full" title="Edit Description">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536M9 13h3l8-8a2.828 2.828 0 10-4-4l-8 8v3z" />
+                        </svg>
+                    </button>
+                </div>
+                <div v-else>
+                    <textarea
+                        id="description"
+                        v-model="form.description"
+                        rows="3"
+                        class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 rounded-md shadow-sm resize-none"
+                        placeholder="Write a short description about your organization..."
+                    ></textarea>
+                    <InputError class="mt-2" :message="form.errors.description" />
+                    <div class="flex gap-2 mt-2">
+                        <button type="button" @click="saveDescription" class="px-4 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm font-medium">Save</button>
+                        <button type="button" @click="cancelEditDescription" class="px-4 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 text-sm font-medium">Cancel</button>
+                    </div>
                 </div>
             </div>
 
