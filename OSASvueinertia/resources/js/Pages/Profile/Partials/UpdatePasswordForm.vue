@@ -5,6 +5,9 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import { usePage } from '@inertiajs/vue3';
+
+const user = usePage().props.auth.user;
 
 const passwordInput = ref(null);
 const currentPasswordInput = ref(null);
@@ -46,6 +49,16 @@ const updatePassword = () => {
         </div>
 
         <form @submit.prevent="updatePassword" class="space-y-6">
+            <!-- Hidden username/email field for accessibility and autofill -->
+            <input
+                type="text"
+                name="username"
+                :value="user.email"
+                autocomplete="username"
+                style="display: none;"
+                tabindex="-1"
+                aria-hidden="true"
+            />
             <!-- Password fields in responsive layout -->
             <div class="space-y-6 md:space-y-0 md:grid md:grid-cols-2 md:gap-6">
                 <!-- Current password field -->

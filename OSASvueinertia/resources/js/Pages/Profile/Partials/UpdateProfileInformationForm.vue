@@ -184,7 +184,7 @@ function saveDescription() {
                         :disabled="!isAdmin"
                         :class="!isAdmin ? 'bg-gray-100 text-gray-400 cursor-not-allowed select-none pointer-events-none' : ''"
                         required
-                        autocomplete="username"
+                        autocomplete="email"
                     />
                     <InputError class="mt-2" :message="form.errors.email" />
                 </div>
