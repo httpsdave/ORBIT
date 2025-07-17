@@ -4,7 +4,7 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Link, useForm, usePage, router } from '@inertiajs/vue3';
-import { ref, watch } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 
 defineProps({
     mustVerifyEmail: {
@@ -72,6 +72,20 @@ function submit() {
 const isEditingDescription = ref(false);
 const originalDescription = ref(user.description || '');
 
+// Sync form.description and originalDescription with user.description on mount and when user.description changes
+onMounted(() => {
+    form.description = user.description || '';
+    originalDescription.value = user.description || '';
+});
+
+watch(
+  () => user.description,
+  (newVal) => {
+    form.description = newVal || '';
+    originalDescription.value = newVal || '';
+  }
+);
+
 function startEditDescription() {
     isEditingDescription.value = true;
 }
@@ -90,20 +104,11 @@ function saveDescription() {
         onSuccess: () => {
             originalDescription.value = form.description;
             isEditingDescription.value = false;
+            router.reload({ only: ['auth'] }); // Reload user data after save
         },
         _method: 'patch',
     });
 }
-
-watch(
-  () => user.description,
-  (newVal) => {
-    originalDescription.value = newVal || '';
-    if (!isEditingDescription.value) {
-      form.description = newVal || '';
-    }
-  }
-);
 </script>
 
 <template>

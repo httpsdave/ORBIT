@@ -50,6 +50,7 @@ class HandleInertiaRequests extends Middleware
                     'email' => $user->email,
                     'role' => $user->role,  // Make sure this includes the role relationship
                     'profile_photo_url' => $user->profile_photo_url,
+                    'description' => $user->description, // Added description field
                 ] : null,
                 'unreadNotificationsCount' => $unreadCount,
             ],
