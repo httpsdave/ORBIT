@@ -15,12 +15,16 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        // Get colleges with student organization counts
-        $colleges = College::withCount('studentOrgs')
-            ->get();
+        // Get colleges with user counts (each user is considered an organization)
+        $colleges = College::with('users')
+            ->get()
+            ->map(function ($college) {
+                $college->student_orgs_count = $college->users->count();
+                return $college;
+            });
             
-        // Get total student organizations count
-        $totalStudentOrgs = StudentOrg::count();
+        // Get total student organizations count (users with a college_id)
+        $totalStudentOrgs = \App\Models\User::whereNotNull('college_id')->count();
         
         // Get today's event
         $todayEvent = Event::where('start_date', '<=', Carbon::now())
