@@ -109,6 +109,9 @@ function saveDescription() {
         _method: 'patch',
     });
 }
+
+// Remove description logic for admins
+const showDescription = !isAdmin;
 </script>
 
 <template>
@@ -190,7 +193,7 @@ function saveDescription() {
                 </div>
             </div>
 
-            <div>
+            <div v-if="showDescription">
                 <InputLabel for="description" value="Organization Description" class="text-gray-700 font-medium" />
                 <div v-if="!isEditingDescription" class="flex items-center justify-between group">
                     <div class="text-gray-800 min-h-[2.5rem]">

@@ -46,7 +46,8 @@
                             <div class="flex flex-col items-start flex-1 min-w-0">
                                 <h3 class="text-lg font-semibold text-gray-800 mb-1 truncate w-full">{{ org.name }}</h3>
                                 <span v-if="org.college" class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full mb-2">{{ org.college.acronym || org.college.name }}</span>
-                                <p class="text-gray-600 text-xs line-clamp-2 mb-2 w-full">{{ org.description || 'No description available' }}</p>
+                                <p v-if="org.description && !auth.user || (auth.user && auth.user.role !== 'admin' && (!auth.user.role || auth.user.role.name !== 'admin'))" class="text-gray-600 text-xs line-clamp-2 mb-2 w-full">{{ org.description }}</p>
+                                <p v-else class="text-gray-600 text-xs line-clamp-2 mb-2 w-full">No description available</p>
                             </div>
                             <div class="flex-shrink-0 ml-4 flex items-center justify-center">
                                 <img
