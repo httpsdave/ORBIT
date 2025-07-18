@@ -1,12 +1,13 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed, watch } from 'vue';
-import { Link, usePage } from '@inertiajs/vue3';
+import { Link, usePage, router } from '@inertiajs/vue3';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import SidebarHeader from './SidebarHeader.vue';
 import NavigationItems from './NavigationItems.vue';
 import SidebarFooter from './SidebarFooter.vue';
 import MobileHeader from '@/Components/MobileHeader.vue';
 import NotificationDropdown from '@/Components/NotificationDropdown.vue';
+import Modal from '@/Components/Modal.vue';
 
 const props = defineProps({
   isAdmin: {
@@ -43,6 +44,9 @@ const unreadNotificationsCount = computed(() => {
 const showingSidebar = ref(false);
 const sidebarExpanded = ref(true);
 const windowWidth = ref(window.innerWidth); // Track window width
+
+// Sign out confirmation modal state
+const showSignOutModal = ref(false);
 
 // User profile dropdown state
 const isDropdownOpen = ref(false);
@@ -206,6 +210,21 @@ const handleKeyDown = (event) => {
   }
 };
 
+// Handle sign out confirmation
+const confirmSignOut = () => {
+  showSignOutModal.value = true;
+  isDropdownOpen.value = false;
+};
+
+const cancelSignOut = () => {
+  showSignOutModal.value = false;
+};
+
+const proceedSignOut = () => {
+  // Use Inertia router to post logout (handles CSRF automatically)
+  router.post(route('logout'));
+};
+
 // Lifecycle hooks
 onMounted(() => {
   document.addEventListener('click', closeSidebarOnClickOutside);
@@ -366,17 +385,16 @@ onUnmounted(() => {
                   <span class="ml-3">My Profile</span>
                 </Link>
                 
-                <Link 
-                  :href="route('logout')" 
-                  method="post" 
-                  as="button" 
+                <button
+                  type="button"
+                  @click="confirmSignOut"
                   class="w-full flex items-center px-4 py-2 text-red-600 font-medium hover:text-red-700 transition-all duration-300 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-400"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                   </svg>
                   <span class="ml-3">Sign Out</span>
-                </Link>
+                </button>
               </div>
             </div>
           </div>
@@ -452,6 +470,31 @@ onUnmounted(() => {
       aria-hidden="true"
     ></div>
   </div>
+  <!-- Sign Out Confirmation Modal -->
+  <Modal :show="showSignOutModal" @close="cancelSignOut">
+    <div class="p-8 bg-white rounded-xl shadow-lg w-full max-w-md mx-auto">
+      <h2 class="text-xl font-semibold text-gray-800 mb-2">Confirm Sign Out</h2>
+      <p class="text-gray-600 mb-8">Are you sure you want to sign out?</p>
+      <div class="flex justify-end gap-2 w-full">
+        <button
+          @click="cancelSignOut"
+          type="button"
+          class="inline-flex items-center justify-center px-4 py-2 bg-gray-200 text-sm font-medium text-gray-700 rounded-xl shadow-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group"
+        >
+          <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
+          Cancel
+        </button>
+        <button
+          @click="proceedSignOut"
+          type="button"
+          class="inline-flex items-center justify-center px-4 py-2 bg-red-600 text-sm font-medium text-white rounded-xl shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group"
+        >
+          <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
+          Sign Out
+        </button>
+      </div>
+    </div>
+  </Modal>
 </template>
 
 <style scoped>
