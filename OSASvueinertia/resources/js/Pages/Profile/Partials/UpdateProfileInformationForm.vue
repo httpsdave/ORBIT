@@ -4,7 +4,8 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Link, useForm, usePage, router } from '@inertiajs/vue3';
-import { ref, watch, onMounted } from 'vue';
+import { ref, watch, onMounted, computed } from 'vue';
+import Modal from '@/Components/Modal.vue';
 
 defineProps({
     mustVerifyEmail: {
@@ -20,20 +21,32 @@ console.log('User data:', user);
 
 // Add for name change restriction
 const lastNameChangeAt = user.last_name_change_at ? new Date(user.last_name_change_at) : null;
-const now = new Date();
-let canChangeName = true;
-let nextAllowedDate = null;
-let daysLeft = 0;
-let hoursLeft = 0;
-if (lastNameChangeAt) {
+
+const canChangeName = computed(() => {
+    if (!lastNameChangeAt) return true;
+    const now = new Date();
     const msLeft = (lastNameChangeAt.getTime() + 14 * 24 * 60 * 60 * 1000) - now.getTime();
-    if (msLeft > 0) {
-        canChangeName = false;
-        nextAllowedDate = new Date(lastNameChangeAt.getTime() + 14 * 24 * 60 * 60 * 1000);
-        daysLeft = Math.floor(msLeft / (1000 * 60 * 60 * 24));
-        hoursLeft = Math.floor((msLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    }
-}
+    return msLeft <= 0;
+});
+
+const nextAllowedDate = computed(() => {
+    if (!lastNameChangeAt) return null;
+    return new Date(lastNameChangeAt.getTime() + 14 * 24 * 60 * 60 * 1000);
+});
+
+const daysLeft = computed(() => {
+    if (!lastNameChangeAt) return 0;
+    const now = new Date();
+    const msLeft = (lastNameChangeAt.getTime() + 14 * 24 * 60 * 60 * 1000) - now.getTime();
+    return msLeft > 0 ? Math.floor(msLeft / (1000 * 60 * 60 * 24)) : 0;
+});
+
+const hoursLeft = computed(() => {
+    if (!lastNameChangeAt) return 0;
+    const now = new Date();
+    const msLeft = (lastNameChangeAt.getTime() + 14 * 24 * 60 * 60 * 1000) - now.getTime();
+    return msLeft > 0 ? Math.floor((msLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)) : 0;
+});
 
 // Check for admin role based on role property structure
 const isAdmin = user.role && 
@@ -81,6 +94,7 @@ function submit() {
             removeProfilePhoto.value = false;
             photoPreview.value = usePage().props.auth.user.profile_photo_url;
             router.reload({ only: ['auth'] });
+            isEditingProfile.value = false; // Return to disabled state after save
         },
         _method: 'patch',
     });
@@ -145,6 +159,22 @@ function cancelEditProfile() {
     photoPreview.value = user.profile_photo_url;
     removeProfilePhoto.value = false;
 }
+
+const showConfirmModal = ref(false);
+
+function handleSaveClick() {
+    showConfirmModal.value = true;
+}
+
+function confirmSave() {
+    showConfirmModal.value = false;
+    isEditingProfile.value = false; // Immediately exit edit mode
+    submit();
+}
+
+function cancelSave() {
+    showConfirmModal.value = false;
+}
 </script>
 
 <template>
@@ -197,8 +227,8 @@ function cancelEditProfile() {
                         type="text"
                         class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 rounded-md shadow-sm"
                         v-model="form.name"
-                        :disabled="(!isAdmin && !isEditingProfile) || (!isAdmin && !canChangeName)"
-                        :class="((!isAdmin && !isEditingProfile) || (!isAdmin && !canChangeName)) ? 'bg-gray-100 text-gray-400 cursor-not-allowed select-none pointer-events-none' : ''"
+                        :disabled="isAdmin ? !isEditingProfile : (!isEditingProfile || !canChangeName)"
+                        :class="(isAdmin ? !isEditingProfile : (!isEditingProfile || !canChangeName)) ? 'bg-gray-100 text-gray-400 cursor-not-allowed select-none pointer-events-none' : ''"
                         required
                         autofocus
                         autocomplete="name"
@@ -221,8 +251,8 @@ function cancelEditProfile() {
                         type="email"
                         class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 rounded-md shadow-sm"
                         v-model="form.email"
-                        :disabled="!isAdmin"
-                        :class="!isAdmin ? 'bg-gray-100 text-gray-400 cursor-not-allowed select-none pointer-events-none' : ''"
+                        :disabled="!isAdmin || !isEditingProfile"
+                        :class="(!isAdmin || !isEditingProfile) ? 'bg-gray-100 text-gray-400 cursor-not-allowed select-none pointer-events-none' : ''"
                         required
                         autocomplete="email"
                     />
@@ -299,11 +329,11 @@ function cancelEditProfile() {
                                     @change="handlePhotoChange" 
                                     class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                                     id="profile-photo-input"
-                                    :disabled="!isAdmin && !isEditingProfile"
+                                    :disabled="!isEditingProfile"
                                 />
                                 <label 
                                     for="profile-photo-input"
-                                    :class="['inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-sm font-medium text-white rounded-xl shadow-md hover:shadow-blue-300/30 hover:from-blue-400 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:from-blue-600 active:to-blue-700 transition-all duration-300 relative overflow-hidden group cursor-pointer', (!isAdmin && !isEditingProfile) ? 'opacity-50 cursor-not-allowed pointer-events-none' : '']"
+                                    :class="['inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-sm font-medium text-white rounded-xl shadow-md hover:shadow-blue-300/30 hover:from-blue-400 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:from-blue-600 active:to-blue-700 transition-all duration-300 relative overflow-hidden group cursor-pointer', !isEditingProfile ? 'opacity-50 pointer-events-none cursor-not-allowed' : '']"
                                 >
                                     <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
                                     <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -314,7 +344,7 @@ function cancelEditProfile() {
                             </div>
                             <!-- Remove Photo Button -->
                             <button
-                                v-if="(user.profile_photo_url || photoPreview) && (isAdmin || isEditingProfile)"
+                                v-if="(user.profile_photo_url || photoPreview) && isEditingProfile"
                                 type="button"
                                 @click="handleRemovePhoto"
                                 class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 hover:border-red-300 hover:text-red-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150"
@@ -333,16 +363,35 @@ function cancelEditProfile() {
                 </div>
                 <InputError class="mt-2" :message="form.errors.profile_photo" />
             </div>
+            <Modal :show="showConfirmModal" @close="cancelSave">
+                <div class="p-6 flex flex-col items-center justify-center min-h-[180px]">
+                    <h2 class="text-lg font-semibold mb-4 text-center">Confirm Changes</h2>
+                    <p class="mb-6 text-center">Are you sure you want to save these changes to your profile?</p>
+                    <div class="flex justify-center gap-2 w-full">
+                        <button @click="cancelSave" type="button"
+                            class="inline-flex items-center justify-center px-4 py-2 bg-gray-200 text-sm font-medium text-gray-700 rounded-xl shadow-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group">
+                            <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
+                            Cancel
+                        </button>
+                        <button @click="confirmSave" type="button"
+                            class="inline-flex items-center justify-center px-4 py-2 bg-blue-500 text-sm font-medium text-white rounded-xl shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group">
+                            <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
+                            Yes, Save
+                        </button>
+                    </div>
+                </div>
+            </Modal>
             <div class="flex items-center pt-4 border-t border-gray-100">
                 <PrimaryButton 
-                    v-if="isAdmin || isEditingProfile"
+                    v-if="isEditingProfile"
                     :disabled="form.processing"
                     class="bg-blue-500 hover:bg-blue-600 focus:bg-blue-600"
+                    @click.prevent="handleSaveClick"
                 >
                     Save Changes
                 </PrimaryButton>
                 <button
-                    v-if="!isAdmin && isEditingProfile"
+                    v-if="isEditingProfile"
                     type="button"
                     @click="cancelEditProfile"
                     class="inline-flex items-center justify-center px-4 py-2 bg-gray-200 text-sm font-medium text-gray-700 rounded-xl shadow-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group ml-2"
@@ -351,7 +400,7 @@ function cancelEditProfile() {
                     Cancel
                 </button>
                 <PrimaryButton
-                    v-if="!isAdmin && !isEditingProfile"
+                    v-if="!isEditingProfile"
                     @click="startEditProfile"
                     type="button"
                 >
