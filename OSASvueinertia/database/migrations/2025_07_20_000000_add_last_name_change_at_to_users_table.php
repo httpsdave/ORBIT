@@ -6,17 +6,23 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up()
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('profile_photo_path', 2048)->nullable()->after('role_id');
+            $table->timestamp('last_name_change_at')->nullable()->after('name');
         });
     }
 
-    public function down()
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('profile_photo_path');
+            $table->dropColumn('last_name_change_at');
         });
     }
 }; 

@@ -40,6 +40,34 @@ class ProfileUpdateRequest extends FormRequest
                 'max:255',
                 Rule::unique(User::class)->ignore($user->id),
             ];
+        } else {
+            // For non-admins, enforce name validation and 14-day restriction
+            $rules['name'] = [
+                'required',
+                'string',
+                'max:255',
+                function ($attribute, $value, $fail) use ($user) {
+                    if ($value !== $user->name && $user->last_name_change_at) {
+                        $now = now();
+                        $nextAllowed = $user->last_name_change_at->copy()->addDays(14);
+                        if ($now->lt($nextAllowed)) {
+                            $diff = $now->diff($nextAllowed);
+                            $days = $diff->d;
+                            $hours = $diff->h;
+                            $msg = 'You can change your name in ';
+                            if ($days > 0) {
+                                $msg .= $days . ' day' . ($days > 1 ? 's' : '');
+                            }
+                            if ($hours > 0) {
+                                if ($days > 0) $msg .= ' and ';
+                                $msg .= $hours . ' hour' . ($hours > 1 ? 's' : '');
+                            }
+                            $msg .= '.';
+                            $fail($msg);
+                        }
+                    }
+                },
+            ];
         }
 
         return $rules;

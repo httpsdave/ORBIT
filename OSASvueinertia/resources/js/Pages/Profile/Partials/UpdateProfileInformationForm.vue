@@ -18,6 +18,23 @@ defineProps({
 const user = usePage().props.auth.user;
 console.log('User data:', user);
 
+// Add for name change restriction
+const lastNameChangeAt = user.last_name_change_at ? new Date(user.last_name_change_at) : null;
+const now = new Date();
+let canChangeName = true;
+let nextAllowedDate = null;
+let daysLeft = 0;
+let hoursLeft = 0;
+if (lastNameChangeAt) {
+    const msLeft = (lastNameChangeAt.getTime() + 14 * 24 * 60 * 60 * 1000) - now.getTime();
+    if (msLeft > 0) {
+        canChangeName = false;
+        nextAllowedDate = new Date(lastNameChangeAt.getTime() + 14 * 24 * 60 * 60 * 1000);
+        daysLeft = Math.floor(msLeft / (1000 * 60 * 60 * 24));
+        hoursLeft = Math.floor((msLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    }
+}
+
 // Check for admin role based on role property structure
 const isAdmin = user.role && 
     (user.role === 'admin' || 
@@ -180,13 +197,21 @@ function cancelEditProfile() {
                         type="text"
                         class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 rounded-md shadow-sm"
                         v-model="form.name"
-                        :disabled="!isAdmin && !isEditingProfile"
-                        :class="(!isAdmin && !isEditingProfile) ? 'bg-gray-100 text-gray-400 cursor-not-allowed select-none pointer-events-none' : ''"
+                        :disabled="(!isAdmin && !isEditingProfile) || (!isAdmin && !canChangeName)"
+                        :class="((!isAdmin && !isEditingProfile) || (!isAdmin && !canChangeName)) ? 'bg-gray-100 text-gray-400 cursor-not-allowed select-none pointer-events-none' : ''"
                         required
                         autofocus
                         autocomplete="name"
                     />
                     <InputError class="mt-2" :message="form.errors.name" />
+                    <div v-if="!isAdmin && !canChangeName" class="text-xs text-red-500 mt-1">
+                        <span v-if="daysLeft > 0 || hoursLeft > 0">
+                            You can change your name in <span class="font-semibold">{{ daysLeft }}</span> day<span v-if="daysLeft !== 1">s</span>
+                            <span v-if="hoursLeft > 0"> and <span class="font-semibold">{{ hoursLeft }}</span> hour<span v-if="hoursLeft !== 1">s</span></span>.
+                        </span>
+                        <br/>
+                        Next allowed change: <span class="font-semibold">{{ nextAllowedDate ? nextAllowedDate.toLocaleDateString() : '' }}</span>
+                    </div>
                 </div>
 
                 <div>

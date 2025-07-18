@@ -20,6 +20,7 @@ class User extends Authenticatable
         'profile_photo_path',
         'college_id',
         'description',
+        'last_name_change_at',
     ];
 
     protected $appends = ['profile_photo_url'];
@@ -32,6 +33,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'last_name_change_at' => 'datetime',
     ];
 
     public function role()
