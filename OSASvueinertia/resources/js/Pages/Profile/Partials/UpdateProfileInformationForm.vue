@@ -112,6 +112,22 @@ function saveDescription() {
 
 // Remove description logic for admins
 const showDescription = !isAdmin;
+
+const isEditingProfile = ref(false);
+
+function startEditProfile() {
+    isEditingProfile.value = true;
+}
+
+function cancelEditProfile() {
+    isEditingProfile.value = false;
+    // Reset form fields to original user data
+    form.name = user.name;
+    form.email = user.email;
+    form.description = user.description || '';
+    photoPreview.value = user.profile_photo_url;
+    removeProfilePhoto.value = false;
+}
 </script>
 
 <template>
@@ -122,7 +138,6 @@ const showDescription = !isAdmin;
                 Manage your personal details, profile photo, and organization description. <span v-if="isAdmin">As an admin, you can also update your name and email address.</span>
             </p>
         </div>
-
         <!-- Status bar for verification status -->
         <div 
             v-if="mustVerifyEmail && user.email_verified_at === null"
@@ -165,8 +180,8 @@ const showDescription = !isAdmin;
                         type="text"
                         class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 rounded-md shadow-sm"
                         v-model="form.name"
-                        :disabled="!isAdmin"
-                        :class="!isAdmin ? 'bg-gray-100 text-gray-400 cursor-not-allowed select-none pointer-events-none' : ''"
+                        :disabled="!isAdmin && !isEditingProfile"
+                        :class="(!isAdmin && !isEditingProfile) ? 'bg-gray-100 text-gray-400 cursor-not-allowed select-none pointer-events-none' : ''"
                         required
                         autofocus
                         autocomplete="name"
@@ -192,7 +207,13 @@ const showDescription = !isAdmin;
 
             <div v-if="showDescription">
                 <InputLabel for="description" value="Organization Description" class="text-gray-700 font-medium" />
-                <div v-if="!isEditingDescription" class="flex items-center justify-between group">
+                <div v-if="!isEditingDescription && (!isAdmin && !isEditingProfile)" class="flex items-center justify-between group">
+                    <div class="text-gray-800 min-h-[2.5rem]">
+                        <span v-if="form.description">{{ form.description }}</span>
+                        <span v-else class="italic text-gray-400">No description available</span>
+                    </div>
+                </div>
+                <div v-else-if="!isEditingDescription && (isAdmin || isEditingProfile)" class="flex items-center justify-between group">
                     <div class="text-gray-800 min-h-[2.5rem]">
                         <span v-if="form.description">{{ form.description }}</span>
                         <span v-else class="italic text-gray-400">No description available</span>
@@ -208,11 +229,13 @@ const showDescription = !isAdmin;
                         id="description"
                         v-model="form.description"
                         rows="3"
+                        :disabled="!isAdmin && !isEditingProfile"
+                        :class="(!isAdmin && !isEditingProfile) ? 'bg-gray-100 text-gray-400 cursor-not-allowed select-none pointer-events-none' : ''"
                         class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 rounded-md shadow-sm resize-none"
                         placeholder="Write a short description about your organization..."
                     ></textarea>
                     <InputError class="mt-2" :message="form.errors.description" />
-                    <div class="flex gap-2 mt-2">
+                    <div class="flex gap-2 mt-2" v-if="isAdmin || isEditingProfile">
                         <button type="button" @click="saveDescription" class="px-4 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm font-medium">Save</button>
                         <button type="button" @click="cancelEditDescription" class="px-4 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 text-sm font-medium">Cancel</button>
                     </div>
@@ -241,7 +264,6 @@ const showDescription = !isAdmin;
                                 </div>
                             </div>
                         </div>
-
                         <!-- Photo Controls -->
                         <div class="flex-1 space-y-3">
                             <!-- Choose Photo Button -->
@@ -252,10 +274,11 @@ const showDescription = !isAdmin;
                                     @change="handlePhotoChange" 
                                     class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                                     id="profile-photo-input"
+                                    :disabled="!isAdmin && !isEditingProfile"
                                 />
                                 <label 
                                     for="profile-photo-input"
-                                    class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-sm font-medium text-white rounded-xl shadow-md hover:shadow-blue-300/30 hover:from-blue-400 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:from-blue-600 active:to-blue-700 transition-all duration-300 relative overflow-hidden group cursor-pointer"
+                                    :class="['inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-sm font-medium text-white rounded-xl shadow-md hover:shadow-blue-300/30 hover:from-blue-400 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:from-blue-600 active:to-blue-700 transition-all duration-300 relative overflow-hidden group cursor-pointer', (!isAdmin && !isEditingProfile) ? 'opacity-50 cursor-not-allowed pointer-events-none' : '']"
                                 >
                                     <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
                                     <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -264,10 +287,9 @@ const showDescription = !isAdmin;
                                     Choose Photo
                                 </label>
                             </div>
-
                             <!-- Remove Photo Button -->
                             <button
-                                v-if="user.profile_photo_url || photoPreview"
+                                v-if="(user.profile_photo_url || photoPreview) && (isAdmin || isEditingProfile)"
                                 type="button"
                                 @click="handleRemovePhoto"
                                 class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 hover:border-red-300 hover:text-red-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150"
@@ -277,7 +299,6 @@ const showDescription = !isAdmin;
                                 </svg>
                                 Remove Photo
                             </button>
-
                             <!-- Photo Guidelines -->
                             <p class="text-xs text-gray-500 mt-2">
                                 Recommended: Square image, at least 200x200 pixels. Maximum file size: 2MB.
@@ -287,15 +308,30 @@ const showDescription = !isAdmin;
                 </div>
                 <InputError class="mt-2" :message="form.errors.profile_photo" />
             </div>
-
             <div class="flex items-center pt-4 border-t border-gray-100">
                 <PrimaryButton 
+                    v-if="isAdmin || isEditingProfile"
                     :disabled="form.processing"
                     class="bg-blue-500 hover:bg-blue-600 focus:bg-blue-600"
                 >
                     Save Changes
                 </PrimaryButton>
-
+                <button
+                    v-if="!isAdmin && isEditingProfile"
+                    type="button"
+                    @click="cancelEditProfile"
+                    class="inline-flex items-center justify-center px-4 py-2 bg-gray-200 text-sm font-medium text-gray-700 rounded-xl shadow-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group ml-2"
+                >
+                    <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
+                    Cancel
+                </button>
+                <PrimaryButton
+                    v-if="!isAdmin && !isEditingProfile"
+                    @click="startEditProfile"
+                    type="button"
+                >
+                    Edit Profile
+                </PrimaryButton>
                 <Transition
                     enter-active-class="transition ease-in-out duration-300"
                     enter-from-class="opacity-0"
