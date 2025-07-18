@@ -4,7 +4,7 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { usePage } from '@inertiajs/vue3';
 
 const user = usePage().props.auth.user;
@@ -19,6 +19,9 @@ const showConfirmPassword = ref(false);
 
 // Track which field is currently focused
 const focusedField = ref(null);
+
+// Track if password input is focused or has content
+const isPasswordActive = computed(() => focusedField.value === 'new' || form.password.length > 0);
 
 const form = useForm({
     current_password: '',
@@ -42,6 +45,35 @@ const updatePassword = () => {
         },
     });
 };
+
+// Password requirement checks
+const passwordRequirements = computed(() => {
+    const password = form.password;
+    return {
+        minLength: password.length >= 8,
+        hasUpper: /[A-Z]/.test(password),
+        hasLower: /[a-z]/.test(password),
+        hasNumber: /[0-9]/.test(password),
+        hasSymbol: /[^A-Za-z0-9]/.test(password),
+        matches: form.password && form.password === form.password_confirmation,
+    };
+});
+
+// Password strength calculation
+const passwordStrength = computed(() => {
+    const req = passwordRequirements.value;
+    let score = 0;
+    if (req.minLength) score++;
+    if (req.hasUpper) score++;
+    if (req.hasLower) score++;
+    if (req.hasNumber) score++;
+    if (req.hasSymbol) score++;
+    if (score <= 2) return { label: 'Weak', color: 'bg-red-400', width: 'w-1/4' };
+    if (score === 3) return { label: 'Good', color: 'bg-yellow-400', width: 'w-2/4' };
+    if (score === 4) return { label: 'Strong', color: 'bg-blue-400', width: 'w-3/4' };
+    if (score === 5) return { label: 'Excellent', color: 'bg-green-500', width: 'w-full' };
+    return { label: '', color: '', width: '' };
+});
 
 // Toggle password visibility functions
 const toggleCurrentPassword = (event) => {
@@ -265,7 +297,23 @@ const handleToggleMouseDown = (event) => {
                             </svg>
                         </div>
                     </div>
+                    <!-- Password strength bar and label moved below input+icon container -->
+                    <div v-if="form.password">
+                        <div class="mt-1 h-0.5 w-full rounded bg-gray-200 overflow-hidden flex">
+                            <div :class="[passwordStrength.color, passwordStrength.width, 'h-0.5 rounded transition-all duration-300']"></div>
+                        </div>
+                        <div class="text-xs mt-1 font-semibold text-gray-600">{{ passwordStrength.label }} Password</div>
+                    </div>
                     <InputError :message="form.errors.password" class="mt-2" />
+                    <!-- Password requirements as errors -->
+                    <ul v-if="isPasswordActive" class="mt-2 space-y-1 text-xs text-red-500">
+                        <li v-if="!passwordRequirements.minLength">Minimum 8 characters</li>
+                        <li v-if="!passwordRequirements.hasUpper">At least one uppercase letter</li>
+                        <li v-if="!passwordRequirements.hasLower">At least one lowercase letter</li>
+                        <li v-if="!passwordRequirements.hasNumber">At least one number</li>
+                        <li v-if="!passwordRequirements.hasSymbol">At least one symbol</li>
+                        <li v-if="form.password && !passwordRequirements.matches">Passwords match</li>
+                    </ul>
                 </div>
                 
                 <!-- Password confirmation field -->

@@ -17,7 +17,17 @@ class PasswordController extends Controller
     {
         $validated = $request->validate([
             'current_password' => ['required', 'current_password'],
-            'password' => ['required', Password::defaults(), 'confirmed'],
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'max:64', // allow up to 64 characters
+                'regex:/[A-Z]/', // at least one uppercase
+                'regex:/[a-z]/', // at least one lowercase
+                'regex:/[0-9]/', // at least one number
+                'regex:/[^A-Za-z0-9]/', // at least one symbol
+                'confirmed',
+            ],
         ]);
 
         $request->user()->update([
