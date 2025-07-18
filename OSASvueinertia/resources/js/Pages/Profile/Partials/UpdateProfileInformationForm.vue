@@ -367,6 +367,9 @@ function cancelSave() {
                 <div class="p-6 flex flex-col items-center justify-center min-h-[180px]">
                     <h2 class="text-lg font-semibold mb-4 text-center">Confirm Changes</h2>
                     <p class="mb-6 text-center">Are you sure you want to save these changes to your profile?</p>
+                    <p v-if="!isAdmin" class="mb-4 text-sm text-blue-500 text-center">
+                        Note: You can only change your name once every 14 days.
+                    </p>
                     <div class="flex justify-center gap-2 w-full">
                         <button @click="cancelSave" type="button"
                             class="inline-flex items-center justify-center px-4 py-2 bg-gray-200 text-sm font-medium text-gray-700 rounded-xl shadow-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group">
