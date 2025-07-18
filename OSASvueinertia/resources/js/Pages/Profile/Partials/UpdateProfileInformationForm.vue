@@ -116,13 +116,10 @@ const showDescription = !isAdmin;
 
 <template>
     <section class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
-        <!-- Header with colored accent -->
+        <!-- Specific section description with colored accent -->
         <div class="border-l-4 border-blue-500 pl-3 mb-6">
-            <h2 class="text-xl font-semibold text-gray-800">
-                Profile Information
-            </h2>
-            <p class="mt-1 text-sm text-gray-600">
-                Update your account's profile photo. <span v-if="isAdmin">You can also update your name and email address.</span>
+            <p class="text-sm text-gray-600">
+                Manage your personal details, profile photo, and organization description. <span v-if="isAdmin">As an admin, you can also update your name and email address.</span>
             </p>
         </div>
 

@@ -81,13 +81,10 @@ const handleToggleMouseDown = (event) => {
 
 <template>
     <section class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
-        <!-- Header with colored accent -->
+        <!-- Specific section description with colored accent -->
         <div class="border-l-4 border-green-500 pl-3 mb-6">
-            <h2 class="text-xl font-semibold text-gray-800">
-                Update Password
-            </h2>
-            <p class="mt-1 text-sm text-gray-600">
-                Ensure your account is using a long, random password to stay secure.
+            <p class="text-sm text-gray-600">
+                Change your current password to a new secure password. All fields are required for verification.
             </p>
         </div>
 

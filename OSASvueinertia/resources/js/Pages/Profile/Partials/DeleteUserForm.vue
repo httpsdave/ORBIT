@@ -49,16 +49,10 @@ const closeModal = () => {
 <template>
     <!-- Only show delete account section to admins -->
     <section v-if="isAdmin" class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
-        <!-- Header with red accent -->
+        <!-- Specific section description with colored accent -->
         <div class="border-l-4 border-red-500 pl-3 mb-6">
-            <h2 class="text-xl font-semibold text-gray-800">
-                Delete Account
-            </h2>
-
-            <p class="mt-1 text-sm text-gray-600">
-                Once your account is deleted, all of its resources and data will
-                be permanently deleted. Before deleting your account, please
-                download any data or information that you wish to retain.
+            <p class="text-sm text-gray-600">
+                Permanently remove your account and all associated data. This action requires password confirmation and cannot be undone.
             </p>
         </div>
 
