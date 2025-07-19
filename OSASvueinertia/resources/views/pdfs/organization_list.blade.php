@@ -509,11 +509,8 @@
                 </td>
             </tr>
         </table>
-        <div class="noted-section center-align" style="margin-top: 5px;">
-            <p style="margin: 2px 0;">Noted:</p>
-        </div>
-
         <div class="dean-signature center-align" style="width: 100%; margin-top: 3px;">
+            <p style="margin-bottom: 0; font-weight: normal; margin-left: -165px;">Noted:</p>
             <p style="margin-bottom: 0;"><span class="date-signature-line">{{ $application->dean_name ?? '' }}</span></p>
             <p style="margin-top: 2px; font-weight: bold;">Dean/Assoc. Dean of College</p>
         </div>
@@ -704,11 +701,8 @@
                     </td>
                 </tr>
             </table>
-            <div class="noted-section center-align" style="margin-top: 5px;">
-                <p style="margin: 2px 0;">Noted:</p>
-            </div>
-
             <div class="dean-signature center-align" style="width: 100%; margin-top: 3px;">
+                <p style="margin-bottom: 0; font-weight: normal; margin-left: -165px;">Noted:</p>
                 <p style="margin-bottom: 0;"><span class="date-signature-line">{{ $application->dean_name ?? '' }}</span></p>
                 <p style="margin-top: 2px; font-weight: bold;">Dean/Assoc. Dean of College</p>
             </div>
