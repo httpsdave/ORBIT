@@ -72,21 +72,7 @@ const validateForm = () => {
     errors.value.president_name = 'President Name is required';
   }
   
-  if (!form.is_bonafide) {
-    errors.value.is_bonafide = 'Bonafide Student certification is required';
-  }
-  
-  if (!form.is_not_academic_probation) {
-    errors.value.is_not_academic_probation = 'Academic probation status is required';
-  }
-  
-  if (!form.is_not_disciplinary_probation) {
-    errors.value.is_not_disciplinary_probation = 'Disciplinary probation status is required';
-  }
-  
-  if (!form.has_position) {
-    errors.value.has_position = 'Position/rank status is required';
-  }
+  // Student status fields are now optional - no validation required
   
   return Object.keys(errors.value).length === 0;
 };
@@ -257,28 +243,24 @@ const submit = () => {
                 <label class="block font-bold">Student Status</label>
                 <div class="flex flex-col gap-2 mt-2">
                     <label class="inline-flex items-center">
-                        <input type="checkbox" v-model="form.is_bonafide" class="mr-2" required>
+                        <input type="checkbox" v-model="form.is_bonafide" class="mr-2">
                         <span>Bonafide Student</span>
                     </label>
-                    <p v-if="errors.is_bonafide" class="text-red-500 text-sm mt-1">{{ errors.is_bonafide }}</p>
                     
                     <label class="inline-flex items-center">
-                        <input type="checkbox" v-model="form.is_not_academic_probation" class="mr-2" required>
+                        <input type="checkbox" v-model="form.is_not_academic_probation" class="mr-2">
                         <span>Not Under Academic Probation</span>
                     </label>
-                    <p v-if="errors.is_not_academic_probation" class="text-red-500 text-sm mt-1">{{ errors.is_not_academic_probation }}</p>
                     
                     <label class="inline-flex items-center">
-                        <input type="checkbox" v-model="form.is_not_disciplinary_probation" class="mr-2" required>
+                        <input type="checkbox" v-model="form.is_not_disciplinary_probation" class="mr-2">
                         <span>Not Under Disciplinary Probation</span>
                     </label>
-                    <p v-if="errors.is_not_disciplinary_probation" class="text-red-500 text-sm mt-1">{{ errors.is_not_disciplinary_probation }}</p>
                     
                     <label class="inline-flex items-center">
-                        <input type="checkbox" v-model="form.has_position" class="mr-2" required>
+                        <input type="checkbox" v-model="form.has_position" class="mr-2">
                         <span>Has Position/Rank in Organization</span>
                     </label>
-                    <p v-if="errors.has_position" class="text-red-500 text-sm mt-1">{{ errors.has_position }}</p>
                 </div>
             </div>
         </div>

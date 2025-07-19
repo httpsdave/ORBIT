@@ -147,10 +147,10 @@ class OrganizationApplicationController extends Controller
                 'student_name' => 'required|string|max:255',
                 'course_year_section' => 'required|string|max:255',
                 'position_rank' => 'nullable|string|max:255',
-                'is_bonafide' => 'required|boolean',
-                'is_not_academic_probation' => 'required|boolean',
-                'is_not_disciplinary_probation' => 'required|boolean',
-                'has_position' => 'required|boolean',
+                'is_bonafide' => 'nullable|boolean',
+                'is_not_academic_probation' => 'nullable|boolean',
+                'is_not_disciplinary_probation' => 'nullable|boolean',
+                'has_position' => 'nullable|boolean',
                 'coordinator_name' => 'nullable|string|max:255',
             ]);
             
@@ -372,10 +372,10 @@ class OrganizationApplicationController extends Controller
                 'student_name' => 'required|string|max:255',
                 'course_year_section' => 'required|string|max:255',
                 'position_rank' => 'nullable|string|max:255',
-                'is_bonafide' => 'required|boolean',
-                'is_not_academic_probation' => 'required|boolean',
-                'is_not_disciplinary_probation' => 'required|boolean',
-                'has_position' => 'required|boolean',
+                'is_bonafide' => 'nullable|boolean',
+                'is_not_academic_probation' => 'nullable|boolean',
+                'is_not_disciplinary_probation' => 'nullable|boolean',
+                'has_position' => 'nullable|boolean',
             ]);
         } elseif ($application->form_type === 'LSPU-OSAS-SF-007') {
             $validationRules = array_merge($validationRules, [
