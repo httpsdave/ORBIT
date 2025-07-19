@@ -127,13 +127,21 @@
             line-height: 20px;
             font-size: 11pt;
             font-family: 'Calibri', sans-serif;
-            font-weight: normal;
+            font-weight: normal !important;
+        }
+
+        /* Ensure all footer text is normal, not bold, on all pages */
+        .footer, .footer * {
+            font-weight: normal !important;
+            font-style: normal !important;
+            font-family: Calibri, sans-serif !important;
         }
 
         .footer-left {
             position: absolute;
             left: -1.0cm;
             bottom: 0;
+            font-weight: normal !important;
         }
 
         .footer-center {
@@ -141,12 +149,23 @@
             left: 50%;
             transform: translateX(-50%);
             bottom: 0;
+            font-weight: normal !important;
         }
 
         .footer-right {
             position: absolute;
             right: -1.0cm;
             bottom: 0;
+            font-weight: normal !important;
+        }
+        
+        /* Additional rules to ensure footer text is not bold */
+        .footer * {
+            font-weight: normal !important;
+        }
+        
+        .footer div {
+            font-weight: normal !important;
         }
 
         .signature-row {
@@ -279,10 +298,10 @@
     
     function showFooter() {
         // This function will generate the footer HTML
-        $footer = '<div class="footer">
-                <div class="footer-left">LSPU-OSAS-SF-005</div>
-                <div class="footer-center">Rev. 1</div>
-                <div class="footer-right">09 November 2020</div>
+        $footer = '<div class="footer" style="font-weight:normal !important; font-style:normal !important; font-family:Calibri, sans-serif !important;">
+                <div class="footer-left" style="font-weight:normal !important; font-style:normal !important; font-family:Calibri, sans-serif !important;">LSPU-OSAS-SF-005</div>
+                <div class="footer-center" style="font-weight:normal !important; font-style:normal !important; font-family:Calibri, sans-serif !important;">Rev. 1</div>
+                <div class="footer-right" style="font-weight:normal !important; font-style:normal !important; font-family:Calibri, sans-serif !important;">09 November 2020</div>
             </div>';
         return $footer;
     }
@@ -466,6 +485,40 @@
     <!-- First page footer -->
     {!! showFooter() !!}
 
+    <!-- Signatures - on first page -->
+    @if($totalMembers > 0)
+        <table class="signature-table" style="width: 100%; margin-top: 10px; border-collapse: collapse;">
+            <tr>
+                <td style="width: 50%; vertical-align: top; text-align: center; padding-top: 0;">
+                    <div style="width: 200px; margin: 0 auto;">
+                        <p style="margin-bottom: 0;">
+                            <span class="date-signature-line" style="display: block; min-width: 200px; text-align: center;">{{ $application->adviser_name ?? '' }}</span>
+                        </p>
+                        <p style="margin-top: 2px; text-align: center; font-weight: bold;">Faculty Adviser</p>
+                    </div>
+                    <p style="text-align: left; padding-left: 10px; margin-top: 0;">Date: <span class="date-signature-line">{{ now()->format('F d, Y') }}</span></p>
+                </td>
+                <td style="width: 50%; vertical-align: top; text-align: center; padding-top: 0;">
+                    <div style="width: 200px; margin: 0 auto;">
+                        <p style="margin-bottom: 0;">
+                            <span class="date-signature-line" style="display: block; min-width: 200px; text-align: center;">{{ $application->second_adviser ?? '' }}</span>
+                        </p>
+                        <p style="margin-top: 2px; text-align: center; font-weight: bold;">Faculty Adviser</p>
+                    </div>
+                    <p style="text-align: left; padding-left: 10px; margin-top: 0;">Date: <span class="date-signature-line">{{ now()->format('F d, Y') }}</span></p>
+                </td>
+            </tr>
+        </table>
+        <div class="noted-section center-align" style="margin-top: 5px;">
+            <p style="margin: 2px 0;">Noted:</p>
+        </div>
+
+        <div class="dean-signature center-align" style="width: 100%; margin-top: 3px;">
+            <p style="margin-bottom: 0;"><span class="date-signature-line">{{ $application->dean_name ?? '' }}</span></p>
+            <p style="margin-top: 2px; font-weight: bold;">Dean/Assoc. Dean of College</p>
+        </div>
+    @endif
+
     <!-- Generate additional pages if needed -->
     @for ($page = 1; $page < $totalPages; $page++)
         <!-- Create a page break div -->
@@ -622,14 +675,13 @@
             </table>
         </div>
         
+        <!-- Add font reset before footer to prevent bold inheritance -->
+        <span style="font-weight:normal !important; font-style:normal !important; font-family:Calibri, sans-serif !important;"></span>
         <!-- Add footer to each page -->
         {!! showFooter() !!}
-    @endfor
-
-    <!-- Only add signature section on the last page -->
-    @if($totalMembers > 0)
-        @if($currentPage == $totalPages)
-            <!-- Signatures - only on the last page -->
+        
+        <!-- Signatures - on every page -->
+        @if($totalMembers > 0)
             <table class="signature-table" style="width: 100%; margin-top: 10px; border-collapse: collapse;">
                 <tr>
                     <td style="width: 50%; vertical-align: top; text-align: center; padding-top: 0;">
@@ -661,6 +713,6 @@
                 <p style="margin-top: 2px; font-weight: bold;">Dean/Assoc. Dean of College</p>
             </div>
         @endif
-    @endif
+    @endfor
 </body>
 </html>
