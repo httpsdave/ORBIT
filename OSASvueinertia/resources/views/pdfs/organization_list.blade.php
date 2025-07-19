@@ -82,6 +82,11 @@
             text-align: center;
         }
 
+        .info-cell-spaced {
+            padding-left: 60px;
+            padding-right: 60px;
+        }
+
         .photo-box {
             border: 1px solid black;
             width: 96px;
@@ -234,6 +239,27 @@
             margin-top: 6px;
             display: block;
         }
+
+        .underline {
+            position: relative;
+            border-bottom: 1px solid #000;
+            width: 90%;
+            min-width: 60px;
+            margin: 6px auto;
+            height: 16px;
+            text-align: center;
+        }
+        .filled-text {
+            position: relative;
+            z-index: 2;
+            background: white;
+            padding: 0 2px;
+        }
+        .spacer-cell {
+            width: 60px;
+            min-width: 60px;
+            max-width: 120px;
+        }
     </style>
 </head>
 <body>
@@ -322,9 +348,21 @@
                                         </div>
                                     </td>
                                     <td class="info-cell">
-                                        <div class="member-info">{{ $leftMember->student_name ?? '' }}</div>
-                                        <div class="member-info">{{ $leftMember->student_number ?? '' }}</div>
-                                        <div class="member-info">{{ $leftMember->course_year_section ?? '' }}</div>
+                                        <div class="member-info underline">
+                                            @if($leftMember && $leftMember->student_name)
+                                                <span class="filled-text">{{ $leftMember->student_name }}</span>
+                                            @endif
+                                        </div>
+                                        <div class="member-info underline">
+                                            @if($leftMember && $leftMember->student_number)
+                                                <span class="filled-text">{{ $leftMember->student_number }}</span>
+                                            @endif
+                                        </div>
+                                        <div class="member-info underline">
+                                            @if($leftMember && $leftMember->course_year_section)
+                                                <span class="filled-text">{{ $leftMember->course_year_section }}</span>
+                                            @endif
+                                        </div>
                                     </td>
                                 </tr>
                             </table>
@@ -335,9 +373,21 @@
                                         <div class="photo-box"><span class="photo-box-text">1 x 1</span></div>
                                     </td>
                                     <td class="info-cell">
-                                        <div class="member-info"></div>
-                                        <div class="member-info">Student Number</div>
-                                        <div class="member-info">Course - Year Section</div>
+                                        <div class="member-info underline">
+                                            @if($leftMember && $leftMember->student_name)
+                                                <span class="filled-text">{{ $leftMember->student_name }}</span>
+                                            @endif
+                                        </div>
+                                        <div class="member-info underline">
+                                            @if($leftMember && $leftMember->student_number)
+                                                <span class="filled-text">{{ $leftMember->student_number }}</span>
+                                            @endif
+                                        </div>
+                                        <div class="member-info underline">
+                                            @if($leftMember && $leftMember->course_year_section)
+                                                <span class="filled-text">{{ $leftMember->course_year_section }}</span>
+                                            @endif
+                                        </div>
                                     </td>
                                 </tr>
                             </table>
@@ -364,9 +414,21 @@
                                         </div>
                                     </td>
                                     <td class="info-cell">
-                                        <div class="member-info">{{ $rightMember->student_name ?? '' }}</div>
-                                        <div class="member-info">{{ $rightMember->student_number ?? '' }}</div>
-                                        <div class="member-info">{{ $rightMember->course_year_section ?? '' }}</div>
+                                        <div class="member-info underline">
+                                            @if($rightMember && $rightMember->student_name)
+                                                <span class="filled-text">{{ $rightMember->student_name }}</span>
+                                            @endif
+                                        </div>
+                                        <div class="member-info underline">
+                                            @if($rightMember && $rightMember->student_number)
+                                                <span class="filled-text">{{ $rightMember->student_number }}</span>
+                                            @endif
+                                        </div>
+                                        <div class="member-info underline">
+                                            @if($rightMember && $rightMember->course_year_section)
+                                                <span class="filled-text">{{ $rightMember->course_year_section }}</span>
+                                            @endif
+                                        </div>
                                     </td>
                                 </tr>
                             </table>
@@ -377,9 +439,21 @@
                                         <div class="photo-box"><span class="photo-box-text">1 x 1</span></div>
                                     </td>
                                     <td class="info-cell">
-                                        <div class="member-info"></div>
-                                        <div class="member-info">Student Number</div>
-                                        <div class="member-info">Course - Year Section</div>
+                                        <div class="member-info underline">
+                                            @if($rightMember && $rightMember->student_name)
+                                                <span class="filled-text">{{ $rightMember->student_name }}</span>
+                                            @endif
+                                        </div>
+                                        <div class="member-info underline">
+                                            @if($rightMember && $rightMember->student_number)
+                                                <span class="filled-text">{{ $rightMember->student_number }}</span>
+                                            @endif
+                                        </div>
+                                        <div class="member-info underline">
+                                            @if($rightMember && $rightMember->course_year_section)
+                                                <span class="filled-text">{{ $rightMember->course_year_section }}</span>
+                                            @endif
+                                        </div>
                                     </td>
                                 </tr>
                             </table>
@@ -433,9 +507,21 @@
                                             </div>
                                         </td>
                                         <td class="info-cell">
-                                            <div class="member-info">{{ $leftMember->student_name ?? '' }}</div>
-                                            <div class="member-info">{{ $leftMember->student_number ?? '' }}</div>
-                                            <div class="member-info">{{ $leftMember->course_year_section ?? '' }}</div>
+                                            <div class="member-info underline">
+                                                @if($leftMember && $leftMember->student_name)
+                                                    <span class="filled-text">{{ $leftMember->student_name }}</span>
+                                                @endif
+                                            </div>
+                                            <div class="member-info underline">
+                                                @if($leftMember && $leftMember->student_number)
+                                                    <span class="filled-text">{{ $leftMember->student_number }}</span>
+                                                @endif
+                                            </div>
+                                            <div class="member-info underline">
+                                                @if($leftMember && $leftMember->course_year_section)
+                                                    <span class="filled-text">{{ $leftMember->course_year_section }}</span>
+                                                @endif
+                                            </div>
                                         </td>
                                     </tr>
                                 </table>
@@ -446,9 +532,21 @@
                                             <div class="photo-box"><span class="photo-box-text">1 x 1</span></div>
                                         </td>
                                         <td class="info-cell">
-                                            <div class="member-info"></div>
-                                            <div class="member-info">Student Number</div>
-                                            <div class="member-info">Course - Year Section</div>
+                                            <div class="member-info underline">
+                                                @if($leftMember && $leftMember->student_name)
+                                                    <span class="filled-text">{{ $leftMember->student_name }}</span>
+                                                @endif
+                                            </div>
+                                            <div class="member-info underline">
+                                                @if($leftMember && $leftMember->student_number)
+                                                    <span class="filled-text">{{ $leftMember->student_number }}</span>
+                                                @endif
+                                            </div>
+                                            <div class="member-info underline">
+                                                @if($leftMember && $leftMember->course_year_section)
+                                                    <span class="filled-text">{{ $leftMember->course_year_section }}</span>
+                                                @endif
+                                            </div>
                                         </td>
                                     </tr>
                                 </table>
@@ -475,9 +573,21 @@
                                             </div>
                                         </td>
                                         <td class="info-cell">
-                                            <div class="member-info">{{ $rightMember->student_name ?? '' }}</div>
-                                            <div class="member-info">{{ $rightMember->student_number ?? '' }}</div>
-                                            <div class="member-info">{{ $rightMember->course_year_section ?? '' }}</div>
+                                            <div class="member-info underline">
+                                                @if($rightMember && $rightMember->student_name)
+                                                    <span class="filled-text">{{ $rightMember->student_name }}</span>
+                                                @endif
+                                            </div>
+                                            <div class="member-info underline">
+                                                @if($rightMember && $rightMember->student_number)
+                                                    <span class="filled-text">{{ $rightMember->student_number }}</span>
+                                                @endif
+                                            </div>
+                                            <div class="member-info underline">
+                                                @if($rightMember && $rightMember->course_year_section)
+                                                    <span class="filled-text">{{ $rightMember->course_year_section }}</span>
+                                                @endif
+                                            </div>
                                         </td>
                                     </tr>
                                 </table>
@@ -488,9 +598,21 @@
                                             <div class="photo-box"><span class="photo-box-text">1 x 1</span></div>
                                         </td>
                                         <td class="info-cell">
-                                            <div class="member-info"></div>
-                                            <div class="member-info">Student Number</div>
-                                            <div class="member-info">Course - Year Section</div>
+                                            <div class="member-info underline">
+                                                @if($rightMember && $rightMember->student_name)
+                                                    <span class="filled-text">{{ $rightMember->student_name }}</span>
+                                                @endif
+                                            </div>
+                                            <div class="member-info underline">
+                                                @if($rightMember && $rightMember->student_number)
+                                                    <span class="filled-text">{{ $rightMember->student_number }}</span>
+                                                @endif
+                                            </div>
+                                            <div class="member-info underline">
+                                                @if($rightMember && $rightMember->course_year_section)
+                                                    <span class="filled-text">{{ $rightMember->course_year_section }}</span>
+                                                @endif
+                                            </div>
                                         </td>
                                     </tr>
                                 </table>

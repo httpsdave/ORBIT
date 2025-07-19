@@ -304,6 +304,10 @@ const submit = () => {
     });
   }
 };
+
+function limitTo2Digits(event) {
+  event.target.value = event.target.value.replace(/[^0-9]/g, '').slice(0, 2);
+}
 </script>
 
 <template>
@@ -326,8 +330,8 @@ const submit = () => {
                 <option value="Summer">Summer</option>
             </select> 
             Sem. / AY 
-            <input v-model="form.academic_year_start" type="text" class="border p-1 w-16 mx-1" placeholder="20__">-
-            <input v-model="form.academic_year_end" type="text" class="border p-1 w-16 mx-1" placeholder="20__">
+            <input v-model="form.academic_year_start" type="text" class="border p-1 w-16 mx-1" placeholder="20__" inputmode="numeric" pattern="[0-9]{2}" maxlength="2" @input="limitTo2Digits" >-
+            <input v-model="form.academic_year_end" type="text" class="border p-1 w-16 mx-1" placeholder="20__" inputmode="numeric" pattern="[0-9]{2}" maxlength="2" @input="limitTo2Digits" >
         </p>
     </div>
 
@@ -371,14 +375,14 @@ const submit = () => {
                             <span v-else class="text-center leading-tight">1 x 1<br>PICTURE</span>
                         </div>
                         <div class="member-info flex-1 flex flex-col justify-center text-center">
-                            <div class="member-line mb-1 min-h-[20px] py-1">
-                                {{ form.members[startIndex + (rowIndex - 1)].student_name || '' }}
+                            <div class="member-line mb-1 min-h-[20px] py-1" :class="{ 'text-gray-400 italic': !(form.members[startIndex + (rowIndex - 1)].student_name) }">
+                                {{ form.members[startIndex + (rowIndex - 1)].student_name || 'Student Name' }}
                             </div>
-                            <div class="member-line mb-1 min-h-[20px] py-1">
-                                {{ form.members[startIndex + (rowIndex - 1)].student_number || '' }}
+                            <div class="member-line mb-1 min-h-[20px] py-1" :class="{ 'text-gray-400 italic': !(form.members[startIndex + (rowIndex - 1)].student_number) }">
+                                {{ form.members[startIndex + (rowIndex - 1)].student_number || 'Student Number' }}
                             </div>
-                            <div class="member-line mb-1 min-h-[20px] py-1">
-                                {{ form.members[startIndex + (rowIndex - 1)].course_year_section || '' }}
+                            <div class="member-line mb-1 min-h-[20px] py-1" :class="{ 'text-gray-400 italic': !(form.members[startIndex + (rowIndex - 1)].course_year_section) }">
+                                {{ form.members[startIndex + (rowIndex - 1)].course_year_section || 'Course - Year Section' }}
                             </div>
                         </div>
                     </div>
@@ -387,9 +391,9 @@ const submit = () => {
                             <span class="text-center leading-tight">1 x 1<br>PICTURE</span>
                         </div>
                         <div class="member-info flex-1 flex flex-col justify-center text-center">
-                            <div class="member-line mb-1 min-h-[20px] py-1"></div>
-                            <div class="member-line mb-1 min-h-[20px] py-1">Student Number</div>
-                            <div class="member-line mb-1 min-h-[20px] py-1">Course - Year Section</div>
+                            <div class="member-line mb-1 min-h-[20px] py-1 text-gray-400 italic">Student Name</div>
+                            <div class="member-line mb-1 min-h-[20px] py-1 text-gray-400 italic">Student Number</div>
+                            <div class="member-line mb-1 min-h-[20px] py-1 text-gray-400 italic">Course - Year Section</div>
                         </div>
                     </div>
                 </div>
@@ -407,14 +411,14 @@ const submit = () => {
                             <span v-else class="text-center leading-tight">1 x 1<br>PICTURE</span>
                         </div>
                         <div class="member-info flex-1 flex flex-col justify-center text-center">
-                            <div class="member-line mb-1 min-h-[20px] py-1">
-                                {{ form.members[startIndex + (rowIndex - 1) + 5].student_name || '' }}
+                            <div class="member-line mb-1 min-h-[20px] py-1" :class="{ 'text-gray-400 italic': !(form.members[startIndex + (rowIndex - 1) + 5].student_name) }">
+                                {{ form.members[startIndex + (rowIndex - 1) + 5].student_name || 'Student Name' }}
                             </div>
-                            <div class="member-line mb-1 min-h-[20px] py-1">
-                                {{ form.members[startIndex + (rowIndex - 1) + 5].student_number || '' }}
+                            <div class="member-line mb-1 min-h-[20px] py-1" :class="{ 'text-gray-400 italic': !(form.members[startIndex + (rowIndex - 1) + 5].student_number) }">
+                                {{ form.members[startIndex + (rowIndex - 1) + 5].student_number || 'Student Number' }}
                             </div>
-                            <div class="member-line mb-1 min-h-[20px] py-1">
-                                {{ form.members[startIndex + (rowIndex - 1) + 5].course_year_section || '' }}
+                            <div class="member-line mb-1 min-h-[20px] py-1" :class="{ 'text-gray-400 italic': !(form.members[startIndex + (rowIndex - 1) + 5].course_year_section) }">
+                                {{ form.members[startIndex + (rowIndex - 1) + 5].course_year_section || 'Course - Year Section' }}
                             </div>
                         </div>
                     </div>
@@ -423,9 +427,9 @@ const submit = () => {
                             <span class="text-center leading-tight">1 x 1<br>PICTURE</span>
                         </div>
                         <div class="member-info flex-1 flex flex-col justify-center text-center">
-                            <div class="member-line mb-1 min-h-[20px] py-1"></div>
-                            <div class="member-line mb-1 min-h-[20px] py-1">Student Number</div>
-                            <div class="member-line mb-1 min-h-[20px] py-1">Course - Year Section</div>
+                            <div class="member-line mb-1 min-h-[20px] py-1 text-gray-400 italic">Student Name</div>
+                            <div class="member-line mb-1 min-h-[20px] py-1 text-gray-400 italic">Student Number</div>
+                            <div class="member-line mb-1 min-h-[20px] py-1 text-gray-400 italic">Course - Year Section</div>
                         </div>
                     </div>
                 </div>
@@ -541,13 +545,13 @@ const submit = () => {
 
             <div>
                 <label class="block font-bold">Academic Year Start</label>
-                <input v-model="form.academic_year_start" class="border p-2 w-full" placeholder="20__" required>
+                <input v-model="form.academic_year_start" class="border p-2 w-full" placeholder="20__" required inputmode="numeric" pattern="[0-9]{2}" maxlength="2" @input="limitTo2Digits" >
                 <div v-if="errors.academic_year_start" class="text-red-500 text-sm mt-1">{{ errors.academic_year_start }}</div>
             </div>
 
             <div>
                 <label class="block font-bold">Academic Year End</label>
-                <input v-model="form.academic_year_end" class="border p-2 w-full" placeholder="20__" required>
+                <input v-model="form.academic_year_end" class="border p-2 w-full" placeholder="20__" required inputmode="numeric" pattern="[0-9]{2}" maxlength="2" @input="limitTo2Digits" >
                 <div v-if="errors.academic_year_end" class="text-red-500 text-sm mt-1">{{ errors.academic_year_end }}</div>
             </div>
 
