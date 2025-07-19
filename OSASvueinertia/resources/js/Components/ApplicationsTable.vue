@@ -59,6 +59,20 @@ const formTypeToName = (formType) => {
   }
 };
 
+// Format date function to display submission date
+const formatDate = (dateString) => {
+  if (!dateString) return 'N/A';
+  
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return 'Invalid Date';
+  
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
+};
+
 // Add this function to your methods
 const getDropdownPosition = (appId) => {
   // Find the button element that triggered this dropdown
@@ -346,7 +360,7 @@ const closeDropdowns = (event) => {
             <th class="px-6 py-5 font-semibold">Form Type</th>
             <th class="px-6 py-5 font-semibold">Organization</th>
             <th class="px-6 py-5 font-semibold">President</th>
-            <th class="px-6 py-5 font-semibold">Date</th>
+            <th class="px-6 py-5 font-semibold">Submitted</th>
             <th class="px-6 py-5 font-semibold">Status</th>
             <th class="px-6 py-5 font-semibold text-center">Actions</th>
           </tr>
@@ -364,7 +378,7 @@ const closeDropdowns = (event) => {
               <div class="text-sm text-gray-600">{{ app.president_name }}</div>
             </td>
             <td class="px-6 py-5">
-              <div class="text-sm text-gray-600">{{ app.application_date }}</div>
+              <div class="text-sm text-gray-600">{{ formatDate(app.created_at) }}</div>
             </td>
             <td class="px-6 py-5">
               <span :class="`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(app.status)}`">
