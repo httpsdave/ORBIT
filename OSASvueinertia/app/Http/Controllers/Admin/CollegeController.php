@@ -14,7 +14,7 @@ class CollegeController extends Controller
      */
     public function index()
     {
-        $colleges = College::withCount('studentOrgs')->get();
+        $colleges = College::withCount('users')->get();
         
         return Inertia::render('Admin/Colleges/Index', [
             'colleges' => $colleges

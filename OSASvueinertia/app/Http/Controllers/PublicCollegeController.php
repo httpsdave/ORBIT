@@ -14,7 +14,7 @@ class PublicCollegeController extends Controller
      */
     public function index()
     {
-        $colleges = College::withCount('studentOrgs')->get();
+        $colleges = College::withCount('users')->get();
         
         return Inertia::render('Colleges/Index', [
             'colleges' => $colleges
@@ -26,7 +26,7 @@ class PublicCollegeController extends Controller
      */
     public function show(College $college)
     {
-        $college->load('studentOrgs');
+        $college->load('users');
         
         return Inertia::render('Colleges/Show', [
             'college' => $college

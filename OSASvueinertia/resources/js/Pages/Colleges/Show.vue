@@ -41,7 +41,7 @@
                             </div>
                             <div class="mt-2 sm:mt-0">
                                 <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                                    {{ college.student_orgs.length }} {{ college.student_orgs.length === 1 ? 'Organization' : 'Organizations' }}
+                                    {{ college.users.length }} {{ college.users.length === 1 ? 'Organization' : 'Organizations' }}
                                 </span>
                             </div>
                         </div>
@@ -63,13 +63,13 @@
                         <h2 class="text-2xl font-bold text-gray-800">Student Organizations</h2>
                     </div>
 
-                    <div v-if="college.student_orgs.length === 0" class="bg-white rounded-xl shadow-md p-8 text-center">
+                    <div v-if="college.users.length === 0" class="bg-white rounded-xl shadow-md p-8 text-center">
                         <div class="text-gray-500">No student organizations found for this college.</div>
                     </div>
 
                     <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <div
-                            v-for="org in college.student_orgs"
+                            v-for="org in college.users"
                             :key="org.id"
                             class="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden flex flex-col"
                         >
@@ -86,19 +86,24 @@
                                             {{ org.name }}
                                         </Link>
                                     </h3>
-                                    <span v-if="org.acronym" 
+                                    <span v-if="org.college && org.college.acronym" 
                                           class="ml-2 bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-md">
-                                        {{ org.acronym }}
+                                        {{ org.college.acronym }}
                                     </span>
                                 </div>
                                 
                                 <!-- Logo centered -->
-                                <div v-if="org.logo_path" class="flex justify-center my-4">
+                                <div v-if="org.profile_photo_url" class="flex justify-center my-4">
                                     <img
-                                        :src="`/storage/${org.logo_path}`"
+                                        :src="org.profile_photo_url"
                                         :alt="`${org.name} logo`"
-                                        class="h-20 w-auto object-contain"
+                                        class="h-20 w-20 object-cover rounded-full border border-gray-200 shadow-inner bg-gray-50"
                                     />
+                                </div>
+                                <div v-else class="flex justify-center my-4">
+                                    <div class="h-20 w-20 rounded-full bg-gradient-to-br from-blue-500 to-green-400 flex items-center justify-center text-white text-2xl font-medium shadow-inner select-none">
+                                        {{ org.name ? org.name.charAt(0).toUpperCase() : '?' }}
+                                    </div>
                                 </div>
                                 
                                 <p v-if="org.description" class="text-gray-600 text-sm mt-3 line-clamp-3">
@@ -108,14 +113,10 @@
                                 
                                 <div class="mt-auto pt-4 flex items-center justify-between">
                                     <span
-                                        class="inline-flex items-center text-xs px-2 py-1 rounded-full font-medium"
-                                        :class="org.status === 'active'
-                                            ? 'bg-green-100 text-green-800'
-                                            : 'bg-red-100 text-red-800'"
+                                        class="inline-flex items-center text-xs px-2 py-1 rounded-full font-medium bg-green-100 text-green-800"
                                     >
-                                        <span class="w-2 h-2 rounded-full mr-1.5" 
-                                              :class="org.status === 'active' ? 'bg-green-500' : 'bg-red-500'"></span>
-                                        {{ org.status === 'active' ? 'Active' : 'Inactive' }}
+                                        <span class="w-2 h-2 rounded-full mr-1.5 bg-green-500"></span>
+                                        Active
                                     </span>
                                     
                                     <Link

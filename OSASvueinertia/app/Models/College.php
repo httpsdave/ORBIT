@@ -25,7 +25,7 @@ class College extends Model
     }
 
     /**
-     * Get the users for the college.
+     * Get the users (organizations) for the college.
      */
     public function users()
     {

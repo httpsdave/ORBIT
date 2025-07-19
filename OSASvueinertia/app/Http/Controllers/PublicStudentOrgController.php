@@ -32,7 +32,7 @@ class PublicStudentOrgController extends Controller
     /**
      * Display the specified student organization.
      */
-    public function show(StudentOrg $studentOrg)
+    public function show(User $studentOrg)
     {
         $studentOrg->load('college');
         
@@ -46,7 +46,7 @@ class PublicStudentOrgController extends Controller
      */
     public function getAll()
     {
-        $colleges = College::with('studentOrgs')->get();
+        $colleges = College::with('users')->get();
         
         return response()->json($colleges);
     }
