@@ -64,61 +64,73 @@
           <div
             v-for="college in colleges"
             :key="college.id"
-            class="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden flex flex-col"
+            class="relative"
           >
-            <!-- Colored top border, random color per college -->
-            <div class="h-1 w-full" :class="{
-                'bg-blue-500': college.id % 4 === 0,
-                'bg-green-500': college.id % 4 === 1,
-                'bg-yellow-500': college.id % 4 === 2,
-                'bg-red-500': college.id % 4 === 3,
-            }"></div>
-            
-            <div class="p-6 flex-1 flex flex-col">
-              <div class="flex items-start justify-between">
-                <h2 class="text-xl font-semibold text-gray-800 leading-tight">
-                  {{ college.name }}
-                </h2>
-                <span v-if="college.acronym" 
-                      class="ml-2 bg-gray-100 text-gray-600 text-sm px-2 py-1 rounded-md">
-                  {{ college.acronym }}
-                </span>
+            <div class="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden flex flex-col">
+              <!-- Colored top border, random color per college -->
+              <div class="h-1 w-full rounded-t-xl" :class="{
+                  'bg-blue-500': college.id % 4 === 0,
+                  'bg-green-500': college.id % 4 === 1,
+                  'bg-yellow-500': college.id % 4 === 2,
+                  'bg-red-500': college.id % 4 === 3,
+              }"></div>
+              
+              <div class="p-6 flex-1 flex flex-col">
+                <div class="flex items-start justify-between">
+                  <h2 class="text-xl font-semibold text-gray-800 leading-tight flex-1 min-w-0 mr-2">
+                    <span class="break-words">{{ college.name }}</span>
+                  </h2>
+                  <span v-if="college.acronym" 
+                        class="flex-shrink-0 bg-gray-100 text-gray-600 text-sm px-2 py-1 rounded-md">
+                    {{ college.acronym }}
+                  </span>
+                </div>
+                
+                <p v-if="college.description" class="text-gray-600 mt-3 text-sm line-clamp-3">
+                  {{ college.description }}
+                </p>
+                <div v-else class="text-gray-400 italic text-sm mt-3">No description available</div>
               </div>
               
-              <p v-if="college.description" class="text-gray-600 mt-3 text-sm line-clamp-3">
-                {{ college.description }}
-              </p>
-              <div v-else class="text-gray-400 italic text-sm mt-3">No description available</div>
+              <div class="px-6 py-3 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
+                <div class="flex space-x-2">
+                  <button 
+                    @click="openEditModal(college)" 
+                    class="p-1.5 bg-gray-100 border border-gray-300 text-gray-700 text-sm rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 transition-colors duration-150 ease-in-out"
+                    title="Edit"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                  </button>
+                  <button 
+                    @click="openDeleteModal(college)" 
+                    class="p-1.5 bg-gray-100 border border-gray-300 text-gray-700 text-sm rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 transition-colors duration-150 ease-in-out"
+                    title="Delete"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+                </div>
+                
+                <div v-if="college.student_orgs_count" class="flex items-center text-sm text-gray-500">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                  {{ college.student_orgs_count }} {{ college.student_orgs_count === 1 ? 'Organization' : 'Organizations' }}
+                </div>
+              </div>
             </div>
             
-            <div class="px-6 py-3 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
-              <div class="flex space-x-2">
-                <button 
-                  @click="openEditModal(college)" 
-                  class="p-1.5 bg-gray-100 border border-gray-300 text-gray-700 text-sm rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 transition-colors duration-150 ease-in-out"
-                  title="Edit"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                  </svg>
-                </button>
-                <button 
-                  @click="openDeleteModal(college)" 
-                  class="p-1.5 bg-gray-100 border border-gray-300 text-gray-700 text-sm rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 transition-colors duration-150 ease-in-out"
-                  title="Delete"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
-                </button>
-              </div>
-              
-              <div v-if="college.student_orgs_count" class="flex items-center text-sm text-gray-500">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-                {{ college.student_orgs_count }} {{ college.student_orgs_count === 1 ? 'Organization' : 'Organizations' }}
-              </div>
+            <!-- College Logo/Avatar - Positioned to overflow -->
+            <div class="absolute -bottom-4 -right-4 z-10">
+              <img 
+                :src="getCollegeLogo(college.acronym, college.logo_path)" 
+                :alt="`${college.name} logo`"
+                class="college-logo"
+                @error="handleImageError"
+              />
             </div>
           </div>
         </div>
@@ -126,75 +138,139 @@
     </div>
 
     <!-- Create Modal -->
-<Modal :show="isCreateModalOpen" @close="isCreateModalOpen = false" :closeable="true" max-width="md">
-  <div class="p-6">
-    <div class="flex items-center justify-between border-b border-gray-200 pb-3 mb-6">
-      <h2 class="text-lg font-bold text-gray-900 flex items-center">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-        </svg>
-        Add New College
-      </h2>
-      <button @click="isCreateModalOpen = false" class="text-gray-400 hover:text-gray-600 focus:outline-none">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-    </div>
-        <form @submit.prevent="handleCreateSubmit">
-          <div class="mb-4">
-            <label for="name" class="block text-sm font-medium text-gray-700 mb-1">College Name</label>
-            <input 
-              type="text" 
-              id="name" 
-              v-model="form.name" 
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
-              placeholder="Enter college name"
-              required
-            />
-            <div v-if="errors && errors.name" class="text-red-500 text-sm mt-1">{{ errors.name }}</div>
+    <Modal :show="isCreateModalOpen" @close="isCreateModalOpen = false" :closeable="true" max-width="md">
+      <div class="p-6">
+        <div class="flex items-center justify-between border-b border-gray-200 pb-3 mb-6">
+          <h2 class="text-lg font-bold text-gray-900 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            Add New College
+          </h2>
+          <button @click="isCreateModalOpen = false" class="text-gray-400 hover:text-gray-600 focus:outline-none">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        
+        <form @submit.prevent="handleCreateSubmit" enctype="multipart/form-data" class="space-y-6">
+          <div class="grid md:grid-cols-2 gap-6">
+            <div>
+              <label for="name" class="block text-sm font-medium text-gray-700 mb-1">College Name</label>
+              <input 
+                type="text" 
+                id="name" 
+                v-model="form.name" 
+                class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 rounded-md shadow-sm transition-colors duration-200"
+                placeholder="Enter college name"
+                required
+              />
+              <div v-if="errors && errors.name" class="text-red-500 text-sm mt-1">{{ errors.name }}</div>
+            </div>
+            
+            <div>
+              <label for="acronym" class="block text-sm font-medium text-gray-700 mb-1">Acronym</label>
+              <input 
+                type="text" 
+                id="acronym" 
+                v-model="form.acronym" 
+                class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 rounded-md shadow-sm transition-colors duration-200"
+                placeholder="e.g. CAS, COE"
+                required
+              />
+              <div v-if="errors && errors.acronym" class="text-red-500 text-sm mt-1">{{ errors.acronym }}</div>
+            </div>
           </div>
-          <div class="mb-4">
-            <label for="acronym" class="block text-sm font-medium text-gray-700 mb-1">Acronym</label>
-            <input 
-              type="text" 
-              id="acronym" 
-              v-model="form.acronym" 
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
-              placeholder="e.g. CAS, COE"
-              required
-            />
-            <div v-if="errors && errors.acronym" class="text-red-500 text-sm mt-1">{{ errors.acronym }}</div>
-          </div>
-          <div class="mb-6">
+          
+          <div>
             <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
             <textarea 
               id="description" 
               v-model="form.description" 
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+              class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 rounded-md shadow-sm resize-none transition-colors duration-200"
               rows="3"
               placeholder="Enter a brief description of the college"
             ></textarea>
             <div v-if="errors && errors.description" class="text-red-500 text-sm mt-1">{{ errors.description }}</div>
           </div>
-          <div class="flex justify-end space-x-3">
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">College Logo</label>
+            <div class="mt-2 p-4 border border-gray-300 rounded-md bg-gray-50">
+              <div class="flex items-center gap-6">
+                <!-- Logo Preview -->
+                <div class="flex-shrink-0">
+                  <div class="relative group">
+                    <img 
+                      :src="logoPreview || '/images/lspu_logo_better.png'" 
+                      class="w-24 h-24 rounded-full object-cover border-4 border-blue-200 shadow-md transition-all duration-200 group-hover:border-blue-300" 
+                    />
+                    <div 
+                      v-if="logoPreview"
+                      class="absolute inset-0 bg-black bg-opacity-40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center"
+                    >
+                      <svg class="w-6 h-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Logo Controls -->
+                <div class="flex-1 space-y-3">
+                  <!-- Choose Logo Button -->
+                  <div class="relative">
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      @change="handleLogoChange" 
+                      class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                      id="college-logo-input"
+                    />
+                    <label 
+                      for="college-logo-input"
+                      class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-sm font-medium text-white rounded-xl shadow-md hover:shadow-blue-300/30 hover:from-blue-400 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:from-blue-600 active:to-blue-700 transition-all duration-300 relative overflow-hidden group cursor-pointer"
+                    >
+                      <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
+                      <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                      </svg>
+                      Choose Logo
+                    </label>
+                  </div>
+                  
+                  <!-- Logo Guidelines -->
+                  <p class="text-xs text-gray-500 mt-2">
+                    Recommended: Square image, at least 200x200 pixels. Maximum file size: 2MB. Leave empty to use default logo.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div v-if="errors && errors.logo" class="text-red-500 text-sm mt-1">{{ errors.logo }}</div>
+          </div>
+          
+          <div class="flex items-center pt-4 border-t border-gray-100">
             <button 
               type="button" 
               @click="isCreateModalOpen = false" 
-              class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-colors duration-200"
+              class="inline-flex items-center justify-center px-4 py-2 bg-gray-200 text-sm font-medium text-gray-700 rounded-xl shadow-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group"
             >
+              <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
               Cancel
             </button>
             <button 
               type="submit" 
-              :disabled="form.processing" 
-              class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 transition-colors duration-200 disabled:opacity-50 flex items-center"
+              :disabled="formProcessing" 
+              class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-sm font-medium text-white rounded-xl shadow-md hover:shadow-blue-300/30 hover:from-blue-400 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:from-blue-600 active:to-blue-700 transition-all duration-300 relative overflow-hidden group ml-2 disabled:opacity-50"
             >
-              <svg v-if="form.processing" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
+              <svg v-if="formProcessing" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              {{ form.processing ? 'Saving...' : 'Save College' }}
+              {{ formProcessing ? 'Saving...' : 'Save College' }}
             </button>
           </div>
         </form>
@@ -202,7 +278,7 @@
     </Modal>
 
     <!-- Edit Modal -->
-    <Modal :show="isEditModalOpen" @close="isEditModalOpen = false" :closeable="false" max-width="md">
+    <Modal :show="isEditModalOpen" @close="isEditModalOpen = false" :closeable="true" max-width="md">
       <div class="p-6">
         <div class="flex items-center justify-between border-b border-gray-200 pb-3 mb-6">
           <h2 class="text-lg font-bold text-gray-900 flex items-center">
@@ -217,57 +293,121 @@
             </svg>
           </button>
         </div>
-        <form @submit.prevent="handleEditSubmit">
-          <div class="mb-4">
-            <label for="edit-name" class="block text-sm font-medium text-gray-700 mb-1">College Name</label>
-            <input 
-              type="text" 
-              id="edit-name" 
-              v-model="editForm.name" 
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
-              required
-            />
-            <div v-if="editErrors && editErrors.name" class="text-red-500 text-sm mt-1">{{ editErrors.name }}</div>
+        
+        <form @submit.prevent="handleEditSubmit" class="space-y-6">
+          <div class="grid md:grid-cols-2 gap-6">
+            <div>
+              <label for="edit-name" class="block text-sm font-medium text-gray-700 mb-1">College Name</label>
+              <input 
+                type="text" 
+                id="edit-name" 
+                v-model="editForm.name" 
+                class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 rounded-md shadow-sm transition-colors duration-200"
+                required
+              />
+              <div v-if="editErrors && editErrors.name" class="text-red-500 text-sm mt-1">{{ editErrors.name }}</div>
+            </div>
+            
+            <div>
+              <label for="edit-acronym" class="block text-sm font-medium text-gray-700 mb-1">Acronym</label>
+              <input 
+                type="text" 
+                id="edit-acronym" 
+                v-model="editForm.acronym" 
+                class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 rounded-md shadow-sm transition-colors duration-200"
+                required
+              />
+              <div v-if="editErrors && editErrors.acronym" class="text-red-500 text-sm mt-1">{{ editErrors.acronym }}</div>
+            </div>
           </div>
-          <div class="mb-4">
-            <label for="edit-acronym" class="block text-sm font-medium text-gray-700 mb-1">Acronym</label>
-            <input 
-              type="text" 
-              id="edit-acronym" 
-              v-model="editForm.acronym" 
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
-              required
-            />
-            <div v-if="editErrors && editErrors.acronym" class="text-red-500 text-sm mt-1">{{ editErrors.acronym }}</div>
-          </div>
-          <div class="mb-6">
+          
+          <div>
             <label for="edit-description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
             <textarea 
               id="edit-description" 
               v-model="editForm.description" 
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+              class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 rounded-md shadow-sm resize-none transition-colors duration-200"
               rows="3"
             ></textarea>
             <div v-if="editErrors && editErrors.description" class="text-red-500 text-sm mt-1">{{ editErrors.description }}</div>
           </div>
-          <div class="flex justify-end space-x-3">
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">College Logo</label>
+            <div class="mt-2 p-4 border border-gray-300 rounded-md bg-gray-50">
+              <div class="flex items-center gap-6">
+                <!-- Logo Preview -->
+                <div class="flex-shrink-0">
+                  <div class="relative group">
+                    <img 
+                      :src="editLogoPreview || getCollegeLogo(collegeToEdit?.acronym, collegeToEdit?.logo_path)" 
+                      class="w-24 h-24 rounded-full object-cover border-4 border-blue-200 shadow-md transition-all duration-200 group-hover:border-blue-300" 
+                    />
+                    <div 
+                      v-if="editLogoPreview || collegeToEdit?.logo_path"
+                      class="absolute inset-0 bg-black bg-opacity-40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center"
+                    >
+                      <svg class="w-6 h-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Logo Controls -->
+                <div class="flex-1 space-y-3">
+                  <!-- Choose Logo Button -->
+                  <div class="relative">
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      @change="handleEditLogoChange" 
+                      class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                      id="edit-college-logo-input"
+                    />
+                    <label 
+                      for="edit-college-logo-input"
+                      class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-sm font-medium text-white rounded-xl shadow-md hover:shadow-blue-300/30 hover:from-blue-400 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:from-blue-600 active:to-blue-700 transition-all duration-300 relative overflow-hidden group cursor-pointer"
+                    >
+                      <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
+                      <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                      </svg>
+                      Choose Logo
+                    </label>
+                  </div>
+                  
+                  <!-- Logo Guidelines -->
+                  <p class="text-xs text-gray-500 mt-2">
+                    Recommended: Square image, at least 200x200 pixels. Maximum file size: 2MB. Leave empty to keep current logo.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div v-if="editErrors && editErrors.logo" class="text-red-500 text-sm mt-1">{{ editErrors.logo }}</div>
+          </div>
+          
+          <div class="flex items-center pt-4 border-t border-gray-100">
             <button 
               type="button" 
               @click="isEditModalOpen = false" 
-              class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-colors duration-200"
+              class="inline-flex items-center justify-center px-4 py-2 bg-gray-200 text-sm font-medium text-gray-700 rounded-xl shadow-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group"
             >
+              <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
               Cancel
             </button>
             <button 
               type="submit" 
-              :disabled="editForm.processing" 
-              class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 transition-colors duration-200 disabled:opacity-50 flex items-center"
+              :disabled="editFormProcessing" 
+              class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-sm font-medium text-white rounded-xl shadow-md hover:shadow-green-300/30 hover:from-green-400 hover:to-green-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 active:from-green-600 active:to-green-700 transition-all duration-300 relative overflow-hidden group ml-2 disabled:opacity-50"
             >
-              <svg v-if="editForm.processing" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
+              <svg v-if="editFormProcessing" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              {{ editForm.processing ? 'Saving...' : 'Save Changes' }}
+              {{ editFormProcessing ? 'Saving...' : 'Save Changes' }}
             </button>
           </div>
         </form>
@@ -275,7 +415,7 @@
     </Modal>
 
     <!-- Delete Confirmation Modal -->
-    <Modal :show="isDeleteModalOpen" @close="isDeleteModalOpen = false" :closeable="false" max-width="md">
+    <Modal :show="isDeleteModalOpen" @close="isDeleteModalOpen = false" :closeable="true" max-width="md">
       <div class="p-6">
         <div class="flex items-center justify-between border-b border-gray-200 pb-3 mb-6">
           <h2 class="text-lg font-bold text-gray-900 flex items-center">
@@ -290,43 +430,62 @@
             </svg>
           </button>
         </div>
-        <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-md">
-          <div class="flex">
-            <div class="flex-shrink-0">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        
+        <div class="flex flex-col items-center justify-center min-h-[180px]">
+          <!-- Warning Icon -->
+          <div class="mb-6">
+            <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
               </svg>
             </div>
-            <div class="ml-3">
-              <p class="text-sm text-red-700">
-                Are you sure you want to delete <span class="font-bold">{{ collegeToDelete ? collegeToDelete.name : '' }}</span>?
-              </p>
-              <p class="text-sm text-red-600 mt-1">
-                This action cannot be undone.
-              </p>
+          </div>
+          
+          <!-- Warning Message -->
+          <div class="text-center mb-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">
+              Delete College
+            </h3>
+            <p class="text-sm text-gray-600 mb-4">
+              Are you sure you want to delete <span class="font-bold text-red-600">{{ collegeToDelete ? collegeToDelete.name : '' }}</span>?
+            </p>
+            <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+              <div class="flex items-start">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500 mt-0.5 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                <div class="text-sm text-red-700">
+                  <p class="font-medium">This action cannot be undone.</p>
+                  <p class="mt-1">All data associated with this college will be permanently removed.</p>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="flex justify-end space-x-3">
-          <button 
-            type="button" 
-            @click="isDeleteModalOpen = false" 
-            class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-colors duration-200"
-          >
-            Cancel
-          </button>
-          <button 
-            type="button" 
-            @click="handleDelete" 
-            :disabled="deleteProcessing" 
-            class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2 transition-colors duration-200 disabled:opacity-50 flex items-center"
-          >
-            <svg v-if="deleteProcessing" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            {{ deleteProcessing ? 'Deleting...' : 'Delete College' }}
-          </button>
+          
+          <!-- Action Buttons -->
+          <div class="flex justify-center gap-3 w-full">
+            <button 
+              type="button" 
+              @click="isDeleteModalOpen = false" 
+              class="inline-flex items-center justify-center px-6 py-2 bg-gray-200 text-sm font-medium text-gray-700 rounded-xl shadow-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group"
+            >
+              <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
+              Cancel
+            </button>
+            <button 
+              type="button" 
+              @click="handleDelete" 
+              :disabled="deleteProcessing" 
+              class="inline-flex items-center justify-center px-6 py-2 bg-gradient-to-r from-red-500 to-red-600 text-sm font-medium text-white rounded-xl shadow-md hover:shadow-red-300/30 hover:from-red-400 hover:to-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 active:from-red-600 active:to-red-700 transition-all duration-300 relative overflow-hidden group disabled:opacity-50"
+            >
+              <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
+              <svg v-if="deleteProcessing" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              {{ deleteProcessing ? 'Deleting...' : 'Delete College' }}
+            </button>
+          </div>
         </div>
       </div>
     </Modal>
@@ -337,7 +496,6 @@
 import { Head } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Modal from '@/Components/Modal.vue';
-import { useForm } from '@inertiajs/vue3';
 
 export default {
   components: {
@@ -359,60 +517,128 @@ export default {
       collegeToEdit: null,
       collegeToDelete: null,
       deleteProcessing: false,
-      editErrors: {}
+      editErrors: {},
+      logoPreview: null,
+      editLogoPreview: null,
+      // Form data for create
+      form: {
+        name: '',
+        acronym: '',
+        description: '',
+        logo: null
+      },
+      // Form data for edit
+      editForm: {
+        name: '',
+        acronym: '',
+        description: '',
+        logo: null
+      },
+      // Processing states
+      formProcessing: false,
+      editFormProcessing: false
     };
   },
   
   setup() {
-    const form = useForm({
-      name: '',
-      acronym: '',
-      description: ''
-    });
-    
-    const editForm = useForm({
-      name: '',
-      acronym: '',
-      description: ''
-    });
-    
-    return { form, editForm };
+    // We'll handle form data manually for file uploads
+    return {};
   },
+  
+
   
   methods: {
     openCreateModal() {
-      this.form.reset();
+      this.form = {
+        name: '',
+        acronym: '',
+        description: '',
+        logo: null
+      };
+      this.logoPreview = null;
       this.isCreateModalOpen = true;
     },
     
     handleCreateSubmit() {
-      this.form.post(route('admin.colleges.store'), {
+      this.formProcessing = true;
+      
+      // Create FormData for file upload
+      const formData = new FormData();
+      formData.append('name', this.form.name);
+      formData.append('acronym', this.form.acronym);
+      formData.append('description', this.form.description);
+      
+      if (this.form.logo) {
+        formData.append('logo', this.form.logo);
+      }
+      
+      // Use $inertia.post with FormData
+      this.$inertia.post(route('admin.colleges.store'), formData, {
         onSuccess: () => {
           this.isCreateModalOpen = false;
-          this.form.reset();
+          this.form = {
+            name: '',
+            acronym: '',
+            description: '',
+            logo: null
+          };
+          this.logoPreview = null;
+        },
+        onError: (errors) => {
+          // Handle errors if needed
+        },
+        onFinish: () => {
+          this.formProcessing = false;
         }
       });
     },
     
     openEditModal(college) {
       this.collegeToEdit = college;
-      this.editForm.name = college.name;
-      this.editForm.acronym = college.acronym;
-      this.editForm.description = college.description || '';
+      this.editForm = {
+        name: college.name,
+        acronym: college.acronym,
+        description: college.description || '',
+        logo: null
+      };
+      this.editLogoPreview = null;
       this.isEditModalOpen = true;
       this.editErrors = {};
     },
     
     handleEditSubmit() {
-      this.editForm.put(route('admin.colleges.update', this.collegeToEdit.id), {
+      this.editFormProcessing = true;
+      
+      // Create FormData for file upload
+      const formData = new FormData();
+      formData.append('name', this.editForm.name);
+      formData.append('acronym', this.editForm.acronym);
+      formData.append('description', this.editForm.description);
+      formData.append('_method', 'PUT'); // Required for PUT requests with FormData
+      
+      if (this.editForm.logo) {
+        formData.append('logo', this.editForm.logo);
+      }
+      
+      // Use $inertia.post with FormData (PUT method)
+      this.$inertia.post(route('admin.colleges.update', this.collegeToEdit.id), formData, {
         onSuccess: () => {
           this.isEditModalOpen = false;
-          this.editForm.reset();
+          this.editForm = {
+            name: '',
+            acronym: '',
+            description: '',
+            logo: null
+          };
           this.collegeToEdit = null;
           this.editErrors = {};
+          this.editLogoPreview = null;
         },
         onError: (errors) => {
           this.editErrors = errors;
+        },
+        onFinish: () => {
+          this.editFormProcessing = false;
         }
       });
     },
@@ -433,6 +659,60 @@ export default {
           this.deleteProcessing = false;
         }
       });
+    },
+    
+    getCollegeLogo(acronym, customLogoPath = null) {
+      // If college has a custom uploaded logo, use it
+      if (customLogoPath) {
+        // Add /storage/ prefix to access files through the storage link
+        return `/storage/${customLogoPath}`;
+      }
+      
+      if (!acronym) {
+        return '/images/lspu_logo_better.png';
+      }
+      
+      const logoMap = {
+        'CAS': '/images/cas-logo.jpg',
+        'CCS': '/images/ccs-logo.jpg',
+        'CCJE': '/images/ccje-logo.jpg',
+        'COE': '/images/coe-logo.jpg',
+        'CIT': '/images/cit-logo.jpg',
+        'CTE': '/images/cte-logo.jpg',
+        'CHMT': '/images/chmt-logo.jpg',
+        'CBAA': '/images/cbaa-logo.jpg'
+      };
+      
+      return logoMap[acronym.toUpperCase()] || '/images/lspu_logo_better.png'; // Default fallback
+    },
+    
+    handleImageError(event) {
+      // Fallback to default logo if image fails to load
+      if (event && event.target) {
+        event.target.src = '/images/lspu_logo_better.png';
+      }
+    },
+    
+    handleLogoChange(event) {
+      const file = event.target.files[0];
+      if (file) {
+        this.form.logo = file;
+        this.logoPreview = URL.createObjectURL(file);
+      } else {
+        this.form.logo = null;
+        this.logoPreview = null;
+      }
+    },
+    
+    handleEditLogoChange(event) {
+      const file = event.target.files[0];
+      if (file) {
+        this.editForm.logo = file;
+        this.editLogoPreview = URL.createObjectURL(file);
+      } else {
+        this.editForm.logo = null;
+        this.editLogoPreview = null;
+      }
     }
   }
 };
@@ -444,5 +724,18 @@ export default {
   
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* Ensure consistent logo sizing and positioning */
+.college-logo {
+  width: 5rem;
+  height: 5rem;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center;
+  border: 4px solid white;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  background-color: white;
+  flex-shrink: 0;
 }
 </style>

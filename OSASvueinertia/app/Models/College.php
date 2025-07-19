@@ -13,6 +13,7 @@ class College extends Model
         'name',
         'acronym',
         'description',
+        'logo_path',
     ];
 
     /**

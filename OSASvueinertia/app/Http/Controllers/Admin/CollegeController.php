@@ -30,9 +30,22 @@ class CollegeController extends Controller
             'name' => 'required|string|max:255',
             'acronym' => 'required|string|max:50|unique:colleges',
             'description' => 'nullable|string',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        College::create($validated);
+        $data = [
+            'name' => $validated['name'],
+            'acronym' => $validated['acronym'],
+            'description' => $validated['description'],
+        ];
+
+        // Handle logo upload
+        if ($request->hasFile('logo')) {
+            $logoPath = $request->file('logo')->store('college-logos', 'public');
+            $data['logo_path'] = $logoPath;
+        }
+
+        College::create($data);
 
         return redirect()->route('admin.colleges.index')
             ->with('message', 'College created successfully.');
@@ -47,9 +60,27 @@ class CollegeController extends Controller
             'name' => 'required|string|max:255',
             'acronym' => 'required|string|max:50|unique:colleges,acronym,' . $college->id,
             'description' => 'nullable|string',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $college->update($validated);
+        $data = [
+            'name' => $validated['name'],
+            'acronym' => $validated['acronym'],
+            'description' => $validated['description'],
+        ];
+
+        // Handle logo upload
+        if ($request->hasFile('logo')) {
+            // Delete old logo if exists
+            if ($college->logo_path) {
+                \Storage::disk('public')->delete($college->logo_path);
+            }
+            
+            $logoPath = $request->file('logo')->store('college-logos', 'public');
+            $data['logo_path'] = $logoPath;
+        }
+
+        $college->update($data);
 
         return redirect()->route('admin.colleges.index')
             ->with('message', 'College updated successfully.');
