@@ -23,8 +23,9 @@ class DashboardController extends Controller
                 return $college;
             });
             
-        // Get total student organizations count (users with a college_id)
-        $totalStudentOrgs = \App\Models\User::whereNotNull('college_id')->count();
+        // Get total student organizations count (all users with 'user' role)
+        $userRoleId = \App\Models\Role::where('slug', 'user')->value('id');
+        $totalStudentOrgs = \App\Models\User::where('role_id', $userRoleId)->count();
         
         // Get today's event
         $todayEvent = Event::where('start_date', '<=', Carbon::now())
