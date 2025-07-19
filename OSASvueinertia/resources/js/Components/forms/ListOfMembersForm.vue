@@ -33,6 +33,72 @@ const addMember = () => {
     });
 };
 
+// CSV upload functionality
+const handleCSVUpload = (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    if (file.type !== 'text/csv' && !file.name.endsWith('.csv')) {
+        alert('Please upload a CSV file only.');
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        try {
+            const csvContent = e.target.result;
+            const lines = csvContent.split('\n');
+            
+            // Skip the first row (header) and process data rows
+            const dataRows = lines.slice(1).filter(line => line.trim() !== '');
+            
+            if (dataRows.length === 0) {
+                alert('No data found in CSV file.');
+                return;
+            }
+
+            // Clear existing members
+            form.members = [];
+            
+            // Process each row
+            dataRows.forEach((row, index) => {
+                const columns = row.split(',').map(col => col.trim().replace(/"/g, ''));
+                
+                // Extract first 3 columns only
+                const studentName = columns[0] || '';
+                const studentNumber = columns[1] || '';
+                const courseYearSection = columns[2] || '';
+                
+                // Add member if at least one field has data
+                if (studentName || studentNumber || courseYearSection) {
+                    form.members.push({
+                        student_name: studentName,
+                        student_number: studentNumber,
+                        course_year_section: courseYearSection,
+                        photo_path: null,
+                        photo_preview: null
+                    });
+                }
+            });
+            
+            // Reset to first page after upload
+            currentPage.value = 1;
+            
+            alert(`Successfully imported ${form.members.length} members from CSV file.`);
+            
+        } catch (error) {
+            console.error('Error parsing CSV:', error);
+            alert('Error reading CSV file. Please check the file format.');
+        }
+    };
+    
+    reader.readAsText(file);
+    
+    // Reset the file input
+    event.target.value = '';
+};
+
 // Add a function to remove a member
 const removeMember = (index) => {
     // Prevent removing the last member
@@ -44,6 +110,17 @@ const removeMember = (index) => {
         URL.revokeObjectURL(form.members[index].photo_preview);
     }
     form.members.splice(index, 1);
+};
+
+// Add a function to remove a member's photo
+const removeMemberPhoto = (index) => {
+    // Clean up object URL if it exists
+    if (form.members[index].photo_preview) {
+        URL.revokeObjectURL(form.members[index].photo_preview);
+    }
+    // Clear photo data
+    form.members[index].photo_path = null;
+    form.members[index].photo_preview = null;
 };
 
 // Current date computed property
@@ -494,8 +571,42 @@ const submit = () => {
 
         <!-- Member List Management -->
         <div class="mt-6">
-            <div class="flex justify-between items-center">
+            <div class="flex justify-between items-center mb-4">
                 <h3 class="text-lg font-bold">Members</h3>
+                <div class="flex gap-2">
+                    <!-- CSV Upload -->
+                    <div class="flex items-center">
+                        <label for="csv-upload" class="bg-green-500 text-white px-3 py-1 rounded cursor-pointer hover:bg-green-600 transition-colors">
+                            📄 Upload CSV
+                        </label>
+                        <input 
+                            id="csv-upload" 
+                            type="file" 
+                            @change="handleCSVUpload" 
+                            accept=".csv,text/csv" 
+                            class="hidden"
+                        >
+                    </div>
+                </div>
+            </div>
+
+            <!-- CSV Format Instructions -->
+            <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded text-sm">
+                <p class="font-semibold text-blue-800 mb-1">📋 CSV Format Requirements:</p>
+                <ul class="text-blue-700 list-disc list-inside space-y-1">
+                    <li>First row should contain column headers (will be ignored)</li>
+                    <li>Columns must be in this order: <strong>Student Name, Student Number, Course - Year & Section</strong></li>
+                    <li>Additional columns will be ignored</li>
+                    <li>File must be in CSV format (.csv extension)</li>
+                </ul>
+            </div>
+
+            <!-- Member Count Display -->
+            <div class="mb-4 p-2 bg-gray-50 border border-gray-200 rounded text-sm">
+                <span class="font-semibold">👥 Total Members: {{ form.members.length }}</span>
+                <span v-if="form.members.length > 0" class="ml-4 text-gray-600">
+                    (Showing page {{ currentPage }} of {{ totalPages }})
+                </span>
             </div>
 
             <div v-for="(member, idx) in currentPageMemberInputs" :key="startIndex + idx" class="mt-4 p-4 border rounded">
@@ -539,7 +650,18 @@ const submit = () => {
                         <label class="block font-bold">1x1 Photo</label>
                         <input type="file" @change="event => handlePhotoUpload(event, startIndex + idx)" class="border p-2 w-full" accept="image/*">
                         <div v-if="getPhotoPreview(member)" class="mt-2">
-                            <img :src="getPhotoPreview(member)" alt="Preview" class="w-16 h-16 object-cover border">
+                            <div class="flex items-center gap-2">
+                                <img :src="getPhotoPreview(member)" alt="Preview" class="w-16 h-16 object-cover border">
+                                <button 
+                                    @click="removeMemberPhoto(startIndex + idx)" 
+                                    type="button" 
+                                    class="bg-red-500 text-white px-2 py-1 rounded text-sm hover:bg-red-600 transition-colors flex items-center gap-1"
+                                    title="Remove photo"
+                                >
+                                    <span class="text-white">✕</span>
+                                    <span>Remove</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -575,12 +697,13 @@ const submit = () => {
                 </button>
             </div>
 
-            <!-- Add Member Button (moved below member list, left-aligned) -->
-            <div class="mt-4 flex justify-start">
-                <button @click="addMember" type="button" class="bg-blue-500 text-white px-3 py-1 rounded">
-                    Add Member
-                </button>
-            </div>
+
+        </div>
+
+        <div class="mt-6 flex justify-between items-center">
+            <button @click="addMember" type="button" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors">
+                ➕ Add Member
+            </button>
         </div>
 
         <div class="mt-6 text-center">
