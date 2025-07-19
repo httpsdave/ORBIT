@@ -243,8 +243,7 @@
         .underline {
             position: relative;
             border-bottom: 1px solid #000;
-            width: 90%;
-            min-width: 60px;
+            width: 190px; /* Increased width for even longer underline */
             margin: 6px auto;
             height: 16px;
             text-align: center;
@@ -329,7 +328,7 @@
             @for ($row = 0; $row < $membersPerColumn; $row++)
                 <tr>
                     <!-- Left Column -->
-                    <td>
+                    <td style="padding-right: 20px;"> <!-- Reduced right padding for left column -->
                         @php
                             $leftIndex = $row;
                             $leftMember = $members[$leftIndex] ?? null;
@@ -395,7 +394,7 @@
                     </td>
                     
                     <!-- Right Column -->
-                    <td>
+                    <td style="padding-left: 20px;"> <!-- Reduced left padding for right column -->
                         @php
                             $rightIndex = $row + $membersPerColumn;
                             $rightMember = $members[$rightIndex] ?? null;
@@ -488,7 +487,7 @@
                 @for ($row = 0; $row < $membersPerColumn; $row++)
                     <tr>
                         <!-- Left Column -->
-                        <td>
+                        <td style="padding-right: 20px;"> <!-- Reduced right padding for left column -->
                             @php
                                 $leftIndex = $startIdx + $row;
                                 $leftMember = isset($members[$leftIndex]) ? $members[$leftIndex] : null;
@@ -554,7 +553,7 @@
                         </td>
                         
                         <!-- Right Column -->
-                        <td>
+                        <td style="padding-left: 20px;"> <!-- Reduced left padding for right column -->
                             @php
                                 $rightIndex = $startIdx + $row + $membersPerColumn;
                                 $rightMember = isset($members[$rightIndex]) ? $members[$rightIndex] : null;
