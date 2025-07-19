@@ -3,12 +3,13 @@ import { Head, router } from '@inertiajs/vue3';
 import { ref, onMounted, watch, computed } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title } from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { Pie, Bar } from 'vue-chartjs';
 import Modal from '@/Components/Modal.vue';
 import { Link } from '@inertiajs/vue3';
 
 // Register Chart.js components
-ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title);
+ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title, ChartDataLabels);
 
 // Define props for data that will be passed from the controller
 const props = defineProps({
@@ -107,7 +108,14 @@ const updateMembersBarChartData = () => {
                 label: 'Number of Members',
                 backgroundColor: '#e0e0e0',
                 data: [0],
-                borderRadius: 8
+                borderRadius: 8,
+                datalabels: {
+                    color: '#666666',
+                    font: {
+                        weight: 'bold',
+                        size: 20
+                    }
+                }
             }]
         };
         return;
@@ -119,7 +127,17 @@ const updateMembersBarChartData = () => {
                 label: 'Number of Members',
                 backgroundColor: COLORS_WITH_OPACITY,
                 data: orgsWithMembers.map(org => org.members_count),
-                borderRadius: 8
+                borderRadius: 8,
+                datalabels: {
+                    color: '#ffffff',
+                    font: {
+                        weight: 'bold',
+                        size: 20
+                    },
+                    formatter: function(value) {
+                        return value;
+                    }
+                }
             }
         ]
     };
@@ -160,7 +178,14 @@ const updateChartData = () => {
         datasets: [
             {
                 backgroundColor: COLORS.slice(0, collegesWithOrgs.length),
-                data: collegesWithOrgs.map(college => college.student_orgs_count || 0)
+                data: collegesWithOrgs.map(college => college.student_orgs_count || 0),
+                datalabels: {
+                    color: '#ffffff',
+                    font: {
+                        weight: 'bold',
+                        size: 28
+                    }
+                }
             }
         ]
     };
@@ -172,7 +197,14 @@ const setPlaceholderCharts = () => {
         labels: ['No Organizations'],
         datasets: [{
             backgroundColor: ['#e0e0e0'],
-            data: [1]
+            data: [1],
+            datalabels: {
+                color: '#666666',
+                font: {
+                    weight: 'bold',
+                    size: 28
+                }
+            }
         }]
     };
     pieChartData.value = placeholder;
@@ -216,6 +248,21 @@ const pieChartOptions = ref({
                     return `${label}: ${value} orgs (${percentage}%)`;
                 }
             }
+        },
+        datalabels: {
+            color: '#ffffff',
+            font: {
+                weight: 'bold',
+                size: 28,
+                family: 'Inter, sans-serif'
+            },
+            formatter: function(value, context) {
+                const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                const percentage = Math.round((value / total) * 100);
+                return percentage + '%';
+            },
+            textAlign: 'center',
+            textBaseline: 'middle'
         }
     }
 });
@@ -238,6 +285,16 @@ const barChartOptions = ref({
                     // Show full org name in tooltip title
                     return context[0].label;
                 }
+            }
+        },
+        datalabels: {
+            color: '#ffffff',
+            font: {
+                weight: 'bold',
+                size: 20
+            },
+            formatter: function(value) {
+                return value;
             }
         }
     },
