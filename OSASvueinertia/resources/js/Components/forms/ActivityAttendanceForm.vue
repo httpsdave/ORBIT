@@ -29,6 +29,58 @@ const addAttendee = () => {
     });
 };
 
+// CSV upload functionality
+const handleCSVUpload = (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    if (file.type !== 'text/csv' && !file.name.endsWith('.csv')) {
+        alert('Please upload a CSV file only.');
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        try {
+            const csvContent = e.target.result;
+            const lines = csvContent.split('\n');
+            // Skip the first row (header) and process data rows
+            const dataRows = lines.slice(1).filter(line => line.trim() !== '');
+            if (dataRows.length === 0) {
+                alert('No data found in CSV file.');
+                return;
+            }
+            // Clear existing attendees
+            form.attendees = [];
+            // Process each row
+            dataRows.forEach((row) => {
+                const columns = row.split(',').map(col => col.trim().replace(/"/g, ''));
+                // Extract first 2 columns only
+                const name = columns[0] || '';
+                const courseYearSection = columns[1] || '';
+                // Add attendee if at least one field has data
+                if (name || courseYearSection) {
+                    form.attendees.push({
+                        name: name,
+                        course_year_section: courseYearSection,
+                        signature: null
+                    });
+                }
+            });
+            // Reset to first page after upload
+            currentPage.value = 1;
+            alert(`Successfully imported ${form.attendees.length} attendees from CSV file.`);
+        } catch (error) {
+            console.error('Error parsing CSV:', error);
+            alert('Error reading CSV file. Please check the file format.');
+        }
+    };
+    reader.readAsText(file);
+    // Reset the file input
+    event.target.value = '';
+};
+
 // Add a function to remove an attendee
 const removeAttendee = (index) => {
     form.attendees.splice(index, 1);
@@ -229,6 +281,32 @@ const submit = () => {
     <div class="mt-6">
         <h4 class="text-md font-bold mb-2">Attendees</h4>
         
+        <!-- Member Count Display and CSV Upload -->
+        <div class="mb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+            <div class="font-semibold text-sm">👥 Total Attendees: {{ form.attendees.length }}</div>
+            <div class="flex items-center">
+                <label for="csv-upload" class="bg-green-500 text-white px-3 py-1 rounded cursor-pointer hover:bg-green-600 transition-colors">
+                    📄 Upload CSV
+                </label>
+                <input 
+                    id="csv-upload" 
+                    type="file" 
+                    @change="handleCSVUpload" 
+                    accept=".csv,text/csv" 
+                    class="hidden"
+                >
+            </div>
+        </div>
+        <!-- CSV Format Instructions -->
+        <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded text-sm">
+            <p class="font-semibold text-blue-800 mb-1">📋 CSV Format Requirements:</p>
+            <ul class="text-blue-700 list-disc list-inside space-y-1">
+                <li>First row should contain column headers (will be ignored)</li>
+                <li>Columns must be in this order: <strong>Name, Course/Year & Section</strong></li>
+                <li>Additional columns will be ignored</li>
+                <li>File must be in CSV format (.csv extension)</li>
+            </ul>
+        </div>
         <table class="w-full border-collapse border border-gray-300 mb-4">
             <thead>
                 <tr class="bg-gray-100">
