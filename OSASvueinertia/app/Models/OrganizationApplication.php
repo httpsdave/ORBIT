@@ -42,16 +42,6 @@ class OrganizationApplication extends Model
         // New fields for the plan of activities form
         'secretary_name',
 
-        // New fields for the certification form
-        
-        'student_name' ,
-        'course_year_section' ,
-        'position_rank',
-        'is_bonafide' ,
-        'is_not_academic_probation',
-        'is_not_disciplinary_probation',
-        'has_position',
-
         // New fields for the list of members form
         'semester',
         'second_adviser',
@@ -94,6 +84,11 @@ class OrganizationApplication extends Model
     public function officers()
     {
         return $this->hasMany(Officer::class);
+    }
+
+    public function studentCertifications()
+    {
+        return $this->hasMany(StudentCertification::class);
     }
 
     public function attendees()

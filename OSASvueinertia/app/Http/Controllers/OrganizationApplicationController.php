@@ -144,13 +144,15 @@ class OrganizationApplicationController extends Controller
             ]);
         } elseif ($request->form_type === 'LSPU-OSAS-SF-006') {
             $validationRules = array_merge($validationRules, [
-                'student_name' => 'required|string|max:255',
-                'course_year_section' => 'required|string|max:255',
-                'position_rank' => 'nullable|string|max:255',
-                'is_bonafide' => 'nullable|boolean',
-                'is_not_academic_probation' => 'nullable|boolean',
-                'is_not_disciplinary_probation' => 'nullable|boolean',
-                'has_position' => 'nullable|boolean',
+                'students' => 'required|array|min:1',
+                'students.*.student_name' => 'required|string|max:255',
+                'students.*.course_year_section' => 'required|string|max:255',
+                'students.*.position_rank' => 'nullable|string|max:255',
+                'students.*.is_bonafide' => 'nullable|boolean',
+                'students.*.is_not_academic_probation' => 'nullable|boolean',
+                'students.*.is_not_disciplinary_probation' => 'nullable|boolean',
+                'students.*.has_position' => 'nullable|boolean',
+                'students.*.certification_date' => 'required|date',
                 'coordinator_name' => 'nullable|string|max:255',
             ]);
             
@@ -285,6 +287,13 @@ class OrganizationApplicationController extends Controller
             }
         }
 
+        // Save student certifications if this is the Student Certification form
+        if ($request->form_type === 'LSPU-OSAS-SF-006' && $request->has('students')) {
+            foreach ($data['students'] as $studentData) {
+                $application->studentCertifications()->create($studentData);
+            }
+        }
+
         return redirect()->route('applications.index');
     }
 
@@ -301,7 +310,7 @@ class OrganizationApplicationController extends Controller
         }
         
         // Eager load all possible related models for editing
-        $application->load('activities', 'members', 'officers', 'attendees');
+        $application->load('activities', 'members', 'officers', 'attendees', 'studentCertifications');
         return Inertia::render('OrganizationApplications/Edit', ['application' => $application]);
     }
 
@@ -369,13 +378,15 @@ class OrganizationApplicationController extends Controller
             // Special handling for members below
         } elseif ($application->form_type === 'LSPU-OSAS-SF-006') {
             $validationRules = array_merge($validationRules, [
-                'student_name' => 'required|string|max:255',
-                'course_year_section' => 'required|string|max:255',
-                'position_rank' => 'nullable|string|max:255',
-                'is_bonafide' => 'nullable|boolean',
-                'is_not_academic_probation' => 'nullable|boolean',
-                'is_not_disciplinary_probation' => 'nullable|boolean',
-                'has_position' => 'nullable|boolean',
+                'students' => 'required|array|min:1',
+                'students.*.student_name' => 'required|string|max:255',
+                'students.*.course_year_section' => 'required|string|max:255',
+                'students.*.position_rank' => 'nullable|string|max:255',
+                'students.*.is_bonafide' => 'nullable|boolean',
+                'students.*.is_not_academic_probation' => 'nullable|boolean',
+                'students.*.is_not_disciplinary_probation' => 'nullable|boolean',
+                'students.*.has_position' => 'nullable|boolean',
+                'students.*.certification_date' => 'required|date',
             ]);
         } elseif ($application->form_type === 'LSPU-OSAS-SF-007') {
             $validationRules = array_merge($validationRules, [
@@ -471,6 +482,16 @@ class OrganizationApplicationController extends Controller
             // Create new attendees
             foreach ($request->attendees as $attendeeData) {
                 $application->attendees()->create($attendeeData);
+            }
+        }
+
+        if ($application->form_type === 'LSPU-OSAS-SF-006' && $request->has('students')) {
+            // Delete existing student certifications
+            $application->studentCertifications()->delete();
+            
+            // Create new student certifications
+            foreach ($request->students as $studentData) {
+                $application->studentCertifications()->create($studentData);
             }
         }
         
@@ -689,9 +710,21 @@ class OrganizationApplicationController extends Controller
 
     public function exportCertificationPdf(OrganizationApplication $application, Request $request)
     {
-        $pdf = Pdf::loadView('pdfs.organization_certification', compact('application'))
-                ->setPaper('A4', 'portrait');
-                
+        // Eager load the student certifications relationship
+        $application->load('studentCertifications');
+
+        // Check if student certifications data exists
+        if ($application->studentCertifications->isEmpty()) {
+            return redirect()->back()->with('error', 'No student certifications found for this organization.');
+        }
+
+        // Generate the PDF using the loaded data
+        $pdf = Pdf::loadView('pdfs.organization_certification', [
+                'application' => $application, 
+                'studentCertifications' => $application->studentCertifications
+            ])
+            ->setPaper('A4', 'portrait');
+            
         $action = $request->query('action', 'download');
         
         if ($action === 'view') {

@@ -143,6 +143,41 @@ const currentPageMemberInputs = computed(() => {
     return form.members.slice(startIndex.value, endIndex.value);
 });
 
+// Add computed for pagination display
+const visiblePages = computed(() => {
+    const total = totalPages.value;
+    const current = currentPage.value;
+    const delta = 2; // Number of pages to show on each side of current page
+    
+    if (total <= 7) {
+        // If 7 or fewer pages, show all
+        return Array.from({ length: total }, (_, i) => i + 1);
+    }
+    
+    const range = [];
+    const rangeWithDots = [];
+    
+    for (let i = Math.max(2, current - delta); i <= Math.min(total - 1, current + delta); i++) {
+        range.push(i);
+    }
+    
+    if (current - delta > 2) {
+        rangeWithDots.push(1, '...');
+    } else {
+        rangeWithDots.push(1);
+    }
+    
+    rangeWithDots.push(...range);
+    
+    if (current + delta < total - 1) {
+        rangeWithDots.push('...', total);
+    } else {
+        rangeWithDots.push(total);
+    }
+    
+    return rangeWithDots;
+});
+
 // Navigation functions
 const goToPage = (page) => {
     if (page >= 1 && page <= totalPages.value) {
@@ -479,14 +514,17 @@ function limitTo2Digits(event) {
             
             <div class="flex gap-2">
                 <button 
-                    v-for="page in totalPages" 
+                    v-for="page in visiblePages" 
                     :key="page"
-                    @click="goToPage(page)"
+                    @click="page === '...' ? null : goToPage(page)"
+                    :disabled="page === '...'"
                     :class="[
                         'px-3 py-1 rounded',
-                        currentPage === page 
-                            ? 'bg-blue-600 text-white' 
-                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                        page === '...' 
+                            ? 'text-gray-400 cursor-default' 
+                            : currentPage === page 
+                                ? 'bg-blue-600 text-white' 
+                                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                     ]">
                     {{ page }}
                 </button>
@@ -502,8 +540,7 @@ function limitTo2Digits(event) {
 
         <!-- Page Info -->
         <div v-if="totalPages > 1" class="text-center mt-4 text-sm text-gray-600">
-            Page {{ currentPage }} of {{ totalPages }} 
-            (Showing members {{ startIndex + 1 }}-{{ endIndex }} of {{ form.members.length }})
+            Page {{ currentPage }} of {{ totalPages }} • Members {{ startIndex + 1 }}-{{ endIndex }} of {{ form.members.length }}
         </div>
     </div>
 
@@ -609,7 +646,7 @@ function limitTo2Digits(event) {
             <div class="mb-4 p-2 bg-gray-50 border border-gray-200 rounded text-sm">
                 <span class="font-semibold">👥 Total Members: {{ form.members.length }}</span>
                 <span v-if="form.members.length > 0" class="ml-4 text-gray-600">
-                    (Showing page {{ currentPage }} of {{ totalPages }})
+                    • Page {{ currentPage }} of {{ totalPages }}
                 </span>
             </div>
 
@@ -681,14 +718,17 @@ function limitTo2Digits(event) {
                 </button>
                 <div class="flex gap-2">
                     <button 
-                        v-for="page in totalPages" 
+                        v-for="page in visiblePages" 
                         :key="page"
-                        @click="goToPage(page)"
+                        @click="page === '...' ? null : goToPage(page)"
+                        :disabled="page === '...'"
                         :class="[
                             'px-3 py-1 rounded',
-                            currentPage === page 
-                                ? 'bg-blue-600 text-white' 
-                                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                            page === '...' 
+                                ? 'text-gray-400 cursor-default' 
+                                : currentPage === page 
+                                    ? 'bg-blue-600 text-white' 
+                                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                         ]">
                         {{ page }}
                     </button>

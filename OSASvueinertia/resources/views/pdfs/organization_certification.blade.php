@@ -318,91 +318,109 @@
             margin: 4px 0; /* Add some spacing above and below */
             display: inline-block;
         }
+
+        /* Page break for multiple certifications */
+        .page-break {
+            page-break-before: always;
+        }
+
+        .certification-page {
+            min-height: 100vh;
+            position: relative;
+        }
     </style>
 </head>
 <body>
-    <div class="header">
-        <img src="{{ public_path('images/lspu-logo.png') }}" alt="LSPU Logo" class="logo">
-        <div class="header-title">Republic of the Philippines</div>
-        <img src="{{ public_path('images/lspu-name.png') }}" alt="Laguna State Polytechnic University" class="university-name"><br>
-        <div class="header-province">Province of Laguna</div>
-        <div class="header-office"><strong>OFFICE OF STUDENT AFFAIRS AND SERVICES</strong></div>
-    </div>
+    @foreach($studentCertifications as $index => $certification)
+        @if($index > 0)
+            <div class="page-break"></div>
+        @endif
+        
+        <div class="certification-page">
+            <div class="header">
+                <img src="{{ public_path('images/lspu-logo.png') }}" alt="LSPU Logo" class="logo">
+                <div class="header-title">Republic of the Philippines</div>
+                <img src="{{ public_path('images/lspu-name.png') }}" alt="Laguna State Polytechnic University" class="university-name"><br>
+                <div class="header-province">Province of Laguna</div>
+                <div class="header-office"><strong>OFFICE OF STUDENT AFFAIRS AND SERVICES</strong></div>
+            </div>
 
-    <!-- Modified date-line section to center DATE under its underline -->
-<div class="date-line">
-    <p><u>{{ \Carbon\Carbon::parse($application->application_date)->format('F d, Y') }}</u></p>
-    <p style="text-align: right; margin-right: 15px;">DATE</p>
-</div>
+            <!-- Modified date-line section to center DATE under its underline -->
+            <div class="date-line">
+                <p><u>{{ \Carbon\Carbon::parse($certification->certification_date)->format('F d, Y') }}</u></p>
+                <p style="text-align: right; margin-right: 15px;">DATE</p>
+            </div>
 
-    <div class="cert-title">
-        CERTIFICATION
-    </div>
+            <div class="cert-title">
+                CERTIFICATION
+            </div>
 
-    <div class="cert-content">
-    This certifies that 
-    <div style="display: inline-block; vertical-align: bottom; position: relative; top: 6px;">
-        <div>
-            <span class="student-blank">{{ $application->student_name ?? '' }}</span>
+            <div class="cert-content">
+            This certifies that 
+            <div style="display: inline-block; vertical-align: bottom; position: relative; top: 6px;">
+                <div>
+                    <span class="student-blank">{{ $certification->student_name ?? '' }}</span>
+                </div>
+                <div style="text-align: center; font-size: 11;font-weight:bold; margin-top: -5px;">
+                    student name
+                </div>
+            </div>, a 
+            <div style="display: inline-block; vertical-align: bottom; position: relative; top: 6px;">
+                <div>
+                    <span class="course-blank">{{ $certification->course_year_section ?? '' }}</span>
+                </div>
+                <div style="text-align: center; font-size: 11pt;font-weight:bold; margin-top: -5px;">
+                    course/year and section
+                </div>
+            </div>.
         </div>
-        <div style="text-align: center; font-size: 11;font-weight:bold; margin-top: -5px;">
-            student name
-        </div>
-    </div>, a 
-    <div style="display: inline-block; vertical-align: bottom; position: relative; top: 6px;">
-        <div>
-            <span class="course-blank">{{ $application->course_year_section ?? '' }}</span>
-        </div>
-        <div style="text-align: center; font-size: 11pt;font-weight:bold; margin-top: -5px;">
-            course/year and section
-        </div>
-    </div>.
-</div>
-    
-    <!-- Moved "student of this College is:" to its own line -->
-    <div class="college-is-text">
-        student of this College is:
-    </div>
+            
+            <!-- Moved "student of this College is:" to its own line -->
+            <div class="college-is-text">
+                student of this College is:
+            </div>
 
-   <!-- Wrapped checkboxes in a container with margin-top -->
-<div class="checkbox-container" style="padding-left: 25px;">
-    <!-- Text-based checkboxes with increased spacing -->
-    <div class="checkbox-item">
-        <span class="text-checkbox">({{ $application->is_bonafide ? '/' : ' ' }})</span> a bonafide student;
-    </div>
-    <div class="checkbox-item">
-        <span class="text-checkbox">({{ $application->is_not_academic_probation ? '/' : ' ' }})</span> not under academic probation;
-    </div>
-    <div class="checkbox-item">
-        <span class="text-checkbox">({{ $application->is_not_disciplinary_probation ? '/' : ' ' }})</span> not under disciplinary probation;
-    </div>
-    <div class="position-line">
-        <span class="text-checkbox">({{ $application->has_position ? '/' : ' ' }})</span> position/rank in the organization <span class="position-blank">{{ $application->position_rank ?? '' }}</span>;
-    </div>
-</div>
-
- <!-- Modified Noted section to move just the "Noted:" text higher -->
-<div class="signature-section" style="margin-top: 100px;">
-    <div class="noted-section" style="padding-left: 80px;">
-        <p style="margin-left: -40px; margin-bottom: 70px;"><strong>Noted:</strong></p>
-        <!-- Faculty adviser signature -->
-        <div class="faculty-adviser-signature" style="margin-top: -15px;">
-            <div class="signature-name-adviser">{{ $application->adviser_name ?? '' }}</div>
-            <div class="signature-title-adviser">Faculty Adviser(s)</div>
+           <!-- Wrapped checkboxes in a container with margin-top -->
+        <div class="checkbox-container" style="padding-left: 25px;">
+            <!-- Text-based checkboxes with increased spacing -->
+            <div class="checkbox-item">
+                <span class="text-checkbox">({{ $certification->is_bonafide ? '/' : ' ' }})</span> a bonafide student;
+            </div>
+            <div class="checkbox-item">
+                <span class="text-checkbox">({{ $certification->is_not_academic_probation ? '/' : ' ' }})</span> not under academic probation;
+            </div>
+            <div class="checkbox-item">
+                <span class="text-checkbox">({{ $certification->is_not_disciplinary_probation ? '/' : ' ' }})</span> not under disciplinary probation;
+            </div>
+            <div class="position-line">
+                <span class="text-checkbox">({{ $certification->has_position ? '/' : ' ' }})</span> position/rank in the organization <span class="position-blank">{{ $certification->position_rank ?? '' }}</span>;
+            </div>
         </div>
-    </div>
-</div>
 
-    <!-- MODIFIED: Separate dean signature section to keep at bottom -->
-    <div class="dean-signature-section">
-        <div class="signature-name">{{ $application->dean_name ?? '' }}</div>
-        <div class="signature-title">Dean/Assoc. Dean of College</div>
-    </div>
+         <!-- Modified Noted section to move just the "Noted:" text higher -->
+        <div class="signature-section" style="margin-top: 100px;">
+            <div class="noted-section" style="padding-left: 80px;">
+                <p style="margin-left: -40px; margin-bottom: 70px;"><strong>Noted:</strong></p>
+                <!-- Faculty adviser signature -->
+                <div class="faculty-adviser-signature" style="margin-top: -15px;">
+                    <div class="signature-name-adviser">{{ $application->adviser_name ?? '' }}</div>
+                    <div class="signature-title-adviser">Faculty Adviser(s)</div>
+                </div>
+            </div>
+        </div>
 
-    <div class="footer">
-        <div class="footer-left">LSPU-OSAS-SF-006</div>
-        <div class="footer-center">Rev. 1</div>
-        <div class="footer-right">09 November 2020</div>
-    </div>
+            <!-- MODIFIED: Separate dean signature section to keep at bottom -->
+            <div class="dean-signature-section">
+                <div class="signature-name">{{ $application->dean_name ?? '' }}</div>
+                <div class="signature-title">Dean/Assoc. Dean of College</div>
+            </div>
+
+            <div class="footer">
+                <div class="footer-left">LSPU-OSAS-SF-006</div>
+                <div class="footer-center">Rev. 1</div>
+                <div class="footer-right">09 November 2020</div>
+            </div>
+        </div>
+    @endforeach
 </body>
 </html>
