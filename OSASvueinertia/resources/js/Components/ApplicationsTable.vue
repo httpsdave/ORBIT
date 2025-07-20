@@ -358,8 +358,7 @@ const closeDropdowns = (event) => {
         <thead>
           <tr class="bg-gray-50 text-left text-gray-600 text-sm">
             <th class="px-6 py-5 font-semibold">Form Type</th>
-            <th class="px-6 py-5 font-semibold">Organization</th>
-            <th class="px-6 py-5 font-semibold">President</th>
+            <th v-if="isAdmin" class="px-6 py-5 font-semibold">Organization</th>
             <th class="px-6 py-5 font-semibold">Submitted</th>
             <th class="px-6 py-5 font-semibold">Status</th>
             <th class="px-6 py-5 font-semibold text-center">Actions</th>
@@ -371,11 +370,8 @@ const closeDropdowns = (event) => {
               <div class="text-sm font-semibold text-gray-800">{{ formTypeToName(app.form_type) }}</div>
               <div class="text-xs text-gray-500 mt-1">{{ app.form_type }}</div>
             </td>
-            <td class="px-6 py-5">
+            <td v-if="isAdmin" class="px-6 py-5">
               <div class="text-sm font-medium text-gray-800">{{ app.user.name }}</div>
-            </td>
-            <td class="px-6 py-5">
-              <div class="text-sm text-gray-600">{{ app.president_name }}</div>
             </td>
             <td class="px-6 py-5">
               <div class="text-sm text-gray-600">{{ formatDate(app.created_at) }}</div>
