@@ -189,23 +189,21 @@ const form = useForm({
   adviser_name: props.initialFormData.adviser_name || '',
   dean_name: props.initialFormData.dean_name || '',
   director_name: props.initialFormData.director_name || '',
-  students: [],
+  students: props.initialFormData.students || [],
 });
 
 // Initialize with data from props if available
-if (props.initialFormData?.students && props.initialFormData.students.length > 0) {
-  // Copy students from initialFormData
-  form.students = [...props.initialFormData.students.map(student => ({
+if (!form.students || form.students.length === 0) {
+  addStudent();
+} else {
+  // Convert boolean values properly for checkboxes
+  form.students = form.students.map(student => ({
     ...student,
-    // Convert boolean values properly for checkboxes
     is_bonafide: student.is_bonafide === true || student.is_bonafide === 1 || student.is_bonafide === '1',
     is_not_academic_probation: student.is_not_academic_probation === true || student.is_not_academic_probation === 1 || student.is_not_academic_probation === '1',
     is_not_disciplinary_probation: student.is_not_disciplinary_probation === true || student.is_not_disciplinary_probation === 1 || student.is_not_disciplinary_probation === '1',
     has_position: student.has_position === true || student.has_position === 1 || student.has_position === '1',
-  }))];
-} else {
-  // Add default empty student
-  addStudent();
+  }));
 }
 
 const validateForm = () => {

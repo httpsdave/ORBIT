@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useForm,router, usePage } from '@inertiajs/vue3';
 import StudentOrganizationForm from '@/Components/forms/StudentOrganizationForm.vue';
 import RenewalForm from '@/Components/forms/RenewalForm.vue';
@@ -22,13 +22,16 @@ const user = usePage().props.auth.user;
 const isAdmin = user && (user.role?.slug === 'admin' || user.is_admin || (typeof user.role === 'object' && user.role.id === 1));
 
 // Initialize form data based on the application type
-const initializeFormData = () => {
-  const formData = { ...props.application };
+const formData = computed(() => {
+  const data = { ...props.application };
+  
+  console.log('Edit.vue - props.application:', props.application);
+  console.log('Edit.vue - studentCertifications:', props.application.studentCertifications);
   
   // Initialize activities for Plan of Activities form if they don't exist
   if (props.application.form_type === 'LSPU-OSAS-SF-004') {
-    if (!formData.activities || !formData.activities.length) {
-      formData.activities = Array(3).fill().map(() => ({
+    if (!data.activities || !data.activities.length) {
+      data.activities = Array(3).fill().map(() => ({
         objective: '',
         name: '',
         description: '',
@@ -41,8 +44,8 @@ const initializeFormData = () => {
   
   // Initialize members for List of Members form if they don't exist
   else if (props.application.form_type === 'LSPU-OSAS-SF-005') {
-    if (!formData.members || !formData.members.length) {
-      formData.members = Array(4).fill().map(() => ({
+    if (!data.members || !data.members.length) {
+      data.members = Array(4).fill().map(() => ({
         student_name: '',
         student_number: '',
         course_year_section: '',
@@ -51,10 +54,31 @@ const initializeFormData = () => {
     }
   }
   
+  // Initialize students for Student Certification form if they don't exist
+  else if (props.application.form_type === 'LSPU-OSAS-SF-006') {
+    console.log('Edit.vue - Processing StudentCertificationForm');
+    // Backend now provides students data directly
+    if (!formData.students || !formData.students.length) {
+      formData.students = Array(1).fill().map(() => ({
+        student_name: '',
+        course_year_section: '',
+        position_rank: '',
+        is_bonafide: false,
+        is_not_academic_probation: false,
+        is_not_disciplinary_probation: false,
+        has_position: false,
+        certification_date: '',
+      }));
+      console.log('Edit.vue - Created default students:', formData.students);
+    } else {
+      console.log('Edit.vue - Using existing students:', formData.students);
+    }
+  }
+  
   // Initialize officers for List of Officers form if they don't exist
   else if (props.application.form_type === 'LSPU-OSAS-SF-007') {
-    if (!formData.officers || !formData.officers.length) {
-      formData.officers = Array(4).fill().map(() => ({
+    if (!data.officers || !data.officers.length) {
+      data.officers = Array(4).fill().map(() => ({
         student_name: '',
         position: '',
         student_number: '',
@@ -65,8 +89,8 @@ const initializeFormData = () => {
   
   // Initialize attendees for Student Activity Attendance Sheet if they don't exist
   else if (props.application.form_type === 'LSPU-OSAS-SF-009') {
-    if (!formData.attendees || !formData.attendees.length) {
-      formData.attendees = Array(10).fill().map(() => ({
+    if (!data.attendees || !data.attendees.length) {
+      data.attendees = Array(10).fill().map(() => ({
         name: '',
         course_year_section: '',
         signature: null
@@ -74,10 +98,9 @@ const initializeFormData = () => {
     }
   }
   
-  return formData;
-};
-
-const formData = ref(initializeFormData());
+  console.log('Edit.vue - Final formData:', data);
+  return data;
+});
 
 const handleFormSubmitted = (data) => {
   console.log('Submitting update for application ID:', props.application.id);

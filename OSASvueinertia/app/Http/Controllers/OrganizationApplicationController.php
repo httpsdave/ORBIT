@@ -311,6 +311,24 @@ class OrganizationApplicationController extends Controller
         
         // Eager load all possible related models for editing
         $application->load('activities', 'members', 'officers', 'attendees', 'studentCertifications');
+        
+        // Explicitly handle studentCertifications for StudentCertificationForm
+        if ($application->form_type === 'LSPU-OSAS-SF-006') {
+            // Convert studentCertifications to students array for frontend compatibility
+            $application->students = $application->studentCertifications->map(function($cert) {
+                return [
+                    'student_name' => $cert->student_name,
+                    'course_year_section' => $cert->course_year_section,
+                    'position_rank' => $cert->position_rank,
+                    'is_bonafide' => (bool) $cert->is_bonafide,
+                    'is_not_academic_probation' => (bool) $cert->is_not_academic_probation,
+                    'is_not_disciplinary_probation' => (bool) $cert->is_not_disciplinary_probation,
+                    'has_position' => (bool) $cert->has_position,
+                    'certification_date' => $cert->certification_date ? $cert->certification_date->format('Y-m-d') : '',
+                ];
+            })->toArray();
+        }
+        
         return Inertia::render('OrganizationApplications/Edit', ['application' => $application]);
     }
 

@@ -71,6 +71,22 @@ const handleFormSelection = (formId) => {
             }))
         };
     }
+    // Initialize students for Student Certification form
+    else if (formId === 'LSPU-OSAS-SF-006') {
+        formData.value = {
+            ...filteredSavedData,
+            students: Array(1).fill().map(() => ({
+                student_name: '',
+                course_year_section: '',
+                position_rank: '',
+                is_bonafide: false,
+                is_not_academic_probation: false,
+                is_not_disciplinary_probation: false,
+                has_position: false,
+                certification_date: '',
+            }))
+        };
+    }
     // Initialize officers for List of Officers form
     else if (formId === 'LSPU-OSAS-SF-007') {
         formData.value = {
