@@ -121,7 +121,7 @@ const emit = defineEmits(['submitted']);
 
 // Add pagination state
 const currentPage = ref(1);
-const officersPerPage = 5;
+const officersPerPage = 4;
 
 // Pagination computed properties
 const totalPages = computed(() => Math.ceil(form.officers.length / officersPerPage));
