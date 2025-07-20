@@ -297,12 +297,14 @@
     }
     
     function showFooter() {
-        // This function will generate the footer HTML
-        $footer = '<div class="footer" style="font-weight:normal !important; font-style:normal !important; font-family:Calibri, sans-serif !important;">
-                <div class="footer-left" style="font-weight:normal !important; font-style:normal !important; font-family:Calibri, sans-serif !important;">LSPU-OSAS-SF-005</div>
-                <div class="footer-center" style="font-weight:normal !important; font-style:normal !important; font-family:Calibri, sans-serif !important;">Rev. 1</div>
-                <div class="footer-right" style="font-weight:normal !important; font-style:normal !important; font-family:Calibri, sans-serif !important;">09 November 2020</div>
-            </div>';
+        // This function will generate the footer HTML with complete CSS reset
+        $footer = '<div style="font-weight:normal !important; font-style:normal !important; font-family:Calibri, sans-serif !important; all:unset; display:block;">
+            <div class="footer" style="font-weight:normal !important; font-style:normal !important; font-family:Calibri, sans-serif !important; all:unset; display:block; position:fixed; bottom:0; width:100%; height:20px; line-height:20px; font-size:11pt;">
+                <div class="footer-left" style="font-weight:normal !important; font-style:normal !important; font-family:Calibri, sans-serif !important; all:unset; display:block; position:absolute; left:-1.0cm; bottom:0;">LSPU-OSAS-SF-005</div>
+                <div class="footer-center" style="font-weight:normal !important; font-style:normal !important; font-family:Calibri, sans-serif !important; all:unset; display:block; position:absolute; left:50%; transform:translateX(-50%); bottom:0;">Rev. 1</div>
+                <div class="footer-right" style="font-weight:normal !important; font-style:normal !important; font-family:Calibri, sans-serif !important; all:unset; display:block; position:absolute; right:-1.0cm; bottom:0;">09 November 2020</div>
+            </div>
+        </div>';
         return $footer;
     }
     
@@ -672,8 +674,6 @@
             </table>
         </div>
         
-        <!-- Add font reset before footer to prevent bold inheritance -->
-        <span style="font-weight:normal !important; font-style:normal !important; font-family:Calibri, sans-serif !important;"></span>
         <!-- Add footer to each page -->
         {!! showFooter() !!}
         
