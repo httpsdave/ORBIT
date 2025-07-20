@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 
 const props = defineProps({
@@ -74,7 +74,6 @@ const form = useForm({
   coordinator_name: props.initialFormData.coordinator_name || '',
   director_name: props.initialFormData.director_name || '',
   
-
   college:props.initialFormData.college || '',
   activity_name:props.initialFormData.activity_name || '',
   activity_date:props.initialFormData.activity_date || '',
@@ -93,6 +92,69 @@ if (props.initialFormData?.attendees && props.initialFormData.attendees.length >
 
   }
 }
+
+// Pagination state (must be after form is defined)
+const attendeesPerPage = 10;
+const currentPage = ref(1);
+
+const totalPages = computed(() => {
+    return Math.ceil(form.attendees.length / attendeesPerPage);
+});
+
+const paginatedAttendees = computed(() => {
+    const start = (currentPage.value - 1) * attendeesPerPage;
+    return form.attendees.slice(start, start + attendeesPerPage);
+});
+
+const goToPrevPage = () => {
+    if (currentPage.value > 1) currentPage.value--;
+};
+const goToNextPage = () => {
+    if (currentPage.value < totalPages.value) currentPage.value++;
+};
+
+// Computed for visible page numbers with ellipsis
+const visiblePages = computed(() => {
+    const total = totalPages.value;
+    const current = currentPage.value;
+    const delta = 2;
+    if (total <= 7) {
+        return Array.from({ length: total }, (_, i) => i + 1);
+    }
+    const range = [];
+    const rangeWithDots = [];
+    for (let i = Math.max(2, current - delta); i <= Math.min(total - 1, current + delta); i++) {
+        range.push(i);
+    }
+    if (current - delta > 2) {
+        rangeWithDots.push(1, '...');
+    } else {
+        rangeWithDots.push(1);
+    }
+    rangeWithDots.push(...range);
+    if (current + delta < total - 1) {
+        rangeWithDots.push('...', total);
+    } else {
+        rangeWithDots.push(total);
+    }
+    return rangeWithDots;
+});
+
+const goToPage = (page) => {
+    if (typeof page === 'number' && page >= 1 && page <= totalPages.value) {
+        currentPage.value = page;
+    }
+};
+
+// When attendees are added/removed, ensure currentPage is valid
+watch(
+    () => form.attendees.length,
+    (newLen) => {
+        if (currentPage.value > totalPages.value) {
+            currentPage.value = totalPages.value || 1;
+        }
+    }
+);
 
 const submit = () => {
   if (!validateForm()) {
@@ -177,9 +239,9 @@ const submit = () => {
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(attendee, index) in form.attendees" :key="index">
+                <tr v-for="(attendee, index) in paginatedAttendees" :key="(currentPage - 1) * attendeesPerPage + index">
                     <td class="border border-gray-300 p-2 text-center">
-                        {{ index + 1 }}.
+                        {{ (currentPage - 1) * attendeesPerPage + index + 1 }}.
                     </td>
                     <td class="border border-gray-300 p-2">
                         <input v-model="attendee.name" class="w-full p-1">
@@ -188,7 +250,7 @@ const submit = () => {
                         <input v-model="attendee.course_year_section" class="w-full p-1">
                     </td>
                     <td class="border border-gray-300 p-2">
-                        <button type="button" @click="removeAttendee(index)" class="bg-red-500 text-white px-2 py-1 rounded text-xs">Remove</button>
+                        <button type="button" @click="removeAttendee((currentPage - 1) * attendeesPerPage + index)" class="bg-red-500 text-white px-2 py-1 rounded text-xs">Remove</button>
                     </td>
                 </tr>
             </tbody>
@@ -197,6 +259,45 @@ const submit = () => {
         <button type="button" @click="addAttendee" class="bg-blue-500 text-white px-3 py-1 rounded mb-4">
             Add Attendee Row
         </button>
+    </div>
+
+    <!-- Pagination Controls -->
+    <div v-if="totalPages > 1" class="pagination-controls flex justify-center items-center mt-8 gap-4">
+        <button 
+            type="button"
+            @click="goToPrevPage" 
+            :disabled="currentPage === 1"
+            class="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed">
+            Previous
+        </button>
+        <div class="flex gap-2">
+            <button 
+                v-for="page in visiblePages" 
+                :key="page"
+                @click="page === '...' ? null : goToPage(page)"
+                :disabled="page === '...'"
+                :class="[
+                    'px-3 py-1 rounded',
+                    page === '...'
+                        ? 'text-gray-400 cursor-default'
+                        : currentPage === page
+                            ? 'bg-blue-600 text-white'
+                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                ]">
+                {{ page }}
+            </button>
+        </div>
+        <button 
+            type="button"
+            @click="goToNextPage" 
+            :disabled="currentPage === totalPages"
+            class="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed">
+            Next
+        </button>
+    </div>
+    <!-- Page Info -->
+    <div v-if="totalPages > 1" class="text-center mt-4 text-sm text-gray-600">
+        Page {{ currentPage }} of {{ totalPages }} • Attendees {{ (currentPage - 1) * attendeesPerPage + 1 }}-{{ Math.min(currentPage * attendeesPerPage, form.attendees.length) }} of {{ form.attendees.length }}
     </div>
 
     <div class="mt-6 text-center">

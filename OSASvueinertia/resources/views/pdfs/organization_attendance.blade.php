@@ -164,67 +164,67 @@
 </head>
 <body>
 
-    <div class="header">
-    <img src="{{ public_path('images/lspu-logo.png') }}" alt="LSPU Logo" class="logo">
-        <span class="calibri-text">Republic of the Philippines</span><br>
-        <img src="{{ public_path('images/lspu-name.png') }}" alt="Laguna State Polytechnic University" class="university-name"><br>
-        <span class="calibri-text">Province of Laguna</span><br>
-        <div style="margin-top: 5px; font-weight: bold;">OFFICE OF STUDENT AFFAIRS AND SERVICES</div>
-        <div class="title" style="margin-top: 5px;">STUDENT ACTIVITY ATTENDANCE SHEET</div>
-        <span class= "underline" style="font-weight: bold; margin-top: 5px;">COLLEGE OF {{ $application->college ?? '' }}</span>
-    </div>
+    @php
+        $attendees = ($application->attendees ?? collect())->toArray();
+        $chunks = array_chunk($attendees, 35);
+        $totalPages = max(1, count($chunks));
+    @endphp
 
-    <div class="content">
-        <div class="form-row" style="margin-top: 0.2cm;">
-            <div class="form-field" style="float: left; width: 60%;">
-                <label>ACTIVITY: </label>
-                <span class="underline">{{ $application->activity_name ?? '' }}</span>
-            </div>
-            <div class="form-field" style="float: right; width: 30%; text-align: right;">
-                <label>DATE: </label>
-                <span class="underline" style="min-width: 100px;">{{ $application->activity_date ? \Carbon\Carbon::parse($application->activity_date)->format('F d, Y') : '' }}</span>
-            </div>
+    @foreach($chunks as $chunkIndex => $attendeeChunk)
+        <div class="header">
+            <img src="{{ public_path('images/lspu-logo.png') }}" alt="LSPU Logo" class="logo">
+            <span class="calibri-text">Republic of the Philippines</span><br>
+            <img src="{{ public_path('images/lspu-name.png') }}" alt="Laguna State Polytechnic University" class="university-name"><br>
+            <span class="calibri-text">Province of Laguna</span><br>
+            <div style="margin-top: 5px; font-weight: bold;">OFFICE OF STUDENT AFFAIRS AND SERVICES</div>
+            <div class="title" style="margin-top: 5px;">STUDENT ACTIVITY ATTENDANCE SHEET</div>
+            <span class= "underline" style="font-weight: bold; margin-top: 5px;">COLLEGE OF {{ $application->college ?? '' }}</span>
         </div>
 
-        <table>
-            <tr>
-                <th>NAME</th>
-                <th>COURSE/YEAR &<br>SECTION</th>
-                <th>SIGNATURE</th>
-            </tr>
-            @if(isset($application->attendees) && count($application->attendees) > 0)
-                @foreach($application->attendees as $index => $attendee)
+        <div class="content">
+            <div class="form-row" style="margin-top: 0.2cm;">
+                <div class="form-field" style="float: left; width: 60%;">
+                    <label>ACTIVITY: </label>
+                    <span class="underline">{{ $application->activity_name ?? '' }}</span>
+                </div>
+                <div class="form-field" style="float: right; width: 30%; text-align: right;">
+                    <label>DATE: </label>
+                    <span class="underline" style="min-width: 100px;">{{ $application->activity_date ? \Carbon\Carbon::parse($application->activity_date)->format('F d, Y') : '' }}</span>
+                </div>
+            </div>
+
+            <table>
+                <tr>
+                    <th>NAME</th>
+                    <th>COURSE/YEAR &<br>SECTION</th>
+                    <th>SIGNATURE</th>
+                </tr>
+                @foreach($attendeeChunk as $index => $attendee)
                 <tr>
                     <td><span class="row-number">{{ $index + 1 }}.</span> {{ $attendee['name'] }}</td>
                     <td>{{ $attendee['course_year_section'] }}</td>
                     <td>&nbsp;</td>
                 </tr>
                 @endforeach
-                
-                @for($i = count($application->attendees) + 1; $i <= 35; $i++)
+                @for($i = count($attendeeChunk) + 1; $i <= 35; $i++)
                 <tr>
                     <td><span class="row-number">{{ $i }}.</span></td>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                 </tr>
                 @endfor
-            @else
-                @for($i = 1; $i <= 35; $i++)
-                <tr>
-                    <td><span class="row-number">{{ $i }}.</span></td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                </tr>
-                @endfor
-            @endif
-        </table>
-    </div>
+            </table>
+        </div>
 
-    <div class="footer">
-        <div class="footer-left">LSPU-OSAS-SF-009</div>
-        <div class="footer-center">Rev. 0</div>
-        <div class="footer-right">10 August 2016</div>
-    </div>
+        <div class="footer">
+            <div class="footer-left">LSPU-OSAS-SF-009</div>
+            <div class="footer-center">Rev. 0</div>
+            <div class="footer-right">10 August 2016</div>
+        </div>
+        @if($chunkIndex < $totalPages - 1)
+            <div style="page-break-after: always;"></div>
+        @endif
+    @endforeach
 
 </body>
 </html>
