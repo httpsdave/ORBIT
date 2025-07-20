@@ -177,8 +177,19 @@ class OrganizationApplicationController extends Controller
                 'attendees.*.signature' => 'nullable',
             ]);
         } elseif ($request->form_type === 'LSPU-OSAS-SF-EVAL') {
-            // Validation for evaluation form
+            // Override common validation rules for evaluation form
+            $validationRules['adviser_name'] = 'nullable|string|max:255';
+            $validationRules['dean_name'] = 'nullable|string|max:255';
+            $validationRules['coordinator_name'] = 'nullable|string|max:255';
+            
+            // Add evaluation form specific validation
             $validationRules = array_merge($validationRules, [
+                'activity_title' => 'required|string|max:255',
+                'venue' => 'required|string|max:255',
+                'date_start' => 'required|date',
+                'date_end' => 'nullable|date|after_or_equal:date_start',
+                'time_start' => 'required',
+                'time_end' => 'nullable',
                 'ratings' => 'required|array|size:15',
                 'ratings.*' => ['required', 'regex:/^(?:[1-4]\.[0-9]|5\.0)$/', 'numeric', 'min:1.0', 'max:5.0'],
                 'comments_suggestions' => 'nullable|string',
@@ -347,9 +358,9 @@ class OrganizationApplicationController extends Controller
         $validationRules = [
             'organization_name' => 'required|string|max:255',
             'president_name' => 'required|string|max:255',
-            'adviser_name' => 'required|string|max:255',
-            'dean_name' => 'required|string|max:255',
-            'coordinator_name' => $application->form_type === 'LSPU-OSAS-SF-006' ? 'nullable|string|max:255' : 'required|string|max:255',
+            'adviser_name' => $application->form_type === 'LSPU-OSAS-SF-EVAL' ? 'nullable|string|max:255' : 'required|string|max:255',
+            'dean_name' => $application->form_type === 'LSPU-OSAS-SF-EVAL' ? 'nullable|string|max:255' : 'required|string|max:255',
+            'coordinator_name' => ($application->form_type === 'LSPU-OSAS-SF-006' || $application->form_type === 'LSPU-OSAS-SF-EVAL') ? 'nullable|string|max:255' : 'required|string|max:255',
             'signed_document' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
         ];
         
@@ -424,8 +435,36 @@ class OrganizationApplicationController extends Controller
         } elseif ($application->form_type === 'LSPU-OSAS-SF-EVAL') {
             // Validation for evaluation form
             $validationRules = array_merge($validationRules, [
+                'activity_title' => 'required|string|max:255',
+                'venue' => 'required|string|max:255',
+                'date_start' => 'required|date',
+                'date_end' => 'nullable|date|after_or_equal:date_start',
+                'time_start' => 'required',
+                'time_end' => 'nullable',
                 'ratings' => 'required|array|size:15',
-                'ratings.*' => ['required', 'regex:/^(?:[1-4]\.[0-9]|5\.0)$/', 'numeric', 'min:1.0', 'max:5.0'],
+                'ratings.*' => [
+                    'required',
+                    'string',
+                    function ($attribute, $value, $fail) {
+                        // Ensure it's a string and matches the format
+                        if (!is_string($value)) {
+                            $fail('The rating must be a string.');
+                            return;
+                        }
+                        
+                        // Check format using regex
+                        if (!preg_match('/^(?:[1-4]\.[0-9]|5\.0)$/', $value)) {
+                            $fail('The rating must be in format X.Y where X is 1-4 and Y is 0-9, or exactly 5.0');
+                            return;
+                        }
+                        
+                        // Check numeric range
+                        $numValue = floatval($value);
+                        if ($numValue < 1.0 || $numValue > 5.0) {
+                            $fail('The rating must be between 1.0 and 5.0.');
+                        }
+                    }
+                ],
                 'comments_suggestions' => 'nullable|string',
             ]);
         }

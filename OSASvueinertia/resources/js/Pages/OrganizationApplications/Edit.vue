@@ -58,8 +58,8 @@ const formData = computed(() => {
   else if (props.application.form_type === 'LSPU-OSAS-SF-006') {
     console.log('Edit.vue - Processing StudentCertificationForm');
     // Backend now provides students data directly
-    if (!formData.students || !formData.students.length) {
-      formData.students = Array(1).fill().map(() => ({
+    if (!data.students || !data.students.length) {
+      data.students = Array(1).fill().map(() => ({
         student_name: '',
         course_year_section: '',
         position_rank: '',
@@ -69,9 +69,9 @@ const formData = computed(() => {
         has_position: false,
         certification_date: '',
       }));
-      console.log('Edit.vue - Created default students:', formData.students);
+      console.log('Edit.vue - Created default students:', data.students);
     } else {
-      console.log('Edit.vue - Using existing students:', formData.students);
+      console.log('Edit.vue - Using existing students:', data.students);
     }
   }
   
@@ -109,7 +109,27 @@ const handleFormSubmitted = (data) => {
   // Convert to FormData for file uploads
   const formData = new FormData();
   for (const key in data) {
-    if (Array.isArray(data[key])) {
+    if (key === 'ratings' && Array.isArray(data[key])) {
+      // Ensure ratings are strings
+      data[key].forEach((rating, idx) => {
+        let stringRating = rating;
+        if (rating !== null && rating !== undefined && rating !== '') {
+          stringRating = rating.toString();
+          // Convert single digit to X.0 format
+          if (/^[1-5]$/.test(stringRating)) {
+            stringRating = stringRating + '.0';
+          }
+          // Ensure proper decimal format
+          if (/^[1-4]$/.test(stringRating[0])) {
+            const decimal = stringRating.includes('.') ? stringRating.split('.')[1] : '0';
+            stringRating = `${stringRating[0]}.${decimal}`;
+          } else if (stringRating[0] === '5') {
+            stringRating = '5.0';
+          }
+        }
+        formData.append(`ratings[${idx}]`, stringRating);
+      });
+    } else if (Array.isArray(data[key])) {
       data[key].forEach((item, idx) => {
         for (const subKey in item) {
           if (item[subKey] !== null && item[subKey] !== undefined) {
@@ -125,6 +145,11 @@ const handleFormSubmitted = (data) => {
   }
   // Add _method=PUT for Laravel method spoofing
   formData.append('_method', 'PUT');
+
+  // For debugging - log the FormData contents
+  for (let [key, value] of formData.entries()) {
+    console.log(`${key}: ${value}`);
+  }
 
   router.post(`/applications/${props.application.id}`, formData, {
     forceFormData: true,

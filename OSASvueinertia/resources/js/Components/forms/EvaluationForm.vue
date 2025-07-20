@@ -67,9 +67,30 @@ watch(() => props.initialFormData, (newVal) => {
       form.date_end = newVal.date_end || '';
       form.time_start = newVal.time_start || '';
       form.time_end = newVal.time_end || '';
-      form.ratings = Array.isArray(newVal.ratings) && newVal.ratings.length === statements.length
-        ? [...newVal.ratings]
-        : Array(statements.length).fill('');
+      
+      // Handle ratings - ensure they are strings in the correct format
+      if (Array.isArray(newVal.ratings) && newVal.ratings.length === statements.length) {
+        form.ratings = newVal.ratings.map(rating => {
+          if (rating === null || rating === undefined || rating === '') {
+            return '';
+          }
+          // Convert to string and ensure proper format
+          let val = rating.toString();
+          if (/^[1-5]$/.test(val)) {
+            val = val + '.0';
+          }
+          if (/^[1-4]$/.test(val[0])) {
+            const decimal = val.includes('.') ? val.split('.')[1] : '0';
+            val = `${val[0]}.${decimal}`;
+          } else if (val[0] === '5') {
+            val = '5.0';
+          }
+          return val;
+        });
+      } else {
+        form.ratings = Array(statements.length).fill('');
+      }
+      
       form.comments_suggestions = newVal.comments_suggestions || '';
       lastValidRatings.value = [...form.ratings];
     }
@@ -154,18 +175,27 @@ const validateForm = () => {
     isValid = false;
   }
   
+  // Updated rating validation
   form.ratings.forEach((r, i) => {
     if (!r) {
       errors.value[`rating_${i}`] = 'Required';
       isValid = false;
     } else {
-      let val = r;
+      let val = r.toString();
+      // Convert single digit to X.0 format
       if (/^[1-5]$/.test(val)) {
         val = val + '.0';
         form.ratings[i] = val;
       }
+      // Validate format and range
       if (!/^(?:[1-4]\.[0-9]|5\.0)$/.test(val)) {
-        errors.value[`rating_${i}`] = 'Must be from 1.0 to 5.0';
+        errors.value[`rating_${i}`] = 'Must be between 1.0 and 5.0';
+        isValid = false;
+      }
+      // Convert to numeric for range validation
+      const numVal = parseFloat(val);
+      if (numVal < 1.0 || numVal > 5.0) {
+        errors.value[`rating_${i}`] = 'Must be between 1.0 and 5.0';
         isValid = false;
       }
     }
@@ -175,22 +205,39 @@ const validateForm = () => {
 
 const submit = () => {
   if (!validateForm()) return;
-  
-  // Format the date and time ranges for storage
-  const submitData = {
-    ...form.data(),
-    date: formattedDateRange.value,
-    time: formattedTimeRange.value,
-  };
-  
+
+  // Transform the form data before submission to ensure ratings are strings
+  form.transform(data => {
+    return {
+      ...data,
+      ratings: data.ratings.map(rating => {
+        if (!rating) return '';
+        let val = rating.toString();
+        // Convert single digit to X.0 format
+        if (/^[1-5]$/.test(val)) {
+          val = val + '.0';
+        }
+        // Ensure proper decimal format
+        if (/^[1-4]$/.test(val[0])) {
+          const decimal = val.includes('.') ? val.split('.')[1] : '0';
+          val = `${val[0]}.${decimal}`;
+        } else if (val[0] === '5') {
+          val = '5.0';
+        }
+        return val;
+      })
+    };
+  });
+
   if (props.isEdit) {
-    emit('submitted', submitData);
+    emit('submitted', form.data());
   } else {
+    form.clearErrors();
     form.post('/applications', {
-      data: submitData,
+      preserveScroll: true,
       onSuccess: () => {
         alert('Form submitted successfully!');
-        emit('submitted', submitData);
+        emit('submitted', form.data());
       },
       onError: (errors) => {
         console.error('Form submission errors:', errors);
