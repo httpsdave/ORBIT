@@ -173,3 +173,5 @@ Route::middleware(['auth'])->group(function () {
 
     });
 });
+
+Route::post('/applications/upload-report', [OrganizationApplicationController::class, 'uploadReport'])->name('applications.upload-report');

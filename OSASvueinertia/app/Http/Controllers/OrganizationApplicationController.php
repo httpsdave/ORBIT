@@ -1135,4 +1135,41 @@ class OrganizationApplicationController extends Controller
         // Return Inertia response instead of JSON
         return back()->with('success', 'Form data saved successfully');
     }
+
+    public function uploadReport(Request $request)
+    {
+        $request->validate([
+            'form_type' => 'required|string|in:LSPU-OSAS-SF-ACCOMPLISHMENT,LSPU-OSAS-SF-NARRATIVE,LSPU-OSAS-SF-BYLAWS,LSPU-OSAS-SF-FINANCIAL',
+            'file' => 'required|file|mimes:pdf|max:10240',
+        ]);
+
+        $user = $request->user();
+        $formType = $request->input('form_type');
+        $file = $request->file('file');
+
+        $columnMap = [
+            'LSPU-OSAS-SF-ACCOMPLISHMENT' => 'accomplishment_report_path',
+            'LSPU-OSAS-SF-NARRATIVE' => 'narrative_report_path',
+            'LSPU-OSAS-SF-BYLAWS' => 'bylaws_path',
+            'LSPU-OSAS-SF-FINANCIAL' => 'financial_report_path',
+        ];
+        $column = $columnMap[$formType];
+
+        // Create a new application for this upload
+        $application = OrganizationApplication::create([
+            'user_id' => $user->id,
+            'form_type' => $formType,
+            'organization_name' => $user->name,
+            'president_name' => $user->name,
+            'status' => 'Pending',
+            'application_date' => now(), // Fix: set required field
+        ]);
+
+        $fileName = $formType . '_' . time() . '.pdf';
+        $path = $file->storeAs('reports/' . $user->id, $fileName, 'public');
+        $application->$column = $path;
+        $application->save();
+
+        return redirect()->route('applications.index')->with('success', 'Report uploaded successfully!');
+    }
 }

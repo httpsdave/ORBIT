@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import FormSelector from '@/Components/FormSelector.vue';
 import StudentOrganizationForm from '@/Components/forms/StudentOrganizationForm.vue';
 import RenewalForm from '@/Components/forms/RenewalForm.vue';
@@ -10,6 +10,7 @@ import StudentCertificationForm from '@/Components/forms/StudentCertificationFor
 import ListOfOfficersForm from '@/Components/forms/ListOfOfficersForm.vue';
 import ActivityAttendanceForm from '@/Components/forms/ActivityAttendanceForm.vue';
 import EvaluationForm from '@/Components/forms/EvaluationForm.vue';
+import { Inertia } from '@inertiajs/inertia';
 
 // Get saved form data from props
 const props = defineProps({
@@ -21,6 +22,10 @@ const props = defineProps({
 
 const currentForm = ref('');
 const formData = ref({});
+const uploadFile = ref(null);
+const uploadError = ref('');
+const uploadProgress = ref(0);
+const uploadSuccess = ref('');
 
 const formOptions = [
     { value: 'LSPU-OSAS-SF-001', label: 'Recognition Form' },
@@ -32,7 +37,18 @@ const formOptions = [
     { value: 'LSPU-OSAS-SF-007', label: 'List of Officers' }, 
     { value: 'LSPU-OSAS-SF-009', label: 'Student Activity Attendance Sheet' },
     { value: 'LSPU-OSAS-SF-EVAL', label: 'Evaluation Form' },
+    { value: 'LSPU-OSAS-SF-ACCOMPLISHMENT', label: 'Accomplishment Report' },
+    { value: 'LSPU-OSAS-SF-NARRATIVE', label: 'Narrative Report' },
+    { value: 'LSPU-OSAS-SF-BYLAWS', label: 'Constitution & By-laws' },
+    { value: 'LSPU-OSAS-SF-FINANCIAL', label: 'Financial Report' },
 ];
+
+const isDirectUploadForm = computed(() => [
+    'LSPU-OSAS-SF-ACCOMPLISHMENT',
+    'LSPU-OSAS-SF-NARRATIVE',
+    'LSPU-OSAS-SF-BYLAWS',
+    'LSPU-OSAS-SF-FINANCIAL'
+].includes(currentForm.value));
 
 const handleFormSelection = (formId) => {
     currentForm.value = formId;
@@ -123,6 +139,57 @@ const handleFormSubmitted = (data) => {
     formData.value = {};
     
 };
+
+const handleFileDrop = (e) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if (file && file.type === 'application/pdf') {
+        uploadFile.value = file;
+        uploadError.value = '';
+    } else {
+        uploadError.value = 'Please upload a PDF file.';
+    }
+};
+const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file && file.type === 'application/pdf') {
+        uploadFile.value = file;
+        uploadError.value = '';
+    } else {
+        uploadError.value = 'Please upload a PDF file.';
+    }
+};
+const handleDirectUploadSubmit = () => {
+    if (!uploadFile.value) {
+        uploadError.value = 'Please select a PDF file.';
+        return;
+    }
+    uploadError.value = '';
+    uploadSuccess.value = '';
+    uploadProgress.value = 0;
+    const formData = new FormData();
+    formData.append('form_type', currentForm.value);
+    formData.append('file', uploadFile.value);
+    Inertia.post('/applications/upload-report', formData, {
+        forceFormData: true,
+        onProgress: (event) => {
+            if (event && event.detail && event.detail.progress) {
+                uploadProgress.value = event.detail.progress.percentage;
+            }
+        },
+        onSuccess: () => {
+            uploadSuccess.value = 'File uploaded successfully!';
+            currentForm.value = '';
+            uploadFile.value = null;
+            uploadProgress.value = 0;
+            setTimeout(() => { uploadSuccess.value = ''; }, 4000);
+        },
+        onError: (errors) => {
+            uploadError.value = errors.file || 'Upload failed.';
+            uploadProgress.value = 0;
+        }
+    });
+};
 </script>
 
 <template>
@@ -135,6 +202,34 @@ const handleFormSubmitted = (data) => {
     />
 
     <!-- Show the selected form -->
+    <div v-else-if="isDirectUploadForm">
+      <div
+        class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer bg-gray-50 hover:bg-gray-100 transition"
+        @drop="handleFileDrop"
+        @dragover.prevent
+        @click="$refs.fileInput.click()"
+      >
+        <input type="file" ref="fileInput" accept="application/pdf" class="hidden" @change="handleFileChange" />
+        <div v-if="uploadFile">
+          <p class="text-green-700 font-semibold">{{ uploadFile.name }}</p>
+        </div>
+        <div v-else>
+          <p class="text-gray-500">Drag and drop a PDF file here, or click to select</p>
+        </div>
+        <div v-if="uploadError" class="text-red-600 mt-2">{{ uploadError }}</div>
+        <div v-if="uploadProgress > 0 && uploadProgress < 100" class="mt-2 w-full bg-gray-200 rounded-full h-2.5">
+          <div class="bg-blue-600 h-2.5 rounded-full" :style="{ width: uploadProgress + '%' }"></div>
+        </div>
+        <div v-if="uploadSuccess" class="text-green-600 mt-2">{{ uploadSuccess }}</div>
+      </div>
+      <button
+        class="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition disabled:opacity-50"
+        :disabled="!uploadFile || uploadProgress > 0 && uploadProgress < 100"
+        @click="handleDirectUploadSubmit"
+      >
+        Submit {{ formOptions.find(f => f.value === currentForm)?.label }}
+      </button>
+    </div>
     <div v-else>
       <!-- Student Organization Form -->
       <StudentOrganizationForm 

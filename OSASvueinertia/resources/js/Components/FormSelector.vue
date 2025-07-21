@@ -6,6 +6,15 @@ const props = defineProps({
   formOptions: {
     type: Array,
     required: true
+    // Example usage in parent:
+    // [
+    //   { value: 'LSPU-OSAS-SF-001', label: 'Recognition Form' },
+    //   ...
+    //   { value: 'LSPU-OSAS-SF-ACCOMPLISHMENT', label: 'Accomplishment Report' },
+    //   { value: 'LSPU-OSAS-SF-NARRATIVE', label: 'Narrative Report' },
+    //   { value: 'LSPU-OSAS-SF-BYLAWS', label: 'Constitution & By-laws' },
+    //   { value: 'LSPU-OSAS-SF-FINANCIAL', label: 'Financial Report' },
+    // ]
   },
   title: {
     type: String,

@@ -62,6 +62,11 @@ class OrganizationApplication extends Model
          'time_end',
         'comments_suggestions',
 
+        'accomplishment_report_path',
+        'narrative_report_path',
+        'bylaws_path',
+        'financial_report_path',
+
     ];
 
     protected $casts = [

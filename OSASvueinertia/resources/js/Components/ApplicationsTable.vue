@@ -308,6 +308,36 @@ const closeDropdowns = (event) => {
   }
 };
 
+const getReportPath = (app) => {
+  switch(app.form_type) {
+    case 'LSPU-OSAS-SF-ACCOMPLISHMENT':
+      return app.accomplishment_report_path;
+    case 'LSPU-OSAS-SF-NARRATIVE':
+      return app.narrative_report_path;
+    case 'LSPU-OSAS-SF-BYLAWS':
+      return app.bylaws_path;
+    case 'LSPU-OSAS-SF-FINANCIAL':
+      return app.financial_report_path;
+    default:
+      return app.signed_document_path;
+  }
+};
+
+const getViewUrl = (app) => {
+  // For direct-upload forms, link directly to the PDF
+  const reportPath = getReportPath(app);
+  if ([
+    'LSPU-OSAS-SF-ACCOMPLISHMENT',
+    'LSPU-OSAS-SF-NARRATIVE',
+    'LSPU-OSAS-SF-BYLAWS',
+    'LSPU-OSAS-SF-FINANCIAL',
+  ].includes(app.form_type) && reportPath) {
+    return `/storage/${reportPath}`;
+  }
+  // Otherwise, use the generated PDF route
+  return getPdfRoute(app, 'view');
+};
+
 </script>
 
 <template>
@@ -394,7 +424,7 @@ const closeDropdowns = (event) => {
               </div>
               <!-- Document status indicator -->
               <div class="mt-1.5 flex items-center gap-1">
-                <span v-if="app.signed_document_path" class="text-xs text-green-600 flex items-center gap-1">
+                <span v-if="getReportPath(app)" class="text-xs text-green-600 flex items-center gap-1">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                   </svg>
@@ -415,7 +445,7 @@ const closeDropdowns = (event) => {
                 <div class="flex space-x-3">
                   <!-- View PDF - Keep as direct button for primary action -->
                   <a 
-                    :href="getPdfRoute(app, 'view')" 
+                    :href="getViewUrl(app)" 
                     target="_blank" 
                     class="bg-green-500 hover:bg-green-400 text-white p-2.5 rounded-lg transition duration-300 relative overflow-hidden group shadow-sm"
                     title="View PDF"
@@ -480,7 +510,7 @@ const closeDropdowns = (event) => {
         </button>
         <!-- Delete document option (only if document exists) -->
         <button 
-          v-if="activeDropdownApp.signed_document_path && (isAdmin || (!isAdmin && activeDropdownApp.status !== 'Approved'))"
+          v-if="getReportPath(activeDropdownApp) && (isAdmin || (!isAdmin && activeDropdownApp.status !== 'Approved'))"
           @click="deleteDocument(activeDropdownApp.id)"
           class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200"
         >
@@ -491,7 +521,7 @@ const closeDropdowns = (event) => {
         </button>
         <!-- View signed document option (only if document exists) -->
         <a 
-          v-if="activeDropdownApp.signed_document_path"
+          v-if="getReportPath(activeDropdownApp)"
           :href="`/applications/${activeDropdownApp.id}/view-document`" 
           target="_blank" 
           class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200"
