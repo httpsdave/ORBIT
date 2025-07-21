@@ -8,6 +8,25 @@ import StatusModal from '@/Components/StatusModal.vue';
 import NoApplicationsMessage from '@/Components/NoApplicationsMessage.vue';
 import Modal from '@/Components/Modal.vue';
 
+// --- Add form preview dropdown state and data ---
+const showPreviewDropdown = ref(false);
+const formTemplates = [
+  { type: 'LSPU-OSAS-SF-001', label: 'Application for Recognition' },
+  { type: 'LSPU-OSAS-SF-002', label: 'Renewal Form' },
+  { type: 'LSPU-OSAS-SF-003', label: 'Commitment Form' },
+  { type: 'LSPU-OSAS-SF-004', label: 'Plan of Activities' },
+  { type: 'LSPU-OSAS-SF-005', label: 'List of Members' },
+  { type: 'LSPU-OSAS-SF-006', label: 'Student Certification' },
+  { type: 'LSPU-OSAS-SF-007', label: 'List of Officers' },
+  { type: 'LSPU-OSAS-SF-009', label: 'Activity Attendance Sheet' },
+  { type: 'LSPU-OSAS-SF-EVAL', label: 'Evaluation Form' },
+];
+const openPreview = (formType) => {
+  const url = `/applications/preview/${formType}?action=view`;
+  window.open(url, '_blank');
+  showPreviewDropdown.value = false;
+};
+
 const props = defineProps({ 
   applications: Array,
   successMessage: String,
@@ -289,7 +308,7 @@ const endYear = () => {
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
           {{ isAdmin ? 'Manage Applications' : 'Your Applications' }}
         </h2>
-        <div class="flex gap-3">
+        <div class="flex gap-3 items-center relative">
           <Link
             href="/applications/create"
             class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white px-5 py-2.5 rounded-lg shadow inline-flex items-center transition duration-300 text-sm font-medium"
@@ -299,6 +318,39 @@ const endYear = () => {
             </svg>
             New Application
           </Link>
+          <!-- Preview Forms Dropdown (Users only) -->
+          <div v-if="!isAdmin" class="relative">
+            <button
+              @click="showPreviewDropdown = !showPreviewDropdown"
+              class="bg-white border border-blue-600 text-blue-700 hover:bg-blue-50 px-5 py-2.5 rounded-lg shadow inline-flex items-center transition duration-300 text-sm font-medium ml-2"
+              type="button"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M15 10a1 1 0 01-1 1H6a1 1 0 110-2h8a1 1 0 011 1z" clip-rule="evenodd" />
+              </svg>
+              Preview Forms
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </button>
+            <div
+              v-if="showPreviewDropdown"
+              class="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-50"
+            >
+              <ul class="py-1">
+                <li v-for="form in formTemplates" :key="form.type">
+                  <button
+                    @click="openPreview(form.type)"
+                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition"
+                  >
+                    <span class="font-medium">{{ form.label }}</span>
+                  </button>
+                </li>
+              </ul>
+            </div>
+            <!-- Click outside to close -->
+            <div v-if="showPreviewDropdown" class="fixed inset-0 z-40" @click="showPreviewDropdown = false"></div>
+          </div>
           <button
             v-if="isAdmin"
             @click="openEndYearModal"

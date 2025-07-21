@@ -860,6 +860,237 @@ class OrganizationApplicationController extends Controller
     }
 
     /**
+     * Preview a form template with sample data as PDF
+     */
+    public function previewForm($form_type, Request $request)
+    {
+        // Map form_type to blade template and sample data
+        $templateMap = [
+            'LSPU-OSAS-SF-001' => 'pdfs.organization_application',
+            'LSPU-OSAS-SF-002' => 'pdfs.organization_renewal',
+            'LSPU-OSAS-SF-003' => 'pdfs.organization_commitment',
+            'LSPU-OSAS-SF-004' => 'pdfs.organization_plan',
+            'LSPU-OSAS-SF-005' => 'pdfs.organization_list',
+            'LSPU-OSAS-SF-006' => 'pdfs.organization_certification',
+            'LSPU-OSAS-SF-007' => 'pdfs.organization_officers',
+            'LSPU-OSAS-SF-009' => 'pdfs.organization_attendance',
+            'LSPU-OSAS-SF-EVAL' => 'pdfs.organization_evaluation',
+        ];
+
+        if (!isset($templateMap[$form_type])) {
+            abort(404, 'Form type not found');
+        }
+
+        // Sample data for each form type
+        $sampleData = [
+            'LSPU-OSAS-SF-001' => [
+                'application' => (object)[
+                    'organization_name' => 'Sample Organization',
+                    'president_name' => 'Juan Dela Cruz',
+                    'adviser_name' => 'Prof. Maria Santos',
+                    'dean_name' => 'Dr. Jose Rizal',
+                    'coordinator_name' => 'Engr. Ana Luna',
+                    'director_name' => 'Dr. Emilio Aguinaldo',
+                    'application_date' => now(),
+                    'form_type' => 'LSPU-OSAS-SF-001',
+                ],
+            ],
+            'LSPU-OSAS-SF-002' => [
+                'application' => (object)[
+                    'organization_name' => 'Sample Org Renewal',
+                    'president_name' => 'Pedro Penduko',
+                    'adviser_name' => 'Prof. Liza Soberano',
+                    'dean_name' => 'Dr. Andres Bonifacio',
+                    'coordinator_name' => 'Engr. Gregoria De Jesus',
+                    'director_name' => 'Dr. Apolinario Mabini',
+                    'college' => 'College of Engineering',
+                    'academic_year_start' => '2024',
+                    'academic_year_end' => '2025',
+                    'application_date' => now(),
+                    'form_type' => 'LSPU-OSAS-SF-002',
+                ],
+            ],
+            'LSPU-OSAS-SF-003' => [
+                'application' => (object)[
+                    'organization_name' => 'Sample Commitment Org',
+                    'president_name' => 'Maria Clara',
+                    'adviser_name' => 'Prof. Simoun',
+                    'adviser_college' => 'College of Arts',
+                    'adviser_rank' => 'Associate Professor',
+                    'adviser_address' => '123 Sample St.',
+                    'adviser_contact' => '09171234567',
+                    'form_date' => now(),
+                    'academic_year_start' => '2024',
+                    'academic_year_end' => '2025',
+                    'coordinator_name' => 'Engr. Luna',
+                    'dean_name' => 'Dr. Bonifacio',
+                    'form_type' => 'LSPU-OSAS-SF-003',
+                ],
+            ],
+            'LSPU-OSAS-SF-004' => [
+                'application' => (object)[
+                    'organization_name' => 'Sample Plan Org',
+                    'president_name' => 'Gregorio del Pilar',
+                    'adviser_name' => 'Prof. Mabini',
+                    'dean_name' => 'Dr. Jacinto',
+                    'coordinator_name' => 'Engr. Luna',
+                    'secretary_name' => 'Simeon Ola',
+                    'academic_year_start' => '2024',
+                    'academic_year_end' => '2025',
+                    'application_date' => now(),
+                    'form_type' => 'LSPU-OSAS-SF-004',
+                ],
+                'activities' => [
+                    (object)[
+                        'objective' => 'Promote leadership',
+                        'name' => 'Leadership Seminar',
+                        'description' => 'A seminar to develop leadership skills.',
+                        'persons_involved' => 'All members',
+                        'target_date' => now()->addMonth(),
+                        'budget' => 5000,
+                    ],
+                ],
+            ],
+            'LSPU-OSAS-SF-005' => [
+                'application' => (object)[
+                    'organization_name' => 'Sample Members Org',
+                    'president_name' => 'Jose Abad Santos',
+                    'adviser_name' => 'Prof. Del Pilar',
+                    'dean_name' => 'Dr. Luna',
+                    'coordinator_name' => 'Engr. Mabini',
+                    'semester' => '1st',
+                    'academic_year_start' => '2024',
+                    'academic_year_end' => '2025',
+                    'application_date' => now(),
+                    'form_type' => 'LSPU-OSAS-SF-005',
+                ],
+                'members' => [
+                    (object)[
+                        'student_name' => 'Sample Member 1',
+                        'student_number' => '20240001',
+                        'course_year_section' => 'BSIT 3A',
+                        'photo_path' => null,
+                    ],
+                ],
+            ],
+            'LSPU-OSAS-SF-006' => [
+                'application' => (object)[
+                    'organization_name' => 'Sample Certification Org',
+                    'president_name' => 'Juan Luna',
+                    'adviser_name' => 'Prof. Gregorio',
+                    'dean_name' => 'Dr. Mabini',
+                    'coordinator_name' => 'Engr. Bonifacio',
+                    'application_date' => now(),
+                    'form_type' => 'LSPU-OSAS-SF-006',
+                ],
+                'studentCertifications' => [
+                    (object)[
+                        'student_name' => 'Sample Student',
+                        'course_year_section' => 'BSCS 2B',
+                        'position_rank' => 'Member',
+                        'is_bonafide' => true,
+                        'is_not_academic_probation' => true,
+                        'is_not_disciplinary_probation' => true,
+                        'has_position' => false,
+                        'certification_date' => now()->format('Y-m-d'),
+                    ],
+                ],
+            ],
+            'LSPU-OSAS-SF-007' => [
+                'application' => (object)[
+                    'organization_name' => 'Sample Officers Org',
+                    'president_name' => 'Emilio Jacinto',
+                    'adviser_name' => 'Prof. Luna',
+                    'dean_name' => 'Dr. Mabini',
+                    'coordinator_name' => 'Engr. Rizal',
+                    'academic_year_start' => '2024',
+                    'academic_year_end' => '2025',
+                    'application_date' => now(),
+                    'form_type' => 'LSPU-OSAS-SF-007',
+                ],
+                'officers' => [
+                    (object)[
+                        'student_name' => 'Sample Officer',
+                        'position' => 'President',
+                        'student_number' => '20240002',
+                        'photo_path' => null,
+                    ],
+                ],
+            ],
+            'LSPU-OSAS-SF-009' => [
+                'application' => (object)[
+                    'organization_name' => 'Sample Attendance Org',
+                    'activity_name' => 'Sample Activity',
+                    'activity_date' => now(),
+                    'president_name' => 'Gregorio Aglipay',
+                    'adviser_name' => 'Prof. Mabini',
+                    'dean_name' => 'Dr. Luna',
+                    'coordinator_name' => 'Engr. Rizal',
+                    'application_date' => now(),
+                    'form_type' => 'LSPU-OSAS-SF-009',
+                ],
+                'attendees' => [
+                    (object)[
+                        'name' => 'Sample Attendee',
+                        'course_year_section' => 'BSIT 1A',
+                        'signature' => null,
+                    ],
+                ],
+            ],
+            'LSPU-OSAS-SF-EVAL' => [
+                'application' => (object)[
+                    'organization_name' => 'Sample Evaluation Org',
+                    'activity_title' => 'Sample Activity',
+                    'venue' => 'Main Hall',
+                    'date_start' => now(),
+                    'date_end' => now()->addDay(),
+                    'time_start' => '08:00',
+                    'time_end' => '12:00',
+                    'president_name' => 'Jose Palma',
+                    'adviser_name' => 'Prof. Mabini',
+                    'dean_name' => 'Dr. Luna',
+                    'coordinator_name' => 'Engr. Rizal',
+                    'application_date' => now(),
+                    'form_type' => 'LSPU-OSAS-SF-EVAL',
+                    'ratings' => array_fill(0, 15, '5.0'),
+                    'comments_suggestions' => 'Sample comment.',
+                ],
+            ],
+        ];
+
+        $template = $templateMap[$form_type];
+        $data = $sampleData[$form_type];
+
+        // Fix: wrap members, officers, studentCertifications in collections, and set attendees as property of application
+        if ($form_type === 'LSPU-OSAS-SF-005') {
+            $data['members'] = collect($data['members'] ?? []);
+        }
+        if ($form_type === 'LSPU-OSAS-SF-007') {
+            $data['officers'] = collect($data['officers'] ?? []);
+        }
+        if ($form_type === 'LSPU-OSAS-SF-006') {
+            $data['studentCertifications'] = collect($data['studentCertifications'] ?? []);
+        }
+        if ($form_type === 'LSPU-OSAS-SF-009') {
+            // Attendance expects $application->attendees as a collection of arrays
+            if (isset($data['attendees'])) {
+                $data['application']->attendees = collect($data['attendees'])->map(function($a) { return (array)$a; });
+            }
+        }
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView($template, $data)
+            ->setPaper('A4', 'portrait');
+
+        $action = $request->query('action', 'view');
+        $filename = 'Preview_' . $form_type . '.pdf';
+
+        if ($action === 'view') {
+            return $pdf->stream($filename);
+        }
+        return $pdf->download($filename);
+    }
+
+    /**
      * Auto-save form data for the authenticated user
      */
     public function autoSaveFormData(Request $request)

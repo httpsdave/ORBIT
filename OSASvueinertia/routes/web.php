@@ -115,6 +115,9 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/applications/{application}/delete-document', [OrganizationApplicationController::class, 'deleteSignedDocument'])
     ->name('applications.delete-document');
 
+    // Preview form template as PDF with sample data
+    Route::get('/applications/preview/{form_type}', [\App\Http\Controllers\OrganizationApplicationController::class, 'previewForm'])->name('applications.preview');
+
     // User dashboard route with admin redirect
     Route::get('/dashboard', function () {
         // Redirect admins to admin dashboard
