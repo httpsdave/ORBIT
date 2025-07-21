@@ -214,11 +214,38 @@ onBeforeUnmount(() => {
             >
                 
                 <!-- Top banner for small screens -->
-                <div class="md:hidden w-full bg-gradient-to-r from-green-500 to-blue-500 p-4 flex justify-center items-center rounded-xl mb-6 shadow-lg">
-                    <img src="/images/lspu_logo_better.png" alt="LSPU Logo" class="w-12 h-12 mr-3">
-                    <div class="text-white">
-                        <h2 class="text-lg font-bold">LSPU ORBIT</h2>
-                        <div class="h-0.5 w-16 bg-white opacity-70"></div>
+                <div
+                    class="md:hidden w-full p-4 flex justify-center items-center rounded-xl mb-6 shadow-lg relative overflow-hidden"
+                    :class="[
+                        gradientIndex === 0
+                            ? 'bg-gradient-to-r from-green-300 via-green-200 to-blue-300'
+                            : 'bg-gradient-to-r from-red-300 via-red-200 to-blue-300',
+                        isDarkMode ? '' : ''
+                    ]"
+                    style="transition: background 1s;"
+                >
+                    <!-- Background image with gradient overlay for mobile -->
+                    <img
+                        src="/images/left_panel.jpg"
+                        alt="LSPU Background"
+                        class="absolute inset-0 w-full h-full object-cover object-center z-0 opacity-60"
+                        style="pointer-events: none;"
+                    />
+                    <div
+                        class="absolute inset-0 z-10"
+                        :class="[
+                            gradientIndex === 0
+                                ? 'bg-gradient-to-br from-blue-500/80 via-green-500/70 to-yellow-500/60'
+                                : 'bg-gradient-to-br from-blue-500/80 via-red-500/70 to-yellow-500/60'
+                        ]"
+                        style="opacity:0.85; pointer-events: none; transition: background 1s;"
+                    ></div>
+                    <div class="relative z-20 flex items-center">
+                        <img src="/images/lspu_logo_better.png" alt="LSPU Logo" class="w-12 h-12 mr-3">
+                        <div class="text-white">
+                            <h2 class="text-lg font-bold drop-shadow">LSPU ORBIT</h2>
+                            <div class="h-0.5 w-16 bg-white opacity-70"></div>
+                        </div>
                     </div>
                 </div>
                 
