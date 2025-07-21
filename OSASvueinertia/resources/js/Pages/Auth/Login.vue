@@ -215,7 +215,7 @@ onBeforeUnmount(() => {
                 
                 <!-- Top banner for small screens -->
                 <div
-                    class="md:hidden w-full p-4 flex justify-center items-center rounded-xl mb-6 shadow-lg relative overflow-hidden"
+                    class="md:hidden w-full flex justify-center items-center rounded-xl mb-6 shadow-lg relative overflow-hidden py-8 min-h-[120px]"
                     :class="[
                         gradientIndex === 0
                             ? 'bg-gradient-to-r from-green-300 via-green-200 to-blue-300'
@@ -241,10 +241,10 @@ onBeforeUnmount(() => {
                         style="opacity:0.85; pointer-events: none; transition: background 1s;"
                     ></div>
                     <div class="relative z-20 flex items-center">
-                        <img src="/images/lspu_logo_better.png" alt="LSPU Logo" class="w-12 h-12 mr-3">
+                        <img src="/images/lspu_logo_better.png" alt="LSPU Logo" class="w-20 h-20 mr-5">
                         <div class="text-white">
-                            <h2 class="text-lg font-bold drop-shadow">LSPU ORBIT</h2>
-                            <div class="h-0.5 w-16 bg-white opacity-70"></div>
+                            <h2 class="text-3xl font-bold drop-shadow">LSPU ORBIT</h2>
+                            <div class="h-0.5 w-20 bg-white opacity-70"></div>
                         </div>
                     </div>
                 </div>
