@@ -318,8 +318,8 @@ const endYear = () => {
             </svg>
             New Application
           </Link>
-          <!-- Preview Forms Dropdown (Users only) -->
-          <div v-if="!isAdmin" class="relative">
+          <!-- Preview Forms Dropdown (Users and Admins) -->
+          <div class="relative">
             <button
               @click="showPreviewDropdown = !showPreviewDropdown"
               class="bg-white border border-blue-600 text-blue-700 hover:bg-blue-50 px-5 py-2.5 rounded-lg shadow inline-flex items-center transition duration-300 text-sm font-medium ml-2"
