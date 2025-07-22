@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, watch, onUnmounted } from 'vue';
 import FormSelector from '@/Components/FormSelector.vue';
 import StudentOrganizationForm from '@/Components/forms/StudentOrganizationForm.vue';
 import RenewalForm from '@/Components/forms/RenewalForm.vue';
@@ -26,6 +26,23 @@ const uploadFile = ref(null);
 const uploadError = ref('');
 const uploadProgress = ref(0);
 const uploadSuccess = ref('');
+const pdfPreviewUrl = ref(null);
+
+watch(uploadFile, (file) => {
+    if (pdfPreviewUrl.value) {
+        URL.revokeObjectURL(pdfPreviewUrl.value);
+        pdfPreviewUrl.value = null;
+    }
+    if (file) {
+        pdfPreviewUrl.value = URL.createObjectURL(file);
+    }
+});
+
+onUnmounted(() => {
+    if (pdfPreviewUrl.value) {
+        URL.revokeObjectURL(pdfPreviewUrl.value);
+    }
+});
 
 const formOptions = [
     { value: 'LSPU-OSAS-SF-001', label: 'Recognition Form' },
@@ -202,32 +219,50 @@ const handleDirectUploadSubmit = () => {
 
     <!-- Show the selected form -->
     <div v-else-if="isDirectUploadForm">
-      <div
-        class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer bg-gray-50 hover:bg-gray-100 transition"
-        @drop="handleFileDrop"
-        @dragover.prevent
-        @click="$refs.fileInput.click()"
-      >
-        <input type="file" ref="fileInput" accept="application/pdf" class="hidden" @change="handleFileChange" />
-        <div v-if="uploadFile">
-          <p class="text-green-700 font-semibold">{{ uploadFile.name }}</p>
+      <div class="w-full max-w-2xl mx-auto">
+        <div
+          class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer bg-gray-50 hover:bg-gray-100 transition"
+          @drop="handleFileDrop"
+          @dragover.prevent
+          @click="$refs.fileInput.click()"
+        >
+          <input type="file" ref="fileInput" accept="application/pdf" class="hidden" @change="handleFileChange" />
+          <div v-if="uploadFile">
+            <div
+              class="text-green-700 font-semibold max-w-full overflow-hidden text-ellipsis whitespace-nowrap"
+              :title="uploadFile.name"
+              style="max-width: 100%;"
+            >
+              {{ uploadFile.name }}
+            </div>
+          </div>
+          <div v-else>
+            <p class="text-gray-500">Drag and drop a PDF file here, or click to select</p>
+          </div>
+          <div v-if="uploadError" class="text-red-600 mt-2">{{ uploadError }}</div>
+          <div v-if="uploadProgress > 0 && uploadProgress < 100" class="mt-2 w-full bg-gray-200 rounded-full h-2.5">
+            <div class="bg-blue-600 h-2.5 rounded-full" :style="{ width: uploadProgress + '%' }"></div>
+          </div>
+          <div v-if="uploadSuccess" class="text-green-600 mt-2">{{ uploadSuccess }}</div>
         </div>
-        <div v-else>
-          <p class="text-gray-500">Drag and drop a PDF file here, or click to select</p>
+        <div v-if="pdfPreviewUrl" class="w-full mt-6">
+          <iframe
+            :src="pdfPreviewUrl"
+            type="application/pdf"
+            class="w-full border rounded-lg"
+            style="height: 650px;"
+          ></iframe>
         </div>
-        <div v-if="uploadError" class="text-red-600 mt-2">{{ uploadError }}</div>
-        <div v-if="uploadProgress > 0 && uploadProgress < 100" class="mt-2 w-full bg-gray-200 rounded-full h-2.5">
-          <div class="bg-blue-600 h-2.5 rounded-full" :style="{ width: uploadProgress + '%' }"></div>
+        <div class="flex justify-center mt-8">
+          <button
+            class="px-6 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition disabled:opacity-50"
+            :disabled="!uploadFile || uploadProgress > 0 && uploadProgress < 100"
+            @click="handleDirectUploadSubmit"
+          >
+            Submit
+          </button>
         </div>
-        <div v-if="uploadSuccess" class="text-green-600 mt-2">{{ uploadSuccess }}</div>
       </div>
-      <button
-        class="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition disabled:opacity-50"
-        :disabled="!uploadFile || uploadProgress > 0 && uploadProgress < 100"
-        @click="handleDirectUploadSubmit"
-      >
-        Submit {{ formOptions.find(f => f.value === currentForm)?.label }}
-      </button>
     </div>
     <div v-else>
       <!-- Student Organization Form -->
