@@ -67,6 +67,18 @@ const isDirectUploadForm = computed(() => [
     'LSPU-OSAS-SF-FINANCIAL'
 ].includes(currentForm.value));
 
+// Helper to format date to yyyy-MM-dd
+function formatDateForInput(dateStr) {
+    if (!dateStr) return '';
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return '';
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+}
+
 const handleFormSelection = (formId) => {
     currentForm.value = formId;
     
@@ -80,9 +92,14 @@ const handleFormSelection = (formId) => {
     
     // Initialize form data with saved data if available
     if (formId === 'LSPU-OSAS-SF-004') {
-        formData.value = {
-            ...filteredSavedData,
-            activities: [
+        let activities = [];
+        if (Array.isArray(props.savedFormData.activities) && props.savedFormData.activities.length > 0) {
+            activities = props.savedFormData.activities.map(act => ({
+                ...act,
+                target_date: formatDateForInput(act.target_date)
+            }));
+        } else {
+            activities = [
                 {
                     objective: '',
                     name: '',
@@ -91,7 +108,11 @@ const handleFormSelection = (formId) => {
                     target_date: '',
                     budget: 0
                 }
-            ]
+            ];
+        }
+        formData.value = {
+            ...filteredSavedData,
+            activities
         };
     }
     // Initialize members for List of Members form

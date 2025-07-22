@@ -229,10 +229,10 @@
             <!-- Loop through activities -->
             @forelse($activities as $activity)
             <tr>
-                <td>{{ $activity->objective }}</td>
-                <td>{{ $activity->name }}</td>
-                <td>{{ $activity->description }}</td>
-                <td>{{ $activity->persons_involved }}</td>
+                <td>{!! $activity->objective !!}</td>
+                <td>{!! $activity->name !!}</td>
+                <td>{!! $activity->description !!}</td>
+                <td>{!! $activity->persons_involved !!}</td>
                 <td>{{ \Carbon\Carbon::parse($activity->target_date)->format('F d, Y') }}</td>
                 <td>{{ number_format($activity->budget, 2) }}</td>
             </tr>

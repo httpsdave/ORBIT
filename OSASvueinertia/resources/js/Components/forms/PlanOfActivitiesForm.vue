@@ -1,5 +1,5 @@
 <script setup>
-import { ref, nextTick } from 'vue';
+import { ref, nextTick, watch } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 // REMOVE: import StatusBanner from '@/Components/StatusBanner.vue';
 
@@ -55,6 +55,41 @@ const form = useForm({
   director_name: props.initialFormData.director_name || '',
   activities: initializeActivities(),
 });
+
+// Helper to format date to yyyy-MM-dd
+function formatDateForInput(dateStr) {
+  if (!dateStr) return '';
+  // If already in yyyy-MM-dd, return as is
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
+  // Otherwise, try to parse and format
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return '';
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+// Watch for changes in initialFormData to update form fields
+watch(() => props.initialFormData, (newData) => {
+  if (!newData) return;
+  form.organization_name = newData.organization_name || '';
+  form.academic_year_start = newData.academic_year_start || '';
+  form.academic_year_end = newData.academic_year_end || '';
+  form.president_name = newData.president_name || '';
+  form.secretary_name = newData.secretary_name || '';
+  form.application_date = formatDateForInput(newData.application_date) || '';
+  form.adviser_name = newData.adviser_name || '';
+  form.dean_name = newData.dean_name || '';
+  form.coordinator_name = newData.coordinator_name || '';
+  form.director_name = newData.director_name || '';
+  if (Array.isArray(newData.activities)) {
+    form.activities = newData.activities.map(act => ({
+      ...act,
+      target_date: formatDateForInput(act.target_date)
+    }));
+  }
+}, { immediate: true });
 
 // Rich text editor functions
 
@@ -559,6 +594,7 @@ nextTick(() => {
                                         <div 
                                             :data-field="`objective-${index}`"
                                             contenteditable="true"
+                                            v-html="activity.objective"
                                             @input="activity.objective = $event.target.innerHTML"
                                             @mouseup="handleMouseUp"
                                             class="w-full p-1 text-sm min-h-[20px] focus:outline-none focus:ring-1 focus:ring-blue-500"
@@ -570,6 +606,7 @@ nextTick(() => {
                                         <div 
                                             :data-field="`name-${index}`"
                                             contenteditable="true"
+                                            v-html="activity.name"
                                             @input="activity.name = $event.target.innerHTML"
                                             @mouseup="handleMouseUp"
                                             class="w-full p-1 text-sm min-h-[20px] focus:outline-none focus:ring-1 focus:ring-blue-500"
@@ -581,6 +618,7 @@ nextTick(() => {
                                         <div 
                                             :data-field="`description-${index}`"
                                             contenteditable="true"
+                                            v-html="activity.description"
                                             @input="activity.description = $event.target.innerHTML"
                                             @mouseup="handleMouseUp"
                                             class="w-full p-1 text-sm min-h-[40px] focus:outline-none focus:ring-1 focus:ring-blue-500"
@@ -592,6 +630,7 @@ nextTick(() => {
                                         <div 
                                             :data-field="`persons_involved-${index}`"
                                             contenteditable="true"
+                                            v-html="activity.persons_involved"
                                             @input="activity.persons_involved = $event.target.innerHTML"
                                             @mouseup="handleMouseUp"
                                             class="w-full p-1 text-sm min-h-[20px] focus:outline-none focus:ring-1 focus:ring-blue-500"
