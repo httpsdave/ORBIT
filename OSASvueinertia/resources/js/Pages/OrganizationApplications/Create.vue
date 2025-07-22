@@ -82,14 +82,16 @@ const handleFormSelection = (formId) => {
     if (formId === 'LSPU-OSAS-SF-004') {
         formData.value = {
             ...filteredSavedData,
-            activities: Array(3).fill().map(() => ({
-                objective: '',
-                name: '',
-                description: '',
-                persons_involved: '',
-                target_date: '',
-                budget: 0
-            }))
+            activities: [
+                {
+                    objective: '',
+                    name: '',
+                    description: '',
+                    persons_involved: '',
+                    target_date: '',
+                    budget: 0
+                }
+            ]
         };
     }
     // Initialize members for List of Members form
