@@ -54,6 +54,14 @@ const formTypeToName = (formType) => {
       return 'Student Activity Attendance Sheet';
     case 'LSPU-OSAS-SF-EVAL':
       return 'Evaluation Summary';
+    case 'LSPU-OSAS-SF-ACCOMPLISHMENT':
+      return 'Accomplishment Report';
+    case 'LSPU-OSAS-SF-NARRATIVE':
+      return 'Narrative Report';
+    case 'LSPU-OSAS-SF-BYLAWS':
+      return 'Constitution & By-Laws';
+    case 'LSPU-OSAS-SF-FINANCIAL':
+      return 'Financial Report';
     default:
       return formType;
   }
