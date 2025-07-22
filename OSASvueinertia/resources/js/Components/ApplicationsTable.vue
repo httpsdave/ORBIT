@@ -424,7 +424,7 @@ const getViewUrl = (app) => {
               </div>
               <!-- Document status indicator -->
               <div class="mt-1.5 flex items-center gap-1">
-                <span v-if="getReportPath(app)" class="text-xs text-green-600 flex items-center gap-1">
+                <span v-if="app.signed_document_path" class="text-xs text-green-600 flex items-center gap-1">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                   </svg>
@@ -499,7 +499,7 @@ const getViewUrl = (app) => {
         </button>
         <!-- Upload document option -->
         <button
-          v-if="isAdmin || (!isAdmin && activeDropdownApp.status !== 'Approved')"
+          v-if="!activeDropdownApp.signed_document_path"
           @click="triggerFileUpload(activeDropdownApp.id)"
           class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200"
         >
@@ -508,9 +508,9 @@ const getViewUrl = (app) => {
           </svg>
           Upload Document
         </button>
-        <!-- Delete document option (only if document exists) -->
+        <!-- Delete document option (only if signed_document_path exists) -->
         <button 
-          v-if="getReportPath(activeDropdownApp) && (isAdmin || (!isAdmin && activeDropdownApp.status !== 'Approved'))"
+          v-if="activeDropdownApp.signed_document_path"
           @click="deleteDocument(activeDropdownApp.id)"
           class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200"
         >
@@ -519,9 +519,9 @@ const getViewUrl = (app) => {
           </svg>
           Delete Document
         </button>
-        <!-- View signed document option (only if document exists) -->
+        <!-- View signed document option (only if signed_document_path exists) -->
         <a 
-          v-if="getReportPath(activeDropdownApp)"
+          v-if="activeDropdownApp.signed_document_path"
           :href="`/applications/${activeDropdownApp.id}/view-document`" 
           target="_blank" 
           class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200"
