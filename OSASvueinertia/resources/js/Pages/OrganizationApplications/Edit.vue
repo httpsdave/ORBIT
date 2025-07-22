@@ -155,15 +155,7 @@ const handleFormSubmitted = (data) => {
     forceFormData: true,
     preserveScroll: true,
     onSuccess: () => {
-      alert('Application updated successfully!');
-      router.visit('/applications', {
-        method: 'get',
-        data: {},
-        preserveScroll: true,
-        onSuccess: () => {
-          // Optionally, you can show a toast or flash message here
-        }
-      });
+      // Do NOT call router.visit here! The backend will redirect to /applications with the flash message.
     },
     onError: (errors) => {
       alert('Update failed. Please check your input.');

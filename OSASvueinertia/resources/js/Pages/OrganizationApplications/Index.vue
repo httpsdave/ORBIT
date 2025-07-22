@@ -7,6 +7,7 @@ import ApplicationsTable from '@/Components/ApplicationsTable.vue';
 import StatusModal from '@/Components/StatusModal.vue';
 import NoApplicationsMessage from '@/Components/NoApplicationsMessage.vue';
 import Modal from '@/Components/Modal.vue';
+import StatusBanner from '@/Components/StatusBanner.vue';
 
 // --- Add form preview dropdown state and data ---
 const showPreviewDropdown = ref(false);
@@ -35,12 +36,41 @@ const props = defineProps({
   isAdmin: Boolean,
   users: Array,
   currentUserFilter: String,
+  updateMessage: String,
 });
 
 
 
-const message = ref(props.successMessage || props.errorMessage || null);
-const showMessage = ref(!!props.successMessage || !!props.errorMessage);
+// Only set showMessage to true on first mount if a prop is present
+const showMessage = ref(!!(props.successMessage || props.updateMessage || props.errorMessage));
+
+const localMessage = ref('');
+const message = computed(() =>
+  localMessage.value ||
+  props.successMessage ||
+  props.updateMessage ||
+  props.errorMessage ||
+  ''
+);
+const statusType = ref('success');
+
+if (props.updateMessage) {
+  statusType.value = 'update';
+} else if (props.successMessage) {
+  statusType.value = 'success';
+} else if (props.errorMessage) {
+  statusType.value = 'error';
+}
+
+// Update all places where message and showMessage are set to also set statusType
+// For success (create/submit)
+// Example: message.value = 'Application submitted successfully!'; statusType.value = 'success';
+// For update
+// Example: message.value = 'Application updated successfully!'; statusType.value = 'update';
+// For delete
+// Example: message.value = 'Application deleted successfully!'; statusType.value = 'delete';
+// For error
+// Example: message.value = 'Failed to delete application.'; statusType.value = 'error';
 
 // Unified filter states
 const searchQuery = ref('');
@@ -132,18 +162,30 @@ const clearSearch = () => {
     filterApplications();
 };
 
-// Initialize filtered applications
+let bannerTimeout = null;
+
+function startBannerTimeout() {
+  if (bannerTimeout) clearTimeout(bannerTimeout);
+  bannerTimeout = setTimeout(() => {
+    showMessage.value = false;
+    bannerTimeout = null;
+  }, 2500);
+}
+
+watch(showMessage, (val) => {
+  if (val) {
+    startBannerTimeout();
+  } else if (bannerTimeout) {
+    clearTimeout(bannerTimeout);
+    bannerTimeout = null;
+  }
+});
+
 onMounted(() => {
   filteredApplications.value = props.applications;
-  
-  // Auto-hide success message after 5 seconds
   if (showMessage.value) {
-    setTimeout(() => {
-      showMessage.value = false;
-    }, 5000);
+    startBannerTimeout();
   }
-  
-  // Fade in animation on page load
   if (formElement.value) {
     formElement.value.classList.add('opacity-100');
   }
@@ -159,8 +201,8 @@ const deleteApplication = (id) => {
     router.delete(`/applications/${id}`, {
       onSuccess: () => {
         filteredApplications.value = filteredApplications.value.filter(app => app.id !== id);
-        
-        message.value = "Application deleted successfully!";
+        localMessage.value = "Application deleted successfully!";
+        statusType.value = 'delete';
         showMessage.value = true;
         
         setTimeout(() => {
@@ -168,7 +210,8 @@ const deleteApplication = (id) => {
         }, 5000);
       },
       onError: () => {
-        message.value = "Failed to delete application.";
+        localMessage.value = "Failed to delete application.";
+        statusType.value = 'error';
         showMessage.value = true;
       }
     });
@@ -205,7 +248,8 @@ const updateApplicationStatus = (statusData) => {
         closeStatusModal();
         isSubmitting.value = false;
         
-        message.value = "Application status updated successfully!";
+        localMessage.value = "Application status updated successfully!";
+        statusType.value = 'update';
         showMessage.value = true;
         
         setTimeout(() => {
@@ -214,7 +258,8 @@ const updateApplicationStatus = (statusData) => {
       },
       onError: (errors) => {
         isSubmitting.value = false;
-        message.value = errors?.message || "Failed to update status.";
+        localMessage.value = errors?.message || "Failed to update status.";
+        statusType.value = 'error';
         showMessage.value = true;
       }
     });
@@ -244,7 +289,8 @@ const updateApplicationStatus = (statusData) => {
       closeStatusModal();
       isSubmitting.value = false;
       
-      message.value = "Application status updated successfully!";
+      localMessage.value = "Application status updated successfully!";
+      statusType.value = 'update';
       showMessage.value = true;
       
       setTimeout(() => {
@@ -253,7 +299,8 @@ const updateApplicationStatus = (statusData) => {
     })
     .catch(error => {
       isSubmitting.value = false;
-      message.value = error.message || "Failed to update status.";
+      localMessage.value = error.message || "Failed to update status.";
+      statusType.value = 'error';
       showMessage.value = true;
     });
   }
@@ -261,14 +308,16 @@ const updateApplicationStatus = (statusData) => {
 
 const handleDocumentUpload = (uploadResult) => {
   if (uploadResult.success) {
-    message.value = uploadResult.message;
+    localMessage.value = uploadResult.message;
+    statusType.value = 'success';
     showMessage.value = true;
     
     setTimeout(() => {
       showMessage.value = false;
     }, 5000);
   } else {
-    message.value = uploadResult.message;
+    localMessage.value = uploadResult.message;
+    statusType.value = 'error';
     showMessage.value = true;
   }
 };
@@ -315,14 +364,16 @@ const actuallyDeleteDocument = () => {
   router.delete(`/applications/${documentToDeleteId.value}/delete-document`, {
     onSuccess: () => {
       isDeletingDocument.value = false; // Hide the loading modal
-      message.value = "Document deleted successfully!";
+      localMessage.value = "Document deleted successfully!";
+      statusType.value = 'delete';
       showMessage.value = true;
       setTimeout(() => { showMessage.value = false; }, 5000);
       refreshApplications();
     },
     onError: () => {
       isDeletingDocument.value = false; // Hide the loading modal
-      message.value = "Failed to delete document.";
+      localMessage.value = "Failed to delete document.";
+      statusType.value = 'error';
       showMessage.value = true;
     }
   });
@@ -401,25 +452,13 @@ const cancelDeleteDocument = () => {
       </div>
     </template>
 
-    <!-- Success/Error Message -->
-    <div v-if="showMessage" class="mb-6 transition-opacity duration-500 ease-in-out">
-      <div :class="props.successMessage ? 'bg-gradient-to-r from-green-500 to-emerald-500' : 'bg-gradient-to-r from-red-500 to-pink-500'" class="text-white py-4 px-6 rounded-lg shadow-md flex items-center justify-between">
-        <div class="flex items-center">
-          <svg v-if="props.successMessage" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-          </svg>
-          <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9a1 1 0 00-1-1z" clip-rule="evenodd" />
-          </svg>
-          <span>{{ props.successMessage || props.errorMessage || message }}</span>
-        </div>
-        <button @click="showMessage = false" class="text-white hover:text-gray-100">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-          </svg>
-        </button>
-      </div>
-    </div>
+    <!-- Status Banner -->
+    <StatusBanner
+      :show="showMessage"
+      :type="statusType"
+      :message="message"
+      @close="showMessage = false"
+    />
 
     <!-- Unified Search and Filter Section -->
     <div class="mb-6 space-y-4">

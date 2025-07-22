@@ -305,7 +305,7 @@ class OrganizationApplicationController extends Controller
             }
         }
 
-        return redirect()->route('applications.index');
+        return redirect()->route('applications.index')->with('success', 'Application submitted successfully!');
     }
 
     public function edit(OrganizationApplication $application)
@@ -552,7 +552,7 @@ class OrganizationApplicationController extends Controller
             }
         }
         
-        return redirect()->route('applications.index')->with('success', 'Application updated successfully');
+        return redirect()->route('applications.index')->with('updateMessage', 'Application updated successfully!');
     }
 
     public function destroy(OrganizationApplication $application)
@@ -1170,6 +1170,6 @@ class OrganizationApplicationController extends Controller
         $application->$column = $path;
         $application->save();
 
-        return redirect()->route('applications.index')->with('success', 'Report uploaded successfully!');
+        return redirect()->route('applications.index')->with('success', 'Application submitted successfully!');
     }
 }

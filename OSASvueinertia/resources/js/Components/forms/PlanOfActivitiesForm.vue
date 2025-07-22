@@ -1,6 +1,7 @@
 <script setup>
 import { ref, nextTick } from 'vue';
 import { useForm } from '@inertiajs/vue3';
+// REMOVE: import StatusBanner from '@/Components/StatusBanner.vue';
 
 const props = defineProps({
   initialFormData: {
@@ -13,7 +14,7 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['submitted']);
+const emit = defineEmits(['submitted', 'error']);
 
 // Rich text editor state
 const showToolbar = ref(false);
@@ -311,9 +312,11 @@ const validateForm = () => {
   return isValid;
 };
 
+// REMOVE: statusMessage, statusType, showStatus, showBanner
+
 const submit = () => {
   if (!validateForm()) {
-    console.log('Validation failed:', errors.value);
+    emit('error', 'Please fill in all required fields.');
     return;
   }
   
@@ -327,10 +330,10 @@ const submit = () => {
     // For create mode, make the POST request
     form.post('/applications', {
       onSuccess: () => {
-        alert('Form submitted successfully!');
         emit('submitted', form.data());
       },
       onError: (errors) => {
+        emit('error', 'Form submission failed.');
         console.error('Form submission errors:', errors);
       }
     });
@@ -353,6 +356,7 @@ nextTick(() => {
 
 <template>
   <div class="mt-6 form-content">
+    <!-- REMOVE: <StatusBanner ... /> -->
     <!-- Rich Text Toolbar -->
     <div 
       v-if="showToolbar" 

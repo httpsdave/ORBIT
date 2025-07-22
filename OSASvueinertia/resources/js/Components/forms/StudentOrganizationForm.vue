@@ -13,7 +13,7 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['submitted']);
+const emit = defineEmits(['submitted', 'error']);
 
 const form = useForm({
   form_type: 'LSPU-OSAS-SF-001',
@@ -76,6 +76,7 @@ const validateForm = () => {
 
 const submit = () => {
   if (!validateForm()) {
+    emit('error', 'Please fill in all required fields.');
     return;
   }
   
@@ -87,10 +88,10 @@ const submit = () => {
     // For create mode, make the POST request
     form.post('/applications', {
       onSuccess: () => {
-        alert('Form submitted successfully!');
         emit('submitted', form.data());
       },
       onError: (errors) => {
+        emit('error', 'Form submission failed.');
         console.error('Form submission errors:', errors);
       }
     });

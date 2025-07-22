@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { useForm } from '@inertiajs/vue3';
+// REMOVE: import StatusBanner from '@/Components/StatusBanner.vue';
 
 const props = defineProps({
   initialFormData: {
@@ -117,7 +118,7 @@ const handleCSVUpload = (event) => {
     event.target.value = '';
 };
 
-const emit = defineEmits(['submitted']);
+const emit = defineEmits(['submitted', 'error']);
 
 // Add pagination state
 const currentPage = ref(1);
@@ -302,23 +303,22 @@ const validateForm = () => {
   return Object.keys(errors.value).length === 0;
 };
 
+// REMOVE: statusMessage, statusType, showStatus, showBanner
+
 const submit = () => {
   if (!validateForm()) {
+    emit('error', 'Please fill in all required fields.');
     return;
   }
-  
-  // Check if we're in edit mode
   if (props.isEdit) {
-    // For edit mode, just emit the data - don't make HTTP request here
     emit('submitted', form.data());
   } else {
-    // For create mode, make the POST request
     form.post('/applications', {
       onSuccess: () => {
-        alert('Form submitted successfully!');
         emit('submitted', form.data());
       },
       onError: (errors) => {
+        emit('error', 'Form submission failed.');
         console.error('Form submission errors:', errors);
       }
     });
@@ -333,6 +333,7 @@ const submit = () => {
     
     <!-- Officer list preview -->
     <div class="mt-6 form-content">
+      <!-- REMOVE: <StatusBanner ... /> -->
       <div class="header text-center relative">
         <img src="/images/lspu-logo.png" alt="LSPU Logo" class="absolute top-[-0.5rem] left-[-2rem] w-[250px] h-auto">
         <p class="text-sm font-normal mb-0">Republic of the Philippines</p>

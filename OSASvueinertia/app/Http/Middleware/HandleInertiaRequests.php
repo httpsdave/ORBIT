@@ -55,6 +55,9 @@ class HandleInertiaRequests extends Middleware
                 'unreadNotificationsCount' => $unreadCount,
             ],
             // ... other shared data ...
+            'successMessage' => fn () => $request->session()->get('success'),
+            'errorMessage' => fn () => $request->session()->get('error'),
+            'updateMessage' => fn () => $request->session()->get('updateMessage'),
         ]);
     }
 }

@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { useForm } from '@inertiajs/vue3';
+// REMOVE: import StatusBanner from '@/Components/StatusBanner.vue';
 
 const props = defineProps({
   initialFormData: {
@@ -13,7 +14,7 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['submitted']);
+const emit = defineEmits(['submitted', 'error']);
 
 // Add errors ref object
 const errors = ref({});
@@ -243,11 +244,13 @@ const validateForm = () => {
   return Object.keys(errors.value).length === 0;
 };
 
+// REMOVE: statusMessage, statusType, showStatus, showBanner
+
 const submit = () => {
   if (!validateForm()) {
+    emit('error', 'Please fill in all required fields.');
     return;
   }
-
   // Cast boolean fields to 1/0 for backend compatibility
   const data = {
     ...form.data(),
@@ -259,17 +262,16 @@ const submit = () => {
       has_position: student.has_position ? 1 : 0,
     }))
   };
-
   if (props.isEdit) {
     emit('submitted', data);
   } else {
     form.post('/applications', {
       data,
       onSuccess: () => {
-        alert('Form submitted successfully!');
         emit('submitted', data);
       },
       onError: (errors) => {
+        emit('error', 'Form submission failed.');
         console.error('Form submission errors:', errors);
         errors.value = errors;
       }
@@ -280,6 +282,7 @@ const submit = () => {
 
 <template>
   <div class="mt-6 form-content relative font-[Times_New_Roman]">
+    <!-- REMOVE: <StatusBanner ... /> -->
     <!-- Student certification preview with pagination -->
     <div v-for="(student, index) in currentPageStudents" :key="startIndex + index" class="student-certification-page">
       <!-- Page header for additional pages -->

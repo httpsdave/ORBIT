@@ -165,7 +165,6 @@ const handleDirectUploadSubmit = () => {
         return;
     }
     uploadError.value = '';
-    uploadSuccess.value = '';
     uploadProgress.value = 0;
     const formData = new FormData();
     formData.append('form_type', currentForm.value);
@@ -178,11 +177,11 @@ const handleDirectUploadSubmit = () => {
             }
         },
         onSuccess: () => {
-            uploadSuccess.value = 'File uploaded successfully!';
+            // Do NOT call Inertia.visit here! Let the backend redirect and Inertia handle the flash message.
+            // Reset local state
             currentForm.value = '';
             uploadFile.value = null;
             uploadProgress.value = 0;
-            setTimeout(() => { uploadSuccess.value = ''; }, 4000);
         },
         onError: (errors) => {
             uploadError.value = errors.file || 'Upload failed.';
