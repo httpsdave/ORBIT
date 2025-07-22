@@ -297,6 +297,42 @@ const endYear = () => {
     },
   });
 };
+
+const showDeleteDocumentModal = ref(false);
+const documentToDeleteId = ref(null);
+const isDeletingDocument = ref(false);
+
+// Handle document delete confirmation from ApplicationsTable
+const handleConfirmDeleteDocument = (appId) => {
+  documentToDeleteId.value = appId;
+  showDeleteDocumentModal.value = true;
+};
+
+const actuallyDeleteDocument = () => {
+  if (!documentToDeleteId.value) return;
+  showDeleteDocumentModal.value = false;
+  isDeletingDocument.value = true; // Show the loading modal
+  router.delete(`/applications/${documentToDeleteId.value}/delete-document`, {
+    onSuccess: () => {
+      isDeletingDocument.value = false; // Hide the loading modal
+      message.value = "Document deleted successfully!";
+      showMessage.value = true;
+      setTimeout(() => { showMessage.value = false; }, 5000);
+      refreshApplications();
+    },
+    onError: () => {
+      isDeletingDocument.value = false; // Hide the loading modal
+      message.value = "Failed to delete document.";
+      showMessage.value = true;
+    }
+  });
+  documentToDeleteId.value = null;
+};
+
+const cancelDeleteDocument = () => {
+  showDeleteDocumentModal.value = false;
+  documentToDeleteId.value = null;
+};
 </script>
 
 <template>
@@ -495,6 +531,7 @@ const endYear = () => {
         @deleteApplication="deleteApplication"
         @uploadDocument="handleDocumentUpload"
         @refreshData="refreshApplications"
+        @confirmDeleteDocument="handleConfirmDeleteDocument"
       />
       <NoApplicationsMessage v-else />
     </div>
@@ -569,6 +606,55 @@ const endYear = () => {
         </div>
       </div>
     </Modal>
+
+    <!-- Delete Document Confirmation Modal -->
+    <Modal :show="showDeleteDocumentModal" @close="cancelDeleteDocument">
+      <div class="p-6">
+        <div class="flex items-center mb-4">
+          <div class="flex-shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </div>
+          <div class="ml-3">
+            <h3 class="text-lg font-medium text-gray-900">
+              Delete Signed Document
+            </h3>
+          </div>
+        </div>
+        <div class="mt-2">
+          <p class="text-sm text-gray-500 mb-4">
+            Are you sure you want to delete this signed document? This action cannot be undone.
+          </p>
+        </div>
+        <div class="mt-6 flex justify-end space-x-3">
+          <button
+            @click="cancelDeleteDocument"
+            class="px-4 py-2 bg-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-400 transition"
+          >
+            Cancel
+          </button>
+          <button
+            @click="actuallyDeleteDocument"
+            class="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 transition"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    </Modal>
+    <!-- Deleting document progress modal -->
+    <div v-if="isDeletingDocument" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white p-6 rounded-lg shadow-xl w-80">
+        <h3 class="text-gray-800 font-semibold mb-4">Deleting document...</h3>
+        <div class="flex justify-center">
+          <svg class="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
 
     <!-- Add a subtle, center-aligned archive link at the bottom -->
     <div class="flex justify-center mt-10 mb-6">

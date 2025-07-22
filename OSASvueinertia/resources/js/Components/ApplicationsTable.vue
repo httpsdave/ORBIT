@@ -6,7 +6,7 @@ const props = defineProps({
   isAdmin: Boolean,
 });
 
-const emit = defineEmits(['openStatusModal', 'deleteApplication', 'uploadDocument', 'refreshData']);
+const emit = defineEmits(['openStatusModal', 'deleteApplication', 'uploadDocument', 'refreshData', 'confirmDeleteDocument']);
 
 // Upload document functionality
 const documentUploadForm = ref(null);
@@ -264,34 +264,8 @@ const uploadDocument = (file) => {
 
 // Function to delete document
 const deleteDocument = (appId) => {
-  if (confirm('Are you sure you want to delete this signed document?')) {
-    isDeleting.value = true;
-    activeDropdownApp.value = null;
-    
-    router.delete(`/applications/${appId}/delete-document`, {}, {
-      onSuccess: () => {
-        isDeleting.value = false;
-        
-        // Emit event for parent component to handle success message
-        emit('uploadDocument', {
-          success: true,
-          message: 'Document deleted successfully!'
-        });
-        
-        // Refresh data
-        emit('refreshData');
-      },
-      onError: () => {
-        isDeleting.value = false;
-        
-        // Emit event for parent component to handle error message
-        emit('uploadDocument', {
-          success: false,
-          message: 'Failed to delete document.'
-        });
-      }
-    });
-  }
+  activeDropdownApp.value = null;
+  emit('confirmDeleteDocument', appId);
 };
 
 // Handle other actions
