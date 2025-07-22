@@ -99,7 +99,19 @@ const getDropdownPosition = (appId) => {
 
 const getPdfRoute = (app, action = 'download') => {
   const queryParams = action === 'view' ? '?action=view' : '';
-  
+
+  // Direct-upload forms: no generated PDF route needed
+  const directUploadTypes = [
+    'LSPU-OSAS-SF-ACCOMPLISHMENT',
+    'LSPU-OSAS-SF-NARRATIVE',
+    'LSPU-OSAS-SF-BYLAWS',
+    'LSPU-OSAS-SF-FINANCIAL',
+  ];
+  if (directUploadTypes.includes(app.form_type)) {
+    // No PDF route for these types
+    return null;
+  }
+
   // Check the form type directly
   if (app.form_type === 'LSPU-OSAS-SF-002') {
     return `/applications/${app.id}/export-renewal${queryParams}`;
@@ -120,8 +132,7 @@ const getPdfRoute = (app, action = 'download') => {
   } else if (app.form_type === 'LSPU-OSAS-SF-EVAL') {
     return `/applications/${app.id}/export-evaluation${queryParams}`;
   } else {
-    // Default case
-    console.warn('Unknown form type:', app.form_type);
+    // Default case: do not warn for unknown direct-upload types
     return `/applications/${app.id}/pdf${queryParams}`;
   }
 };
@@ -342,8 +353,9 @@ const getViewUrl = (app) => {
   ].includes(app.form_type) && reportPath) {
     return `/storage/${reportPath}`;
   }
-  // Otherwise, use the generated PDF route
-  return getPdfRoute(app, 'view');
+  // Otherwise, use the generated PDF route (if available)
+  const pdfRoute = getPdfRoute(app, 'view');
+  return pdfRoute ? pdfRoute : '#';
 };
 
 </script>
