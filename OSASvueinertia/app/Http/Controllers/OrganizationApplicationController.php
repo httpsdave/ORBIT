@@ -203,6 +203,19 @@ class OrganizationApplicationController extends Controller
         // Explicitly set user_id - make sure this line executes
         $data['user_id'] = auth()->id();
         
+        // Defensive: ensure *_report_path fields are null if not set
+        foreach ([
+            'accomplishment_report_path',
+            'narrative_report_path',
+            'bylaws_path',
+            'financial_report_path',
+            'event_letter_path',
+        ] as $field) {
+            if (!isset($data[$field]) || $data[$field] === '') {
+                $data[$field] = null;
+            }
+        }
+        
         // For debugging, you might want to log this
         \Log::info('Creating application for user: ' . auth()->id());
         // Set default values for missing fields based on form type
@@ -472,6 +485,19 @@ class OrganizationApplicationController extends Controller
         
         // Validate the request data
         $validatedData = $request->validate($validationRules);
+        
+        // Defensive: ensure *_report_path fields are null if not set
+        foreach ([
+            'accomplishment_report_path',
+            'narrative_report_path',
+            'bylaws_path',
+            'financial_report_path',
+            'event_letter_path',
+        ] as $field) {
+            if (!isset($validatedData[$field]) || $validatedData[$field] === '') {
+                $validatedData[$field] = null;
+            }
+        }
         
         // Handle signed document upload on update
         if ($request->hasFile('signed_document')) {
