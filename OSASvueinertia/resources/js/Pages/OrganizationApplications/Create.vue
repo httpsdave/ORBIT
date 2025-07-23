@@ -177,7 +177,6 @@ const handleFormSubmitted = (data) => {
     // Reset the form
     currentForm.value = '';
     formData.value = {};
-    
 };
 
 const handleFileDrop = (e) => {

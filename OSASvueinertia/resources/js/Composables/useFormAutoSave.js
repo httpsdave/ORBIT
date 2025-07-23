@@ -4,33 +4,26 @@ import { router } from '@inertiajs/vue3';
 export function useFormAutoSave(form, formType) {
     const isAutoSaving = ref(false);
     const lastSavedData = ref({});
+    const autoSaveTimeout = ref(null);
 
-    // Auto-save form data when form changes
-    watch(form, (newFormData) => {
-        // Debounce auto-save to avoid too many requests
+    // Save the watcher so we can stop it
+    let unwatch = watch(form, (newFormData) => {
         clearTimeout(autoSaveTimeout.value);
         autoSaveTimeout.value = setTimeout(() => {
             autoSaveFormData(newFormData);
-        }, 1000); // Save after 1 second of inactivity
+        }, 1000);
     }, { deep: true });
-
-    const autoSaveTimeout = ref(null);
 
     const autoSaveFormData = async (formData) => {
         if (!formData || Object.keys(formData).length === 0) {
             return;
         }
-
-        // Don't save if data hasn't changed
         const currentData = JSON.stringify(formData);
         if (currentData === JSON.stringify(lastSavedData.value)) {
             return;
         }
-
         isAutoSaving.value = true;
-
         try {
-            // Send auto-save request
             await router.post('/auto-save-form-data', {
                 form_type: formType,
                 form_data: formData
@@ -38,7 +31,6 @@ export function useFormAutoSave(form, formType) {
                 preserveState: true,
                 preserveScroll: true
             });
-
             lastSavedData.value = { ...formData };
         } catch (error) {
             console.error('Auto-save failed:', error);
@@ -47,8 +39,15 @@ export function useFormAutoSave(form, formType) {
         }
     };
 
+    // Return a stop function to clean up
+    function stop() {
+        if (unwatch) unwatch();
+        if (autoSaveTimeout.value) clearTimeout(autoSaveTimeout.value);
+    }
+
     return {
         isAutoSaving,
-        autoSaveFormData
+        autoSaveFormData,
+        stop
     };
 } 

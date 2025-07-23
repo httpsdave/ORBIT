@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onUnmounted } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import { useFormAutoSave } from '@/Composables/useFormAutoSave';
 
@@ -30,7 +30,16 @@ const form = useForm({
 });
 
 // Initialize auto-save functionality
-const { isAutoSaving } = useFormAutoSave(form, 'LSPU-OSAS-SF-002');
+const { isAutoSaving, autoSaveFormData, stop } = useFormAutoSave(form, 'LSPU-OSAS-SF-002');
+
+// Add a flag to disable auto-save during submit
+const isSubmitting = ref(false);
+let autoSaveTimeout = null;
+
+// Clean up auto-save watcher and timeout on unmount
+onUnmounted(() => {
+  if (autoSaveTimeout) clearTimeout(autoSaveTimeout);
+});
 
 // Add errors ref object
 const errors = ref({});
@@ -93,20 +102,25 @@ const submit = () => {
   if (!validateForm()) {
     return;
   }
-  
+  stop(); // Stop auto-save before submitting!
+  isSubmitting.value = true;
+  if (autoSaveTimeout) clearTimeout(autoSaveTimeout); // Stop any pending auto-save
+
   // Check if we're in edit mode
   if (props.isEdit) {
     // For edit mode, just emit the data - don't make HTTP request here
     emit('submitted', form.data());
+    isSubmitting.value = false;
   } else {
     // For create mode, make the POST request
     form.post('/applications', {
       onSuccess: () => {
-        alert('Form submitted successfully!');
         emit('submitted', form.data());
+        isSubmitting.value = false;
       },
       onError: (errors) => {
         console.error('Form submission errors:', errors);
+        isSubmitting.value = false;
       }
     });
   }

@@ -305,6 +305,7 @@ class OrganizationApplicationController extends Controller
             }
         }
 
+        // Always redirect to the applications index after successful creation for all forms, including renewal
         return redirect()->route('applications.index')->with('success', 'Application submitted successfully!');
     }
 
@@ -1132,8 +1133,8 @@ class OrganizationApplicationController extends Controller
         // Save form data for auto-fill functionality
         FormDataService::saveFormData($request->form_data);
 
-        // Return Inertia response instead of JSON
-        return back()->with('success', 'Form data saved successfully');
+        // Return a 204 No Content response for silent auto-save
+        return response()->noContent();
     }
 
     public function uploadReport(Request $request)
