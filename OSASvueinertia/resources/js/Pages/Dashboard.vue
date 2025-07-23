@@ -117,6 +117,9 @@ const timeUntilNext = computed(() => {
   if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks`;
   return `${Math.floor(diffDays / 30)} months`;
 });
+
+// Tab state for combined Applications/Activity card
+const activeTab = ref('applications');
 </script>
 
 <template>
@@ -218,7 +221,7 @@ const timeUntilNext = computed(() => {
           </div>
   
           <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- My Applications Card -->
+            <!-- Combined Applications & Activity Card with Tabs -->
             <div 
               class="lg:col-span-2 bg-white overflow-hidden shadow-sm rounded-lg transform transition-all duration-500 ease-in-out"
               :class="{ 'translate-y-0 opacity-100': isVisible, 'translate-y-4 opacity-0': !isVisible }"
@@ -226,72 +229,108 @@ const timeUntilNext = computed(() => {
             >
               <div class="p-6">
                 <div class="flex justify-between items-center mb-6">
-                  <h3 class="text-lg font-medium text-gray-800 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    My Applications
-                  </h3>
-                  <Link :href="route('applications.index')" class="inline-flex items-center px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-md hover:bg-blue-600 transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                    </svg>
-                    Create New
-                  </Link>
+                  <div class="flex items-center space-x-2">
+                    <button
+                      class="px-4 py-2 rounded-t-md text-sm font-medium focus:outline-none"
+                      :class="activeTab === 'applications' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-500'"
+                      @click="activeTab = 'applications'"
+                    >
+                      Applications
+                    </button>
+                    <button
+                      class="px-4 py-2 rounded-t-md text-sm font-medium focus:outline-none"
+                      :class="activeTab === 'activity' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-500'"
+                      @click="activeTab = 'activity'"
+                    >
+                      Activity
+                    </button>
+                  </div>
+                  <div v-if="activeTab === 'applications'">
+                    <Link :href="route('applications.index')" class="inline-flex items-center px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-md hover:bg-blue-600 transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                      </svg>
+                      Create New
+                    </Link>
+                  </div>
                 </div>
-                
-                <div v-if="props.myApplications && props.myApplications.length > 0" class="space-y-3">
-                  <div v-for="application in props.myApplications.slice(0, 3)" :key="application.id" 
-                    class="flex items-center justify-between border border-gray-100 rounded-lg p-4 hover:bg-gray-50 transition duration-200 ease-in-out">
-                    <div class="flex items-center">
-                      <div class="h-10 w-10 rounded-md bg-blue-100 flex items-center justify-center mr-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
+                <!-- Applications Tab -->
+                <div v-if="activeTab === 'applications'">
+                  <div v-if="props.myApplications && props.myApplications.length > 0" class="space-y-3">
+                    <div v-for="application in props.myApplications.slice(0, 3)" :key="application.id" 
+                      class="flex items-center justify-between border border-gray-100 rounded-lg p-4 hover:bg-gray-50 transition duration-200 ease-in-out">
+                      <div class="flex items-center">
+                        <div class="h-10 w-10 rounded-md bg-blue-100 flex items-center justify-center mr-4">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                        </div>
+                        <div>
+                          <h4 class="font-medium text-gray-800">{{ application.title }}</h4>
+                          <p class="text-xs text-gray-500">Updated: {{ formatDate(application.updated_at) }}</p>
+                        </div>
                       </div>
-                      <div>
-                        <h4 class="font-medium text-gray-800">{{ application.title }}</h4>
-                        <p class="text-xs text-gray-500">Updated: {{ formatDate(application.updated_at) }}</p>
+                      <div class="flex items-center space-x-3">
+                        <span :class="`px-3 py-1 rounded-full text-xs font-medium ring-1 ring-inset ${getStatusColor(application.status)}`">
+                          {{ application.status }}
+                        </span>
+                        <Link :href="`/applications`" class="text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 p-2 rounded-full transition-colors duration-200">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                          </svg>
+                        </Link>
                       </div>
                     </div>
-                    <div class="flex items-center space-x-3">
-                      <span :class="`px-3 py-1 rounded-full text-xs font-medium ring-1 ring-inset ${getStatusColor(application.status)}`">
-                        {{ application.status }}
-                      </span>
-                      <Link :href="`/applications`" class="text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 p-2 rounded-full transition-colors duration-200">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    <div class="text-center pt-4" v-if="props.myApplications.length > 3">
+                      <Link :href="route('applications.index')" class="inline-flex items-center text-blue-500 hover:text-blue-700 font-medium text-sm transition-colors duration-200">
+                        View All Applications
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                         </svg>
                       </Link>
                     </div>
                   </div>
-                  
-                  <div class="text-center pt-4" v-if="props.myApplications.length > 3">
-                    <Link :href="route('applications.index')" class="inline-flex items-center text-blue-500 hover:text-blue-700 font-medium text-sm transition-colors duration-200">
-                      View All Applications
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  <div v-else class="text-center py-12 bg-gray-50 rounded-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <p class="mt-4 text-gray-600 mb-6">You don't have any applications yet</p>
+                    <Link :href="route('applications.create')" class="mt-3 inline-flex items-center px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-md hover:bg-blue-600 transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                       </svg>
+                      Create Your First Application
                     </Link>
                   </div>
                 </div>
-                
-                <div v-else class="text-center py-12 bg-gray-50 rounded-lg">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                  <p class="mt-4 text-gray-600 mb-6">You don't have any applications yet</p>
-                  <Link :href="route('applications.create')" class="mt-3 inline-flex items-center px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-md hover:bg-blue-600 transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                <!-- Activity Tab -->
+                <div v-if="activeTab === 'activity'">
+                  <div v-if="props.recentActivity && props.recentActivity.length > 0" class="space-y-4">
+                    <div v-for="(activity, index) in props.recentActivity" :key="activity.id" 
+                      class="border rounded-lg p-4 bg-white shadow-sm">
+                      <div class="flex">
+                        <div class="flex-shrink-0 mr-4">
+                          <div class="h-10 w-10 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-500" v-html="getActivityIcon(activity.type)">
+                          </div>
+                        </div>
+                        <div>
+                          <p class="text-sm font-medium text-gray-800">{{ activity.description }}</p>
+                          <p class="text-xs text-gray-500">{{ formatDate(activity.created_at) }}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div v-else class="border rounded-lg p-6 bg-gray-50 text-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    Create Your First Application
-                  </Link>
+                    <p class="mt-4 text-gray-600">No recent activity</p>
+                  </div>
                 </div>
               </div>
             </div>
-  
+
             <!-- Upcoming Events Card - Styled like admin event card -->
             <div 
               class="bg-white overflow-hidden shadow-sm rounded-lg transform transition-all duration-500 ease-in-out"
@@ -376,45 +415,7 @@ const timeUntilNext = computed(() => {
           <!-- Quick Links and Recent Activity -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
             <!-- Recent Activity -->
-            <div 
-              class="bg-white overflow-hidden shadow-sm rounded-lg transform transition-all duration-500 ease-in-out"
-              :class="{ 'translate-y-0 opacity-100': isVisible, 'translate-y-4 opacity-0': !isVisible }"
-              style="transition-delay: 300ms;"
-            >
-              <div class="p-6">
-                <div class="flex items-center mb-4">
-                  <div class="p-2 rounded-md bg-yellow-100 text-yellow-600 mr-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                  <h3 class="text-lg font-medium text-gray-800">Recent Activity</h3>
-                </div>
-                
-                <div v-if="props.recentActivity && props.recentActivity.length > 0" class="space-y-4">
-                  <div v-for="(activity, index) in props.recentActivity" :key="activity.id" 
-                    class="border rounded-lg p-4 bg-white shadow-sm">
-                    <div class="flex">
-                      <div class="flex-shrink-0 mr-4">
-                        <div class="h-10 w-10 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-500" v-html="getActivityIcon(activity.type)">
-                        </div>
-                      </div>
-                      <div>
-                        <p class="text-sm font-medium text-gray-800">{{ activity.description }}</p>
-                        <p class="text-xs text-gray-500">{{ formatDate(activity.created_at) }}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div v-else class="border rounded-lg p-6 bg-gray-50 text-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <p class="mt-4 text-gray-600">No recent activity</p>
-                </div>
-              </div>
-            </div>
+            <!-- Entire Recent Activity card below is now redundant and should be removed -->
             
             <!-- Quick Links REMOVED -->
         
