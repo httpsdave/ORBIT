@@ -14,6 +14,7 @@ const props = defineProps({
     //   { value: 'LSPU-OSAS-SF-NARRATIVE', label: 'Narrative Report' },
     //   { value: 'LSPU-OSAS-SF-BYLAWS', label: 'Constitution & By-laws' },
     //   { value: 'LSPU-OSAS-SF-FINANCIAL', label: 'Financial Report' },
+    //   { value: 'LSPU-ACAD-RL', label: 'Event Letter' }, // NEW
     // ]
   },
   title: {

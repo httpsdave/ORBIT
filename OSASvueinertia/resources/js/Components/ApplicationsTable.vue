@@ -62,6 +62,8 @@ const formTypeToName = (formType) => {
       return 'Constitution & By-Laws';
     case 'LSPU-OSAS-SF-FINANCIAL':
       return 'Financial Report';
+    case 'LSPU-ACAD-RL':
+      return 'Event Letter'; // Show as Event Letter
     default:
       return formType;
   }
@@ -106,6 +108,7 @@ const getPdfRoute = (app, action = 'download') => {
     'LSPU-OSAS-SF-NARRATIVE',
     'LSPU-OSAS-SF-BYLAWS',
     'LSPU-OSAS-SF-FINANCIAL',
+    'LSPU-ACAD-RL', // Added
   ];
   if (directUploadTypes.includes(app.form_type)) {
     // No PDF route for these types
@@ -311,6 +314,8 @@ const getReportPath = (app) => {
       return app.bylaws_path;
     case 'LSPU-OSAS-SF-FINANCIAL':
       return app.financial_report_path;
+    case 'LSPU-ACAD-RL': // Added
+      return app.event_letter_path;
     default:
       return app.signed_document_path;
   }
@@ -324,6 +329,7 @@ const getViewUrl = (app) => {
     'LSPU-OSAS-SF-NARRATIVE',
     'LSPU-OSAS-SF-BYLAWS',
     'LSPU-OSAS-SF-FINANCIAL',
+    'LSPU-ACAD-RL', // Added
   ].includes(app.form_type) && reportPath) {
     return `/storage/${reportPath}`;
   }

@@ -12,10 +12,6 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('organization_applications', function (Blueprint $table) {
-            $table->string('accomplishment_report_path')->nullable();
-            $table->string('narrative_report_path')->nullable();
-            $table->string('bylaws_path')->nullable();
-            $table->string('financial_report_path')->nullable();
             $table->string('event_letter_path')->nullable();
         });
     }
@@ -26,13 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('organization_applications', function (Blueprint $table) {
-            $table->dropColumn([
-                'accomplishment_report_path',
-                'narrative_report_path',
-                'bylaws_path',
-                'financial_report_path',
-                'event_letter_path',
-            ]);
+            $table->dropColumn('event_letter_path');
         });
     }
-}; 
+};

@@ -1140,7 +1140,7 @@ class OrganizationApplicationController extends Controller
     public function uploadReport(Request $request)
     {
         $request->validate([
-            'form_type' => 'required|string|in:LSPU-OSAS-SF-ACCOMPLISHMENT,LSPU-OSAS-SF-NARRATIVE,LSPU-OSAS-SF-BYLAWS,LSPU-OSAS-SF-FINANCIAL',
+            'form_type' => 'required|string|in:LSPU-OSAS-SF-ACCOMPLISHMENT,LSPU-OSAS-SF-NARRATIVE,LSPU-OSAS-SF-BYLAWS,LSPU-OSAS-SF-FINANCIAL,LSPU-ACAD-RL', // Added LSPU-ACAD-RL
             'file' => 'required|file|mimes:pdf|max:10240',
         ]);
 
@@ -1153,6 +1153,7 @@ class OrganizationApplicationController extends Controller
             'LSPU-OSAS-SF-NARRATIVE' => 'narrative_report_path',
             'LSPU-OSAS-SF-BYLAWS' => 'bylaws_path',
             'LSPU-OSAS-SF-FINANCIAL' => 'financial_report_path',
+            'LSPU-ACAD-RL' => 'event_letter_path', // NEW
         ];
         $column = $columnMap[$formType];
 

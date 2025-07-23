@@ -21,6 +21,7 @@ const formTemplates = [
   { type: 'LSPU-OSAS-SF-007', label: 'List of Officers' },
   { type: 'LSPU-OSAS-SF-009', label: 'Activity Attendance Sheet' },
   { type: 'LSPU-OSAS-SF-EVAL', label: 'Evaluation Form' },
+  { type: 'LSPU-ACAD-RL', label: 'Event Letter' },
 ];
 const openPreview = (formType) => {
   const url = `/applications/preview/${formType}?action=view`;

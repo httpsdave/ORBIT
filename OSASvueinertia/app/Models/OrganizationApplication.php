@@ -66,6 +66,7 @@ class OrganizationApplication extends Model
         'narrative_report_path',
         'bylaws_path',
         'financial_report_path',
+        'event_letter_path',
 
     ];
 

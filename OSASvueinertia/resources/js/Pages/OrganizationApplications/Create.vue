@@ -58,13 +58,15 @@ const formOptions = [
     { value: 'LSPU-OSAS-SF-NARRATIVE', label: 'Narrative Report' },
     { value: 'LSPU-OSAS-SF-BYLAWS', label: 'Constitution & By-laws' },
     { value: 'LSPU-OSAS-SF-FINANCIAL', label: 'Financial Report' },
+    { value: 'LSPU-ACAD-RL', label: 'Event Letter' },
 ];
 
 const isDirectUploadForm = computed(() => [
     'LSPU-OSAS-SF-ACCOMPLISHMENT',
     'LSPU-OSAS-SF-NARRATIVE',
     'LSPU-OSAS-SF-BYLAWS',
-    'LSPU-OSAS-SF-FINANCIAL'
+    'LSPU-OSAS-SF-FINANCIAL',
+    'LSPU-ACAD-RL'
 ].includes(currentForm.value));
 
 // Helper to format date to yyyy-MM-dd
