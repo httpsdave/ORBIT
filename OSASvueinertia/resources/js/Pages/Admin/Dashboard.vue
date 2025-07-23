@@ -40,6 +40,10 @@ const props = defineProps({
     advisersData: {
         type: Array,
         default: () => [],
+    },
+    pastEventsCount: { // <-- Add this prop
+        type: Number,
+        default: 0,
     }
 });
 
@@ -367,6 +371,7 @@ const statsCards = computed(() => [
         icon: 'clock',
         color: 'yellow'
     }
+    // Removed Past Events card
 ]);
 
 function exportAdvisersToCSV() {
@@ -454,6 +459,12 @@ function exportAdvisersToCSV() {
                             <div v-else-if="card.icon === 'clock'" class="w-12 h-12 rounded-full flex items-center justify-center bg-yellow-100">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <!-- Calendar Icon for Past Events -->
+                            <div v-else-if="card.icon === 'calendar'" class="w-12 h-12 rounded-full flex items-center justify-center bg-red-100">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
                             </div>
                         </div>
@@ -565,15 +576,24 @@ function exportAdvisersToCSV() {
             <!-- Event Information -->
             <div class="bg-white overflow-hidden shadow-sm rounded-lg">
                 <div class="p-6">
-                    <div class="flex items-center mb-4">
-                        <div class="p-2 rounded-md bg-blue-100 text-blue-600 mr-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div class="flex items-center mb-4 justify-between">
+                        <div class="flex items-center">
+                            <div :class="props.todayEvent ? 'p-2 rounded-md bg-green-100 text-green-600 mr-3' : 'p-2 rounded-md bg-blue-100 text-blue-600 mr-3'">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" :stroke="props.todayEvent ? '#16a34a' : '#3b82f6'">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                            <h3 class="text-lg font-medium text-gray-800">
+                                {{ props.todayEvent ? "Today's Event" : "Upcoming Event" }}
+                            </h3>
+                        </div>
+                        <!-- Minimalist Events Held Badge -->
+                        <div class="flex items-center space-x-1 bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-xs font-semibold">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
+                            <span>Events Held: {{ props.pastEventsCount }}</span>
                         </div>
-                        <h3 class="text-lg font-medium text-gray-800">
-                            {{ props.todayEvent ? "Today's Event" : "Upcoming Event" }}
-                        </h3>
                     </div>
                     
                     <div v-if="displayEvent" class="border rounded-lg p-4 bg-white shadow-sm cursor-pointer hover:bg-blue-50 transition">
@@ -604,7 +624,7 @@ function exportAdvisersToCSV() {
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
                         <p class="mt-4 text-gray-600">No upcoming events scheduled</p>
-                        <a :href="route('calendar')" class="inline-block mt-3 px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-md hover:bg-blue-600 transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                        <a :href="route('calendar')" class="inline-block mt-3 px-4 py-2 bg-green-500 text-white text-sm font-medium rounded-md hover:bg-green-600 transition focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
                             Create Event
                         </a>
                     </div>

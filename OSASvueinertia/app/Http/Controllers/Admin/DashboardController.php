@@ -39,6 +39,9 @@ class DashboardController extends Controller
                 ->orderBy('start_date', 'asc')
                 ->first();
         }
+
+        // Get the number of past events (where end_date < now)
+        $pastEventsCount = Event::where('end_date', '<', Carbon::now())->count();
         
         // Get pending applications count (only active applications)
         $pendingApplications = OrganizationApplication::active()->where('status', 'pending')->count();
@@ -87,14 +90,13 @@ class DashboardController extends Controller
 
         return Inertia::render('Admin/Dashboard', [
             'collegesData' => $colleges,
+            'totalStudentOrgs' => $totalStudentOrgs,
             'todayEvent' => $todayEvent,
             'upcomingEvent' => $upcomingEvent,
-            'totalStudentOrgs' => $totalStudentOrgs,
             'pendingApplications' => $pendingApplications,
-            'totalArchived' => $totalArchived,
-            'recentlyArchived' => $recentlyArchived,
             'userName' => $userName,
-            'advisersData' => $advisersData,
+            'advisersData' => $advisersData->filter()->values(),
+            'pastEventsCount' => $pastEventsCount, // Pass to dashboard
         ]);
     }
 }
