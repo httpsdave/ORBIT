@@ -300,10 +300,12 @@ const handleAction = (app, action) => {
 // Add this after your existing refs
 onMounted(() => {
   document.addEventListener('click', closeDropdowns);
+  document.addEventListener('click', closeMobileDropdowns);
 });
 
 onUnmounted(() => {
   document.removeEventListener('click', closeDropdowns);
+  document.removeEventListener('click', closeMobileDropdowns);
   removeDropdownListeners();
 });
 
@@ -353,6 +355,17 @@ const getViewUrl = (app) => {
   // Otherwise, use the generated PDF route (if available)
   const pdfRoute = getPdfRoute(app, 'view');
   return pdfRoute ? pdfRoute : '#';
+};
+
+// Add for mobile dropdown close on outside click
+const closeMobileDropdowns = (event) => {
+  if (window.innerWidth >= 640) return;
+  if (
+    activeMobileDropdownId.value &&
+    !event.target.closest('.mobile-dropdown-menu')
+  ) {
+    activeMobileDropdownId.value = null;
+  }
 };
 
 </script>
@@ -435,53 +448,52 @@ const getViewUrl = (app) => {
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" /></svg>
             View PDF
           </a>
-          <button @click="toggleDropdown(app, $event)" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1 shadow-sm transition">
+          <button @click.stop="toggleDropdown(app, $event)" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1 shadow-sm transition">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" /></svg>
             More
           </button>
         </div>
         <!-- MOBILE INLINE DROPDOWN -->
-        <div v-if="activeMobileDropdownId === app.id" class="mt-2 bg-gray-50 border border-gray-200 rounded-lg shadow p-3 flex flex-col gap-2 z-10">
-          <button @click="activeMobileDropdownId = null" class="self-end text-xs text-gray-400 hover:text-gray-700">Close ✕</button>
-          <button v-if="isAdmin" @click="handleAction(app, 'updateStatus')" class="w-full text-left px-2 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200">
+        <div v-if="activeMobileDropdownId === app.id" class="mobile-dropdown-menu mt-2 bg-gray-50 border border-gray-200 rounded-lg shadow p-3 flex flex-col gap-2 z-10" @click.stop>
+          <button v-if="isAdmin" @click="activeMobileDropdownId = null; handleAction(app, 'updateStatus')" class="w-full text-left px-2 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-600" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3-9a1 1 0 10-2 0v4a1 1 0 102 0V9z" clip-rule="evenodd" />
               <path d="M10 6a1 1 0 100 2 1 1 0 000-2z" />
             </svg>
             Update Status
           </button>
-          <button v-if="!app.signed_document_path" @click="triggerFileUpload(app.id)" class="w-full text-left px-2 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200">
+          <button v-if="!app.signed_document_path" @click="activeMobileDropdownId = null; triggerFileUpload(app.id)" class="w-full text-left px-2 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-600" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
             </svg>
             Upload Document
           </button>
-          <button v-if="app.signed_document_path" @click="deleteDocument(app.id)" class="w-full text-left px-2 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200">
+          <button v-if="app.signed_document_path" @click="activeMobileDropdownId = null; deleteDocument(app.id)" class="w-full text-left px-2 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-orange-600" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zm3 8a1 1 0 11-2 0 1 1 0 012 0zm-8 2a1 1 0 100 2h10a1 1 0 100-2H4z" clip-rule="evenodd" />
             </svg>
             Delete Document
           </button>
-          <a v-if="app.signed_document_path" :href="`/applications/${app.id}/view-document`" target="_blank" class="w-full text-left px-2 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200">
+          <a v-if="app.signed_document_path" :href="`/applications/${app.id}/view-document`" target="_blank" @click="activeMobileDropdownId = null" class="w-full text-left px-2 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-teal-600" viewBox="0 0 20 20" fill="currentColor">
               <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2h-1.528A6 6 0 004 9.528V4z" />
               <path fill-rule="evenodd" d="M8 10a4 4 0 00-3.446 6.032l-1.261 1.26a1 1 0 101.415 1.415l1.261-1.261A4 4 0 006 10z" clip-rule="evenodd" />
             </svg>
             View Document
           </a>
-          <Link v-if="isAdmin || (!isAdmin && app.status !== 'Approved')" :href="`/applications/${app.id}/edit`" class="w-full text-left px-2 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200">
+          <Link v-if="isAdmin || (!isAdmin && app.status !== 'Approved')" :href="`/applications/${app.id}/edit`" @click="activeMobileDropdownId = null" class="w-full text-left px-2 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-500" viewBox="0 0 20 20" fill="currentColor">
               <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
             </svg>
             Edit Application
           </Link>
-          <a :href="getPdfRoute(app)" class="w-full text-left px-2 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200">
+          <a :href="getPdfRoute(app)" @click="activeMobileDropdownId = null" class="w-full text-left px-2 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
             </svg>
             Download PDF
           </a>
-          <button v-if="isAdmin || (!isAdmin && app.status !== 'Approved')" @click="handleAction(app, 'delete')" class="w-full text-left px-2 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 transition duration-200 border-t border-gray-100 mt-1 pt-1">
+          <button v-if="isAdmin || (!isAdmin && app.status !== 'Approved')" @click="activeMobileDropdownId = null; handleAction(app, 'delete')" class="w-full text-left px-2 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 transition duration-200 border-t border-gray-100 mt-1 pt-1">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
             </svg>
