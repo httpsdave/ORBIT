@@ -391,27 +391,29 @@ const cancelDeleteDocument = () => {
 
   <AuthenticatedLayout>
     <template #header>
-      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 w-full">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
           {{ isAdmin ? 'Manage Applications' : 'Your Applications' }}
         </h2>
-        <div class="flex gap-3 items-center relative">
+        <div class="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto items-stretch sm:items-center relative">
           <Link
             href="/applications/create"
-            class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white px-5 py-2.5 rounded-lg shadow inline-flex items-center transition duration-300 text-sm font-medium"
+            class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-sm font-medium text-white rounded-xl shadow-md hover:shadow-blue-300/30 hover:from-blue-400 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:from-blue-600 active:to-blue-700 transition-all duration-300 relative overflow-hidden group w-full sm:w-auto"
           >
+            <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
             </svg>
             New Application
           </Link>
           <!-- Preview Forms Dropdown (Users and Admins) -->
-          <div class="relative">
+          <div class="relative w-full sm:w-auto">
             <button
               @click="showPreviewDropdown = !showPreviewDropdown"
-              class="bg-white border border-blue-600 text-blue-700 hover:bg-blue-50 px-5 py-2.5 rounded-lg shadow inline-flex items-center transition duration-300 text-sm font-medium ml-2"
+              class="inline-flex items-center justify-center px-4 py-2 bg-white border border-blue-500 text-blue-700 text-sm font-medium rounded-xl shadow-md hover:bg-blue-50 hover:text-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group w-full sm:w-auto"
               type="button"
             >
+              <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-blue-500 rounded-full group-hover:w-96 group-hover:h-96 opacity-5"></span>
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M15 10a1 1 0 01-1 1H6a1 1 0 110-2h8a1 1 0 011 1z" clip-rule="evenodd" />
               </svg>
@@ -422,7 +424,7 @@ const cancelDeleteDocument = () => {
             </button>
             <div
               v-if="showPreviewDropdown"
-              class="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-50"
+              class="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-lg z-50"
             >
               <ul class="py-1">
                 <li v-for="form in formTemplates" :key="form.type">
@@ -441,8 +443,9 @@ const cancelDeleteDocument = () => {
           <button
             v-if="isAdmin"
             @click="openEndYearModal"
-            class="bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-lg shadow inline-flex items-center transition duration-300 text-sm font-medium"
+            class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-sm font-medium text-white rounded-xl shadow-md hover:from-red-600 hover:to-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group w-full sm:w-auto"
           >
+            <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
             </svg>
