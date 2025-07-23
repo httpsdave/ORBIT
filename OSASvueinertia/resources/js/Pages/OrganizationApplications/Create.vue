@@ -10,7 +10,7 @@ import StudentCertificationForm from '@/Components/forms/StudentCertificationFor
 import ListOfOfficersForm from '@/Components/forms/ListOfOfficersForm.vue';
 import ActivityAttendanceForm from '@/Components/forms/ActivityAttendanceForm.vue';
 import EvaluationForm from '@/Components/forms/EvaluationForm.vue';
-import { Inertia } from '@inertiajs/inertia';
+import { router } from '@inertiajs/vue3';
 
 // Get saved form data from props
 const props = defineProps({
@@ -208,7 +208,7 @@ const handleDirectUploadSubmit = () => {
     const formData = new FormData();
     formData.append('form_type', currentForm.value);
     formData.append('file', uploadFile.value);
-    Inertia.post('/applications/upload-report', formData, {
+    router.post('/applications/upload-report', formData, {
         forceFormData: true,
         onProgress: (event) => {
             if (event && event.detail && event.detail.progress) {
@@ -216,7 +216,7 @@ const handleDirectUploadSubmit = () => {
             }
         },
         onSuccess: () => {
-            // Do NOT call Inertia.visit here! Let the backend redirect and Inertia handle the flash message.
+            // Do NOT call router.visit here! Let the backend redirect and Inertia handle the flash message.
             // Reset local state
             currentForm.value = '';
             uploadFile.value = null;

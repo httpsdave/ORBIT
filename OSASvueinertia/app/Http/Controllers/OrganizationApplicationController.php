@@ -1171,6 +1171,10 @@ class OrganizationApplicationController extends Controller
         $application->$column = $path;
         $application->save();
 
+        // Use Inertia-friendly redirect for SPA
+        if ($request->header('X-Inertia')) {
+            return redirect()->route('applications.index')->with('success', 'Application submitted successfully!');
+        }
         return redirect()->route('applications.index')->with('success', 'Application submitted successfully!');
     }
 }
