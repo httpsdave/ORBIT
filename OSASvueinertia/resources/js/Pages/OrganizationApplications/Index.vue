@@ -496,30 +496,34 @@ const cancelDeleteDocument = () => {
         <div
           class="relative bg-white rounded-2xl shadow-2xl flex flex-col w-[95vw] max-w-4xl md:w-[70vw] md:max-w-3xl lg:w-[60vw] lg:max-w-4xl xl:w-[50vw] xl:max-w-5xl h-[70vh] max-h-[90vh] overflow-hidden border border-gray-200"
         >
+          <!-- Close Button: floating at top-right, outside header -->
+          <button
+            @click="closePreviewModal"
+            class="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full bg-white border border-gray-200 shadow-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400 transition z-20"
+            title="Close Preview"
+            aria-label="Close Preview"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
           <!-- Header -->
-          <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-gray-50">
+          <div class="flex items-center justify-between px-4 py-3 pr-16 border-b border-gray-100 bg-gray-50 relative">
             <div class="font-semibold text-gray-800 text-base truncate">
               {{ formTemplates.find(f => f.type === previewFormType)?.label || 'Form Preview' }}
             </div>
             <div class="flex items-center gap-2">
               <button
                 @click="openPreviewInNewWindow"
-                class="inline-flex items-center px-2 py-1 text-xs font-medium text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 rounded transition focus:outline-none focus:ring-2 focus:ring-blue-400"
+                class="inline-flex items-center justify-center px-4 py-2 bg-blue-500 text-sm font-medium text-white rounded-xl shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group"
                 title="Open in New Window"
+                aria-label="Open in New Window"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 3h7v7m0 0L10 21l-7-7 11-11z" />
                 </svg>
                 New Window
-              </button>
-              <button
-                @click="closePreviewModal"
-                class="inline-flex items-center px-2 py-1 text-xs font-medium text-gray-600 hover:text-gray-800 bg-gray-100 hover:bg-gray-200 rounded transition focus:outline-none focus:ring-2 focus:ring-blue-400"
-                title="Close"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
               </button>
             </div>
           </div>
