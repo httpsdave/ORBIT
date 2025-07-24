@@ -25,9 +25,15 @@ const formTemplates = [
   { type: 'LSPU-OSAS-SF-EVAL', label: 'Evaluation Form' },
 ];
 const openPreview = (formType) => {
+  // Device detection for mobile
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
   previewFormType.value = formType;
-  showPreviewModal.value = true;
   showPreviewDropdown.value = false;
+  if (isMobile) {
+    openPreviewInNewWindow();
+  } else {
+    showPreviewModal.value = true;
+  }
 };
 const closePreviewModal = () => {
   showPreviewModal.value = false;
