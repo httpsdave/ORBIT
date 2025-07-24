@@ -11,6 +11,8 @@ import StatusBanner from '@/Components/StatusBanner.vue';
 
 // --- Add form preview dropdown state and data ---
 const showPreviewDropdown = ref(false);
+const showPreviewModal = ref(false); // NEW: Modal state
+const previewFormType = ref(null); // NEW: Which form to preview
 const formTemplates = [
   { type: 'LSPU-OSAS-SF-001', label: 'Application for Recognition' },
   { type: 'LSPU-OSAS-SF-002', label: 'Renewal Form' },
@@ -23,9 +25,19 @@ const formTemplates = [
   { type: 'LSPU-OSAS-SF-EVAL', label: 'Evaluation Form' },
 ];
 const openPreview = (formType) => {
-  const url = `/applications/preview/${formType}?action=view`;
-  window.open(url, '_blank');
+  previewFormType.value = formType;
+  showPreviewModal.value = true;
   showPreviewDropdown.value = false;
+};
+const closePreviewModal = () => {
+  showPreviewModal.value = false;
+  previewFormType.value = null;
+};
+const openPreviewInNewWindow = () => {
+  if (previewFormType.value) {
+    const url = `/applications/preview/${previewFormType.value}?action=view`;
+    window.open(url, '_blank');
+  }
 };
 
 const props = defineProps({ 
@@ -195,6 +207,15 @@ onMounted(() => {
 watch([searchQuery, statusFilter, formTypeFilter, organizationFilter], () => {
   filterApplications();
 }, { immediate: true });
+
+// Watch for modal open/close to lock body scroll
+watch(showPreviewModal, (val) => {
+  if (val) {
+    document.body.classList.add('overflow-hidden');
+  } else {
+    document.body.classList.remove('overflow-hidden');
+  }
+});
 
 const deleteApplication = (id) => {
   if (confirm('Are you sure you want to delete this application? This action cannot be undone.')) {
@@ -463,6 +484,53 @@ const cancelDeleteDocument = () => {
       @close="showMessage = false"
     />
 
+    <!-- PDF Preview Modal -->
+    <transition name="fade">
+      <div v-if="showPreviewModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
+        <div
+          class="relative bg-white rounded-2xl shadow-2xl flex flex-col w-[95vw] max-w-4xl md:w-[70vw] md:max-w-3xl lg:w-[60vw] lg:max-w-4xl xl:w-[50vw] xl:max-w-5xl h-[70vh] max-h-[90vh] overflow-hidden border border-gray-200"
+        >
+          <!-- Header -->
+          <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-gray-50">
+            <div class="font-semibold text-gray-800 text-base truncate">
+              {{ formTemplates.find(f => f.type === previewFormType)?.label || 'Form Preview' }}
+            </div>
+            <div class="flex items-center gap-2">
+              <button
+                @click="openPreviewInNewWindow"
+                class="inline-flex items-center px-2 py-1 text-xs font-medium text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 rounded transition focus:outline-none focus:ring-2 focus:ring-blue-400"
+                title="Open in New Window"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 3h7v7m0 0L10 21l-7-7 11-11z" />
+                </svg>
+                New Window
+              </button>
+              <button
+                @click="closePreviewModal"
+                class="inline-flex items-center px-2 py-1 text-xs font-medium text-gray-600 hover:text-gray-800 bg-gray-100 hover:bg-gray-200 rounded transition focus:outline-none focus:ring-2 focus:ring-blue-400"
+                title="Close"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          <!-- PDF Iframe -->
+          <div class="flex-1 w-full h-full flex items-center justify-center bg-gray-100">
+            <iframe
+              v-if="previewFormType"
+              :src="`/applications/preview/${previewFormType}?action=view`"
+              class="w-full h-full rounded-b-2xl border-0 bg-white"
+              style="min-height: 300px;"
+              allowfullscreen
+            ></iframe>
+          </div>
+        </div>
+      </div>
+    </transition>
+
     <!-- Unified Search and Filter Section -->
     <div class="mb-6 space-y-4">
       <!-- Search Bar -->
@@ -715,5 +783,13 @@ const cancelDeleteDocument = () => {
 </template>
 
 <style scoped>
-/* Add any component-specific styles here */
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.2s;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+}
+.fade-enter-to, .fade-leave-from {
+  opacity: 1;
+}
 </style>
