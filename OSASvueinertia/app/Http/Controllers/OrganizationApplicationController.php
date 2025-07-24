@@ -368,6 +368,37 @@ class OrganizationApplicationController extends Controller
         if (!auth()->user()->isAdmin() && $application->status === 'Approved') {
             return redirect()->route('applications.index')->with('error', 'You cannot update an approved application.');
         }
+
+        // Special handling for direct-upload report forms
+        $specialReportFormTypes = [
+            'LSPU-OSAS-SF-ACCOMPLISHMENT',
+            'LSPU-OSAS-SF-NARRATIVE',
+            'LSPU-OSAS-SF-BYLAWS',
+            'LSPU-OSAS-SF-FINANCIAL',
+            'LSPU-ACAD-RL',
+        ];
+        if (in_array($application->form_type, $specialReportFormTypes)) {
+            $columnMap = [
+                'LSPU-OSAS-SF-ACCOMPLISHMENT' => 'accomplishment_report_path',
+                'LSPU-OSAS-SF-NARRATIVE' => 'narrative_report_path',
+                'LSPU-OSAS-SF-BYLAWS' => 'bylaws_path',
+                'LSPU-OSAS-SF-FINANCIAL' => 'financial_report_path',
+                'LSPU-ACAD-RL' => 'event_letter_path',
+            ];
+            $column = $columnMap[$application->form_type];
+            $validated = $request->validate([
+                'file' => 'required|file|mimes:pdf|max:10240',
+            ]);
+            // Delete old file if exists
+            if ($application->$column) {
+                \Storage::disk('public')->delete($application->$column);
+            }
+            $fileName = $application->form_type . '_' . time() . '.pdf';
+            $path = $request->file('file')->storeAs('reports/' . $application->user_id, $fileName, 'public');
+            $application->$column = $path;
+            $application->save();
+            return redirect()->route('applications.index')->with('updateMessage', 'File updated successfully!');
+        }
         // Common fields validation
         $validationRules = [
             'organization_name' => 'required|string|max:255',
