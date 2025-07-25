@@ -503,99 +503,57 @@ const closeMobileDropdowns = (event) => {
       </div>
     </div>
 
-    <!-- DESKTOP TABLE LAYOUT -->
-    <div class="hidden sm:block overflow-x-auto relative">
-      <table class="w-full min-w-[700px]">
-        <thead>
-          <tr class="bg-gray-50 text-left text-gray-600 text-sm">
-            <th class="px-6 py-5 font-semibold">Form Type</th>
-            <th v-if="isAdmin" class="px-6 py-5 font-semibold">Organization</th>
-            <th class="px-6 py-5 font-semibold">Submitted</th>
-            <th class="px-6 py-5 font-semibold">Status</th>
-            <th class="px-6 py-5 font-semibold text-center">Actions</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-100">
-          <tr v-for="app in applications" :key="app.id" class="hover:bg-blue-50 transition-colors duration-200">
-            <td class="px-6 py-5">
-              <div class="text-sm font-semibold text-gray-800">{{ formTypeToName(app.form_type) }}</div>
-              <div class="text-xs text-gray-500 mt-1">{{ app.form_type }}</div>
-            </td>
-            <td v-if="isAdmin" class="px-6 py-5">
-              <div class="text-sm font-medium text-gray-800">{{ app.user.name }}</div>
-            </td>
-            <td class="px-6 py-5">
-              <div class="text-sm text-gray-600">{{ formatDate(app.created_at) }}</div>
-            </td>
-            <td class="px-6 py-5">
-              <span :class="`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(app.status)}`">
-                {{ app.status }}
+    <!-- DESKTOP STACKED LIST LAYOUT -->
+    <div class="hidden sm:block p-4">
+      <div
+        v-for="app in applications"
+        :key="app.id"
+        class="bg-white rounded-xl shadow border border-gray-100 mb-4 flex flex-col md:flex-row md:items-center md:justify-between hover:shadow-lg transition"
+      >
+        <div class="flex items-center gap-4 p-5 flex-1 min-w-0">
+          <div class="flex-shrink-0">
+            <div class="bg-blue-100 text-blue-600 rounded-full p-3">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-6a2 2 0 012-2h2a2 2 0 012 2v6m-6 0h6" /></svg>
+            </div>
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="font-medium text-base text-gray-900 truncate">
+              {{ formTypeToName(app.form_type) }}
+              <span v-if="isAdmin" class="inline-flex items-center">
+                <svg class="mx-1" width="10" height="10" viewBox="0 0 10 10" fill="#374151" xmlns="http://www.w3.org/2000/svg" style="display:inline"><polygon points="0,0 10,5 0,10"/></svg>
+                {{ app.user.name }}
               </span>
-              <!-- Feedback badge if exists -->
-              <div v-if="app.feedback" class="mt-1.5">
-                <button 
-                  @click="emit('openStatusModal', app)"
-                  class="text-xs text-gray-500 hover:text-blue-600 flex items-center gap-1 transition-colors duration-200"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
-                  </svg>
-                  View feedback
-                </button>
-              </div>
-              <!-- Document status indicator -->
-              <div class="mt-1.5 flex items-center gap-1">
-                <span v-if="app.signed_document_path" class="text-xs text-green-600 flex items-center gap-1">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.707a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                  </svg>
-                  Document uploaded
-                </span>
-                <span v-else class="text-xs text-gray-500 flex items-center gap-1">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M18 10A8 8 0 112 10a8 8 0 0116 0zm-8-3a1 1 0 100 2 1 1 0 000-2zm2 7a1 1 0 10-2 0v-4a1 1 0 112 0v4z" clip-rule="evenodd"/>
-                  </svg>
-                  No document
-                </span>
-              </div>
-            </td>
-            <td class="px-6 py-5">
-              <!-- Action Dropdown -->
-              <div class="flex justify-center dropdown-container relative">
-                <!-- Primary Action Buttons -->
-                <div class="flex space-x-3">
-                  <!-- View PDF - Keep as direct button for primary action -->
-                  <a 
-                    :href="getViewUrl(app)" 
-                    target="_blank" 
-                    class="bg-green-500 hover:bg-green-400 text-white p-2.5 rounded-lg transition duration-300 relative overflow-hidden group shadow-sm"
-                    title="View PDF"
-                  >
-                    <span class="absolute w-0 h-0 transition-all duration-300 ease-out bg-white rounded-full group-hover:w-16 group-hover:h-16 opacity-10"></span>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                      <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                      <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
-                    </svg>
-                  </a>
-                  
-                  <!-- Add data-dropdown-trigger attribute -->
-                    <button 
-                      @click.stop="toggleDropdown(app, $event)"
-                      class="bg-blue-600 hover:bg-blue-500 text-white p-2.5 rounded-lg transition duration-300 relative overflow-hidden group shadow-sm"
-                      title="More Actions"
-                      :data-dropdown-trigger="app.id"
-                    >
-                    <span class="absolute w-0 h-0 transition-all duration-300 ease-out bg-white rounded-full group-hover:w-16 group-hover:h-16 opacity-10"></span>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                      <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+            </div>
+            <div class="text-sm text-gray-600 truncate">{{ app.form_type }}</div>
+            <div class="flex flex-wrap gap-2 text-xs text-gray-500 mt-1">
+              <span>Submitted: {{ formatDate(app.created_at) }}</span>
+              <span v-if="app.status">&bull; <span :class="`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(app.status)}`">{{ app.status }}</span></span>
+              <span v-if="app.signed_document_path" class="text-green-600 flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.707a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+                Document uploaded
+              </span>
+              <span v-else class="text-gray-500 flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M18 10A8 8 0 112 10a8 8 0 0116 0zm-8-3a1 1 0 100 2 1 1 0 000-2zm2 7a1 1 0 10-2 0v-4a1 1 0 112 0v4z" clip-rule="evenodd"/>
+                </svg>
+                No document
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 p-5 pt-0 md:pt-5 md:pl-0 md:pr-6 md:flex-col md:items-end">
+          <a :href="getViewUrl(app)" target="_blank" class="bg-green-500 hover:bg-green-400 text-white px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1 shadow-sm transition" title="View PDF">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" /></svg>
+            View PDF
+          </a>
+          <button @click.stop="toggleDropdown(app, $event)" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1 shadow-sm transition" title="More Actions" :data-dropdown-trigger="app.id">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" /></svg>
+            More
+          </button>
+        </div>
+      </div>
     </div>
     <!-- Render the dropdown only once, outside the table -->
     <Teleport to="body">
