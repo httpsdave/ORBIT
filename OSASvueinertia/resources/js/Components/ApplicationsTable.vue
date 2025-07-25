@@ -368,6 +368,14 @@ const closeMobileDropdowns = (event) => {
   }
 };
 
+// Add this method in <script setup>
+const viewPdf = (app) => {
+  const url = getViewUrl(app);
+  if (url && url !== '#') {
+    window.open(url, '_blank');
+  }
+};
+
 </script>
 
 <template>
@@ -415,7 +423,9 @@ const closeMobileDropdowns = (event) => {
 
     <!-- MOBILE CARD LAYOUT -->
     <div class="sm:hidden p-2 space-y-4">
-      <div v-for="app in applications" :key="app.id" class="bg-white rounded-xl shadow border border-gray-100 p-4 flex flex-col gap-2">
+      <div v-for="app in applications" :key="app.id" 
+        class="bg-white rounded-xl shadow border border-gray-100 p-4 flex flex-col gap-2 cursor-pointer hover:bg-gray-50 transition"
+        @click="viewPdf(app)">
         <div class="flex items-center justify-between">
           <div>
             <div class="text-base font-semibold text-gray-800">{{ formTypeToName(app.form_type) }}</div>
@@ -444,10 +454,6 @@ const closeMobileDropdowns = (event) => {
           </span>
         </div>
         <div class="flex gap-2 mt-2 flex-wrap">
-          <a :href="getViewUrl(app)" target="_blank" class="bg-green-500 hover:bg-green-400 text-white px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1 shadow-sm transition">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" /></svg>
-            View PDF
-          </a>
           <button @click.stop="toggleDropdown(app, $event)" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1 shadow-sm transition">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" /></svg>
             More
@@ -508,7 +514,8 @@ const closeMobileDropdowns = (event) => {
       <div
         v-for="app in applications"
         :key="app.id"
-        class="bg-white rounded-xl shadow border border-gray-100 mb-4 flex flex-col md:flex-row md:items-center md:justify-between hover:shadow-lg transition"
+        class="bg-white rounded-xl shadow border border-gray-100 mb-4 flex flex-col md:flex-row md:items-center md:justify-between hover:shadow-lg transition cursor-pointer hover:bg-gray-50"
+        @click="viewPdf(app)"
       >
         <div class="flex items-center gap-4 p-5 flex-1 min-w-0">
           <div class="flex-shrink-0">
@@ -544,10 +551,6 @@ const closeMobileDropdowns = (event) => {
           </div>
         </div>
         <div class="flex items-center gap-2 p-5 pt-0 md:pt-5 md:pl-0 md:pr-6 md:flex-col md:items-end">
-          <a :href="getViewUrl(app)" target="_blank" class="bg-green-500 hover:bg-green-400 text-white px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1 shadow-sm transition" title="View PDF">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" /></svg>
-            View PDF
-          </a>
           <button @click.stop="toggleDropdown(app, $event)" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1 shadow-sm transition" title="More Actions" :data-dropdown-trigger="app.id">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" /></svg>
             More
