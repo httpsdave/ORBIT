@@ -454,9 +454,20 @@ const viewPdf = (app) => {
           </span>
         </div>
         <div class="flex gap-2 mt-2 flex-wrap">
-          <button @click.stop="toggleDropdown(app, $event)" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1 shadow-sm transition">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" /></svg>
-            More
+          <button
+            @click.stop="toggleDropdown(app, $event)"
+            :aria-label="'Actions for ' + formTypeToName(app.form_type)"
+            class="relative inline-flex items-center justify-center rounded-full p-2 text-gray-500 hover:text-blue-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-200 transition group"
+            :data-dropdown-trigger="app.id"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="#1f2937">
+              <circle cx="10" cy="4" r="2.2"/>
+              <circle cx="10" cy="10" r="2.2"/>
+              <circle cx="10" cy="16" r="2.2"/>
+            </svg>
+            <span class="absolute left-1/2 -bottom-8 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity duration-300 whitespace-nowrap z-50">
+              Actions
+            </span>
           </button>
         </div>
         <!-- MOBILE INLINE DROPDOWN -->
@@ -551,9 +562,19 @@ const viewPdf = (app) => {
           </div>
         </div>
         <div class="flex items-center gap-2 p-5 pt-0 md:pt-5 md:pl-0 md:pr-6 md:flex-col md:items-end">
-          <button @click.stop="toggleDropdown(app, $event)" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1 shadow-sm transition" title="More Actions" :data-dropdown-trigger="app.id">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" /></svg>
-            More
+          <button
+            @click.stop="toggleDropdown(app, $event)"
+            :aria-label="'Actions for ' + formTypeToName(app.form_type)"
+            class="relative inline-flex items-center justify-center rounded-full p-2 text-gray-500 hover:text-blue-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-200 transition group"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="#1f2937">
+              <circle cx="10" cy="4" r="2.2"/>
+              <circle cx="10" cy="10" r="2.2"/>
+              <circle cx="10" cy="16" r="2.2"/>
+            </svg>
+            <span class="absolute left-1/2 -bottom-8 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity duration-300 whitespace-nowrap z-50">
+              Actions
+            </span>
           </button>
         </div>
       </div>
