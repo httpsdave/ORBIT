@@ -22,6 +22,9 @@ const dropdownRef = ref(null);
 const dropdownDirection = ref('down'); // 'down' or 'up'
 const activeMobileDropdownId = ref(null); // For mobile card dropdown
 
+const showPreviewModal = ref(false);
+const previewApp = ref(null);
+
 const getStatusColor = (status) => {
   switch(status.toLowerCase()) {
     case 'approved':
@@ -369,10 +372,20 @@ const closeMobileDropdowns = (event) => {
 };
 
 // Add this method in <script setup>
+const openPreview = (app) => {
+  previewApp.value = app;
+  showPreviewModal.value = true;
+};
+const closePreviewModal = () => {
+  showPreviewModal.value = false;
+  previewApp.value = null;
+};
+
+// Replace viewPdf to use modal
 const viewPdf = (app) => {
   const url = getViewUrl(app);
   if (url && url !== '#') {
-    window.open(url, '_blank');
+    openPreview(app);
   }
 };
 
@@ -669,5 +682,43 @@ const viewPdf = (app) => {
         </button>
       </div>
     </Teleport>
+
+    <!-- PDF Preview Modal -->
+    <transition name="fade">
+      <div v-if="showPreviewModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60" @click="closePreviewModal">
+        <div
+          class="relative bg-transparent shadow-2xl flex flex-col w-[95vw] max-w-4xl md:w-[70vw] md:max-w-3xl lg:w-[60vw] lg:max-w-4xl xl:w-[50vw] xl:max-w-5xl h-[70vh] md:h-[80vh] lg:h-[85vh] xl:h-[90vh] max-h-[95vh] overflow-hidden border border-transparent"
+          @click.stop
+        >
+          <!-- Close Button: floating at top-right, outside header -->
+          <button
+            @click="closePreviewModal"
+            class="absolute top-4 right-4 flex items-center justify-center text-white hover:text-gray-200 focus:outline-none transition z-20 opacity-90"
+            title="Close Preview"
+            aria-label="Close Preview"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+          <!-- Header -->
+          <div class="flex items-center justify-between px-4 py-3 pr-16 bg-transparent relative">
+            <div class="font-semibold text-gray-200 text-base truncate opacity-90">
+              {{ previewApp ? formTypeToName(previewApp.form_type) : '' }}
+            </div>
+          </div>
+          <!-- PDF Iframe -->
+          <div class="flex-1 w-full h-full flex items-center justify-center bg-gray-100">
+            <iframe
+              v-if="previewApp"
+              :src="getViewUrl(previewApp)"
+              class="w-full h-full border-0 bg-white"
+              style="min-height: 300px;"
+              allowfullscreen
+            ></iframe>
+          </div>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
