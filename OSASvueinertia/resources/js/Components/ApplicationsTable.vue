@@ -412,6 +412,13 @@ const onSignedDocumentError = () => {
   signedDocumentError.value = 'Failed to load the signed document. The file may be corrupted or too large.';
 };
 
+// Method to open signed document in new window
+const openSignedDocumentInNewWindow = (appId) => {
+  if (typeof window !== 'undefined') {
+    window.open(`/applications/${appId}/view-document`, '_blank');
+  }
+};
+
 // Replace viewPdf to use modal
 const viewPdf = (app) => {
   const url = getViewUrl(app);
@@ -832,7 +839,7 @@ watch(showSignedDocumentModal, (val) => {
             </div>
             <div class="flex items-center gap-2">
               <button
-                @click="window.open(`/applications/${signedDocumentApp.id}/view-document`, '_blank')"
+                @click="openSignedDocumentInNewWindow(signedDocumentApp.id)"
                 class="inline-flex items-center justify-center px-4 py-2 bg-blue-500 text-sm font-medium text-white rounded-xl shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group"
                 title="Open in New Window"
                 aria-label="Open in New Window"
@@ -876,7 +883,7 @@ watch(showSignedDocumentModal, (val) => {
                 </svg>
                 <p class="text-sm text-gray-600 mb-4">{{ signedDocumentError }}</p>
                 <button
-                  @click="window.open(`/applications/${signedDocumentApp.id}/view-document`, '_blank')"
+                  @click="openSignedDocumentInNewWindow(signedDocumentApp.id)"
                   class="inline-flex items-center px-4 py-2 bg-blue-500 text-sm font-medium text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition"
                 >
                   Open in New Window
