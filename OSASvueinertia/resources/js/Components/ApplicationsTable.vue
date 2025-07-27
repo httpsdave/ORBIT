@@ -25,6 +25,12 @@ const activeMobileDropdownId = ref(null); // For mobile card dropdown
 const showPreviewModal = ref(false);
 const previewApp = ref(null);
 
+// Add new state for signed document viewing modal
+const showSignedDocumentModal = ref(false);
+const signedDocumentApp = ref(null);
+const signedDocumentLoading = ref(false);
+const signedDocumentError = ref(null);
+
 const getStatusColor = (status) => {
   switch(status.toLowerCase()) {
     case 'approved':
@@ -381,6 +387,31 @@ const closePreviewModal = () => {
   previewApp.value = null;
 };
 
+// Add new methods for signed document viewing
+const openSignedDocumentModal = (app) => {
+  signedDocumentApp.value = app;
+  signedDocumentLoading.value = true;
+  signedDocumentError.value = null;
+  showSignedDocumentModal.value = true;
+};
+
+const closeSignedDocumentModal = () => {
+  showSignedDocumentModal.value = false;
+  signedDocumentApp.value = null;
+  signedDocumentLoading.value = false;
+  signedDocumentError.value = null;
+};
+
+const onSignedDocumentLoad = () => {
+  signedDocumentLoading.value = false;
+  signedDocumentError.value = null;
+};
+
+const onSignedDocumentError = () => {
+  signedDocumentLoading.value = false;
+  signedDocumentError.value = 'Failed to load the signed document. The file may be corrupted or too large.';
+};
+
 // Replace viewPdf to use modal
 const viewPdf = (app) => {
   const url = getViewUrl(app);
@@ -389,8 +420,27 @@ const viewPdf = (app) => {
   }
 };
 
+// Add new method for viewing signed documents
+const viewSignedDocument = (app) => {
+  if (app.signed_document_path && app.signed_document_path.trim() !== '') {
+    // Close any open dropdowns
+    activeDropdownApp.value = null;
+    activeMobileDropdownId.value = null;
+    openSignedDocumentModal(app);
+  }
+};
+
 // Watch for modal open/close to lock body scroll
 watch(showPreviewModal, (val) => {
+  if (val) {
+    document.body.classList.add('overflow-hidden');
+  } else {
+    document.body.classList.remove('overflow-hidden');
+  }
+});
+
+// Add watcher for signed document modal
+watch(showSignedDocumentModal, (val) => {
   if (val) {
     document.body.classList.add('overflow-hidden');
   } else {
@@ -513,13 +563,13 @@ watch(showPreviewModal, (val) => {
             </svg>
             Delete Document
           </button>
-          <a v-if="app.signed_document_path" :href="`/applications/${app.id}/view-document`" target="_blank" @click="activeMobileDropdownId = null" class="w-full text-left px-2 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200">
+          <button v-if="app.signed_document_path" @click="activeMobileDropdownId = null; viewSignedDocument(app)" class="w-full text-left px-2 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-teal-600" viewBox="0 0 20 20" fill="currentColor">
               <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2h-1.528A6 6 0 004 9.528V4z" />
               <path fill-rule="evenodd" d="M8 10a4 4 0 00-3.446 6.032l-1.261 1.26a1 1 0 101.415 1.415l1.261-1.261A4 4 0 006 10z" clip-rule="evenodd" />
             </svg>
             View Document
-          </a>
+          </button>
           <Link v-if="isAdmin || (!isAdmin && app.status !== 'Approved')" :href="`/applications/${app.id}/edit`" @click="activeMobileDropdownId = null" class="w-full text-left px-2 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-500" viewBox="0 0 20 20" fill="currentColor">
               <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
@@ -661,10 +711,9 @@ watch(showPreviewModal, (val) => {
           Delete Document
         </button>
         <!-- View signed document option (only if signed_document_path exists) -->
-        <a 
+        <button 
           v-if="activeDropdownApp.signed_document_path"
-          :href="`/applications/${activeDropdownApp.id}/view-document`" 
-          target="_blank" 
+          @click="viewSignedDocument(activeDropdownApp)"
           class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200"
         >
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-teal-600" viewBox="0 0 20 20" fill="currentColor">
@@ -672,7 +721,7 @@ watch(showPreviewModal, (val) => {
             <path fill-rule="evenodd" d="M8 10a4 4 0 00-3.446 6.032l-1.261 1.26a1 1 0 101.415 1.415l1.261-1.261A4 4 0 006 10z" clip-rule="evenodd" />
           </svg>
           View Document
-        </a>
+        </button>
         <!-- Edit Application -->
         <Link 
           v-if="isAdmin || (!isAdmin && activeDropdownApp.status !== 'Approved')"
@@ -753,6 +802,87 @@ watch(showPreviewModal, (val) => {
               style="min-height: 300px;"
               allowfullscreen
             ></iframe>
+          </div>
+        </div>
+      </div>
+    </transition>
+
+    <!-- Signed Document Preview Modal -->
+    <transition name="fade">
+      <div v-if="showSignedDocumentModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60" @click="closeSignedDocumentModal">
+        <div
+          class="relative bg-transparent shadow-2xl flex flex-col w-[95vw] max-w-4xl md:w-[70vw] md:max-w-3xl lg:w-[60vw] lg:max-w-4xl xl:w-[50vw] xl:max-w-5xl h-[70vh] md:h-[80vh] lg:h-[85vh] xl:h-[90vh] max-h-[95vh] overflow-hidden border border-transparent"
+          @click.stop
+        >
+          <!-- Close Button: floating at top-right, outside header -->
+          <button
+            @click="closeSignedDocumentModal"
+            class="absolute top-4 right-4 flex items-center justify-center text-white hover:text-gray-200 focus:outline-none transition z-20 opacity-90"
+            title="Close Preview"
+            aria-label="Close Preview"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+          <!-- Header -->
+          <div class="flex items-center justify-between px-4 py-3 pr-16 bg-transparent relative">
+            <div class="font-semibold text-gray-200 text-base truncate opacity-90">
+              {{ signedDocumentApp ? `Signed Document - ${formTypeToName(signedDocumentApp.form_type)}` : '' }}
+            </div>
+            <div class="flex items-center gap-2">
+              <button
+                @click="window.open(`/applications/${signedDocumentApp.id}/view-document`, '_blank')"
+                class="inline-flex items-center justify-center px-4 py-2 bg-blue-500 text-sm font-medium text-white rounded-xl shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group"
+                title="Open in New Window"
+                aria-label="Open in New Window"
+              >
+                <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 3h7v7m0 0L10 21l-7-7 11-11z" />
+                </svg>
+                New Window
+              </button>
+            </div>
+          </div>
+          <!-- PDF Iframe -->
+          <div class="flex-1 w-full h-full flex items-center justify-center bg-gray-100 relative">
+            <iframe
+              v-if="signedDocumentApp"
+              :src="`/applications/${signedDocumentApp.id}/view-document`"
+              class="w-full h-full border-0 bg-white"
+              style="min-height: 300px;"
+              allowfullscreen
+              @load="onSignedDocumentLoad"
+              @error="onSignedDocumentError"
+            ></iframe>
+            
+            <!-- Loading overlay for iframe -->
+            <div v-if="signedDocumentLoading" class="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center">
+              <div class="text-center">
+                <svg class="animate-spin h-8 w-8 text-blue-600 mx-auto mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <p class="text-sm text-gray-600">Loading signed document...</p>
+              </div>
+            </div>
+            
+            <!-- Error state -->
+            <div v-if="signedDocumentError" class="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center">
+              <div class="text-center">
+                <svg class="h-12 w-12 text-red-500 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+                <p class="text-sm text-gray-600 mb-4">{{ signedDocumentError }}</p>
+                <button
+                  @click="window.open(`/applications/${signedDocumentApp.id}/view-document`, '_blank')"
+                  class="inline-flex items-center px-4 py-2 bg-blue-500 text-sm font-medium text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition"
+                >
+                  Open in New Window
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
