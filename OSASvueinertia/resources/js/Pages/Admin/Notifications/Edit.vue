@@ -61,7 +61,6 @@
 
 <script setup>
 import { useForm, router } from '@inertiajs/vue3'
-import { defineProps } from 'vue'
 
 const props = defineProps({
   notification: Object,

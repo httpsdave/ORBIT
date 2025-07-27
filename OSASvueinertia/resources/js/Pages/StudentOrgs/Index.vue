@@ -78,7 +78,7 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { defineProps, ref, computed } from 'vue';
+import { ref, computed } from 'vue';
 
 const props = defineProps({
     auth: Object,

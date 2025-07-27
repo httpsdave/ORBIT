@@ -1,6 +1,6 @@
 <script setup>
 import { Link, router } from '@inertiajs/vue3';
-import { defineProps, defineEmits, ref, nextTick, onMounted, onUnmounted } from 'vue';
+import { ref, nextTick, onMounted, onUnmounted, watch } from 'vue';
 const props = defineProps({
   applications: Array,
   isAdmin: Boolean,
@@ -388,6 +388,15 @@ const viewPdf = (app) => {
     openPreview(app);
   }
 };
+
+// Watch for modal open/close to lock body scroll
+watch(showPreviewModal, (val) => {
+  if (val) {
+    document.body.classList.add('overflow-hidden');
+  } else {
+    document.body.classList.remove('overflow-hidden');
+  }
+});
 
 </script>
 

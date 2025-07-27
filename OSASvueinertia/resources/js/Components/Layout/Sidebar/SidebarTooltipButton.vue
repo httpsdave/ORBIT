@@ -28,7 +28,7 @@
 </template>
 
 <script setup>
-import { ref, nextTick, defineProps, watch } from 'vue';
+import { ref, nextTick, watch } from 'vue';
 
 const props = defineProps({
   tooltip: {
