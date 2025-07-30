@@ -162,9 +162,9 @@
             </div>
             
             <!-- Existing Feedback -->
-            <div v-if="application?.feedback" class="mt-4 p-3 bg-gray-50 rounded-md">
+            <div v-if="application?.feedback" class="mt-4 p-3 bg-gray-50 rounded-md break-words overflow-x-hidden">
               <h4 class="text-xs font-medium text-gray-700 mb-1">Current Feedback:</h4>
-              <p class="text-sm text-gray-900">{{ application.feedback }}</p>
+              <p class="text-sm text-gray-900 break-words">{{ application.feedback }}</p>
             </div>
           </div>
 
