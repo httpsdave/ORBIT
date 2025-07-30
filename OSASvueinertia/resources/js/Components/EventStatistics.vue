@@ -1,5 +1,5 @@
 <template>
-  <div class="p-4 sm:p-6 h-full">
+  <div class="p-4 sm:p-6 w-full max-w-full overflow-x-hidden">
     <!-- Loading State -->
     <div v-if="isLoading" class="flex items-center justify-center h-96">
       <div class="text-center">
@@ -26,7 +26,7 @@
     </div>
 
     <!-- Statistics Content -->
-    <div v-else class="space-y-4 sm:space-y-6">
+    <div v-else class="space-y-4 sm:space-y-6 w-full max-w-full">
       <!-- Header -->
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <div>
@@ -35,22 +35,82 @@
         </div>
         <div class="mt-4 sm:mt-0 flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
           <!-- Time Range Selector -->
-          <select 
-            v-model="selectedTimeRange" 
-            @change="updateChartData"
-            class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          >
-            <option value="7">Last 7 days</option>
-            <option value="30">Last 30 days</option>
-            <option value="90">Last 3 months</option>
-            <option value="365">Last year</option>
-            <option value="all">All time</option>
-          </select>
+          <div class="relative w-full sm:w-auto">
+            <button
+              @click="showTimeRangeDropdown = !showTimeRangeDropdown"
+              class="inline-flex items-center justify-center px-4 py-2 bg-white border border-blue-500 text-blue-700 text-sm font-medium rounded-xl shadow-md hover:bg-blue-50 hover:text-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group w-full sm:w-auto"
+              type="button"
+            >
+              <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 002 2z" />
+              </svg>
+              {{
+                selectedTimeRange === '7' ? 'Last 7 days' :
+                selectedTimeRange === '30' ? 'Last 30 days' :
+                selectedTimeRange === '90' ? 'Last 3 months' :
+                selectedTimeRange === '365' ? 'Last year' :
+                'All time'
+              }}
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </button>
+            <div
+              v-if="showTimeRangeDropdown"
+              class="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-lg z-50"
+            >
+              <ul class="py-1">
+                <li>
+                  <button
+                    @click="selectedTimeRange = '7'; updateChartData(); showTimeRangeDropdown = false"
+                    :class="['w-full text-left px-4 py-2 text-sm transition', selectedTimeRange === '7' ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-700']"
+                  >
+                    Last 7 days
+                  </button>
+                </li>
+                <li>
+                  <button
+                    @click="selectedTimeRange = '30'; updateChartData(); showTimeRangeDropdown = false"
+                    :class="['w-full text-left px-4 py-2 text-sm transition', selectedTimeRange === '30' ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-700']"
+                  >
+                    Last 30 days
+                  </button>
+                </li>
+                <li>
+                  <button
+                    @click="selectedTimeRange = '90'; updateChartData(); showTimeRangeDropdown = false"
+                    :class="['w-full text-left px-4 py-2 text-sm transition', selectedTimeRange === '90' ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-700']"
+                  >
+                    Last 3 months
+                  </button>
+                </li>
+                <li>
+                  <button
+                    @click="selectedTimeRange = '365'; updateChartData(); showTimeRangeDropdown = false"
+                    :class="['w-full text-left px-4 py-2 text-sm transition', selectedTimeRange === '365' ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-700']"
+                  >
+                    Last year
+                  </button>
+                </li>
+                <li>
+                  <button
+                    @click="selectedTimeRange = 'all'; updateChartData(); showTimeRangeDropdown = false"
+                    :class="['w-full text-left px-4 py-2 text-sm transition', selectedTimeRange === 'all' ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-700']"
+                  >
+                    All time
+                  </button>
+                </li>
+              </ul>
+            </div>
+            <!-- Click outside to close -->
+            <div v-if="showTimeRangeDropdown" class="fixed inset-0 z-40" @click="showTimeRangeDropdown = false"></div>
+          </div>
           
           <!-- Export Button -->
           <button
             @click="exportStatistics"
-            class="inline-flex items-center justify-center px-4 py-2 bg-green-500 text-sm font-medium text-white rounded-xl shadow-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group"
+            class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-sm font-medium text-white rounded-xl shadow-md hover:from-green-600 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group w-full sm:w-auto"
           >
             <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
             <svg class="w-4 h-4 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -63,7 +123,7 @@
       </div>
 
       <!-- Statistics Cards - Responsive Grid -->
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 w-full">
         <!-- Total Events -->
         <div class="bg-white rounded-lg p-3 sm:p-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200">
           <div class="flex items-center">
@@ -131,7 +191,7 @@
           <h3 class="text-lg font-semibold text-gray-900">Event Trends</h3>
           <div class="mt-2 sm:mt-0">
             <div class="flex items-center space-x-2 text-sm text-gray-600">
-              <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+              <div class="w-3 h-3 bg-green-500 rounded-full"></div>
               <span>Events over time</span>
             </div>
           </div>
@@ -155,7 +215,7 @@
       </div>
 
       <!-- Mobile Summary (replaces chart on small screens) -->
-      <div class="sm:hidden bg-white rounded-lg border border-gray-200 p-4">
+      <div class="block sm:hidden bg-white rounded-lg border border-gray-200 p-4 shadow-sm w-full">
         <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Summary</h3>
         <div class="grid grid-cols-2 gap-4">
           <div class="text-center">
@@ -174,13 +234,13 @@
         <!-- Monthly Distribution -->
         <div class="bg-white rounded-lg border border-gray-200 p-6">
           <h3 class="text-lg font-semibold text-gray-900 mb-4">Monthly Distribution</h3>
-          <div class="space-y-3">
+          <div class="space-y-3 max-h-64 overflow-y-auto pr-2">
             <div v-for="month in monthlyDistribution" :key="month.month" class="flex items-center">
               <div class="w-20 text-sm text-gray-600">{{ month.month }}</div>
               <div class="flex-1 mx-3">
                 <div class="bg-gray-200 rounded-full h-2">
                   <div 
-                    class="bg-blue-500 h-2 rounded-full transition-all duration-500" 
+                    class="bg-green-500 h-2 rounded-full transition-all duration-500" 
                     :style="{ width: month.percentage + '%' }"
                   ></div>
                 </div>
@@ -236,6 +296,7 @@ export default {
     const chart = ref(null);
     const selectedTimeRange = ref('30');
     const hasError = ref(false);
+    const showTimeRangeDropdown = ref(false);
 
     // Computed statistics
     const totalEvents = computed(() => props.events.length);
@@ -304,7 +365,7 @@ export default {
     const recentActivity = computed(() => {
       return [...props.events]
         .sort((a, b) => new Date(b.start_date) - new Date(a.start_date))
-        .slice(0, 10);
+        .slice(0, 3);
     });
 
     // Update chart data based on selected time range
@@ -373,13 +434,13 @@ export default {
             {
               label: 'Events',
               data: eventsData,
-              borderColor: 'rgb(59, 130, 246)',
+              borderColor: 'rgb(34, 197, 94)', // Green-500
               backgroundColor: 'transparent',
               borderWidth: 2,
               tension: 0.3,
               fill: false,
-              pointBackgroundColor: 'rgb(59, 130, 246)',
-              pointBorderColor: 'rgb(59, 130, 246)',
+              pointBackgroundColor: 'rgb(34, 197, 94)',
+              pointBorderColor: 'rgb(34, 197, 94)',
               pointRadius: 4,
               pointHoverRadius: 6,
               pointBorderWidth: 0
@@ -567,7 +628,8 @@ export default {
       updateChartData,
       exportStatistics,
       refreshData,
-      formatDate
+      formatDate,
+      showTimeRangeDropdown
     };
   }
 };
