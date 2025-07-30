@@ -238,7 +238,14 @@ const openInNewWindow = () => {
 
 const downloadDocument = () => {
   if (props.application) {
-    window.open(`/applications/${props.application.id}/view-document?download=1`, '_blank')
+    const url = `/applications/${props.application.id}/view-document?download=1`;
+    const fileName = getFileName(props.application.signed_document_path);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', fileName || 'document.pdf');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }
 }
 
