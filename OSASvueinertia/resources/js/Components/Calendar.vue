@@ -30,8 +30,41 @@
     
 </div>
 
-<!-- Event History Toggle -->
-<div class="flex justify-end mb-6">
+<!-- View Toggle and Actions -->
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
+  <!-- View Toggle Switch -->
+  <div class="flex items-center bg-gray-100 rounded-lg p-1">
+    <button 
+      @click="currentView = 'calendar'"
+      :class="[
+        'flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200',
+        currentView === 'calendar' 
+          ? 'bg-white text-blue-600 shadow-sm' 
+          : 'text-gray-600 hover:text-gray-800'
+      ]"
+    >
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+      </svg>
+      <span>Calendar</span>
+    </button>
+    <button 
+      @click="currentView = 'statistics'"
+      :class="[
+        'flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200',
+        currentView === 'statistics' 
+          ? 'bg-white text-blue-600 shadow-sm' 
+          : 'text-gray-600 hover:text-gray-800'
+      ]"
+    >
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+      </svg>
+      <span>Statistics</span>
+    </button>
+  </div>
+  
+  <!-- Event History Button -->
   <button 
     @click="showPastEventsModal = true" 
     class="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors duration-200"
@@ -43,25 +76,59 @@
   </button>
 </div>
 
-  <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-5">
-    <!-- Custom calendar header with your color scheme -->
-    <div class="mb-6">
-      <!-- Colored banner for the calendar -->
-      <div class="flex w-full mb-4 overflow-hidden rounded-lg">
-        <div class="w-1/4 h-1.5 bg-blue-500"></div>
-        <div class="w-1/4 h-1.5 bg-green-500"></div>
-        <div class="w-1/4 h-1.5 bg-yellow-500"></div>
-        <div class="w-1/4 h-1.5 bg-red-500"></div>
+  <!-- Main Content Container with 3D Flip Animation -->
+  <div class="relative bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden" style="perspective: 1000px;">
+    <!-- Calendar View -->
+    <div 
+      :class="[
+        'transition-all duration-700 ease-in-out transform-style-preserve-3d',
+        currentView === 'statistics' ? 'rotate-y-180' : 'rotate-y-0'
+      ]"
+      style="transform-style: preserve-3d;"
+    >
+      <!-- Front Side - Calendar -->
+      <div 
+        :class="[
+          'w-full backface-hidden',
+          currentView === 'statistics' ? 'opacity-0 pointer-events-none' : 'opacity-100'
+        ]"
+        style="backface-visibility: hidden;"
+      >
+        <div class="p-5">
+          <!-- Custom calendar header with your color scheme -->
+          <div class="mb-6">
+            <!-- Colored banner for the calendar -->
+            <div class="flex w-full mb-4 overflow-hidden rounded-lg">
+              <div class="w-1/4 h-1.5 bg-blue-500"></div>
+              <div class="w-1/4 h-1.5 bg-green-500"></div>
+              <div class="w-1/4 h-1.5 bg-yellow-500"></div>
+              <div class="w-1/4 h-1.5 bg-red-500"></div>
+            </div>
+          </div>
+          
+          <FullCalendar
+            ref="fullCalendar"
+            :options="calendarOptions"
+            class="full-calendar-custom"
+          />
+        </div>
+      </div>
+      
+      <!-- Back Side - Statistics -->
+      <div 
+        :class="[
+          'absolute inset-0 w-full backface-hidden rotate-y-180',
+          currentView === 'calendar' ? 'opacity-0 pointer-events-none' : 'opacity-100'
+        ]"
+        style="backface-visibility: hidden; transform: rotateY(180deg);"
+      >
+        <EventStatistics 
+          :events="events" 
+          :is-admin="isAdmin"
+          :key="'statistics-' + events.length"
+        />
       </div>
     </div>
-    
-    <FullCalendar
-      ref="fullCalendar"
-      :options="calendarOptions"
-      class="full-calendar-custom"
-    />
-    
-    
   </div>
   
   <!-- Event Form Modal -->
@@ -287,9 +354,10 @@ import FullCalendar from '@fullcalendar/vue3';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import FileUploadComponent from '@/Components/FileUploadComponent.vue';
-import TodayUpcomingEvents from '@/Components/TodayUpcomingEvents.vue';
-import EventHistoryModal from '@/Components/EventHistoryModal.vue';
+import FileUploadComponent from './FileUploadComponent.vue';
+import TodayUpcomingEvents from './TodayUpcomingEvents.vue';
+import EventHistoryModal from './EventHistoryModal.vue';
+import EventStatistics from './EventStatistics.vue';
 import axios from 'axios';
 import dayjs from 'dayjs';
 
@@ -298,7 +366,8 @@ export default {
     FullCalendar,
     FileUploadComponent,
     TodayUpcomingEvents,
-    EventHistoryModal
+    EventHistoryModal,
+    EventStatistics
   },
   
   props: {
@@ -324,6 +393,9 @@ export default {
     // For event details modal (non-admin users)
     const showEventDetailsModal = ref(false);
     const selectedEvent = ref({});
+    
+    // View toggle state
+    const currentView = ref('calendar');
     
     const eventForm = reactive({
       title: '',
@@ -699,6 +771,7 @@ function exportPastEventsCsv(pastEvents) {
       isAdmin: props.isAdmin,
       showEventDetailsModal,
       selectedEvent,
+      currentView,
       saveEvent,
       editEvent,
       updateEvent,
@@ -716,3 +789,169 @@ function exportPastEventsCsv(pastEvents) {
 
 
 </script>
+
+<style scoped>
+/* 3D Flip Animation Styles */
+.transform-style-preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+.rotate-y-0 {
+  transform: rotateY(0deg);
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+/* Smooth transitions for view toggle */
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.duration-700 {
+  transition-duration: 700ms;
+}
+
+.ease-in-out {
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Custom calendar styles */
+.full-calendar-custom {
+  font-family: inherit;
+}
+
+.full-calendar-custom .fc-toolbar {
+  margin-bottom: 1rem;
+}
+
+.full-calendar-custom .fc-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.full-calendar-custom .fc-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.full-calendar-custom .fc-button:disabled {
+  opacity: 0.6;
+  transform: none;
+}
+
+.full-calendar-custom .fc-event {
+  border: none;
+  border-radius: 0.375rem;
+  padding: 0.25rem 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.full-calendar-custom .fc-event:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.full-calendar-custom .fc-daygrid-event {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-left: 4px solid #4f46e5;
+}
+
+.full-calendar-custom .fc-day-today {
+  background-color: rgba(59, 130, 246, 0.1) !important;
+}
+
+.full-calendar-custom .fc-day-past {
+  background-color: rgba(156, 163, 175, 0.05);
+}
+
+/* Loading animation */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Fade in animation for statistics */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  .full-calendar-custom .fc-toolbar {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .full-calendar-custom .fc-toolbar-chunk {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .full-calendar-custom .fc-button {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+  }
+}
+
+/* Focus states for accessibility */
+.focus\:ring-2:focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+.focus\:ring-blue-500:focus {
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+/* Toggle button hover effects */
+.hover\:bg-gray-100:hover {
+  background-color: rgba(243, 244, 246, 1);
+}
+
+.hover\:text-gray-800:hover {
+  color: rgba(31, 41, 55, 1);
+}
+
+/* Shadow effects */
+.shadow-sm {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+/* Ensure proper z-index for modals */
+.z-50 {
+  z-index: 50;
+}
+</style>
