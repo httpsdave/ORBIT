@@ -704,27 +704,48 @@ class OrganizationApplicationController extends Controller
         return response()->file($filePath);
     }
 
-    /* NEW METHOD: Update application status */
+    /**
+     * Show the SPA document view page
+     */
+    public function showDocumentView(OrganizationApplication $application)
+    {
+        // Check if user has permission to view this application
+        if (!auth()->user()->isAdmin() && $application->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized to view this application.');
+        }
+
+        // Check if application has a signed document
+        if (!$application->signed_document_path) {
+            return redirect()->back()->with('error', 'No signed document found for this application.');
+        }
+
+        // Determine back URL based on user role
+        $backUrl = auth()->user()->isAdmin() ? route('admin.dashboard') : route('dashboard');
+
+        return Inertia::render('DocumentView', [
+            'application' => $application->load('user'),
+            'backUrl' => $backUrl,
+        ]);
+    }
+
+    /**
+     * Update application status (API endpoint for SPA)
+     */
     public function updateStatus(Request $request, OrganizationApplication $application)
     {
         // Ensure only admins can update status
-        // Ensure only admins can update status
-            if (!auth()->user()->isAdmin()) {
-                return redirect()->route('home')->with('error', 'Unauthorized. Only administrators can update application status.');
+        if (!auth()->user()->isAdmin()) {
+            if ($request->expectsJson()) {
+                return response()->json(['error' => 'Unauthorized. Only administrators can update application status.'], 403);
+            }
+            return redirect()->route('home')->with('error', 'Unauthorized. Only administrators can update application status.');
         }
-
 
         $request->validate([
-            'status' => 'required|string|in:Pending,Approved,Disapproved',
-            'feedback' => 'nullable|string|max:1000',
+            'status' => 'required|string|in:pending,approved,disapproved',
         ]);
 
-        $application->status = $request->status;
-        
-        // Save feedback if provided
-        if ($request->has('feedback')) {
-            $application->feedback = $request->feedback;
-        }
+        $application->status = ucfirst($request->status);
         
         // Record who approved/disapproved the application
         $application->reviewed_by = auth()->id();
@@ -732,9 +753,49 @@ class OrganizationApplicationController extends Controller
         
         $application->save();
 
-        return redirect()->back()->with('success', 'Application status updated successfully');
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Application status updated successfully',
+                'application' => $application->fresh()
+            ]);
+        }
 
+        return redirect()->back()->with('success', 'Application status updated successfully');
     }
+
+    /**
+     * Save feedback for an application (API endpoint for SPA)
+     */
+    public function saveFeedback(Request $request, OrganizationApplication $application)
+    {
+        // Check if user has permission to provide feedback
+        if (!auth()->user()->isAdmin() && $application->user_id !== auth()->id()) {
+            if ($request->expectsJson()) {
+                return response()->json(['error' => 'Unauthorized to provide feedback for this application.'], 403);
+            }
+            abort(403, 'Unauthorized to provide feedback for this application.');
+        }
+
+        $request->validate([
+            'feedback' => 'required|string|max:1000',
+        ]);
+
+        $application->feedback = $request->feedback;
+        $application->save();
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Feedback saved successfully',
+                'application' => $application->fresh()
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Feedback saved successfully');
+    }
+
+
 
     
     public function exportPdf(OrganizationApplication $application, Request $request)

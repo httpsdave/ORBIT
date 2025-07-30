@@ -111,6 +111,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/applications/{application}/view-document', [OrganizationApplicationController::class, 'viewSignedDocument'])
     ->name('applications.view-document');
 
+    // SPA Document view page
+    Route::get('/applications/{application}/document', [OrganizationApplicationController::class, 'showDocumentView'])
+    ->name('applications.document-view');
+
     // Delete signed document
     Route::delete('/applications/{application}/delete-document', [OrganizationApplicationController::class, 'deleteSignedDocument'])
     ->name('applications.delete-document');
@@ -170,6 +174,10 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/archive/end-year', [\App\Http\Controllers\Admin\ArchiveController::class, 'endYear'])->name('admin.archive.end-year');
         Route::patch('/archive/{application}/restore', [\App\Http\Controllers\Admin\ArchiveController::class, 'restore'])->name('admin.archive.restore');
         Route::get('/archive/stats', [\App\Http\Controllers\Admin\ArchiveController::class, 'getArchiveStats'])->name('admin.archive.stats');
+
+        // Admin Application Management Routes
+        Route::post('/applications/{application}/update-status', [OrganizationApplicationController::class, 'updateStatus'])->name('admin.applications.update-status');
+        Route::post('/applications/{application}/feedback', [OrganizationApplicationController::class, 'saveFeedback'])->name('admin.applications.feedback');
 
     });
 });

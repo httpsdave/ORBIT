@@ -427,13 +427,14 @@ const viewPdf = (app) => {
   }
 };
 
-// Add new method for viewing signed documents
+// Add new method for viewing signed documents - Navigate to SPA view
 const viewSignedDocument = (app) => {
   if (app.signed_document_path && app.signed_document_path.trim() !== '') {
     // Close any open dropdowns
     activeDropdownApp.value = null;
     activeMobileDropdownId.value = null;
-    openSignedDocumentModal(app);
+    // Navigate to the new SPA document view
+    router.visit(`/applications/${app.id}/document`);
   }
 };
 
