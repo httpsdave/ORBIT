@@ -732,37 +732,44 @@ class OrganizationApplicationController extends Controller
      * Update application status (API endpoint for SPA)
      */
     public function updateStatus(Request $request, OrganizationApplication $application)
-    {
-        // Ensure only admins can update status
-        if (!auth()->user()->isAdmin()) {
-            if ($request->expectsJson()) {
-                return response()->json(['error' => 'Unauthorized. Only administrators can update application status.'], 403);
-            }
-            return redirect()->route('home')->with('error', 'Unauthorized. Only administrators can update application status.');
-        }
+{
+    
 
-        $request->validate([
-            'status' => 'required|string|in:pending,approved,disapproved',
-        ]);
-
-        $application->status = ucfirst($request->status);
-        
-        // Record who approved/disapproved the application
-        $application->reviewed_by = auth()->id();
-        $application->reviewed_at = now();
-        
-        $application->save();
-
+    // Ensure only admins can update status
+    if (!auth()->user()->isAdmin()) {
         if ($request->expectsJson()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Application status updated successfully',
-                'application' => $application->fresh()
-            ]);
+            return response()->json(['error' => 'Unauthorized. Only administrators can update application status.'], 403);
         }
-
-        return redirect()->back()->with('success', 'Application status updated successfully');
+        return redirect()->route('home')->with('error', 'Unauthorized. Only administrators can update application status.');
     }
+
+    // Change validation to match your frontend exactly
+    $validated = $request->validate([
+        'status' => 'required|string|in:Pending,Approved,Disapproved',  // Note: Capital letters to match your frontend
+        'feedback' => 'nullable|string|max:1000',
+    ]);
+
+    $application->status = $validated['status'];  // Use validated data
+    
+    if (!empty($validated['feedback'])) {
+        $application->feedback = $validated['feedback'];
+    }
+    
+    $application->reviewed_by = auth()->id();
+    $application->reviewed_at = now();
+    
+    $application->save();
+
+    if ($request->expectsJson()) {
+        return response()->json([
+            'success' => true,
+            'message' => 'Application status updated successfully',
+            'application' => $application->fresh()
+        ]);
+    }
+
+    return redirect()->back()->with('success', 'Application status updated successfully');
+}
 
     /**
      * Save feedback for an application (API endpoint for SPA)
