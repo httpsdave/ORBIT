@@ -47,28 +47,36 @@
       <!-- Separator Bar - Hidden on mobile, visible on desktop -->
       <div class="hidden lg:block w-1 bg-gray-300 flex-shrink-0 shadow-sm"></div>
 
-      <!-- Right Panel - Hidden on mobile, shown as overlay when info button is clicked -->
-      <div class="w-full lg:w-80 bg-white flex flex-col h-auto lg:h-full order-1 lg:order-2 border-b lg:border-b-0 overflow-hidden" :class="{
-  'hidden': isMobile && !showInfoPanel,
-  'fixed inset-0 z-50 max-h-screen': isMobile && showInfoPanel,
-  'lg:relative lg:flex lg:max-h-none': true
-}">
+<!-- Right Panel - GPU accelerated for smooth animations -->
+<div 
+  class="bg-white flex flex-col overflow-hidden will-change-transform"
+  :class="{
+    // Mobile - optimized transforms
+    'fixed top-0 right-0 z-50 h-screen w-80 sm:w-96 shadow-lg': isMobile,
+    // Desktop - always visible
+    'w-80 h-full order-1 lg:order-2 border-b lg:border-b-0 lg:relative lg:flex': !isMobile
+  }"
+  :style="isMobile ? {
+    transform: showInfoPanel ? 'translate3d(0, 0, 0)' : 'translate3d(100%, 0, 0)',
+    transition: 'transform 0.25s cubic-bezier(0.4, 0.0, 0.2, 1)'
+  } : {}"
+>
         <!-- Panel Header -->
         <div class="p-4 border-b border-gray-200">
           <div class="flex items-center justify-between">
             <h2 class="text-lg font-semibold text-gray-900">Document Details</h2>
             <div class="flex items-center space-x-2">
               <!-- Close button for mobile overlay -->
-              <button
-                v-if="isMobile && showInfoPanel"
-                @click="toggleInfoPanel"
-                class="inline-flex items-center justify-center w-8 h-8 text-gray-400 hover:text-gray-600 focus:outline-none focus:text-gray-600 transition rounded-full hover:bg-gray-100"
-                aria-label="Close panel"
-              >
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M18 6L6 18M6 6l12 12" />
-                </svg>
-              </button>
+<button
+  v-if="isMobile && showInfoPanel"
+  @click="toggleInfoPanel"
+  class="inline-flex items-center justify-center w-8 h-8 text-gray-400 hover:text-gray-600 focus:outline-none focus:text-gray-600 transition-all duration-200 rounded-full hover:bg-gray-100 transform hover:rotate-90"
+  aria-label="Close panel"
+>
+  <svg class="w-5 h-5 transition-transform duration-200" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M18 6L6 18M6 6l12 12" />
+  </svg>
+</button>
               <!-- Info button for all <lg screens -->
                 <button
   v-if="!showInfoPanel"
@@ -97,9 +105,16 @@
         </div>
 
         <!-- Panel Content -->
-        <div class="flex-1 overflow-y-auto p-4 space-y-6" :class="isMobile && showInfoPanel ? 'max-h-[calc(100vh-8rem)]' : 'max-h-96 lg:max-h-none'">
+        <!-- Panel Content with staggered animation -->
+<div class="flex-1 overflow-y-auto p-4 space-y-6" style="max-height: calc(100vh - 4rem);">
+  <transition-group
+    enter-active-class="transition-all duration-300 ease-out"
+    enter-from-class="opacity-0 translate-x-4"
+    enter-to-class="opacity-100 translate-x-0"
+    appear
+  >
           <!-- Basic Information -->
-          <div>
+          <div key="basic-info">
             <h3 class="text-sm font-medium text-gray-900 mb-3">Basic Information</h3>
             <div class="space-y-2 text-sm">
               <div>
@@ -127,7 +142,7 @@
           </div>
 
           <!-- Status Section -->
-          <div>
+          <div key="status">
             <h3 class="text-sm font-medium text-gray-900 mb-3">Status</h3>
             <div class="flex items-center space-x-2">
               <span 
@@ -142,7 +157,7 @@
           </div>
 
           <!-- Update Status Section (Admin Only) -->
-          <div v-if="$page.props.auth.user.role === 'admin'">
+          <div key="update-status" v-if="$page.props.auth.user.role === 'admin'">
             <h3 class="text-sm font-medium text-gray-900 mb-3">Update Status</h3>
             <div class="space-y-3">
               <select 
@@ -169,7 +184,7 @@
           </div>
 
           <!-- Feedback Section -->
-          <div>
+          <div key="feedback">
             <h3 class="text-sm font-medium text-gray-900 mb-3">Feedback</h3>
             <div class="space-y-3">
               <textarea
@@ -200,7 +215,7 @@
           </div>
 
           <!-- Actions -->
-          <div>
+          <div key="actions">
             <h3 class="text-sm font-medium text-gray-900 mb-3">Actions</h3>
             <div class="space-y-2">
               <button
@@ -223,29 +238,41 @@
               </button>
             </div>
           </div>
+        </transition-group>
         </div>
+        
       </div>
 
       <!-- Floating Info Button for Mobile -->
-      <button
-        v-if="isMobile && !showInfoPanel"
-        @click="toggleInfoPanel"
-        class="fixed bottom-6 right-6 z-40 w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center focus:outline-none focus:ring-4 focus:ring-blue-300 focus:ring-opacity-50"
-        aria-label="Show document information"
-      >
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10" />
-          <path d="M12 16v-4M12 8h.01" />
-        </svg>
-      </button>
+<transition
+  enter-active-class="transition-all duration-300 ease-out"
+  leave-active-class="transition-all duration-200 ease-in"
+  enter-from-class="opacity-0 scale-75 translate-y-4"
+  enter-to-class="opacity-100 scale-100 translate-y-0"
+  leave-from-class="opacity-100 scale-100 translate-y-0"
+  leave-to-class="opacity-0 scale-75 translate-y-4"
+>
+  <button
+    v-if="isMobile && !showInfoPanel"
+    @click="toggleInfoPanel"
+    class="fixed bottom-6 right-6 z-40 w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center focus:outline-none focus:ring-4 focus:ring-blue-300 focus:ring-opacity-50 transform hover:scale-105 active:scale-95"
+    aria-label="Show document information"
+  >
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10" />
+      <path d="M12 16v-4M12 8h.01" />
+    </svg>
+  </button>
+</transition>
 
-      <!-- Mobile Overlay Backdrop -->
-      <div
-        v-if="isMobile && showInfoPanel"
-        @click="toggleInfoPanel"
-        class="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
-        aria-hidden="true"
-      ></div>
+      <!-- Mobile Overlay Backdrop - Optimized for performance -->
+<div
+  v-if="isMobile && showInfoPanel"
+  @click="toggleInfoPanel"
+  class="fixed inset-0 bg-black z-40 transition-opacity duration-200 ease-out"
+  :class="showInfoPanel ? 'bg-opacity-40' : 'bg-opacity-0'"
+  aria-hidden="true"
+></div>
     </div>
   </SidebarLayout>
 </template>
@@ -262,6 +289,8 @@ const props = defineProps({
     default: '/dashboard'
   }
 })
+
+
 
 // State
 const documentLoading = ref(true)
@@ -410,7 +439,7 @@ const getFileName = (path) => {
 
 // Computed property to determine if we're on mobile
 const isMobile = computed(() => windowWidth.value < 1024)
-const isTablet = computed(() => windowWidth.value >= 768 && windowWidth.value < 1024)
+const isSmallScreen = computed(() => windowWidth.value < 640) // For very small screens
 
 // Handle window resize
 const handleResize = () => {
@@ -450,6 +479,7 @@ onUnmounted(() => {
   window.removeEventListener('resize', handleResize)
   document.removeEventListener('keydown', handleKeydown)
 })
+
 </script>
 
 <style scoped>
@@ -500,5 +530,112 @@ onUnmounted(() => {
   .max-w-48 {
     max-width: 8rem;
   }
+}
+/* Smooth transitions for panel */
+.transition-transform {
+  transition-property: transform;
+  transition-timing-function: cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+/* Ensure panel slides in smoothly */
+@media (max-width: 1023px) {
+  .right-panel-enter {
+    transform: translateX(100%);
+  }
+  
+  .right-panel-enter-active {
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .right-panel-enter-to {
+    transform: translateX(0);
+  }
+  
+  .right-panel-leave {
+    transform: translateX(0);
+  }
+  
+  .right-panel-leave-active {
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .right-panel-leave-to {
+    transform: translateX(100%);
+  }
+}
+
+/* Floating button pulse animation */
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.33);
+  }
+  80%, 100% {
+    opacity: 0;
+  }
+}
+
+.floating-btn::before {
+  content: '';
+  position: absolute;
+  display: block;
+  width: 300%;
+  height: 300%;
+  box-sizing: border-box;
+  margin-left: -100%;
+  margin-top: -100%;
+  border-radius: 50%;
+  background-color: currentColor;
+  animation: pulse-ring 1.25s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+}
+
+/* Ensure proper z-index stacking */
+.z-40 {
+  z-index: 40;
+}
+
+.z-50 {
+  z-index: 50;
+}
+
+/* Better shadow for mobile panel */
+.shadow-2xl {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+/* Smooth panel animations */
+.transition-transform {
+  transition-property: transform;
+  transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Ensure full height on mobile */
+@media (max-width: 1023px) {
+  .h-screen {
+    height: 100vh;
+    height: 100dvh; /* Use dynamic viewport height if supported */
+  }
+}
+
+/* Custom scrollbar for better UX */
+.overflow-y-auto::-webkit-scrollbar {
+  width: 4px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.5);
+  border-radius: 2px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.8);
+}
+
+/* Smooth backdrop transition */
+.transition-opacity {
+  transition-property: opacity;
+  transition-timing-function: cubic-bezier(0.4, 0.0, 0.2, 1);
 }
 </style>
