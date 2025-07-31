@@ -1,10 +1,10 @@
 <template>
   <SidebarLayout :is-admin="$page.props.auth.user.role === 'admin'">
-    <div class="flex flex-col lg:flex-row h-full bg-white -m-4 sm:-m-6 lg:-m-6">
+    <div class="flex flex-col lg:flex-row h-full min-h-screen bg-white -m-4 sm:-m-6 lg:-m-6 relative overflow-hidden">
       <!-- PDF Viewer Section - No padding, flush to edges -->
-      <div class="flex-1 flex flex-col h-full order-2 lg:order-1">
+      <div class="flex-1 flex flex-col h-full order-2 lg:order-1 min-h-0">
         <!-- PDF Iframe Container -->
-        <div class="flex-1 relative bg-gray-100">
+        <div class="flex-1 relative bg-gray-100 min-h-[50vh] sm:min-h-[60vh] lg:min-h-0">
           <iframe
             v-if="application"
             :src="`/applications/${application.id}/view-document`"
@@ -47,26 +47,57 @@
       <!-- Separator Bar - Hidden on mobile, visible on desktop -->
       <div class="hidden lg:block w-1 bg-gray-300 flex-shrink-0 shadow-sm"></div>
 
-      <!-- Right Panel -->
-      <div class="w-full lg:w-80 bg-white flex flex-col h-auto lg:h-full order-1 lg:order-2 border-b lg:border-b-0 overflow-hidden">
+      <!-- Right Panel - Hidden on mobile, shown as overlay when info button is clicked -->
+      <div class="w-full lg:w-80 bg-white flex flex-col h-auto lg:h-full order-1 lg:order-2 border-b lg:border-b-0 overflow-hidden" :class="{
+  'hidden': isMobile && !showInfoPanel,
+  'fixed inset-0 z-50 max-h-screen': isMobile && showInfoPanel,
+  'lg:relative lg:flex lg:max-h-none': true
+}">
         <!-- Panel Header -->
         <div class="p-4 border-b border-gray-200">
           <div class="flex items-center justify-between">
             <h2 class="text-lg font-semibold text-gray-900">Document Details</h2>
-            <button
-              @click="() => router.visit('/applications')"
-              class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-800 focus:outline-none focus:text-blue-600 transition"
-            >
-              <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M15 19l-7-7 7-7" />
-              </svg>
-              Back
-            </button>
+            <div class="flex items-center space-x-2">
+              <!-- Close button for mobile overlay -->
+              <button
+                v-if="isMobile && showInfoPanel"
+                @click="toggleInfoPanel"
+                class="inline-flex items-center justify-center w-8 h-8 text-gray-400 hover:text-gray-600 focus:outline-none focus:text-gray-600 transition rounded-full hover:bg-gray-100"
+                aria-label="Close panel"
+              >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 6L6 18M6 6l12 12" />
+                </svg>
+              </button>
+              <!-- Info button for all <lg screens -->
+                <button
+  v-if="!showInfoPanel"
+  @click="toggleInfoPanel"
+  class="inline-flex items-center justify-center w-8 h-8 text-gray-400 hover:text-gray-600 focus:outline-none focus:text-gray-600 transition rounded-full hover:bg-gray-100 lg:hidden"
+  aria-label="Show information panel"
+>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="16" x2="12" y2="12" />
+                  <line x1="12" y1="8" x2="12.01" y2="8" />
+                </svg>
+              </button>
+              <!-- Back button -->
+              <button
+                @click="() => router.visit('/applications')"
+                class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-800 focus:outline-none focus:text-blue-600 transition"
+              >
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M15 19l-7-7 7-7" />
+                </svg>
+                Back
+              </button>
+            </div>
           </div>
         </div>
 
         <!-- Panel Content -->
-        <div class="flex-1 overflow-y-auto p-4 space-y-6 max-h-96 lg:max-h-none">
+        <div class="flex-1 overflow-y-auto p-4 space-y-6" :class="isMobile && showInfoPanel ? 'max-h-[calc(100vh-8rem)]' : 'max-h-96 lg:max-h-none'">
           <!-- Basic Information -->
           <div>
             <h3 class="text-sm font-medium text-gray-900 mb-3">Basic Information</h3>
@@ -194,14 +225,35 @@
           </div>
         </div>
       </div>
+
+      <!-- Floating Info Button for Mobile -->
+      <button
+        v-if="isMobile && !showInfoPanel"
+        @click="toggleInfoPanel"
+        class="fixed bottom-6 right-6 z-40 w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center focus:outline-none focus:ring-4 focus:ring-blue-300 focus:ring-opacity-50"
+        aria-label="Show document information"
+      >
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10" />
+          <path d="M12 16v-4M12 8h.01" />
+        </svg>
+      </button>
+
+      <!-- Mobile Overlay Backdrop -->
+      <div
+        v-if="isMobile && showInfoPanel"
+        @click="toggleInfoPanel"
+        class="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+        aria-hidden="true"
+      ></div>
     </div>
   </SidebarLayout>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { Link, router } from '@inertiajs/vue3'
-import SidebarLayout from '@/Components/Layout/Sidebar/SidebarLayout.vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { router } from '@inertiajs/vue3'
+import SidebarLayout from '@/Components/Layout/Sidebar/SidebarLayout.vue';
 
 const props = defineProps({
   application: Object,
@@ -218,6 +270,8 @@ const selectedStatus = ref(props.application?.status || 'pending')
 const isUpdatingStatus = ref(false)
 const feedbackText = ref(props.application?.feedback || '')
 const isSavingFeedback = ref(false)
+const showInfoPanel = ref(false)
+const windowWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1024)
 
 // Methods
 const onDocumentLoad = () => {
@@ -354,9 +408,47 @@ const getFileName = (path) => {
   return path.split('/').pop() || path
 }
 
+// Computed property to determine if we're on mobile
+const isMobile = computed(() => windowWidth.value < 1024)
+const isTablet = computed(() => windowWidth.value >= 768 && windowWidth.value < 1024)
+
+// Handle window resize
+const handleResize = () => {
+  windowWidth.value = window.innerWidth
+  // Close info panel when switching to desktop
+  if (!isMobile.value) {
+    showInfoPanel.value = false
+  }
+}
+
+// Toggle info panel visibility
+const toggleInfoPanel = () => {
+  showInfoPanel.value = !showInfoPanel.value
+}
+
+// Handle escape key to close panel
+const handleKeydown = (event) => {
+  if (event.key === 'Escape' && showInfoPanel.value && isMobile.value) {
+    showInfoPanel.value = false
+  }
+}
+
 onMounted(() => {
   // Set initial loading state
   documentLoading.value = true
+  
+  // Add event listeners
+  window.addEventListener('resize', handleResize)
+  document.addEventListener('keydown', handleKeydown)
+  
+  // Set initial window width
+  handleResize()
+})
+
+onUnmounted(() => {
+  // Clean up event listeners
+  window.removeEventListener('resize', handleResize)
+  document.removeEventListener('keydown', handleKeydown)
 })
 </script>
 
@@ -382,5 +474,31 @@ onMounted(() => {
 
 .overflow-y-auto::-webkit-scrollbar-thumb:hover {
   background: #a8a8a8;
+}
+@media (max-width: 1023px) {
+  .min-h-screen {
+    min-height: 100vh;
+  }
+  
+  /* Ensure PDF takes appropriate space on mobile */
+  .flex-1 {
+    min-height: 50vh;
+  }
+}
+
+/* Tablet specific adjustments */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .flex-1 {
+    min-height: 60vh;
+  }
+}
+@media (max-width: 640px) {
+  .break-words {
+    word-break: break-all;
+  }
+  
+  .max-w-48 {
+    max-width: 8rem;
+  }
 }
 </style>
