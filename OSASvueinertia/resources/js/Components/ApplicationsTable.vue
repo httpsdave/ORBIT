@@ -382,9 +382,20 @@ const openPreview = (app) => {
   previewApp.value = app;
   showPreviewModal.value = true;
 };
+
 const closePreviewModal = () => {
   showPreviewModal.value = false;
   previewApp.value = null;
+};
+
+// Open submission preview in new window (for PDF preview modal)
+const openPreviewInNewWindow = () => {
+  if (previewApp.value) {
+    const url = getViewUrl(previewApp.value);
+    if (url && url !== '#') {
+      window.open(url, '_blank');
+    }
+  }
 };
 
 // Add new methods for signed document viewing
@@ -799,6 +810,20 @@ watch(showSignedDocumentModal, (val) => {
           <div class="flex items-center justify-between px-4 py-3 pr-16 bg-transparent relative">
             <div class="font-semibold text-gray-200 text-base truncate opacity-90">
               {{ previewApp ? formTypeToName(previewApp.form_type) : '' }}
+            </div>
+            <div class="flex items-center gap-2">
+              <button
+                @click="openPreviewInNewWindow"
+                class="inline-flex items-center justify-center px-4 py-2 bg-blue-500 text-sm font-medium text-white rounded-xl shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group"
+                title="Open in New Window"
+                aria-label="Open in New Window"
+              >
+                <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 3h7v7m0 0L10 21l-7-7 11-11z" />
+                </svg>
+                New Window
+              </button>
             </div>
           </div>
           <!-- PDF Iframe -->
