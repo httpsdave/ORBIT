@@ -465,7 +465,7 @@ watch(showSignedDocumentModal, (val) => {
 </script>
 
 <template>
-  <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 relative" @click="closeDropdowns">
+  <div class="relative" @click="closeDropdowns">
     <!-- File input (hidden) -->
     <input 
       ref="fileInput"
@@ -500,11 +500,11 @@ watch(showSignedDocumentModal, (val) => {
     </div>
     
     <!-- Colored banner -->
-    <div class="flex w-full overflow-hidden shadow-md">
-      <div class="w-1/4 h-1.5 bg-blue-600 animate-pulse" style="animation-delay: 0.2s;"></div>
+    <div class="flex w-full overflow-hidden shadow-md rounded-t-2xl">
+      <div class="w-1/4 h-1.5 bg-blue-600 animate-pulse rounded-tl-2xl" style="animation-delay: 0.2s;"></div>
       <div class="w-1/4 h-1.5 bg-green-500 animate-pulse" style="animation-delay: 0.4s;"></div>
       <div class="w-1/4 h-1.5 bg-amber-500 animate-pulse" style="animation-delay: 0.6s;"></div>
-      <div class="w-1/4 h-1.5 bg-red-500 animate-pulse" style="animation-delay: 0.8s;"></div>
+      <div class="w-1/4 h-1.5 bg-red-500 animate-pulse rounded-tr-2xl" style="animation-delay: 0.8s;"></div>
     </div>
 
     <!-- MOBILE CARD LAYOUT -->
