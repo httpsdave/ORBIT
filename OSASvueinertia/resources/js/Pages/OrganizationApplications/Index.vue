@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed, watch } from 'vue';
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue';
 import { Link, router } from '@inertiajs/vue3';
 import { Head } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
@@ -207,6 +207,16 @@ onMounted(() => {
   if (formElement.value) {
     formElement.value.classList.add('opacity-100');
   }
+  const handler = (event) => {
+    // If coming from DocumentView, force reload applications
+    if (event.detail && event.detail.page && event.detail.page.component === 'DocumentView') {
+      router.reload({ only: ['applications'], preserveScroll: true });
+    }
+  };
+  window.addEventListener('inertia:navigate', handler);
+  onUnmounted(() => {
+    window.removeEventListener('inertia:navigate', handler);
+  });
 });
 
 // Watch for filter changes

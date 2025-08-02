@@ -725,6 +725,7 @@ class OrganizationApplicationController extends Controller
         return Inertia::render('DocumentView', [
             'application' => $application->load('user'),
             'backUrl' => $backUrl,
+            'isAdmin' => auth()->user()->isAdmin(),
         ]);
     }
 

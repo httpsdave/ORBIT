@@ -1,5 +1,5 @@
 <template>
-  <SidebarLayout :is-admin="$page.props.auth.user.role === 'admin'">
+  <SidebarLayout :is-admin="props.isAdmin">
     <div class="flex flex-col lg:flex-row h-full min-h-screen bg-white -m-4 sm:-m-6 lg:-m-6 relative overflow-hidden">
       <!-- PDF Viewer Section - No padding, flush to edges -->
       <div class="flex-1 flex flex-col h-full order-2 lg:order-1 min-h-0">
@@ -92,7 +92,7 @@
               </button>
               <!-- Back button -->
               <button
-                @click="() => router.visit('/applications')"
+                @click="goBackToApplications"
                 class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-800 focus:outline-none focus:text-blue-600 transition"
               >
                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
@@ -156,61 +156,88 @@
             </div>
           </div>
 
-          <!-- Update Status Section (Admin Only) -->
-          <div key="update-status" v-if="$page.props.auth.user.role === 'admin'">
-            <h3 class="text-sm font-medium text-gray-900 mb-3">Update Status</h3>
+          <!-- Admin: Status Update & Feedback Section -->
+          <div key="admin-status-update" v-if="props.isAdmin">
+            <h3 class="text-sm font-medium text-gray-900 mb-3">Update Status & Feedback</h3>
             <div class="space-y-3">
-              <select 
-                v-model="selectedStatus" 
-                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm"
-              >
-                <option value="pending">Pending</option>
-                <option value="approved">Approved</option>
-                <option value="disapproved">Disapproved</option>
-              </select>
+              <div class="grid grid-cols-3 gap-3">
+                <button
+                  @click="selectedStatus = 'Pending'"
+                  :class="[
+                    'py-2 px-4 rounded-lg border text-sm font-medium transition-all duration-200',
+                    selectedStatus === 'Pending'
+                      ? 'bg-amber-100 border-amber-400 text-amber-800 ring-2 ring-amber-200'
+                      : 'bg-white border-gray-200 text-gray-600 hover:bg-amber-50'
+                  ]"
+                >
+                  Pending
+                </button>
+                <button
+                  @click="selectedStatus = 'Approved'"
+                  :class="[
+                    'py-2 px-4 rounded-lg border text-sm font-medium transition-all duration-200',
+                    selectedStatus === 'Approved'
+                      ? 'bg-green-100 border-green-400 text-green-800 ring-2 ring-green-200'
+                      : 'bg-white border-gray-200 text-gray-600 hover:bg-green-50'
+                  ]"
+                >
+                  Approved
+                </button>
+                <button
+                  @click="selectedStatus = 'Disapproved'"
+                  :class="[
+                    'py-2 px-4 rounded-lg border text-sm font-medium transition-all duration-200',
+                    selectedStatus === 'Disapproved'
+                      ? 'bg-red-100 border-red-400 text-red-800 ring-2 ring-red-200'
+                      : 'bg-white border-gray-200 text-gray-600 hover:bg-red-50'
+                  ]"
+                >
+                  Rejected
+                </button>
+              </div>
+              <textarea
+                v-model="feedbackText"
+                rows="4"
+                class="w-full rounded-lg border border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 transition duration-200 p-3 text-sm resize-none"
+                placeholder="Enter feedback to the organization..."
+              ></textarea>
               <button
                 @click="updateStatus"
-                :disabled="isUpdatingStatus || selectedStatus === application?.status"
-                class="w-full inline-flex justify-center items-center px-4 py-2 bg-blue-600 text-sm font-medium text-white rounded-xl shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 relative overflow-hidden group"
+                :disabled="isUpdatingStatus || (selectedStatus === application?.status && feedbackText.trim() === (application?.feedback || ''))"
+                class="w-full inline-flex justify-center items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-medium rounded-lg transition duration-200 text-sm disabled:opacity-70"
               >
-                <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
-                <svg v-if="isUpdatingStatus" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <svg
+                  v-if="isUpdatingStatus"
+                  class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+                  <path
+                    class="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  />
                 </svg>
-                {{ isUpdatingStatus ? 'Updating...' : 'Update Status' }}
+                <span>{{ isUpdatingStatus ? 'Updating...' : 'Update Status' }}</span>
               </button>
             </div>
           </div>
 
-          <!-- Feedback Section -->
-          <div key="feedback">
-            <h3 class="text-sm font-medium text-gray-900 mb-3">Feedback</h3>
-            <div class="space-y-3">
-              <textarea
-                v-model="feedbackText"
-                rows="4"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm resize-none"
-                placeholder="Enter feedback for this submission..."
-              ></textarea>
-              <button
-                @click="saveFeedback"
-                :disabled="isSavingFeedback || !feedbackText.trim()"
-                class="w-full inline-flex justify-center items-center px-4 py-2 bg-green-600 text-sm font-medium text-white rounded-xl shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 relative overflow-hidden group"
-              >
-                <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
-                <svg v-if="isSavingFeedback" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                {{ isSavingFeedback ? 'Saving...' : 'Save Feedback' }}
-              </button>
+          <!-- User: Feedback Display Section -->
+          <div key="user-feedback-display" v-if="!props.isAdmin">
+            <h3 class="text-sm font-medium text-gray-900 mb-3">Feedback from Admin</h3>
+            <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-sm text-gray-700">
+              {{ application?.feedback || 'No feedback provided.' }}
             </div>
-            
-            <!-- Existing Feedback -->
-            <div v-if="application?.feedback" class="mt-4 p-3 bg-gray-50 rounded-md break-words overflow-x-hidden">
-              <h4 class="text-xs font-medium text-gray-700 mb-1">Current Feedback:</h4>
-              <p class="text-sm text-gray-900 break-words">{{ application.feedback }}</p>
+          </div>
+
+          <!-- Admin: Existing Feedback Display -->
+          <div key="admin-feedback-display" v-if="props.isAdmin && application?.feedback">
+            <h3 class="text-sm font-medium text-gray-900 mb-3">Current Feedback</h3>
+            <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-sm text-gray-700">
+              {{ application.feedback }}
             </div>
           </div>
 
@@ -278,7 +305,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { router } from '@inertiajs/vue3'
 import SidebarLayout from '@/Components/Layout/Sidebar/SidebarLayout.vue';
 
@@ -287,7 +314,8 @@ const props = defineProps({
   backUrl: {
     type: String,
     default: '/dashboard'
-  }
+  },
+  isAdmin: Boolean,
 })
 
 
@@ -295,7 +323,7 @@ const props = defineProps({
 // State
 const documentLoading = ref(true)
 const documentError = ref(null)
-const selectedStatus = ref(props.application?.status || 'pending')
+const selectedStatus = ref(props.application?.status || '')
 const isUpdatingStatus = ref(false)
 const feedbackText = ref(props.application?.feedback || '')
 const isSavingFeedback = ref(false)
@@ -339,13 +367,17 @@ const updateStatus = async () => {
   
   try {
     await router.post(`/admin/applications/${props.application.id}/update-status`, {
-      status: selectedStatus.value
+      status: selectedStatus.value,
+      feedback: feedbackText.value
     }, {
       preserveState: true,
       preserveScroll: true,
       onSuccess: () => {
         // Update local state
         props.application.status = selectedStatus.value
+        if (feedbackText.value.trim()) {
+          props.application.feedback = feedbackText.value.trim()
+        }
       },
       onError: (errors) => {
         console.error('Failed to update status:', errors)
@@ -355,32 +387,6 @@ const updateStatus = async () => {
     console.error('Error updating status:', error)
   } finally {
     isUpdatingStatus.value = false
-  }
-}
-
-const saveFeedback = async () => {
-  if (!props.application || isSavingFeedback.value || !feedbackText.value.trim()) return
-  
-  isSavingFeedback.value = true
-  
-  try {
-    await router.post(`/admin/applications/${props.application.id}/feedback`, {
-      feedback: feedbackText.value.trim()
-    }, {
-      preserveState: true,
-      preserveScroll: true,
-      onSuccess: () => {
-        // Update local state
-        props.application.feedback = feedbackText.value.trim()
-      },
-      onError: (errors) => {
-        console.error('Failed to save feedback:', errors)
-      }
-    })
-  } catch (error) {
-    console.error('Error saving feedback:', error)
-  } finally {
-    isSavingFeedback.value = false
   }
 }
 
@@ -437,6 +443,14 @@ const getFileName = (path) => {
   return path.split('/').pop() || path
 }
 
+// Watch for application changes to update local state
+watch(() => props.application, (newApp) => {
+  if (newApp) {
+    selectedStatus.value = newApp.status || '';
+    feedbackText.value = newApp.feedback || '';
+  }
+}, { immediate: true });
+
 // Computed property to determine if we're on mobile
 const isMobile = computed(() => windowWidth.value < 1024)
 const isSmallScreen = computed(() => windowWidth.value < 640) // For very small screens
@@ -460,6 +474,11 @@ const handleKeydown = (event) => {
   if (event.key === 'Escape' && showInfoPanel.value && isMobile.value) {
     showInfoPanel.value = false
   }
+}
+
+// Replace the back button handler
+const goBackToApplications = () => {
+  router.visit('/applications', { preserveState: false, preserveScroll: true });
 }
 
 onMounted(() => {
