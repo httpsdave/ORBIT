@@ -1,6 +1,6 @@
 <script setup>
 import { Head } from '@inertiajs/vue3';
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Link } from '@inertiajs/vue3';
 
@@ -23,6 +23,10 @@ const props = defineProps({
     default: () => [],
   }
 });
+
+// Real-time clock
+const currentDateTime = ref(new Date());
+const clockTimer = ref(null);
 
 // Format date for display
 const formatDate = (dateString) => {
@@ -57,6 +61,19 @@ const formatDateOnly = (dateString) => {
     day: 'numeric'
   });
 };
+
+// Format current date time for header
+const formatCurrentDateTime = computed(() => {
+  return currentDateTime.value.toLocaleDateString('en-US', { 
+    weekday: 'long', 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
+  });
+});
 
 // Get application status color
 const getStatusColor = (status) => {
@@ -99,6 +116,17 @@ onMounted(() => {
   setTimeout(() => {
     isVisible.value = true;
   }, 100);
+  
+  // Start real-time clock
+  clockTimer.value = setInterval(() => {
+    currentDateTime.value = new Date();
+  }, 1000);
+});
+
+onUnmounted(() => {
+  if (clockTimer.value) {
+    clearInterval(clockTimer.value);
+  }
 });
 
 // Get time until next event
@@ -129,7 +157,7 @@ const activeTab = ref('applications');
       <template #header>
         <div class="flex justify-between items-center">
           <h2 class="font-semibold text-xl text-gray-800 leading-tight">My Dashboard</h2>
-          <div class="text-sm text-gray-500">{{ new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) }}</div>
+          <div class="text-sm text-gray-500">{{ formatCurrentDateTime }}</div>
         </div>
       </template>
   

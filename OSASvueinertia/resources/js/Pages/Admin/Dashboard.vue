@@ -1,6 +1,6 @@
 <script setup>
 import { Head, router } from '@inertiajs/vue3';
-import { ref, onMounted, watch, computed } from 'vue';
+import { ref, onMounted, onUnmounted, watch, computed } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
@@ -54,6 +54,10 @@ const COLORS_WITH_OPACITY = COLORS.map(color => `${color}CC`);
 // Get the event to display (priority: today's event, then upcoming event)
 const displayEvent = props.todayEvent || props.upcomingEvent;
 
+// Real-time clock
+const currentDateTime = ref(new Date());
+const clockTimer = ref(null);
+
 // Format date for display
 const formatDate = (dateString) => {
     if (!dateString) return '';
@@ -67,6 +71,39 @@ const formatDate = (dateString) => {
         minute: '2-digit'
     });
 };
+
+// Format time only for display
+const formatTime = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+};
+
+// Format date without time
+const formatDateOnly = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric'
+    });
+};
+
+// Format current date time for header
+const formatCurrentDateTime = computed(() => {
+    return currentDateTime.value.toLocaleDateString('en-US', { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+    });
+});
 
 // Get greeting based on time of day
 const greeting = computed(() => {
@@ -156,6 +193,17 @@ watch(() => props.advisersData, () => {
 onMounted(() => {
     updateChartData(); // for pie
     updateMembersBarChartData(); // for members bar
+    
+    // Start real-time clock
+    clockTimer.value = setInterval(() => {
+        currentDateTime.value = new Date();
+    }, 1000);
+});
+
+onUnmounted(() => {
+    if (clockTimer.value) {
+        clearInterval(clockTimer.value);
+    }
 });
 
 const updateChartData = () => {
@@ -404,6 +452,7 @@ function exportAdvisersToCSV() {
         <template #header>
             <div class="flex items-center justify-between">
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">Admin Dashboard</h2>
+                <div class="text-sm text-gray-500">{{ formatCurrentDateTime }}</div>
             </div>
         </template>
 
