@@ -1,6 +1,7 @@
 <script setup>
 import { Link, router } from '@inertiajs/vue3';
 import { ref, nextTick, onMounted, onUnmounted, watch } from 'vue';
+import FileUploadModal from '@/Components/FileUploadModal.vue';
 const props = defineProps({
   applications: Array,
   isAdmin: Boolean,
@@ -9,9 +10,8 @@ const props = defineProps({
 const emit = defineEmits(['openStatusModal', 'deleteApplication', 'uploadDocument', 'refreshData', 'confirmDeleteDocument']);
 
 // Upload document functionality
-const documentUploadForm = ref(null);
-const selectedApplicationId = ref(null);
-const fileInput = ref(null);
+const showUploadModal = ref(false);
+const selectedApplicationForUpload = ref(null);
 const isUploading = ref(false);
 const uploadProgress = ref(0);
 const isDeleting = ref(false);
@@ -214,25 +214,23 @@ function removeDropdownListeners() {
   window.removeEventListener('resize', updateDropdownPosition);
 }
 
-// Function to trigger file input click
-const triggerFileUpload = (appId) => {
-  selectedApplicationId.value = appId;
+// Function to open upload modal
+const openUploadModal = (app) => {
+  selectedApplicationForUpload.value = app;
   activeDropdownApp.value = null;
-  nextTick(() => {
-    fileInput.value.click();
-  });
+  activeMobileDropdownId.value = null;
+  showUploadModal.value = true;
 };
 
-// Function to handle file selection
-const handleFileSelection = () => {
-  if (fileInput.value.files.length > 0) {
-    uploadDocument(fileInput.value.files[0]);
-  }
+// Function to close upload modal
+const closeUploadModal = () => {
+  showUploadModal.value = false;
+  selectedApplicationForUpload.value = null;
 };
 
 // Function to upload document
 const uploadDocument = (file) => {
-  if (!selectedApplicationId.value) return;
+  if (!selectedApplicationForUpload.value) return;
   
   isUploading.value = true;
   uploadProgress.value = 0;
@@ -240,7 +238,7 @@ const uploadDocument = (file) => {
   const formData = new FormData();
   formData.append('signed_document', file);
   
-  router.post(`/applications/${selectedApplicationId.value}/upload-document`, formData, {
+  router.post(`/applications/${selectedApplicationForUpload.value.id}/upload-document`, formData, {
     onProgress: (progress) => {
       uploadProgress.value = progress.percentage;
     },
@@ -248,10 +246,11 @@ const uploadDocument = (file) => {
       isUploading.value = false;
       uploadProgress.value = 100;
       
-      // Reset the file input
-      if (fileInput.value) {
-        fileInput.value.value = '';
-      }
+      // Close modal
+      setTimeout(() => {
+        closeUploadModal();
+        uploadProgress.value = 0;
+      }, 1000);
       
       // Emit event for parent component to handle success message
       emit('uploadDocument', {
@@ -261,25 +260,16 @@ const uploadDocument = (file) => {
       
       // Refresh data
       emit('refreshData');
-      
-      // After 2 seconds, reset progress bar
-      setTimeout(() => {
-        uploadProgress.value = 0;
-      }, 2000);
     },
     onError: () => {
       isUploading.value = false;
+      uploadProgress.value = 0;
       
       // Emit event for parent component to handle error message
       emit('uploadDocument', {
         success: false,
         message: 'Failed to upload document.'
       });
-      
-      // Reset the file input
-      if (fileInput.value) {
-        fileInput.value.value = '';
-      }
     }
   });
 };
@@ -466,25 +456,8 @@ watch(showSignedDocumentModal, (val) => {
 
 <template>
   <div class="relative" @click="closeDropdowns">
-    <!-- File input (hidden) -->
-    <input 
-      ref="fileInput"
-      type="file" 
-      @change="handleFileSelection"
-      accept=".pdf"
-      class="hidden"
-    />
     
-    <!-- Upload progress overlay -->
-    <div v-if="isUploading" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div class="bg-white p-6 rounded-lg shadow-xl w-80">
-        <h3 class="text-gray-800 font-semibold mb-4">Uploading document...</h3>
-        <div class="w-full bg-gray-200 rounded-full h-2.5 mb-4">
-          <div class="bg-blue-600 h-2.5 rounded-full transition-all duration-300" :style="{ width: `${uploadProgress}%` }"></div>
-        </div>
-        <p class="text-gray-600 text-sm text-center">{{ Math.round(uploadProgress) }}% complete</p>
-      </div>
-    </div>
+
     
     <!-- Deleting document overlay -->
     <div v-if="isDeleting" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -567,7 +540,7 @@ watch(showSignedDocumentModal, (val) => {
             </svg>
             Update Status
           </button>
-          <button v-if="!app.signed_document_path" @click="activeMobileDropdownId = null; triggerFileUpload(app.id)" class="w-full text-left px-2 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200">
+          <button v-if="!app.signed_document_path" @click="openUploadModal(app)" class="w-full text-left px-2 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-600" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
             </svg>
@@ -707,7 +680,7 @@ watch(showSignedDocumentModal, (val) => {
         <!-- Upload document option -->
         <button
           v-if="!activeDropdownApp.signed_document_path"
-          @click="triggerFileUpload(activeDropdownApp.id)"
+          @click="openUploadModal(activeDropdownApp)"
           class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200"
         >
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-600" viewBox="0 0 20 20" fill="currentColor">
@@ -903,5 +876,15 @@ watch(showSignedDocumentModal, (val) => {
         </div>
       </div>
     </transition>
+
+    <!-- File Upload Modal -->
+    <FileUploadModal
+      :showModal="showUploadModal"
+      :application="selectedApplicationForUpload"
+      :isUploading="isUploading"
+      :uploadProgress="uploadProgress"
+      @close="closeUploadModal"
+      @upload="uploadDocument"
+    />
   </div>
 </template>
