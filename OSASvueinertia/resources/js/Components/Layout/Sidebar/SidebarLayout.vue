@@ -8,6 +8,7 @@ import SidebarFooter from './SidebarFooter.vue';
 import MobileHeader from '@/Components/MobileHeader.vue';
 import NotificationDropdown from '@/Components/NotificationDropdown.vue';
 import Modal from '@/Components/Modal.vue';
+import axios from 'axios';
 
 const props = defineProps({
   isAdmin: {
@@ -85,6 +86,65 @@ const toggleDropdown = () => {
 watch(() => sidebarExpanded.value, () => {
   isDropdownOpen.value = false;
 });
+
+// Calendar events state
+const hasUpcomingEvents = ref(false);
+const hasEventsToday = ref(false);
+const badgeWasClicked = ref(false);
+
+// Check for upcoming events
+const checkUpcomingEvents = async () => {
+  try {
+    const response = await axios.get('/api/events');
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    hasEventsToday.value = response.data.some(event => {
+      const eventDate = new Date(event.start_date);
+      return eventDate >= today && eventDate < tomorrow;
+    });
+    
+    hasUpcomingEvents.value = response.data.some(event => {
+      const eventDate = new Date(event.start_date);
+      return eventDate >= tomorrow;
+    });
+    
+    // If no events exist, reset the clicked state
+    if (!hasEventsToday.value && !hasUpcomingEvents.value) {
+      badgeWasClicked.value = false;
+    }
+  } catch (error) {
+    console.error('Error fetching events:', error);
+  }
+};
+
+// Handle calendar click to hide badge
+const handleCalendarClick = () => {
+  badgeWasClicked.value = true;
+};
+
+// Listen for new events added or deleted
+const handleEventAdded = () => {
+  badgeWasClicked.value = false;
+  checkUpcomingEvents();
+};
+
+const handleEventDeleted = () => {
+  checkUpcomingEvents();
+};
+
+// Computed property for showing badge
+const showCalendarBadge = computed(() => {
+  return (hasEventsToday.value || hasUpcomingEvents.value) && !badgeWasClicked.value;
+});
+
+// Global event listener for calendar updates
+if (typeof window !== 'undefined') {
+  window.addEventListener('calendar-event-added', handleEventAdded);
+  window.addEventListener('calendar-event-deleted', handleEventDeleted);
+}
 
 // Calendar data - moved from NavigationItems.vue
 const calendarItem = {
@@ -225,6 +285,9 @@ const proceedSignOut = () => {
   router.post(route('logout'));
 };
 
+// Timer for periodic event checking
+const eventCheckTimer = ref(null);
+
 // Lifecycle hooks
 onMounted(() => {
   document.addEventListener('click', closeSidebarOnClickOutside);
@@ -234,6 +297,14 @@ onMounted(() => {
   
   // Check initial window size
   checkWindowSize();
+  
+  // Check for upcoming events
+  checkUpcomingEvents();
+  
+  // Set up periodic checking for expired events (every 5 minutes)
+  eventCheckTimer.value = setInterval(() => {
+    checkUpcomingEvents();
+  }, 5 * 60 * 1000);
 });
 
 onUnmounted(() => {
@@ -241,6 +312,17 @@ onUnmounted(() => {
   document.removeEventListener('click', closeDropdownOnClickOutside);
   document.removeEventListener('keydown', handleKeyDown);
   window.removeEventListener('resize', checkWindowSize);
+  
+  // Clean up timer
+  if (eventCheckTimer.value) {
+    clearInterval(eventCheckTimer.value);
+  }
+  
+  // Clean up event listeners
+  if (typeof window !== 'undefined') {
+    window.removeEventListener('calendar-event-added', handleEventAdded);
+    window.removeEventListener('calendar-event-deleted', handleEventDeleted);
+  }
 });
 </script>
 
@@ -302,12 +384,32 @@ onUnmounted(() => {
           <!-- Calendar link -->
           <Link 
             :href="route(calendarItem.route)"
+            @click="handleCalendarClick"
             class="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300 group relative"
             aria-label="Calendar"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="calendarItem.icon" />
-            </svg>
+            <div class="relative">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="calendarItem.icon" />
+              </svg>
+              <!-- Event notification badge -->
+              <transition
+                enter-active-class="transition-all duration-200 ease-out"
+                leave-active-class="transition-all duration-300 ease-in"
+                enter-from-class="opacity-0 scale-0"
+                enter-to-class="opacity-100 scale-100"
+                leave-from-class="opacity-100 scale-100"
+                leave-to-class="opacity-0 scale-150"
+              >
+                <span 
+                  v-if="showCalendarBadge && (hasEventsToday || hasUpcomingEvents)" 
+                  :class="[
+                    'absolute -top-1 -right-1 h-3 w-3 rounded-full',
+                    hasEventsToday ? 'bg-red-500' : 'bg-blue-500'
+                  ]"
+                ></span>
+              </transition>
+            </div>
             <!-- Tooltip for calendar -->
             <span class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
               Calendar

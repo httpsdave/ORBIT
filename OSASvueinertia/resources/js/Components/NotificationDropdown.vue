@@ -12,12 +12,21 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
         </svg>
         <!-- Unread notification badge -->
-        <span 
-          v-if="unreadCount > 0" 
-          class="absolute -top-1 -right-1 flex items-center justify-center h-4 w-4 text-xs text-white bg-red-500 rounded-full animate-pulse"
+        <transition
+          enter-active-class="transition-all duration-200 ease-out"
+          leave-active-class="transition-all duration-300 ease-in"
+          enter-from-class="opacity-0 scale-0"
+          enter-to-class="opacity-100 scale-100"
+          leave-from-class="opacity-100 scale-100"
+          leave-to-class="opacity-0 scale-150"
         >
-          {{ unreadCount > 9 ? '9+' : unreadCount }}
-        </span>
+          <span 
+            v-if="unreadCount > 0 && showBadge" 
+            class="absolute -top-1 -right-1 flex items-center justify-center h-4 w-4 text-xs text-white bg-red-500 rounded-full"
+          >
+            {{ unreadCount > 9 ? '9+' : unreadCount }}
+          </span>
+        </transition>
       </div>
       <!-- Tooltip -->
       <span class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-50">
@@ -170,6 +179,7 @@ const dropdownRef = ref(null);
 const isOpen = ref(false);
 const loading = ref(false);
 const recentNotifications = ref([]);
+const showBadge = ref(true);
 
 // Get page props
 const page = usePage();
@@ -183,6 +193,11 @@ const unreadCount = computed(() => {
 
 // Methods
 const toggleDropdown = async () => {
+  // Hide badge when clicked
+  if (showBadge.value && unreadCount.value > 0) {
+    showBadge.value = false;
+  }
+  
   isOpen.value = !isOpen.value;
   
   if (isOpen.value && recentNotifications.value.length === 0) {

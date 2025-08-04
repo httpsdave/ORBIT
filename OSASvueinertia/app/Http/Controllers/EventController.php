@@ -94,11 +94,20 @@ class EventController extends Controller
     }
 
     /**
-     * Get all events
+     * Get all events (excluding past events)
      */
     public function getEvents()
     {
-        $events = Event::all();
+        // Get events that haven't ended yet (future and current events)
+        $events = Event::where('end_date', '>=', Carbon::today())
+                      ->orWhere(function($query) {
+                          // Include events with no end_date that started today or later
+                          $query->whereNull('end_date')
+                                ->whereDate('start_date', '>=', Carbon::today());
+                      })
+                      ->orderBy('start_date', 'asc')
+                      ->get();
+        
         return response()->json($events);
     }
 

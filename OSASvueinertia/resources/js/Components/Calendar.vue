@@ -523,6 +523,11 @@ export default {
           events.value.push(response.data);
           filterExpiredEvents();
           
+          // Dispatch event for calendar badge update
+          if (typeof window !== 'undefined') {
+            window.dispatchEvent(new Event('calendar-event-added'));
+          }
+          
           // Reset the form
           resetForm();
           alert('Event saved successfully!');
@@ -624,6 +629,11 @@ export default {
             // Remove the event from the list
             events.value = events.value.filter(event => event.id !== eventId);
             filterExpiredEvents();
+            
+            // Dispatch event for calendar badge update
+            if (typeof window !== 'undefined') {
+              window.dispatchEvent(new Event('calendar-event-deleted'));
+            }
             
             // If we were editing this event, reset the form
             if (currentEditId.value === eventId) {
