@@ -38,6 +38,13 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('resize', updateWindowWidth);
 });
+    
+    defineProps({
+      title: {
+        type: String,
+        default: ''
+      }
+    });
 </script>
 
 <template>
