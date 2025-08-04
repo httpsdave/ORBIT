@@ -553,7 +553,7 @@ const cancelDeleteDocument = () => {
     </transition>
 
     <!-- Unified Search and Filter Section -->
-    <div class="mb-6 space-y-4">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 mb-6 space-y-4">
       <!-- Search Bar -->
       <div class="relative">
         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">

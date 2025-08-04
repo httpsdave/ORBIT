@@ -500,15 +500,17 @@ watch(showSignedDocumentModal, (val) => {
     </div>
     
     <!-- Colored banner -->
-    <div class="flex w-full overflow-hidden shadow-md rounded-t-2xl">
-      <div class="w-1/4 h-1.5 bg-blue-600 animate-pulse rounded-tl-2xl" style="animation-delay: 0.2s;"></div>
-      <div class="w-1/4 h-1.5 bg-green-500 animate-pulse" style="animation-delay: 0.4s;"></div>
-      <div class="w-1/4 h-1.5 bg-amber-500 animate-pulse" style="animation-delay: 0.6s;"></div>
-      <div class="w-1/4 h-1.5 bg-red-500 animate-pulse rounded-tr-2xl" style="animation-delay: 0.8s;"></div>
+    <div class="max-w-4xl mx-auto px-4 sm:px-6">
+      <div class="flex w-full overflow-hidden shadow-md rounded-t-2xl">
+        <div class="w-1/4 h-1.5 bg-blue-600 animate-pulse rounded-tl-2xl" style="animation-delay: 0.2s;"></div>
+        <div class="w-1/4 h-1.5 bg-green-500 animate-pulse" style="animation-delay: 0.4s;"></div>
+        <div class="w-1/4 h-1.5 bg-amber-500 animate-pulse" style="animation-delay: 0.6s;"></div>
+        <div class="w-1/4 h-1.5 bg-red-500 animate-pulse rounded-tr-2xl" style="animation-delay: 0.8s;"></div>
+      </div>
     </div>
 
     <!-- MOBILE CARD LAYOUT -->
-    <div class="sm:hidden p-2 space-y-4">
+    <div class="sm:hidden p-2 space-y-4 max-w-4xl mx-auto">
       <div v-for="app in applications" :key="app.id" 
         class="bg-white rounded-xl shadow border border-gray-100 p-4 flex flex-col gap-2 cursor-pointer hover:bg-gray-50 transition"
         @click="viewPdf(app)">
@@ -623,7 +625,7 @@ watch(showSignedDocumentModal, (val) => {
     </div>
 
     <!-- DESKTOP STACKED LIST LAYOUT -->
-    <div class="hidden sm:block p-4">
+    <div class="hidden sm:block p-4 max-w-4xl mx-auto">
       <div
         v-for="app in applications"
         :key="app.id"
@@ -686,7 +688,7 @@ watch(showSignedDocumentModal, (val) => {
       <div 
         ref="dropdownRef"
         v-if="activeDropdownApp"
-        class="fixed z-50 bg-white rounded-lg shadow-lg border border-gray-200 py-1 w-48 max-w-xs w-full sm:w-64"
+        class="fixed z-50 bg-white rounded-lg shadow-lg border border-gray-200 py-1 w-full max-w-xs sm:w-64"
         :style="{ top: `${dropdownPosition.top}px`, left: `${dropdownPosition.left}px`, visibility: activeDropdownApp ? 'visible' : 'hidden' }"
         @click.stop
       >
