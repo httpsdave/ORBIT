@@ -20,6 +20,7 @@ class Event extends Model
         'end_date',
         'description',
         'source_document',
+        'status',
     ];
 
     /**

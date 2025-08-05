@@ -49,7 +49,8 @@ class EventController extends Controller
             'title' => 'required|string|max:255',
             'start_date' => 'required|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
-            'description' => 'nullable|string'
+            'description' => 'nullable|string',
+            'status' => 'nullable|in:active,cancelled'
         ]);
 
         $event = Event::create($validated);
@@ -71,11 +72,26 @@ class EventController extends Controller
             'title' => 'sometimes|string|max:255',
             'start_date' => 'sometimes|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
-            'description' => 'nullable|string'
+            'description' => 'nullable|string',
+            'status' => 'sometimes|in:active,cancelled'
         ]);
 
         $event->update($validated);
 
+        return response()->json($event);
+    }
+
+    /**
+     * Cancel an event
+     */
+    public function cancel(Event $event)
+    {
+        // Check if user is admin
+        if (!Auth::check() || !Auth::user()->isAdmin()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $event->update(['status' => 'cancelled']);
         return response()->json($event);
     }
 

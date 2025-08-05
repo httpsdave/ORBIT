@@ -25,6 +25,7 @@
   :is-admin="isAdmin"
   @edit-event="editEvent"
   @delete-event="deleteEvent"
+  @cancel-event="cancelEvent"
   @view-event-details="viewEventDetails"
 />
     
@@ -246,8 +247,24 @@
           <p class="text-gray-700 whitespace-pre-line break-words overflow-wrap-anywhere">{{selectedEvent.description}}</p>
         </div>
         <div v-if="isAdmin" class="flex justify-end space-x-2 mt-4">
-          <button @click="editEvent(selectedEvent)" class="px-3 py-1 bg-yellow-400 text-white rounded hover:bg-yellow-500">Edit</button>
-          <button @click="deleteEvent(selectedEvent.id)" class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600">Delete</button>
+          <button @click="editEvent(selectedEvent)" class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 flex items-center space-x-1">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+            <span>Edit</span>
+          </button>
+          <button v-if="selectedEvent.status !== 'cancelled'" @click="cancelEvent(selectedEvent.id)" class="px-3 py-1 bg-orange-500 text-white rounded hover:bg-orange-600 flex items-center space-x-1">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>Cancel</span>
+          </button>
+          <button @click="deleteEvent(selectedEvent.id)" class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 flex items-center space-x-1">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+            <span>Delete</span>
+          </button>
         </div>
       </div>
     </div>
@@ -262,6 +279,30 @@
   @event-deleted="handleEventDeleted"
   @export-csv="exportPastEventsCsv"
 />
+
+  <!-- Delete Confirmation Modal -->
+  <ConfirmationModal
+    :show="showDeleteConfirmation"
+    title="Delete Event"
+    :message="`Are you sure you want to delete '${eventToDelete?.title}'? This action cannot be undone.`"
+    type="danger"
+    confirm-text="Delete"
+    cancel-text="Cancel"
+    @confirm="confirmDeleteEvent"
+    @cancel="cancelDeleteEvent"
+  />
+
+  <!-- Cancel Confirmation Modal -->
+  <ConfirmationModal
+    :show="showCancelConfirmation"
+    title="Cancel Event"
+    :message="`Are you sure you want to cancel '${eventToCancel?.title}'? You can reactivate it later by editing the event.`"
+    type="warning"
+    confirm-text="Cancel Event"
+    cancel-text="Keep Event"
+    @confirm="confirmCancelEvent"
+    @cancel="cancelCancelEvent"
+  />
   
 </template>
 <style scoped>
@@ -358,6 +399,7 @@ import FileUploadComponent from './FileUploadComponent.vue';
 import TodayUpcomingEvents from './TodayUpcomingEvents.vue';
 import EventHistoryModal from './EventHistoryModal.vue';
 import EventStatistics from './EventStatistics.vue';
+import ConfirmationModal from './ConfirmationModal.vue';
 import axios from 'axios';
 import dayjs from 'dayjs';
 
@@ -367,7 +409,8 @@ export default {
     FileUploadComponent,
     TodayUpcomingEvents,
     EventHistoryModal,
-    EventStatistics
+    EventStatistics,
+    ConfirmationModal
   },
   
   props: {
@@ -396,6 +439,12 @@ export default {
     
     // View toggle state
     const currentView = ref('calendar');
+    
+    // Confirmation modals
+    const showDeleteConfirmation = ref(false);
+    const showCancelConfirmation = ref(false);
+    const eventToDelete = ref(null);
+    const eventToCancel = ref(null);
     
     const eventForm = reactive({
       title: '',
@@ -623,35 +672,99 @@ export default {
     function deleteEvent(eventId) {
       if (!props.isAdmin) return; // Safety check
       
-      if (confirm('Are you sure you want to delete this event?')) {
-        axios.delete(`/api/events/${eventId}`)
-          .then(() => {
-            // Remove the event from the list
-            events.value = events.value.filter(event => event.id !== eventId);
-            filterExpiredEvents();
-            
-            // Dispatch event for calendar badge update
-            if (typeof window !== 'undefined') {
-              window.dispatchEvent(new Event('calendar-event-deleted'));
-            }
-            
-            // If we were editing this event, reset the form
-            if (currentEditId.value === eventId) {
-              resetForm();
-            }
-            // Close the event details modal if open
-            closeEventDetailsModal();
-            alert('Event deleted successfully!');
-          })
-          .catch(error => {
-            if (error.response && error.response.status === 403) {
-              alert('Unauthorized: You do not have permission to perform this action.');
-            } else {
-              console.error('Error deleting event:', error);
-              alert('Failed to delete event. Please try again.');
-            }
-          });
+      const event = events.value.find(e => e.id === eventId);
+      if (event) {
+        eventToDelete.value = event;
+        showDeleteConfirmation.value = true;
       }
+    }
+    
+    function confirmDeleteEvent() {
+      if (!eventToDelete.value) return;
+      
+      axios.delete(`/api/events/${eventToDelete.value.id}`)
+        .then(() => {
+          // Remove the event from the list
+          events.value = events.value.filter(event => event.id !== eventToDelete.value.id);
+          filterExpiredEvents();
+          
+          // Dispatch event for calendar badge update
+          if (typeof window !== 'undefined') {
+            window.dispatchEvent(new Event('calendar-event-deleted'));
+          }
+          
+          // If we were editing this event, reset the form
+          if (currentEditId.value === eventToDelete.value.id) {
+            resetForm();
+          }
+          // Close the event details modal if open
+          closeEventDetailsModal();
+          
+          // Reset confirmation modal
+          showDeleteConfirmation.value = false;
+          eventToDelete.value = null;
+        })
+        .catch(error => {
+          if (error.response && error.response.status === 403) {
+            alert('Unauthorized: You do not have permission to perform this action.');
+          } else {
+            console.error('Error deleting event:', error);
+            alert('Failed to delete event. Please try again.');
+          }
+          showDeleteConfirmation.value = false;
+          eventToDelete.value = null;
+        });
+    }
+    
+    function cancelDeleteEvent() {
+      showDeleteConfirmation.value = false;
+      eventToDelete.value = null;
+    }
+    
+    function cancelEvent(eventId) {
+      if (!props.isAdmin) return; // Safety check
+      
+      const event = events.value.find(e => e.id === eventId);
+      if (event) {
+        eventToCancel.value = event;
+        showCancelConfirmation.value = true;
+      }
+    }
+    
+    function confirmCancelEvent() {
+      if (!eventToCancel.value) return;
+      
+      axios.patch(`/api/events/${eventToCancel.value.id}/cancel`)
+        .then(response => {
+          // Update the event in our local state
+          const index = events.value.findIndex(e => e.id === eventToCancel.value.id);
+          if (index !== -1) {
+            events.value[index] = response.data;
+            filterExpiredEvents();
+          }
+          
+          // Close the event details modal if open
+          closeEventDetailsModal();
+          
+          // Reset confirmation modal
+          showCancelConfirmation.value = false;
+          eventToCancel.value = null;
+        })
+        .catch(error => {
+          if (error.response && error.response.status === 403) {
+            alert('Unauthorized: You do not have permission to perform this action.');
+          } else {
+            console.error('Error cancelling event:', error);
+            alert('Failed to cancel event. Please try again.');
+          }
+          showCancelConfirmation.value = false;
+          eventToCancel.value = null;
+        });
+    }
+    
+    function cancelCancelEvent() {
+      showCancelConfirmation.value = false;
+      eventToCancel.value = null;
     }
 
     
@@ -787,12 +900,22 @@ function exportPastEventsCsv(pastEvents) {
       updateEvent,
       cancelEdit,
       deleteEvent,
+      cancelEvent,
       formatDate,
       viewEventDetails,
       closeEventDetailsModal,
       createNewEvent,
       handleFileProcessed,
-      exportPastEventsCsv
+      exportPastEventsCsv,
+      // Confirmation modals
+      showDeleteConfirmation,
+      showCancelConfirmation,
+      eventToDelete,
+      eventToCancel,
+      confirmDeleteEvent,
+      cancelDeleteEvent,
+      confirmCancelEvent,
+      cancelCancelEvent
     };
   }
 };

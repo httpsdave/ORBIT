@@ -1,5 +1,5 @@
 <template>
-  <div class="p-4 sm:p-6 w-full max-w-full overflow-x-hidden">
+  <div class="p-2 sm:p-4 lg:p-6 w-full max-w-full overflow-x-hidden min-h-screen">
     <!-- Loading State -->
     <div v-if="isLoading" class="flex items-center justify-center h-96">
       <div class="text-center">
@@ -26,7 +26,7 @@
     </div>
 
     <!-- Statistics Content -->
-    <div v-else class="space-y-4 sm:space-y-6 w-full max-w-full">
+    <div v-else class="space-y-3 sm:space-y-4 lg:space-y-6 w-full max-w-full">
       <!-- Header -->
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <div>
@@ -123,7 +123,7 @@
       </div>
 
       <!-- Statistics Cards - Responsive Grid -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 w-full">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4 w-full">
         <!-- Total Events -->
         <div class="bg-white rounded-lg p-3 sm:p-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200">
           <div class="flex items-center">
@@ -150,6 +150,21 @@
             <div class="ml-3 min-w-0 flex-1">
               <p class="text-xs sm:text-sm font-medium text-gray-600 truncate">Completed</p>
               <p class="text-lg sm:text-2xl font-bold text-gray-900">{{ completedEvents }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cancelled Events -->
+        <div class="bg-white rounded-lg p-3 sm:p-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200">
+          <div class="flex items-center">
+            <div class="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 bg-red-100 rounded-lg flex items-center justify-center">
+              <svg class="w-4 h-4 sm:w-5 sm:h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div class="ml-3 min-w-0 flex-1">
+              <p class="text-xs sm:text-sm font-medium text-gray-600 truncate">Cancelled</p>
+              <p class="text-lg sm:text-2xl font-bold text-gray-900">{{ cancelledEvents }}</p>
             </div>
           </div>
         </div>
@@ -216,28 +231,36 @@
 
       <!-- Mobile Summary (replaces chart on small screens) -->
       <div class="block sm:hidden bg-white rounded-lg border border-gray-200 p-4 shadow-sm w-full">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Summary</h3>
-        <div class="grid grid-cols-2 gap-4">
-          <div class="text-center">
-            <p class="text-2xl font-bold text-blue-600">{{ totalEvents }}</p>
-            <p class="text-sm text-gray-600">Total Events</p>
+        <h3 class="text-base font-semibold text-gray-900 mb-3">Quick Summary</h3>
+        <div class="grid grid-cols-2 gap-3">
+          <div class="text-center bg-gray-50 rounded-lg p-3">
+            <p class="text-xl font-bold text-blue-600">{{ totalEvents }}</p>
+            <p class="text-xs text-gray-600">Total Events</p>
           </div>
-          <div class="text-center">
-            <p class="text-2xl font-bold text-green-600">{{ completionRate }}%</p>
-            <p class="text-sm text-gray-600">Completion Rate</p>
+          <div class="text-center bg-gray-50 rounded-lg p-3">
+            <p class="text-xl font-bold text-green-600">{{ completedEvents }}</p>
+            <p class="text-xs text-gray-600">Completed</p>
+          </div>
+          <div class="text-center bg-gray-50 rounded-lg p-3">
+            <p class="text-xl font-bold text-red-600">{{ cancelledEvents }}</p>
+            <p class="text-xs text-gray-600">Cancelled</p>
+          </div>
+          <div class="text-center bg-gray-50 rounded-lg p-3">
+            <p class="text-xl font-bold text-yellow-600">{{ upcomingEvents }}</p>
+            <p class="text-xs text-gray-600">Upcoming</p>
           </div>
         </div>
       </div>
 
       <!-- Event Distribution -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         <!-- Monthly Distribution -->
-        <div class="bg-white rounded-lg border border-gray-200 p-6">
-          <h3 class="text-lg font-semibold text-gray-900 mb-4">Monthly Distribution</h3>
-          <div class="space-y-3 max-h-64 overflow-y-auto pr-2">
+        <div class="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
+          <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-4">Monthly Distribution</h3>
+          <div class="space-y-3 max-h-48 sm:max-h-64 overflow-y-auto pr-2 custom-scrollbar">
             <div v-for="month in monthlyDistribution" :key="month.month" class="flex items-center">
-              <div class="w-20 text-sm text-gray-600">{{ month.month }}</div>
-              <div class="flex-1 mx-3">
+              <div class="w-16 sm:w-20 text-xs sm:text-sm text-gray-600 flex-shrink-0">{{ month.month }}</div>
+              <div class="flex-1 mx-2 sm:mx-3">
                 <div class="bg-gray-200 rounded-full h-2">
                   <div 
                     class="bg-green-500 h-2 rounded-full transition-all duration-500" 
@@ -245,21 +268,24 @@
                   ></div>
                 </div>
               </div>
-              <div class="w-8 text-sm text-gray-900 font-medium">{{ month.count }}</div>
+              <div class="w-6 sm:w-8 text-xs sm:text-sm text-gray-900 font-medium flex-shrink-0">{{ month.count }}</div>
             </div>
           </div>
         </div>
 
         <!-- Recent Activity -->
-        <div class="bg-white rounded-lg border border-gray-200 p-6">
-          <h3 class="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
-          <div class="space-y-3 max-h-64 overflow-y-auto">
-            <div v-for="activity in recentActivity" :key="activity.id" class="flex items-start space-x-3">
+        <div class="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
+          <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
+          <div class="space-y-3">
+            <div v-for="activity in recentActivity.slice(0, 3)" :key="activity.id" class="flex items-start space-x-3">
               <div class="flex-shrink-0 w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
               <div class="flex-1 min-w-0">
                 <p class="text-sm font-medium text-gray-900 truncate">{{ activity.title }}</p>
                 <p class="text-xs text-gray-500">{{ formatDate(activity.start_date, 'MMM DD, YYYY') }}</p>
               </div>
+            </div>
+            <div v-if="recentActivity.length === 0" class="text-center py-4">
+              <p class="text-sm text-gray-500">No recent activity</p>
             </div>
           </div>
         </div>
@@ -305,15 +331,19 @@ export default {
       const now = new Date();
       return props.events.filter(event => {
         const endDate = event.end_date ? new Date(event.end_date) : new Date(event.start_date);
-        return endDate < now;
+        return endDate < now && event.status !== 'cancelled';
       }).length;
+    });
+
+    const cancelledEvents = computed(() => {
+      return props.events.filter(event => event.status === 'cancelled').length;
     });
 
     const upcomingEvents = computed(() => {
       const now = new Date();
       return props.events.filter(event => {
         const startDate = new Date(event.start_date);
-        return startDate > now;
+        return startDate > now && event.status !== 'cancelled';
       }).length;
     });
 
@@ -361,7 +391,7 @@ export default {
         .slice(-6); // Last 6 months
     });
 
-    // Recent activity
+    // Recent activity (limit to 3)
     const recentActivity = computed(() => {
       return [...props.events]
         .sort((a, b) => new Date(b.start_date) - new Date(a.start_date))
@@ -437,13 +467,13 @@ export default {
               borderColor: 'rgb(34, 197, 94)', // Green-500
               backgroundColor: 'transparent',
               borderWidth: 2,
-              tension: 0.3,
+              tension: 0, // No smoothing - sharp point to point
               fill: false,
               pointBackgroundColor: 'rgb(34, 197, 94)',
               pointBorderColor: 'rgb(34, 197, 94)',
-              pointRadius: 4,
-              pointHoverRadius: 6,
-              pointBorderWidth: 0
+              pointRadius: 5,
+              pointHoverRadius: 8,
+              pointBorderWidth: 2
             }
           ]
         };
@@ -619,6 +649,7 @@ export default {
       hasError,
       totalEvents,
       completedEvents,
+      cancelledEvents,
       upcomingEvents,
       completionRate,
       averagePerMonth,
@@ -645,20 +676,24 @@ export default {
 }
 
 /* Custom scrollbar */
-.overflow-y-auto::-webkit-scrollbar {
+.overflow-y-auto::-webkit-scrollbar,
+.custom-scrollbar::-webkit-scrollbar {
   width: 4px;
 }
 
-.overflow-y-auto::-webkit-scrollbar-track {
+.overflow-y-auto::-webkit-scrollbar-track,
+.custom-scrollbar::-webkit-scrollbar-track {
   background: #f1f5f9;
 }
 
-.overflow-y-auto::-webkit-scrollbar-thumb {
+.overflow-y-auto::-webkit-scrollbar-thumb,
+.custom-scrollbar::-webkit-scrollbar-thumb {
   background: #cbd5e1;
   border-radius: 2px;
 }
 
-.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+.overflow-y-auto::-webkit-scrollbar-thumb:hover,
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
 

@@ -43,6 +43,7 @@ Route::middleware(['auth'])->group(function () {
         Route::middleware(['auth'])->group(function () {
             Route::post('/events', [EventController::class, 'store']);
             Route::put('/events/{event}', [EventController::class, 'update']);
+            Route::patch('/events/{event}/cancel', [EventController::class, 'cancel']);
             Route::delete('/events/{event}', [EventController::class, 'destroy']);
             Route::post('/extract-event-info', [EventController::class, 'extractEventInfo']);
         });
