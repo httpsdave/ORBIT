@@ -110,7 +110,7 @@
           <FullCalendar
             ref="fullCalendar"
             :options="calendarOptions"
-            class="full-calendar-custom"
+            :class="['full-calendar-custom', { 'calendar-admin': isAdmin }]"
           />
         </div>
       </div>
@@ -313,6 +313,53 @@
     @confirm="confirmCancelEvent"
     @cancel="cancelCancelEvent"
   />
+
+  <!-- First-time tooltip modal -->
+  <Transition name="modal">
+    <div 
+      v-if="showFirstClickTooltip" 
+      class="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50"
+      @click.self="dismissTooltip"
+    >
+      <Transition name="modal-content" appear>
+        <div class="bg-white rounded-xl shadow-2xl p-6 max-w-sm w-full mx-4 border border-gray-100">
+          <div class="flex items-start space-x-3">
+            <!-- Icon -->
+            <div class="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+              <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            
+            <!-- Content -->
+            <div class="flex-1">
+              <h3 class="text-lg font-semibold text-gray-900 mb-2">Calendar Tips</h3>
+              <p class="text-sm text-gray-600 mb-4">
+                <span class="font-medium">Click</span> any date to create a single-day event, or 
+                <span class="font-medium">drag</span> across multiple dates to create a multi-day event.
+              </p>
+              
+              <!-- Actions -->
+              <div class="flex flex-col space-y-2">
+                <button 
+                  @click="dismissTooltip"
+                  class="w-full px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200"
+                >
+                  Got it!
+                </button>
+                <button 
+                  @click="dismissTooltipPermanently"
+                  class="w-full px-4 py-1.5 text-xs text-gray-500 hover:text-gray-700 transition-colors duration-200"
+                >
+                  Don't show again
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </div>
+  </Transition>
   
 </template>
 <style scoped>
@@ -379,6 +426,44 @@
     :deep(.fc-custom-event:hover) {
       background: #2563EB;
       box-shadow: 0 4px 16px rgba(37, 99, 235, 0.25);
+    }
+
+    /* Calendar selection styling for admins */
+    :deep(.fc-highlight) {
+      background: rgba(59, 130, 246, 0.12) !important;
+      border: 2px solid #3B82F6 !important;
+      border-radius: 6px !important;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+
+    /* Admin interactive calendar styling */
+    .calendar-admin :deep(.fc-daygrid-day) {
+      position: relative;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .calendar-admin :deep(.fc-daygrid-day:hover) {
+      background-color: rgba(59, 130, 246, 0.06);
+      cursor: pointer;
+      transform: translateY(-1px);
+    }
+
+    /* Subtle indicator for admin clickable dates */
+    .calendar-admin :deep(.fc-daygrid-day::before) {
+      content: '';
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 3px;
+      height: 3px;
+      background-color: #3B82F6;
+      border-radius: 50%;
+      opacity: 0.4;
+      transition: opacity 0.2s ease;
+    }
+
+    .calendar-admin :deep(.fc-daygrid-day:hover::before) {
+      opacity: 0.8;
     }
     
     /* Responsive adjustments */
@@ -457,6 +542,10 @@ export default {
     const eventToCancel = ref(null);
     const deleteFromPastEvents = ref(false);
     
+    // First-time user guidance
+    const showFirstClickTooltip = ref(false);
+    const hasSeenTooltip = ref(false);
+    
     const eventForm = reactive({
       title: '',
       date: '',       // Start date
@@ -486,8 +575,12 @@ export default {
       filterExpiredEvents();
     }, { immediate: true });
     
-    // Set up interval to check for expired events every minute
+    // Check if user has seen the tooltip before
     onMounted(() => {
+      // Check localStorage for tooltip preference
+      const tooltipSeen = localStorage.getItem('calendar-tooltip-seen');
+      hasSeenTooltip.value = tooltipSeen === 'true';
+      
       checkEventsTimer.value = setInterval(() => {
         filterExpiredEvents();
       }, 60000); // Check every minute
@@ -550,6 +643,11 @@ export default {
         }
       },
       editable: false, // Disable dragging events
+      selectable: props.isAdmin, // Enable date selection for admins only
+      selectMirror: true, // Show selection preview
+      selectAllow: () => props.isAdmin, // Additional check for selection
+      dateClick: handleDateClick,
+      select: handleDateSelect,
       // eventDrop: handleEventDrop (no longer needed)
     });
     
@@ -872,6 +970,183 @@ export default {
       eventForm.description = '';
     }
 
+    // Handle calendar date click (single day) with improved animations and error handling
+    function handleDateClick(info) {
+      if (!props.isAdmin) {
+        console.warn('Date click attempted by non-admin user');
+        return;
+      }
+
+      // Show first-time tooltip if user hasn't seen it
+      if (!hasSeenTooltip.value) {
+        showFirstClickTooltip.value = true;
+        return; // Don't proceed with event creation on first click
+      }
+      
+      try {
+        // Validate the date
+        if (!info.date || !dayjs(info.date).isValid()) {
+          throw new Error('Invalid date selected');
+        }
+
+        const clickedDate = dayjs(info.date).format('YYYY-MM-DD');
+        
+        // Prevent clicks on past dates (optional business rule)
+        if (dayjs(clickedDate).isBefore(dayjs(), 'day')) {
+          const proceed = confirm('You are creating an event for a past date. Continue?');
+          if (!proceed) return;
+        }
+        
+        // Set up new event with clicked date
+        isEditing.value = false;
+        currentEditId.value = null;
+        extractedData.value = {};
+        
+        eventForm.title = '';
+        eventForm.date = clickedDate;
+        eventForm.end_date = clickedDate;
+        eventForm.start_time = '';
+        eventForm.end_time = '';
+        eventForm.description = '';
+        
+        // Add smooth visual feedback with modern animation
+        if (info.dayEl) {
+          info.dayEl.style.transform = 'scale(1.05)';
+          info.dayEl.style.backgroundColor = 'rgba(59, 130, 246, 0.15)';
+          info.dayEl.style.transition = 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)';
+          
+          // Reset animation after modal opens
+          setTimeout(() => {
+            if (info.dayEl) {
+              info.dayEl.style.transform = '';
+              info.dayEl.style.backgroundColor = '';
+              info.dayEl.style.transition = '';
+            }
+          }, 300);
+        }
+        
+        console.log(`Event creation initiated for date: ${clickedDate}`);
+        
+      } catch (error) {
+        console.error('Error handling date click:', error);
+        
+        // User-friendly error message
+        const errorMessage = error.message === 'Invalid date selected' 
+          ? 'The selected date is invalid. Please try clicking on a different date.'
+          : 'Unable to create event for the selected date. Please try again.';
+          
+        alert(errorMessage);
+        
+        // Reset any visual changes on error
+        if (info.dayEl) {
+          info.dayEl.style.transform = '';
+          info.dayEl.style.backgroundColor = '';
+          info.dayEl.style.transition = '';
+        }
+      }
+    }
+
+    // Handle calendar date range selection (drag) with improved error handling
+    function handleDateSelect(info) {
+      if (!props.isAdmin) {
+        console.warn('Date selection attempted by non-admin user');
+        // Clear any selection
+        if (info.view?.calendar) {
+          info.view.calendar.unselect();
+        }
+        return;
+      }
+      
+      try {
+        // Validate dates
+        if (!info.start || !info.end || !dayjs(info.start).isValid() || !dayjs(info.end).isValid()) {
+          throw new Error('Invalid date range selected');
+        }
+
+        const startDate = dayjs(info.start).format('YYYY-MM-DD');
+        const endDate = dayjs(info.end).subtract(1, 'day').format('YYYY-MM-DD'); // FullCalendar end is exclusive
+        
+        // Validate date range
+        if (dayjs(startDate).isAfter(dayjs(endDate))) {
+          throw new Error('Invalid date range: start date is after end date');
+        }
+        
+        // Check for reasonable date range (e.g., max 365 days)
+        const daysDiff = dayjs(endDate).diff(dayjs(startDate), 'days');
+        if (daysDiff > 365) {
+          throw new Error('Date range too large. Please select a range of 365 days or less.');
+        }
+        
+        // Warn for past dates
+        if (dayjs(startDate).isBefore(dayjs(), 'day')) {
+          const proceed = confirm(`You are creating an event starting in the past (${startDate}). Continue?`);
+          if (!proceed) {
+            info.view.calendar.unselect();
+            return;
+          }
+        }
+        
+        // Set up new event with selected date range
+        isEditing.value = false;
+        currentEditId.value = null;
+        extractedData.value = {};
+        
+        eventForm.title = '';
+        eventForm.date = startDate;
+        eventForm.end_date = endDate;
+        eventForm.start_time = '';
+        eventForm.end_time = '';
+        eventForm.description = '';
+        
+        console.log(`Event creation initiated for date range: ${startDate} to ${endDate}`);
+        
+        // Clear the selection with smooth animation
+        setTimeout(() => {
+          if (info.view?.calendar) {
+            info.view.calendar.unselect();
+          }
+        }, 100);
+        
+      } catch (error) {
+        console.error('Error handling date selection:', error);
+        
+        // User-friendly error messages
+        let errorMessage;
+        switch (error.message) {
+          case 'Invalid date range selected':
+            errorMessage = 'The selected date range is invalid. Please try selecting a different range.';
+            break;
+          case 'Invalid date range: start date is after end date':
+            errorMessage = 'Invalid selection: the start date cannot be after the end date.';
+            break;
+          case 'Date range too large. Please select a range of 365 days or less.':
+            errorMessage = error.message;
+            break;
+          default:
+            errorMessage = 'Unable to create event for the selected date range. Please try again.';
+        }
+        
+        alert(errorMessage);
+        
+        // Clear selection on error
+        if (info.view?.calendar) {
+          info.view.calendar.unselect();
+        }
+      }
+    }
+
+    // Handle first-time tooltip interactions
+    function dismissTooltip() {
+      showFirstClickTooltip.value = false;
+      hasSeenTooltip.value = true;
+    }
+
+    function dismissTooltipPermanently() {
+      showFirstClickTooltip.value = false;
+      hasSeenTooltip.value = true;
+      localStorage.setItem('calendar-tooltip-seen', 'true');
+    }
+
     function handleFileProcessed(data) {
   extractedData.value = data;
   
@@ -944,6 +1219,8 @@ function exportPastEventsCsv(pastEvents) {
       viewEventDetails,
       closeEventDetailsModal,
       createNewEvent,
+      handleDateClick,
+      handleDateSelect,
       handleFileProcessed,
       exportPastEventsCsv,
       // Confirmation modals
@@ -954,7 +1231,11 @@ function exportPastEventsCsv(pastEvents) {
       confirmDeleteEvent,
       cancelDeleteEvent,
       confirmCancelEvent,
-      cancelCancelEvent
+      cancelCancelEvent,
+      // First-time tooltip
+      showFirstClickTooltip,
+      dismissTooltip,
+      dismissTooltipPermanently
     };
   }
 };
