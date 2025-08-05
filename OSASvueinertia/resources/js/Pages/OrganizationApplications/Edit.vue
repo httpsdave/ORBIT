@@ -164,24 +164,6 @@ const handleFormSubmitted = (data) => {
   });
 };
 
-const downloadSignedDocument = () => {
-  if (props.application.signed_document_path) {
-    window.open(`/applications/${props.application.id}/signed-document`, '_blank');
-  }
-};
-
-const deleteSignedDocument = () => {
-  if (props.application.signed_document_path && confirm('Are you sure you want to delete the signed document?')) {
-    const form = useForm({});
-    form.delete(`/applications/${props.application.id}/signed-document`, {
-      onSuccess: () => {
-        // Refresh the page to update the UI
-        window.location.reload();
-      }
-    });
-  }
-};
-
 // Special report form types
 const specialReportFormTypes = [
   'LSPU-OSAS-SF-ACCOMPLISHMENT',
@@ -286,19 +268,6 @@ const handleSpecialFormSubmit = () => {
       </div>
     </div>
     <h1 class="text-2xl font-bold mb-6">Edit {{ props.application.organization_name }} Application</h1>
-    
-    <!-- Signed Document Section -->
-    <div v-if="props.application.signed_document_path" class="mb-6 p-4 bg-gray-100 rounded">
-      <h2 class="text-lg font-semibold">Signed Document</h2>
-      <div class="flex items-center mt-2">
-        <button v-if="props.application.signed_document_path" @click="downloadSignedDocument" class="bg-blue-500 text-white px-3 py-1 rounded mr-2">
-          View Document
-        </button>
-        <button v-if="props.application.signed_document_path && isAdmin" @click="deleteSignedDocument" class="bg-red-500 text-white px-3 py-1 rounded">
-          Delete Document
-        </button>
-      </div>
-    </div>
     
     <!-- Status Information -->
     <div class="mb-6 p-4 rounded" :class="{
