@@ -82,19 +82,19 @@
     <!-- Calendar View -->
     <div 
       :class="[
-        'transition-all duration-700 ease-in-out transform-style-preserve-3d',
+        'transition-transform duration-300 ease-out transform-style-preserve-3d',
         currentView === 'statistics' ? 'rotate-y-180' : 'rotate-y-0'
       ]"
-      style="transform-style: preserve-3d;"
+      style="transform-style: preserve-3d; will-change: transform;"
     >
-      <!-- Front Side - Calendar -->
-      <div 
-        :class="[
-          'w-full backface-hidden',
-          currentView === 'statistics' ? 'opacity-0 pointer-events-none' : 'opacity-100'
-        ]"
-        style="backface-visibility: hidden;"
-      >
+             <!-- Front Side - Calendar -->
+       <div 
+         :class="[
+           'w-full backface-hidden',
+           currentView === 'statistics' ? 'opacity-0 pointer-events-none' : 'opacity-100'
+         ]"
+         style="backface-visibility: hidden; will-change: opacity;"
+       >
         <div class="p-5">
           <!-- Custom calendar header with your color scheme -->
           <div class="mb-6">
@@ -115,14 +115,14 @@
         </div>
       </div>
       
-      <!-- Back Side - Statistics -->
-      <div 
-        :class="[
-          'absolute inset-0 w-full backface-hidden rotate-y-180',
-          currentView === 'calendar' ? 'opacity-0 pointer-events-none' : 'opacity-100'
-        ]"
-        style="backface-visibility: hidden; transform: rotateY(180deg);"
-      >
+             <!-- Back Side - Statistics -->
+       <div 
+         :class="[
+           'absolute inset-0 w-full backface-hidden rotate-y-180',
+           currentView === 'calendar' ? 'opacity-0 pointer-events-none' : 'opacity-100'
+         ]"
+         style="backface-visibility: hidden; transform: rotateY(180deg); will-change: opacity;"
+       >
         <EventStatistics 
           :events="events" 
           :is-admin="isAdmin"
@@ -963,7 +963,7 @@ function exportPastEventsCsv(pastEvents) {
 </script>
 
 <style scoped>
-/* 3D Flip Animation Styles */
+/* Optimized 3D Flip Animation Styles */
 .transform-style-preserve-3d {
   transform-style: preserve-3d;
 }
@@ -978,6 +978,15 @@ function exportPastEventsCsv(pastEvents) {
 
 .rotate-y-180 {
   transform: rotateY(180deg);
+}
+
+/* Performance optimizations */
+.duration-300 {
+  transition-duration: 0.3s;
+}
+
+.ease-out {
+  transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
 }
 
 /* Smooth transitions for view toggle */
