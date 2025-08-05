@@ -283,6 +283,7 @@
   @view-event-details="viewEventDetails"
   @event-deleted="handleEventDeleted"
   @export-csv="exportPastEventsCsv"
+  @delete-past-event="handleDeletePastEvent"
 />
 
   <!-- Delete Confirmation Modal -->
@@ -450,6 +451,7 @@ export default {
     const showCancelConfirmation = ref(false);
     const eventToDelete = ref(null);
     const eventToCancel = ref(null);
+    const deleteFromPastEvents = ref(false);
     
     const eventForm = reactive({
       title: '',
@@ -558,6 +560,17 @@ export default {
     function handleEventDeleted(eventId) {
       events.value = events.value.filter(event => event.id !== eventId);
       filterExpiredEvents();
+    }
+
+    function handleDeletePastEvent(eventId) {
+      const event = events.value.find(e => e.id === eventId);
+      if (event) {
+        eventToDelete.value = event;
+        deleteFromPastEvents.value = true;
+        showDeleteConfirmation.value = true;
+        // Close the past events modal while showing confirmation
+        showPastEventsModal.value = false;
+      }
     }
     
     function saveEvent() {
@@ -708,6 +721,12 @@ export default {
           // Close the event details modal if open
           closeEventDetailsModal();
           
+          // If deletion was from past events modal, reopen it
+          if (deleteFromPastEvents.value) {
+            showPastEventsModal.value = true;
+            deleteFromPastEvents.value = false;
+          }
+          
           // Reset confirmation modal
           showDeleteConfirmation.value = false;
           eventToDelete.value = null;
@@ -721,10 +740,17 @@ export default {
           }
           showDeleteConfirmation.value = false;
           eventToDelete.value = null;
+          deleteFromPastEvents.value = false;
         });
     }
     
     function cancelDeleteEvent() {
+      // If deletion was from past events modal, reopen it
+      if (deleteFromPastEvents.value) {
+        showPastEventsModal.value = true;
+        deleteFromPastEvents.value = false;
+      }
+      
       showDeleteConfirmation.value = false;
       eventToDelete.value = null;
     }
@@ -892,6 +918,7 @@ function exportPastEventsCsv(pastEvents) {
       showPastEventsModal,
       closePastEventsModal,
       handleEventDeleted,
+      handleDeletePastEvent,
       events,
       displayedEvents,
       calendarOptions,
