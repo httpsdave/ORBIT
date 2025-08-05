@@ -143,8 +143,8 @@
         <h2 class="text-lg font-semibold text-gray-800">
           {{ isEditing ? 'Edit Event' : 'Create New Event' }}
         </h2>
-        <button @click="cancelEdit" class="text-gray-500 hover:text-gray-700">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <button @click="cancelEdit" class="text-gray-400 hover:text-gray-600 p-2 rounded-lg hover:bg-gray-100 transition-all duration-200">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
@@ -181,15 +181,17 @@
         <div class="pt-4 flex justify-end space-x-3">
           <button 
             @click="cancelEdit" 
-            class="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200"
+            class="inline-flex items-center justify-center px-4 py-2 bg-white border border-gray-300 text-sm font-medium text-gray-700 rounded-xl shadow-sm hover:bg-gray-50 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group"
           >
-            Cancel
+            <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-gray-100 rounded-full group-hover:w-96 group-hover:h-96 opacity-20"></span>
+            <span class="relative z-10">Cancel</span>
           </button>
           <button 
             @click="isEditing ? updateEvent() : saveEvent()" 
-            class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
+            class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-sm font-medium text-white rounded-xl shadow-md hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group"
           >
-            {{ isEditing ? 'Update Event' : 'Save Event' }}
+            <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
+            <span class="relative z-10">{{ isEditing ? 'Update Event' : 'Save Event' }}</span>
           </button>
         </div>
       </div>
@@ -205,8 +207,8 @@
     <div class="bg-white rounded-lg shadow-lg p-6 max-w-md w-full mx-4">
       <div class="flex justify-between items-center mb-4">
         <h3 class="text-lg font-semibold text-gray-800 break-words overflow-wrap-anywhere max-w-[90%]">{{selectedEvent.title}}</h3>
-        <button @click="closeEventDetailsModal" class="text-gray-500 hover:text-gray-700">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <button @click="closeEventDetailsModal" class="text-gray-400 hover:text-gray-600 p-2 rounded-lg hover:bg-gray-100 transition-all duration-200">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
@@ -247,23 +249,26 @@
           <p class="text-gray-700 whitespace-pre-line break-words overflow-wrap-anywhere">{{selectedEvent.description}}</p>
         </div>
         <div v-if="isAdmin" class="flex justify-end space-x-2 mt-4">
-          <button @click="editEvent(selectedEvent)" class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 flex items-center space-x-1">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <button @click="editEvent(selectedEvent)" class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-sm font-medium text-white rounded-xl shadow-md hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group">
+            <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
+            <svg class="w-4 h-4 mr-2 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
             </svg>
-            <span>Edit</span>
+            <span class="relative z-10">Edit</span>
           </button>
-          <button v-if="selectedEvent.status !== 'cancelled'" @click="cancelEvent(selectedEvent.id)" class="px-3 py-1 bg-orange-500 text-white rounded hover:bg-orange-600 flex items-center space-x-1">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <button v-if="selectedEvent.status !== 'cancelled'" @click="cancelEvent(selectedEvent.id)" class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-sm font-medium text-white rounded-xl shadow-md hover:from-orange-600 hover:to-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group">
+            <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
+            <svg class="w-4 h-4 mr-2 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <span>Cancel</span>
+            <span class="relative z-10">Cancel</span>
           </button>
-          <button @click="deleteEvent(selectedEvent.id)" class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 flex items-center space-x-1">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <button @click="deleteEvent(selectedEvent.id)" class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-sm font-medium text-white rounded-xl shadow-md hover:from-red-600 hover:to-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group">
+            <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
+            <svg class="w-4 h-4 mr-2 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
             </svg>
-            <span>Delete</span>
+            <span class="relative z-10">Delete</span>
           </button>
         </div>
       </div>
@@ -455,10 +460,13 @@ export default {
       description: ''
     });
     
-    // Filter out expired events for display
+    // Filter out expired and cancelled events for display
     const filterExpiredEvents = () => {
       const now = new Date();
       displayedEvents.value = events.value.filter(event => {
+        // Filter out cancelled events
+        if (event.status === 'cancelled') return false;
+        
         // Keep events with no end date
         if (!event.end_date) return true;
         

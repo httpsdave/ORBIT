@@ -123,7 +123,7 @@
       </div>
 
       <!-- Statistics Cards - Responsive Grid -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4 w-full">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 w-full">
         <!-- Total Events -->
         <div class="bg-white rounded-lg p-3 sm:p-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200">
           <div class="flex items-center">
@@ -184,20 +184,7 @@
           </div>
         </div>
 
-        <!-- Completion Rate -->
-        <div class="bg-white rounded-lg p-3 sm:p-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200">
-          <div class="flex items-center">
-            <div class="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-              <svg class="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
-            </div>
-            <div class="ml-3 min-w-0 flex-1">
-              <p class="text-xs sm:text-sm font-medium text-gray-600 truncate">Rate</p>
-              <p class="text-lg sm:text-2xl font-bold text-gray-900">{{ completionRate }}%</p>
-            </div>
-          </div>
-        </div>
+
       </div>
 
       <!-- Chart Container - Responsive -->
@@ -347,10 +334,7 @@ export default {
       }).length;
     });
 
-    const completionRate = computed(() => {
-      if (totalEvents.value === 0) return 0;
-      return Math.round((completedEvents.value / totalEvents.value) * 100);
-    });
+
 
     const averagePerMonth = computed(() => {
       if (props.events.length === 0) return 0;
@@ -651,7 +635,6 @@ export default {
       completedEvents,
       cancelledEvents,
       upcomingEvents,
-      completionRate,
       averagePerMonth,
       chartData,
       monthlyDistribution,

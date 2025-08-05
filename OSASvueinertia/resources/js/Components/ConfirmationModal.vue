@@ -34,18 +34,20 @@
       <div class="flex justify-end space-x-3">
         <button 
           @click="cancel"
-          class="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200"
+          class="inline-flex items-center justify-center px-4 py-2 bg-white border border-gray-300 text-sm font-medium text-gray-700 rounded-xl shadow-sm hover:bg-gray-50 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group"
         >
-          {{ cancelText }}
+          <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-gray-100 rounded-full group-hover:w-96 group-hover:h-96 opacity-20"></span>
+          <span class="relative z-10">{{ cancelText }}</span>
         </button>
         <button 
           @click="confirm"
           :class="[
-            'px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200',
+            'inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white rounded-xl shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group',
             confirmButtonClass
           ]"
         >
-          {{ confirmText }}
+          <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
+          <span class="relative z-10">{{ confirmText }}</span>
         </button>
       </div>
     </div>
@@ -114,11 +116,11 @@ export default {
     const confirmButtonClass = computed(() => {
       switch (props.type) {
         case 'warning':
-          return 'bg-yellow-500 text-white hover:bg-yellow-600 focus:ring-yellow-500';
+          return 'bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 focus:ring-yellow-500';
         case 'danger':
-          return 'bg-red-500 text-white hover:bg-red-600 focus:ring-red-500';
+          return 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 focus:ring-red-500';
         default:
-          return 'bg-green-500 text-white hover:bg-green-600 focus:ring-green-500';
+          return 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 focus:ring-green-500';
       }
     });
 
