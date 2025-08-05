@@ -133,12 +133,13 @@
   </div>
   
   <!-- Event Form Modal -->
-  <div 
-    v-if="extractedData || isEditing" 
-    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-    @click.self="cancelEdit"
-  >
-    <div class="bg-white rounded-lg shadow-lg p-6 max-w-md w-full mx-4">
+  <Transition name="modal">
+    <div 
+      v-if="extractedData || isEditing" 
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      @click.self="cancelEdit"
+    >
+      <div class="bg-white rounded-lg shadow-lg p-6 max-w-md w-full mx-4">
       <div class="flex justify-between items-center mb-4">
         <h2 class="text-lg font-semibold text-gray-800">
           {{ isEditing ? 'Edit Event' : 'Create New Event' }}
@@ -195,16 +196,18 @@
           </button>
         </div>
       </div>
+      </div>
     </div>
-  </div>
+  </Transition>
   
   <!-- Event Details Modal for non-admin users -->
-  <div 
-    v-if="showEventDetailsModal" 
-    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-    @click.self="closeEventDetailsModal"
-  >
-    <div class="bg-white rounded-lg shadow-lg p-6 max-w-md w-full mx-4">
+  <Transition name="modal">
+    <div 
+      v-if="showEventDetailsModal" 
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      @click.self="closeEventDetailsModal"
+    >
+      <div class="bg-white rounded-lg shadow-lg p-6 max-w-md w-full mx-4">
       <div class="flex justify-between items-center mb-4">
         <h3 class="text-lg font-semibold text-gray-800 break-words overflow-wrap-anywhere max-w-[90%]">{{selectedEvent.title}}</h3>
         <button @click="closeEventDetailsModal" class="text-gray-400 hover:text-gray-600 p-2 rounded-lg hover:bg-gray-100 transition-all duration-200">
@@ -272,8 +275,9 @@
           </button>
         </div>
       </div>
+      </div>
     </div>
-  </div>
+  </Transition>
 
   <EventHistoryModal 
   :show-modal="showPastEventsModal"
@@ -1121,5 +1125,14 @@ function exportPastEventsCsv(pastEvents) {
 /* Ensure proper z-index for modals */
 .z-50 {
   z-index: 50;
+}
+
+/* Modal transition styles */
+.modal-enter-active, .modal-leave-active {
+  transition: opacity 0.1s ease;
+}
+
+.modal-enter-from, .modal-leave-to {
+  opacity: 0;
 }
 </style>

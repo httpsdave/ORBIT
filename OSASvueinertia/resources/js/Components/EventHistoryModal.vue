@@ -1,11 +1,12 @@
 <template>
   <!-- Past Events Modal -->
-  <div 
-    v-if="showModal" 
-    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-    @click.self="closeModal"
-  >
-    <div class="bg-white rounded-lg shadow-lg max-w-2xl w-full mx-4 max-h-[80vh] overflow-hidden">
+  <Transition name="modal">
+    <div 
+      v-if="showModal" 
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      @click.self="closeModal"
+    >
+      <div class="bg-white rounded-lg shadow-lg max-w-2xl w-full mx-4 max-h-[80vh] overflow-hidden">
       <div class="flex justify-between items-center p-6 border-b">
         <h3 class="text-lg font-semibold text-gray-800 flex items-center">
           <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -117,8 +118,9 @@
           </li>
         </ul>
       </div>
+      </div>
     </div>
-  </div>
+  </Transition>
 </template>
 <script>
 import { computed } from 'vue';
@@ -189,3 +191,22 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+/* Modal transition styles */
+.modal-enter-active, .modal-leave-active {
+  transition: opacity 0.1s ease;
+}
+
+.modal-enter-from, .modal-leave-to {
+  opacity: 0;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+</style>

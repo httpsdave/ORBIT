@@ -56,10 +56,11 @@
                 <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
               </svg>
             </button>
-            <div
-              v-if="showTimeRangeDropdown"
-              class="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-lg z-50"
-            >
+            <Transition name="dropdown">
+              <div
+                v-if="showTimeRangeDropdown"
+                class="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-lg z-50"
+              >
               <ul class="py-1">
                 <li>
                   <button
@@ -102,7 +103,8 @@
                   </button>
                 </li>
               </ul>
-            </div>
+              </div>
+            </Transition>
             <!-- Click outside to close -->
             <div v-if="showTimeRangeDropdown" class="fixed inset-0 z-40" @click="showTimeRangeDropdown = false"></div>
           </div>
@@ -706,5 +708,14 @@ export default {
 
 .bg-gradient-to-r:nth-child(4) {
   animation-delay: 0.3s;
+}
+
+/* Dropdown transition styles */
+.dropdown-enter-active, .dropdown-leave-active {
+  transition: opacity 0.05s ease;
+}
+
+.dropdown-enter-from, .dropdown-leave-to {
+  opacity: 0;
 }
 </style>
