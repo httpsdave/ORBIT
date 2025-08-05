@@ -91,6 +91,7 @@ watch(() => sidebarExpanded.value, () => {
 const hasUpcomingEvents = ref(false);
 const hasEventsToday = ref(false);
 const badgeWasClicked = ref(false);
+const eventCheckTimer = ref(null);
 
 // Check for upcoming events
 const checkUpcomingEvents = async () => {
@@ -101,17 +102,35 @@ const checkUpcomingEvents = async () => {
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
     
-    hasEventsToday.value = response.data.some(event => {
+    // Filter active events only (not cancelled and not finished)
+    const activeEvents = response.data.filter(event => {
+      // Skip cancelled events
+      if (event.status === 'cancelled') {
+        return false;
+      }
+      
+      // Check if event has finished
+      const endDate = event.end_date ? new Date(event.end_date) : new Date(event.start_date);
+      
+      // If event has finished (current time is past end date), exclude it
+      if (endDate < now) {
+        return false;
+      }
+      
+      return true;
+    });
+    
+    hasEventsToday.value = activeEvents.some(event => {
       const eventDate = new Date(event.start_date);
       return eventDate >= today && eventDate < tomorrow;
     });
     
-    hasUpcomingEvents.value = response.data.some(event => {
+    hasUpcomingEvents.value = activeEvents.some(event => {
       const eventDate = new Date(event.start_date);
       return eventDate >= tomorrow;
     });
     
-    // If no events exist, reset the clicked state
+    // If no active events exist, reset the clicked state
     if (!hasEventsToday.value && !hasUpcomingEvents.value) {
       badgeWasClicked.value = false;
     }
@@ -135,6 +154,10 @@ const handleEventDeleted = () => {
   checkUpcomingEvents();
 };
 
+const handleEventCancelled = () => {
+  checkUpcomingEvents();
+};
+
 // Computed property for showing badge
 const showCalendarBadge = computed(() => {
   return (hasEventsToday.value || hasUpcomingEvents.value) && !badgeWasClicked.value;
@@ -144,6 +167,7 @@ const showCalendarBadge = computed(() => {
 if (typeof window !== 'undefined') {
   window.addEventListener('calendar-event-added', handleEventAdded);
   window.addEventListener('calendar-event-deleted', handleEventDeleted);
+  window.addEventListener('calendar-event-cancelled', handleEventCancelled);
 }
 
 // Calendar data - moved from NavigationItems.vue
@@ -285,9 +309,6 @@ const proceedSignOut = () => {
   router.post(route('logout'));
 };
 
-// Timer for periodic event checking
-const eventCheckTimer = ref(null);
-
 // Lifecycle hooks
 onMounted(() => {
   document.addEventListener('click', closeSidebarOnClickOutside);
@@ -322,6 +343,7 @@ onUnmounted(() => {
   if (typeof window !== 'undefined') {
     window.removeEventListener('calendar-event-added', handleEventAdded);
     window.removeEventListener('calendar-event-deleted', handleEventDeleted);
+    window.removeEventListener('calendar-event-cancelled', handleEventCancelled);
   }
 });
 </script>

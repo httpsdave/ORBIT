@@ -882,6 +882,11 @@ export default {
           // Close the event details modal if open
           closeEventDetailsModal();
           
+          // Dispatch event for calendar badge update
+          if (typeof window !== 'undefined') {
+            window.dispatchEvent(new Event('calendar-event-cancelled'));
+          }
+          
           // Reset confirmation modal
           showCancelConfirmation.value = false;
           eventToCancel.value = null;
