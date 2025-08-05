@@ -1,7 +1,7 @@
 <template>
-  <div class="p-2 sm:p-4 lg:p-6 w-full max-w-full overflow-x-hidden min-h-screen">
+  <div class="p-2 sm:p-4 lg:p-6 w-full max-w-full overflow-x-hidden pb-12 sm:pb-16">
     <!-- Loading State -->
-    <div v-if="isLoading" class="flex items-center justify-center h-96">
+    <div v-if="isLoading" class="flex items-center justify-center py-12">
       <div class="text-center">
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
         <p class="text-gray-600">Loading statistics...</p>
@@ -9,7 +9,7 @@
     </div>
 
     <!-- Error State -->
-    <div v-else-if="hasError" class="flex items-center justify-center h-96">
+    <div v-else-if="hasError" class="flex items-center justify-center py-12">
       <div class="text-center">
         <svg class="w-16 h-16 text-red-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -26,7 +26,7 @@
     </div>
 
     <!-- Statistics Content -->
-    <div v-else class="space-y-3 sm:space-y-4 lg:space-y-6 w-full max-w-full">
+    <div v-else class="space-y-3 sm:space-y-4 lg:space-y-6 w-full max-w-full pb-12 sm:pb-16">
       <!-- Header -->
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <div>
@@ -717,5 +717,55 @@ export default {
 
 .dropdown-enter-from, .dropdown-leave-to {
   opacity: 0;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  /* Ensure proper bottom spacing on mobile */
+  .statistics-container {
+    padding-bottom: 4rem !important;
+    margin-bottom: 2rem;
+  }
+  
+  /* Fix chart container on mobile */
+  .chart-container {
+    overflow-x: auto;
+    min-height: 200px;
+  }
+  
+  /* Ensure cards don't overflow */
+  .grid {
+    gap: 0.75rem;
+  }
+  
+  /* Add extra spacing for content */
+  .space-y-3 > * + *,
+  .space-y-4 > * + *,
+  .space-y-6 > * + * {
+    margin-bottom: 1rem !important;
+  }
+}
+
+/* Additional mobile fixes */
+@media (max-width: 640px) {
+  /* Extra small screens */
+  .main-content {
+    padding-bottom: 5rem !important;
+  }
+  
+  /* Ensure statistics view has enough bottom space */
+  .statistics-view {
+    min-height: auto !important;
+    padding-bottom: 3rem !important;
+  }
+}
+
+/* Fix viewport height issues */
+@media (max-height: 600px) {
+  /* For very short screens */
+  .modal-content {
+    max-height: 80vh;
+    overflow-y: auto;
+  }
 }
 </style>

@@ -1,4 +1,5 @@
 <template>
+  <div class="w-full pb-8">
   <!-- Colored banner -->
   <div class="flex w-full mb-4 overflow-hidden rounded-lg shadow-sm">
     <div class="w-1/4 h-1.5 bg-blue-500 " style="animation-delay: 0.2s;"></div>
@@ -78,7 +79,7 @@
 </div>
 
   <!-- Main Content Container with 3D Flip Animation -->
-  <div class="relative bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden" style="perspective: 1000px;">
+  <div class="relative bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden min-h-96" style="perspective: 1000px;">
     <!-- Calendar View -->
     <div 
       :class="[
@@ -91,7 +92,7 @@
        <div 
          :class="[
            'w-full backface-hidden',
-           currentView === 'statistics' ? 'opacity-0 pointer-events-none' : 'opacity-100'
+           currentView === 'statistics' ? 'opacity-0 pointer-events-none hidden' : 'opacity-100'
          ]"
          style="backface-visibility: hidden; will-change: opacity;"
        >
@@ -118,8 +119,8 @@
              <!-- Back Side - Statistics -->
        <div 
          :class="[
-           'absolute inset-0 w-full backface-hidden rotate-y-180',
-           currentView === 'calendar' ? 'opacity-0 pointer-events-none' : 'opacity-100'
+           'w-full backface-hidden rotate-y-180',
+           currentView === 'calendar' ? 'opacity-0 pointer-events-none hidden' : 'opacity-100'
          ]"
          style="backface-visibility: hidden; transform: rotateY(180deg); will-change: opacity;"
        >
@@ -361,6 +362,7 @@
     </div>
   </Transition>
   
+  </div>
 </template>
 <style scoped>
     /* Custom FullCalendar styling to match your color scheme */
@@ -1429,5 +1431,73 @@ function exportPastEventsCsv(pastEvents) {
 
 .modal-enter-from, .modal-leave-to {
   opacity: 0;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  /* Ensure proper bottom spacing on mobile */
+  .calendar-container {
+    padding-bottom: 2rem;
+    margin-bottom: 2rem;
+  }
+  
+  /* Fix calendar overflow on mobile */
+  :deep(.fc) {
+    font-size: 0.875rem;
+  }
+  
+  :deep(.fc .fc-toolbar) {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  :deep(.fc .fc-toolbar-chunk) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Ensure events are properly visible */
+  :deep(.fc-event) {
+    font-size: 0.75rem;
+    padding: 1px 2px;
+  }
+  
+  /* Fix modal positioning on mobile */
+  .modal-container {
+    padding: 1rem;
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+  }
+  
+  /* Fix statistics view container on mobile */
+  .statistics-view-container {
+    min-height: auto !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+}
+
+/* Additional mobile fixes */
+@media (max-width: 640px) {
+  /* Extra small screens */
+  .main-content {
+    padding-bottom: 3rem;
+  }
+  
+  /* Ensure flip container doesn't constrain height */
+  .flip-container {
+    height: auto !important;
+    min-height: auto !important;
+  }
+}
+
+/* Fix viewport height issues */
+@media (max-height: 600px) {
+  /* For very short screens */
+  .modal-content {
+    max-height: 80vh;
+    overflow-y: auto;
+  }
 }
 </style>

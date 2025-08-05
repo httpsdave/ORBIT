@@ -2,3 +2,44 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Global fixes for mobile scrolling */
+@layer base {
+  html, body {
+    overflow-x: hidden;
+    overflow-y: auto !important;
+    height: auto !important;
+    min-height: 100vh;
+  }
+
+  #app {
+    min-height: 100vh;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  /* Ensure main layout containers don't constrain height */
+  main, .main-content, .layout-container {
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+  }
+}
+
+/* Mobile-specific fixes */
+@media (max-width: 768px) {
+  .statistics-content {
+    padding-bottom: 4rem !important;
+  }
+  
+  .flip-container {
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+  }
+  
+  .calendar-statistics-view {
+    position: relative !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+}

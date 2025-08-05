@@ -574,13 +574,13 @@ onUnmounted(() => {
     <!-- Main Content - with additional top padding to account for the fixed header -->
     <div 
         :class="[
-          'flex-1 flex flex-col min-h-screen overflow-hidden pt-16',
+          'flex-1 flex flex-col pt-16',
           // Only push content when sidebar is expanded (not when hovering)
           sidebarExpanded ? 'md:ml-64' : 'md:ml-20'
         ]"
       >
       <!-- Page Content -->
-      <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 relative p-4 sm:p-6">
+      <main class="flex-1 bg-gray-50 relative p-4 sm:p-6 pb-8">
         <!-- Content provided via slot -->
         <slot></slot>
       </main>

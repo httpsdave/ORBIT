@@ -19,11 +19,9 @@ const props = defineProps({
   <AuthenticatedLayout>
     <Head title="Calendar" />
 
-    
-      
-        <!-- Pass the isAdmin prop to the Calendar component -->
-        <Calendar :initial-events="initialEvents" :is-admin="isAdmin" />
-      
-    
+    <div class="w-full">
+      <!-- Pass the isAdmin prop to the Calendar component -->
+      <Calendar :initial-events="initialEvents" :is-admin="isAdmin" />
+    </div>
   </AuthenticatedLayout>
 </template>
