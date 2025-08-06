@@ -34,13 +34,13 @@ const signedDocumentError = ref(null);
 const getStatusColor = (status) => {
   switch(status.toLowerCase()) {
     case 'approved':
-      return 'bg-green-100 text-green-800';
+      return 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300';
     case 'pending':
-      return 'bg-amber-100 text-amber-800';
+      return 'bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300';
     case 'disapproved':
-      return 'bg-red-100 text-red-800';
+      return 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300';
     default:
-      return 'bg-gray-100 text-gray-800';
+      return 'bg-gray-100 dark:bg-gray-900/30 text-gray-800 dark:text-gray-300';
   }
 };
 
@@ -485,18 +485,18 @@ watch(showSignedDocumentModal, (val) => {
     <!-- MOBILE CARD LAYOUT -->
     <div class="sm:hidden p-2 space-y-4 max-w-4xl mx-auto">
       <div v-for="app in applications" :key="app.id" 
-        class="bg-white rounded-xl shadow border border-gray-100 p-4 flex flex-col gap-2 cursor-pointer hover:bg-gray-50 transition"
+        class="bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-100 dark:border-gray-700 p-4 flex flex-col gap-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition"
         @click="viewPdf(app)">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#2563eb"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h168q13-36 43.5-58t68.5-22q38 0 68.5 22t43.5 58h168q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm80-80h280v-80H280v80Zm0-160h400v-80H280v80Zm0-160h400v-80H280v80Zm200-190q13 0 21.5-8.5T510-820q0-13-8.5-21.5T480-850q-13 0-21.5 8.5T450-820q0 13 8.5 21.5T480-790ZM200-200v-560 560Z"/></svg>
-            <div class="text-base font-semibold text-gray-800">{{ formTypeToName(app.form_type) }}</div>
+            <div class="text-base font-semibold text-gray-800 dark:text-gray-200">{{ formTypeToName(app.form_type) }}</div>
           </div>
           <span :class="`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(app.status)}`">
             {{ app.status }}
           </span>
         </div>
-        <div class="flex flex-wrap gap-2 text-xs text-gray-600">
+        <div class="flex flex-wrap gap-2 text-xs text-gray-600 dark:text-gray-400">
           <span v-if="isAdmin"><span class="font-medium">Org:</span> {{ app.user.name }}</span>
           <span><span class="font-medium">Submitted:</span> {{ formatDate(app.created_at) }}</span>
         </div>
@@ -602,17 +602,17 @@ watch(showSignedDocumentModal, (val) => {
       <div
         v-for="app in applications"
         :key="app.id"
-        class="bg-white rounded-xl shadow border border-gray-100 mb-4 flex flex-col md:flex-row md:items-center md:justify-between hover:shadow-lg transition cursor-pointer hover:bg-gray-50"
+        class="bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-100 dark:border-gray-700 mb-4 flex flex-col md:flex-row md:items-center md:justify-between hover:shadow-lg transition cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
         @click="viewPdf(app)"
       >
         <div class="flex items-center gap-4 p-5 flex-1 min-w-0">
           <div class="flex-shrink-0">
-            <div class="bg-blue-100 text-blue-600 rounded-full p-3">
+            <div class="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full p-3">
               <svg xmlns="http://www.w3.org/2000/svg" height="28px" viewBox="0 -960 960 960" width="28px" fill="#2563eb"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h168q13-36 43.5-58t68.5-22q38 0 68.5 22t43.5 58h168q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm80-80h280v-80H280v80Zm0-160h400v-80H280v80Zm0-160h400v-80H280v80Zm200-190q13 0 21.5-8.5T510-820q0-13-8.5-21.5T480-850q-13 0-21.5 8.5T450-820q0 13 8.5 21.5T480-790ZM200-200v-560 560Z"/></svg>
             </div>
           </div>
           <div class="min-w-0 flex-1">
-            <div class="font-medium text-base text-gray-900 truncate">
+            <div class="font-medium text-base text-gray-900 dark:text-gray-100 truncate">
               {{ formTypeToName(app.form_type) }}
               <span v-if="isAdmin" class="inline-flex items-center">
                 <svg class="mx-1" width="10" height="10" viewBox="0 0 10 10" fill="#374151" xmlns="http://www.w3.org/2000/svg" style="display:inline"><polygon points="0,0 10,5 0,10"/></svg>

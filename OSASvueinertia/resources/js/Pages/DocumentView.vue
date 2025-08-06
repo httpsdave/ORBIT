@@ -393,13 +393,13 @@ const updateStatus = async () => {
 const getStatusColor = (status) => {
   switch(status?.toLowerCase()) {
     case 'approved':
-      return 'bg-green-100 text-green-800'
+      return 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
     case 'pending':
-      return 'bg-amber-100 text-amber-800'
+      return 'bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300'
     case 'disapproved':
-      return 'bg-red-100 text-red-800'
+      return 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300'
     default:
-      return 'bg-gray-100 text-gray-800'
+      return 'bg-gray-100 dark:bg-gray-900/30 text-gray-800 dark:text-gray-300'
   }
 }
 

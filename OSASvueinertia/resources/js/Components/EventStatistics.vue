@@ -14,8 +14,8 @@
         <svg class="w-16 h-16 text-red-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
-        <h3 class="text-lg font-medium text-gray-900 mb-2">Unable to load statistics</h3>
-        <p class="text-gray-600 mb-4">There was an error loading the event statistics.</p>
+        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">Unable to load statistics</h3>
+        <p class="text-gray-600 dark:text-gray-400 mb-4">There was an error loading the event statistics.</p>
         <button 
           @click="refreshData" 
           class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200"
@@ -30,18 +30,18 @@
       <!-- Header -->
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 class="text-xl sm:text-2xl font-bold text-gray-900">Events Report</h2>
-          <p class="text-gray-600 mt-1 text-sm sm:text-base">Analytics and insights for administrative reporting</p>
+          <h2 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">Events Report</h2>
+          <p class="text-gray-600 dark:text-gray-400 mt-1 text-sm sm:text-base">Analytics and insights for administrative reporting</p>
         </div>
         <div class="mt-4 sm:mt-0 flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
           <!-- Time Range Selector -->
           <div class="relative w-full sm:w-auto">
             <button
               @click="showTimeRangeDropdown = !showTimeRangeDropdown"
-              class="inline-flex items-center justify-center px-4 py-2 bg-white border border-blue-500 text-blue-700 text-sm font-medium rounded-xl shadow-md hover:bg-blue-50 hover:text-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group w-full sm:w-auto"
+              class="inline-flex items-center justify-center px-4 py-2 bg-white dark:bg-gray-800 border border-blue-500 dark:border-blue-400 text-blue-700 dark:text-blue-300 text-sm font-medium rounded-xl shadow-md hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-800 dark:hover:text-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-all duration-300 relative overflow-hidden group w-full sm:w-auto"
               type="button"
             >
-              <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
+              <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white dark:bg-gray-800 rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 002 2z" />
               </svg>
@@ -59,13 +59,13 @@
             <Transition name="dropdown">
               <div
                 v-if="showTimeRangeDropdown"
-                class="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-lg z-50"
+                class="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg z-50"
               >
               <ul class="py-1">
                 <li>
                   <button
                     @click="selectedTimeRange = '7'; updateChartData(); showTimeRangeDropdown = false"
-                    :class="['w-full text-left px-4 py-2 text-sm transition', selectedTimeRange === '7' ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-700']"
+                    :class="['w-full text-left px-4 py-2 text-sm transition', selectedTimeRange === '7' ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-medium' : 'text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-700 dark:hover:text-blue-300']"
                   >
                     Last 7 days
                   </button>
@@ -73,7 +73,7 @@
                 <li>
                   <button
                     @click="selectedTimeRange = '30'; updateChartData(); showTimeRangeDropdown = false"
-                    :class="['w-full text-left px-4 py-2 text-sm transition', selectedTimeRange === '30' ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-700']"
+                    :class="['w-full text-left px-4 py-2 text-sm transition', selectedTimeRange === '30' ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-medium' : 'text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-700 dark:hover:text-blue-300']"
                   >
                     Last 30 days
                   </button>
@@ -114,7 +114,7 @@
             @click="exportStatistics"
             class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-sm font-medium text-white rounded-xl shadow-md hover:from-green-600 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group w-full sm:w-auto"
           >
-            <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
+            <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white dark:bg-gray-800 rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
             <svg class="w-4 h-4 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" />
             </svg>
@@ -127,61 +127,61 @@
       <!-- Statistics Cards - Responsive Grid -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 w-full">
         <!-- Total Events -->
-        <div class="bg-white rounded-lg p-3 sm:p-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200">
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-3 sm:p-4 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow duration-200">
           <div class="flex items-center">
-            <div class="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-              <svg class="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+              <svg class="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
             </div>
             <div class="ml-3 min-w-0 flex-1">
-              <p class="text-xs sm:text-sm font-medium text-gray-600 truncate">Total Events</p>
-              <p class="text-lg sm:text-2xl font-bold text-gray-900">{{ totalEvents }}</p>
+              <p class="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 truncate">Total Events</p>
+              <p class="text-lg sm:text-2xl font-bold text-gray-900 dark:text-gray-100">{{ totalEvents }}</p>
             </div>
           </div>
         </div>
 
         <!-- Completed Events -->
-        <div class="bg-white rounded-lg p-3 sm:p-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200">
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-3 sm:p-4 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow duration-200">
           <div class="flex items-center">
-            <div class="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 bg-green-100 rounded-lg flex items-center justify-center">
-              <svg class="w-4 h-4 sm:w-5 sm:h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
+              <svg class="w-4 h-4 sm:w-5 sm:h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
             <div class="ml-3 min-w-0 flex-1">
-              <p class="text-xs sm:text-sm font-medium text-gray-600 truncate">Completed</p>
-              <p class="text-lg sm:text-2xl font-bold text-gray-900">{{ completedEvents }}</p>
+              <p class="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 truncate">Completed</p>
+              <p class="text-lg sm:text-2xl font-bold text-gray-900 dark:text-gray-100">{{ completedEvents }}</p>
             </div>
           </div>
         </div>
 
         <!-- Cancelled Events -->
-        <div class="bg-white rounded-lg p-3 sm:p-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200">
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-3 sm:p-4 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow duration-200">
           <div class="flex items-center">
-            <div class="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 bg-red-100 rounded-lg flex items-center justify-center">
-              <svg class="w-4 h-4 sm:w-5 sm:h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center">
+              <svg class="w-4 h-4 sm:w-5 sm:h-5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
             <div class="ml-3 min-w-0 flex-1">
-              <p class="text-xs sm:text-sm font-medium text-gray-600 truncate">Cancelled</p>
-              <p class="text-lg sm:text-2xl font-bold text-gray-900">{{ cancelledEvents }}</p>
+              <p class="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 truncate">Cancelled</p>
+              <p class="text-lg sm:text-2xl font-bold text-gray-900 dark:text-gray-100">{{ cancelledEvents }}</p>
             </div>
           </div>
         </div>
 
         <!-- Upcoming Events -->
-        <div class="bg-white rounded-lg p-3 sm:p-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200">
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-3 sm:p-4 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow duration-200">
           <div class="flex items-center">
-            <div class="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
-              <svg class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg flex items-center justify-center">
+              <svg class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
             <div class="ml-3 min-w-0 flex-1">
-              <p class="text-xs sm:text-sm font-medium text-gray-600 truncate">Upcoming</p>
-              <p class="text-lg sm:text-2xl font-bold text-gray-900">{{ upcomingEvents }}</p>
+              <p class="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 truncate">Upcoming</p>
+              <p class="text-lg sm:text-2xl font-bold text-gray-900 dark:text-gray-100">{{ upcomingEvents }}</p>
             </div>
           </div>
         </div>
@@ -190,11 +190,11 @@
       </div>
 
       <!-- Chart Container - Responsive -->
-      <div class="hidden sm:block bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
+      <div class="hidden sm:block bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6">
-          <h3 class="text-lg font-semibold text-gray-900">Event Trends</h3>
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Event Trends</h3>
           <div class="mt-2 sm:mt-0">
-            <div class="flex items-center space-x-2 text-sm text-gray-600">
+            <div class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
               <div class="w-3 h-3 bg-green-500 rounded-full"></div>
               <span>Events over time</span>
             </div>
@@ -212,31 +212,31 @@
             <svg class="w-12 h-12 sm:w-16 sm:h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
             </svg>
-            <h3 class="text-base sm:text-lg font-medium text-gray-900 mb-2">No data available</h3>
-            <p class="text-sm sm:text-base text-gray-600">No events found for the selected time range.</p>
+            <h3 class="text-base sm:text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No data available</h3>
+            <p class="text-sm sm:text-base text-gray-600 dark:text-gray-400">No events found for the selected time range.</p>
           </div>
         </div>
       </div>
 
       <!-- Mobile Summary (replaces chart on small screens) -->
-      <div class="block sm:hidden bg-white rounded-lg border border-gray-200 p-4 shadow-sm w-full">
-        <h3 class="text-base font-semibold text-gray-900 mb-3">Quick Summary</h3>
+      <div class="block sm:hidden bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 shadow-sm w-full">
+        <h3 class="text-base font-semibold text-gray-900 dark:text-gray-100 mb-3">Quick Summary</h3>
         <div class="grid grid-cols-2 gap-3">
-          <div class="text-center bg-gray-50 rounded-lg p-3">
-            <p class="text-xl font-bold text-blue-600">{{ totalEvents }}</p>
-            <p class="text-xs text-gray-600">Total Events</p>
+          <div class="text-center bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
+            <p class="text-xl font-bold text-blue-600 dark:text-blue-400">{{ totalEvents }}</p>
+            <p class="text-xs text-gray-600 dark:text-gray-400">Total Events</p>
           </div>
-          <div class="text-center bg-gray-50 rounded-lg p-3">
-            <p class="text-xl font-bold text-green-600">{{ completedEvents }}</p>
-            <p class="text-xs text-gray-600">Completed</p>
+          <div class="text-center bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
+            <p class="text-xl font-bold text-green-600 dark:text-green-400">{{ completedEvents }}</p>
+            <p class="text-xs text-gray-600 dark:text-gray-400">Completed</p>
           </div>
-          <div class="text-center bg-gray-50 rounded-lg p-3">
-            <p class="text-xl font-bold text-red-600">{{ cancelledEvents }}</p>
-            <p class="text-xs text-gray-600">Cancelled</p>
+          <div class="text-center bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
+            <p class="text-xl font-bold text-red-600 dark:text-red-400">{{ cancelledEvents }}</p>
+            <p class="text-xs text-gray-600 dark:text-gray-400">Cancelled</p>
           </div>
-          <div class="text-center bg-gray-50 rounded-lg p-3">
-            <p class="text-xl font-bold text-yellow-600">{{ upcomingEvents }}</p>
-            <p class="text-xs text-gray-600">Upcoming</p>
+          <div class="text-center bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
+            <p class="text-xl font-bold text-yellow-600 dark:text-yellow-400">{{ upcomingEvents }}</p>
+            <p class="text-xs text-gray-600 dark:text-gray-400">Upcoming</p>
           </div>
         </div>
       </div>

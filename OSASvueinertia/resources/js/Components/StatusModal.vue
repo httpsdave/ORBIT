@@ -23,13 +23,13 @@ watch(() => props.application, (newApp) => {
 const getStatusColor = (status) => {
   switch (status?.toLowerCase()) {
     case 'approved':
-      return 'bg-green-100 text-green-800';
+      return 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300';
     case 'pending':
-      return 'bg-amber-100 text-amber-800';
+      return 'bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300';
     case 'disapproved':
-      return 'bg-red-100 text-red-800';
+      return 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300';
     default:
-      return 'bg-gray-100 text-gray-800';
+      return 'bg-gray-100 dark:bg-gray-900/30 text-gray-800 dark:text-gray-300';
   }
 };
 
@@ -51,10 +51,10 @@ const handleUpdateStatus = () => {
       ></div>
 
       <!-- Modal Content -->
-      <div class="bg-white rounded-2xl shadow-md w-full max-w-md relative z-10 overflow-hidden">
+      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-md w-full max-w-md relative z-10 overflow-hidden">
         <!-- Header -->
         <div class="bg-gradient-to-r from-blue-600 to-indigo-600 p-6 text-white">
-          <h3 class="text-xl font-bold">
+          <h3 class="text-xl font-bold text-white">
             {{ isAdmin ? 'Update Application Status' : 'Application Feedback' }}
           </h3>
           <p class="text-sm text-indigo-100 mt-1">
@@ -63,7 +63,7 @@ const handleUpdateStatus = () => {
         </div>
 
         <!-- Body -->
-        <div class="p-6 space-y-4">
+        <div class="p-6 space-y-4 bg-white dark:bg-gray-800">
           <!-- Admin: Status Buttons -->
           <div v-if="isAdmin">
             <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
@@ -106,21 +106,21 @@ const handleUpdateStatus = () => {
 
           <!-- Admin: Feedback Input -->
           <div v-if="isAdmin">
-            <label for="feedback" class="block text-sm font-medium text-gray-700 mb-2">
-              Feedback <span class="text-xs text-gray-500 ml-1">(Optional)</span>
+            <label for="feedback" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Feedback <span class="text-xs text-gray-500 dark:text-gray-400 ml-1">(Optional)</span>
             </label>
             <textarea
               id="feedback"
               v-model="feedbackText"
               rows="4"
-              class="w-full rounded-lg border border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 transition duration-200 p-3 text-sm"
+              class="w-full rounded-lg border border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 transition duration-200 p-3 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               placeholder="Enter feedback to the organization..."
             ></textarea>
           </div>
 
           <!-- User: Status Display -->
           <div v-if="!isAdmin">
-            <h4 class="text-sm font-medium text-gray-700 mb-2">Current Status</h4>
+            <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Current Status</h4>
             <span
               :class="`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(application?.status)}`"
             >
@@ -130,19 +130,19 @@ const handleUpdateStatus = () => {
 
           <!-- User: Feedback Display -->
           <div v-if="!isAdmin">
-            <h4 class="text-sm font-medium text-gray-700 mb-2">Feedback from Admin</h4>
-            <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-sm text-gray-700">
+            <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Feedback from Admin</h4>
+            <div class="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-4 text-sm text-gray-700 dark:text-gray-300">
               {{ application?.feedback || 'No feedback provided.' }}
             </div>
           </div>
         </div>
 
         <!-- Footer -->
-        <div class="bg-gray-50 p-6 flex justify-end space-x-3 border-t border-gray-100">
+        <div class="bg-gray-50 dark:bg-gray-700 p-6 flex justify-end space-x-3 border-t border-gray-100 dark:border-gray-600">
           <button
             v-if="isAdmin"
             @click="emit('close')"
-            class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-100 transition duration-200 text-sm"
+            class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 font-medium hover:bg-gray-100 dark:hover:bg-gray-600 transition duration-200 text-sm"
           >
             Cancel
           </button>

@@ -1,11 +1,11 @@
 <script setup>
 import Checkbox from '@/Components/Checkbox.vue';
-
 import InputError from '@/Components/InputError.vue';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { useTheme } from '@/Composables/useTheme';
 
 
 defineProps({
@@ -26,12 +26,13 @@ const form = useForm({
 const passwordVisible = ref(false);
 const isLoading = ref(false);
 const formElement = ref(null);
-// Set dark mode as default
-const isDarkMode = ref(true);
 const activeSlide = ref(0);
 const slideInterval = ref(null);
 const gradientIndex = ref(0);
 const gradientInterval = ref(null);
+
+// Use global theme system instead of local isDarkMode
+const { isDark: isDarkMode } = useTheme();
 
 // Slideshow images
 const slideshowImages = [
@@ -46,10 +47,6 @@ const slideshowImages = [
 
 const togglePasswordVisibility = () => {
     passwordVisible.value = !passwordVisible.value;
-};
-
-const toggleTheme = () => {
-    isDarkMode.value = !isDarkMode.value;
 };
 
 const submit = () => {

@@ -6,9 +6,14 @@ import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createApp, h } from 'vue';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
+import { useTheme } from '@/Composables/useTheme';
 
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+
+// Initialize theme before creating the Inertia app
+const { initializeTheme } = useTheme();
+initializeTheme();
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,

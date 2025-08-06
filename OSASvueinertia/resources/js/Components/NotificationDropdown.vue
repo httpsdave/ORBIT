@@ -3,7 +3,7 @@
     <!-- Notification Bell Button -->
     <button
       @click="toggleDropdown"
-      class="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300 group relative"
+      class="p-2 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300 group relative"
       aria-label="Notifications"
       :aria-expanded="isOpen"
     >
@@ -29,7 +29,7 @@
         </transition>
       </div>
       <!-- Tooltip -->
-      <span class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-50">
+      <span class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-800 dark:bg-gray-200 text-white dark:text-gray-800 text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-50">
         Notifications
       </span>
     </button>
@@ -37,17 +37,17 @@
     <!-- Dropdown Menu -->
     <div 
       v-show="isOpen"
-      class="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-50 max-h-96 overflow-hidden"
+      class="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50 max-h-96 overflow-hidden"
       @click.stop
     >
       <!-- Header -->
-      <div class="px-4 py-3 border-b border-gray-100 bg-gray-50">
+      <div class="px-4 py-3 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
         <div class="flex items-center justify-between">
-          <h3 class="text-sm font-semibold text-gray-800">Notifications</h3>
+          <h3 class="text-sm font-semibold text-gray-800 dark:text-gray-200">Notifications</h3>
           <button
             v-if="unreadCount > 0"
             @click="markAllAsRead"
-            class="text-xs text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200"
+            class="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium transition-colors duration-200"
           >
             Mark all read
           </button>
@@ -57,20 +57,20 @@
       <!-- Loading State -->
       <div v-if="loading" class="px-4 py-6 text-center">
         <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500 mx-auto"></div>
-        <p class="text-sm text-gray-500 mt-2">Loading notifications...</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">Loading notifications...</p>
       </div>
 
       <!-- Empty State -->
       <div v-else-if="recentNotifications.length === 0" class="px-4 py-6 text-center">
         <div class="flex justify-center mb-3">
-          <div class="rounded-full bg-gray-100 p-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div class="rounded-full bg-gray-100 dark:bg-gray-700 p-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
             </svg>
           </div>
         </div>
-        <p class="text-sm font-medium text-gray-600">No notifications</p>
-        <p class="text-xs text-gray-500">You're all caught up!</p>
+        <p class="text-sm font-medium text-gray-600 dark:text-gray-300">No notifications</p>
+        <p class="text-xs text-gray-500 dark:text-gray-400">You're all caught up!</p>
       </div>
 
       <!-- Notifications List -->
@@ -79,8 +79,8 @@
           v-for="notification in recentNotifications"
           :key="notification.id"
           @click="handleNotificationClick(notification.id)"
-          class="w-full px-4 py-3 hover:bg-gray-50 focus:bg-gray-50 focus:outline-none transition-colors duration-200 border-b border-gray-100 last:border-b-0"
-          :class="{ 'bg-blue-50': !notification.is_read }"
+          class="w-full px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 focus:bg-gray-50 dark:focus:bg-gray-700 focus:outline-none transition-colors duration-200 border-b border-gray-100 dark:border-gray-700 last:border-b-0"
+          :class="{ 'bg-blue-50 dark:bg-blue-900/20': !notification.is_read }"
         >
           <div class="flex items-start space-x-3">
             <!-- Icon -->
@@ -109,35 +109,35 @@
             <!-- Content -->
             <div class="flex-1 min-w-0 text-left">
               <div class="flex items-center justify-between mb-1">
-                <p class="text-sm font-medium text-gray-900 truncate" :class="{ 'font-semibold': !notification.is_read }">
+                <p class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate" :class="{ 'font-semibold': !notification.is_read }">
                   {{ notification.title }}
                 </p>
                 <div class="flex items-center space-x-2">
                   <span v-if="!notification.is_read" class="inline-block h-2 w-2 rounded-full bg-blue-500"></span>
                   <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium" 
                     :class="{
-                      'bg-blue-100 text-blue-700': notification.type === 'info',
-                      'bg-green-100 text-green-700': notification.type === 'success',
-                      'bg-yellow-100 text-yellow-700': notification.type === 'warning',
-                      'bg-red-100 text-red-700': notification.type === 'error',
+                      'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300': notification.type === 'info',
+                      'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300': notification.type === 'success',
+                      'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300': notification.type === 'warning',
+                      'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300': notification.type === 'error',
                     }"
                   >
                     {{ formatType(notification.type) }}
                   </span>
                 </div>
               </div>
-              <p class="text-xs text-gray-600 line-clamp-2">{{ notification.message }}</p>
-              <p class="text-xs text-gray-400 mt-1">{{ formatTimeAgo(notification.created_at) }}</p>
+              <p class="text-xs text-gray-600 dark:text-gray-300 line-clamp-2">{{ notification.message }}</p>
+              <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">{{ formatTimeAgo(notification.created_at) }}</p>
             </div>
           </div>
         </button>
       </div>
 
       <!-- Footer -->
-      <div class="px-4 py-3 border-t border-gray-100 bg-gray-50">
+      <div class="px-4 py-3 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
         <button
           @click="viewAllNotifications"
-          class="block w-full text-center text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200"
+          class="block w-full text-center text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium transition-colors duration-200"
         >
           View all notifications
         </button>

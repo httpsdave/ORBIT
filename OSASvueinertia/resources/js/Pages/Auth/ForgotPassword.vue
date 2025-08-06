@@ -4,6 +4,7 @@ import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { useTheme } from '@/Composables/useTheme';
 
 defineProps({
     status: {
@@ -17,12 +18,13 @@ const form = useForm({
 
 const isLoading = ref(false);
 const formElement = ref(null);
-// Set dark mode as default to match login
-const isDarkMode = ref(true);
 const activeSlide = ref(0);
 const slideInterval = ref(null);
 const gradientIndex = ref(0);
 const gradientInterval = ref(null);
+
+// Use global theme system instead of local isDarkMode
+const { isDark: isDarkMode } = useTheme();
 
 // Slideshow images matching login page
 const slideshowImages = [

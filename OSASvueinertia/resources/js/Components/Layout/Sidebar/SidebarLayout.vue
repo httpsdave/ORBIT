@@ -8,6 +8,7 @@ import SidebarFooter from './SidebarFooter.vue';
 import MobileHeader from '@/Components/MobileHeader.vue';
 import NotificationDropdown from '@/Components/NotificationDropdown.vue';
 import Modal from '@/Components/Modal.vue';
+import ThemeToggle from '@/Components/ThemeToggle.vue';
 import axios from 'axios';
 
 const props = defineProps({
@@ -349,15 +350,15 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="flex min-h-screen bg-gray-50 relative">
+  <div class="flex min-h-screen bg-gray-50 dark:bg-gray-900 relative">
     <!-- Fixed header for both desktop and mobile that spans the entire width -->
-    <header class="fixed top-0 left-0 right-0 bg-white border-b border-gray-200 shadow-sm z-40 h-16">
+    <header class="fixed top-0 left-0 right-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm z-40 h-16">
       <div class="px-4 sm:px-6 h-full flex items-center justify-between">
         <div class="flex items-center">
           <!-- Desktop sidebar toggle button - visible only on desktop -->
           <button
             @click="toggleSidebarExpanded"
-            class="hidden md:inline-flex items-center justify-center p-2 rounded-md text-gray-500 hover:text-blue-600 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300 mr-2"
+            class="hidden md:inline-flex items-center justify-center p-2 rounded-md text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300 mr-2"
             aria-label="Toggle sidebar"
             :aria-expanded="sidebarExpanded"
             style="z-index: 50;"
@@ -370,7 +371,7 @@ onUnmounted(() => {
           <!-- Mobile menu button - visible only on mobile -->
           <button
             @click="toggleSidebar"
-            class="mobile-menu-button md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-500 hover:text-blue-600 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300"
+            class="mobile-menu-button md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300"
             aria-label="Open menu"
             :aria-expanded="showingSidebar"
           >
@@ -489,18 +490,18 @@ onUnmounted(() => {
             <div 
               v-show="isDropdownOpen"
               :class="[
-                'absolute bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden z-50 w-56 mt-2',
+                'absolute bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden z-50 w-56 mt-2',
                 'right-0'
               ]"
             >
-              <div class="py-2 px-4 border-b border-gray-100">
-                <div class="text-sm font-medium text-gray-800">{{ user?.name || 'User' }}</div>
-                <div class="text-xs text-gray-500 truncate">{{ user?.email || '' }}</div>
+              <div class="py-2 px-4 border-b border-gray-100 dark:border-gray-700">
+                <div class="text-sm font-medium text-gray-800 dark:text-gray-200">{{ user?.name || 'User' }}</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ user?.email || '' }}</div>
               </div>
               <div class="flex flex-col">
                 <Link 
                   :href="route('profile.edit')" 
-                  class="flex items-center px-4 py-2 text-gray-600 font-medium hover:text-blue-600 transition-all duration-300 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  class="flex items-center px-4 py-2 text-gray-600 dark:text-gray-300 font-medium hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 hover:bg-blue-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
                   :aria-current="route().current('profile.edit') ? 'page' : undefined"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -508,11 +509,20 @@ onUnmounted(() => {
                   </svg>
                   <span class="ml-3">My Profile</span>
                 </Link>
+
+                <!-- Theme Toggle -->
+                <div class="flex items-center px-4 py-2 text-gray-600 dark:text-gray-300 font-medium">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z" />
+                  </svg>
+                  <span class="ml-3 flex-1">Theme</span>
+                  <ThemeToggle variant="dropdown" size="sm" />
+                </div>
                 
                 <button
                   type="button"
                   @click="confirmSignOut"
-                  class="w-full flex items-center px-4 py-2 text-red-600 font-medium hover:text-red-700 transition-all duration-300 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-400"
+                  class="w-full flex items-center px-4 py-2 text-red-600 dark:text-red-400 font-medium hover:text-red-700 dark:hover:text-red-300 transition-all duration-300 hover:bg-red-50 dark:hover:bg-red-900/20 focus:outline-none focus:ring-2 focus:ring-red-400"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -537,7 +547,7 @@ onUnmounted(() => {
    <aside
       id="sidebar"
       :class="[
-        'z-30 transition-all duration-300 ease-out border-r border-gray-200 bg-white shadow-lg shadow-blue-200/20 flex flex-col',
+        'z-30 transition-all duration-300 ease-out border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-lg shadow-blue-200/20 dark:shadow-gray-900/50 flex flex-col',
         // Desktop positioning logic - always fixed positioned
         'md:fixed md:left-0 md:pt-16 md:h-screen',
         // Width logic - hover overlays, expanded overlays but appears to push content
@@ -580,7 +590,7 @@ onUnmounted(() => {
         ]"
       >
       <!-- Page Content -->
-      <main class="flex-1 bg-gray-50 relative p-4 sm:p-6 pb-8">
+      <main class="flex-1 bg-gray-50 dark:bg-gray-900 relative p-4 sm:p-6 pb-8">
         <!-- Content provided via slot -->
         <slot></slot>
       </main>
@@ -596,9 +606,9 @@ onUnmounted(() => {
   </div>
   <!-- Sign Out Confirmation Modal -->
   <Modal :show="showSignOutModal" @close="cancelSignOut">
-    <div class="p-8 bg-white rounded-xl shadow-lg w-full max-w-md mx-auto">
-      <h2 class="text-xl font-semibold text-gray-800 mb-2">Confirm Sign Out</h2>
-      <p class="text-gray-600 mb-8">Are you sure you want to sign out?</p>
+    <div class="p-8 bg-white dark:bg-gray-800 rounded-xl shadow-lg w-full max-w-md mx-auto">
+      <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-2">Confirm Sign Out</h2>
+      <p class="text-gray-600 dark:text-gray-400 mb-8">Are you sure you want to sign out?</p>
       <div class="flex justify-end gap-2 w-full">
         <button
           @click="cancelSignOut"

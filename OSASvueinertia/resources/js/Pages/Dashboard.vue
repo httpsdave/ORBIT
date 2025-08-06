@@ -78,12 +78,12 @@ const formatCurrentDateTime = computed(() => {
 // Get application status color
 const getStatusColor = (status) => {
   const colors = {
-    'pending': 'bg-yellow-100 text-yellow-800 border-yellow-200',
-    'approved': 'bg-green-100 text-green-800 border-green-200',
-    'rejected': 'bg-red-100 text-red-800 border-red-200',
-    'draft': 'bg-gray-100 text-gray-800 border-gray-200',
+    'pending': 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 border-yellow-200 dark:border-yellow-700',
+    'approved': 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border-green-200 dark:border-green-700',
+    'rejected': 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 border-red-200 dark:border-red-700',
+    'draft': 'bg-gray-100 dark:bg-gray-900/30 text-gray-800 dark:text-gray-300 border-gray-200 dark:border-gray-700',
   };
-  return colors[status.toLowerCase()] || 'bg-blue-100 text-blue-800 border-blue-200';
+  return colors[status.toLowerCase()] || 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 border-blue-200 dark:border-blue-700';
 };
 
 // Get activity icon

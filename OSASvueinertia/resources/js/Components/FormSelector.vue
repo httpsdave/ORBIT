@@ -63,7 +63,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="w-full max-w-md mx-auto bg-white rounded-lg shadow-md" ref="dropdownRef">
+  <div class="w-full max-w-md mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md" ref="dropdownRef">
     <!-- Animated Color Banner -->
     <div class="flex w-full overflow-hidden rounded-t-lg">
       <div class="w-1/4 h-1.5 bg-blue-500 animate-pulse" style="animation-delay: 0.2s;"></div>

@@ -79,7 +79,7 @@
 </div>
 
   <!-- Main Content Container with 3D Flip Animation -->
-  <div class="relative bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden min-h-96" style="perspective: 1000px;">
+  <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden min-h-96" style="perspective: 1000px;">
     <!-- Calendar View -->
     <div 
       :class="[
