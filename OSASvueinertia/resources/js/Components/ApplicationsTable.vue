@@ -496,7 +496,7 @@ watch(showSignedDocumentModal, (val) => {
             {{ app.status }}
           </span>
         </div>
-        <div class="flex flex-wrap gap-2 text-xs text-gray-500 dark:text-gray-300 font-medium">
+        <div class="flex flex-wrap gap-2 text-xs text-gray-500 dark:text-gray-400 font-medium">
           <span v-if="isAdmin"><span class="font-semibold text-gray-700 dark:text-gray-200">Org:</span> {{ app.user.name }}</span>
           <span><span class="font-semibold text-gray-700 dark:text-gray-200">Submitted:</span> {{ formatDate(app.created_at) }}</span>
         </div>
@@ -619,8 +619,8 @@ watch(showSignedDocumentModal, (val) => {
                 {{ app.user.name }}
               </span>
             </div>
-            <div class="text-sm text-gray-500 dark:text-gray-300 font-medium truncate">{{ app.form_type }}</div>
-            <div class="flex flex-wrap gap-2 text-xs text-gray-500 dark:text-gray-300 mt-1 font-medium">
+            <div class="text-sm text-gray-500 dark:text-gray-400 font-medium truncate">{{ app.form_type }}</div>
+            <div class="flex flex-wrap gap-2 text-xs text-gray-500 dark:text-gray-400 mt-1 font-medium">
               <span><span class="font-semibold text-gray-700 dark:text-gray-200">Submitted:</span> {{ formatDate(app.created_at) }}</span>
               <span v-if="app.status">&bull; <span :class="`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(app.status)}`">{{ app.status }}</span></span>
               <span v-if="app.signed_document_path" class="text-green-600 dark:text-green-400 flex items-center gap-1">
