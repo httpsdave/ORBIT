@@ -73,36 +73,36 @@ onUnmounted(() => {
     </div>
 
     <div class="p-4 sm:p-6">
-      <h1 class="text-lg sm:text-xl font-semibold text-gray-800 text-center mb-4 sm:mb-6">{{ title }}</h1>
+      <h1 class="text-lg sm:text-xl font-semibold text-gray-800 dark:text-gray-100 text-center mb-4 sm:mb-6">{{ title }}</h1>
 
       <div class="relative">
-        <label class="block text-sm font-medium text-gray-700 mb-2">Choose Form</label>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Choose Form</label>
 
         <!-- Dropdown Button -->
         <button
           @click.stop="isOpen = !isOpen"
           type="button"
-          class="relative w-full bg-white border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-3 text-left cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-150 hover:bg-gray-50"
+          class="relative w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm pl-3 pr-10 py-3 text-left cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 transition-all duration-150 hover:bg-gray-50 dark:hover:bg-gray-600"
         >
-          <span class="block truncate" :class="[selectedForm ? 'text-gray-800' : 'text-gray-500']">
+          <span class="block truncate" :class="[selectedForm ? 'text-gray-800 dark:text-gray-100' : 'text-gray-500 dark:text-gray-400']">
             {{ getSelectedLabel() }}
           </span>
           <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-            <ChevronDown class="h-5 w-5 text-gray-400" aria-hidden="true" />
+            <ChevronDown class="h-5 w-5 text-gray-400 dark:text-gray-500" aria-hidden="true" />
           </span>
         </button>
 
         <!-- Dropdown Menu -->
         <div
           v-show="isOpen"
-          class="absolute z-50 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none transition-all duration-150"
+          class="absolute z-50 mt-1 w-full bg-white dark:bg-gray-700 shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black dark:ring-gray-600 ring-opacity-5 dark:ring-opacity-25 overflow-auto focus:outline-none transition-all duration-150"
         >
           <div
             v-for="option in formOptions"
             :key="option.value"
             @click="selectForm(option.value)"
-            class="cursor-pointer select-none relative py-2.5 pl-3 pr-9 hover:bg-blue-50 transition-colors duration-150"
-            :class="{ 'bg-blue-50 text-blue-700': selectedForm === option.value }"
+            class="cursor-pointer select-none relative py-2.5 pl-3 pr-9 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors duration-150 text-gray-900 dark:text-gray-100"
+            :class="{ 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300': selectedForm === option.value }"
           >
             {{ option.label }}
           </div>
@@ -114,7 +114,7 @@ onUnmounted(() => {
         <button
           type="button"
           @click="emit('form-selected', selectedForm)"
-          class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-150"
+          class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800 focus:ring-blue-500 transition-colors duration-150"
         >
           Continue to Selected Form
         </button>
