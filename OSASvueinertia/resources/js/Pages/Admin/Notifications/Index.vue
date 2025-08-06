@@ -84,7 +84,7 @@ const formatType = (type) => {
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
-                New Notification
+                Create Notification
               </Link>
             </div>
 
@@ -173,8 +173,13 @@ const formatType = (type) => {
 
             <!-- Mobile/Tablet Responsive Cards -->
             <div class="md:hidden flex flex-col gap-4">
-              <div v-if="notifications.data.length === 0" class="text-center text-gray-500 py-8">
-                <span>No notifications found</span>
+              <div v-if="notifications.data.length === 0" class="text-center text-gray-500 py-12">
+                <div class="flex flex-col items-center justify-center space-y-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                  </svg>
+                  <span>No notifications found</span>
+                </div>
               </div>
               <div v-for="notification in notifications.data" :key="notification.id" class="bg-white rounded-lg shadow border border-gray-100 p-4 flex flex-col gap-2">
                 <div class="flex items-center justify-between">
@@ -251,13 +256,13 @@ const formatType = (type) => {
         <div class="flex justify-end space-x-3">
           <button
             @click="showDeleteModal = false"
-            class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-150 ease-in-out"
           >
             Cancel
           </button>
           <button
             @click="deleteNotification"
-            class="px-4 py-2 text-sm font-medium text-white bg-red-500 border border-transparent rounded-md shadow-sm hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+            class="px-4 py-2 text-sm font-medium text-white bg-red-500 border border-transparent rounded-md shadow-sm hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition duration-150 ease-in-out"
           >
             Delete
           </button>

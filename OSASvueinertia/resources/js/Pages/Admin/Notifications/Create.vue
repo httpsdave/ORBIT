@@ -1,5 +1,5 @@
 <script setup>
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, useForm, router } from '@inertiajs/vue3';
 import { ref, watch, computed } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import InputLabel from '@/Components/InputLabel.vue';
@@ -111,11 +111,19 @@ const submit = () => {
   <AuthenticatedLayout :is-admin="true">
     <Head :title="isEditing ? 'Edit Notification' : 'Create Notification'" />
 
+    <!-- Colored banner -->
+    <div class="flex w-full mb-6 overflow-hidden rounded-md shadow-sm">
+      <div class="w-1/4 h-1 bg-blue-500" style="animation-delay: 0.2s;"></div>
+      <div class="w-1/4 h-1 bg-green-500" style="animation-delay: 0.4s;"></div>
+      <div class="w-1/4 h-1 bg-yellow-500" style="animation-delay: 0.6s;"></div>
+      <div class="w-1/4 h-1 bg-red-500" style="animation-delay: 0.8s;"></div>
+    </div>
+
     <div class="py-6">
       <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
+        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
           <div class="p-6">
-            <h2 class="text-2xl font-semibold text-gray-800 mb-6">
+            <h2 class="text-xl font-medium text-gray-800 mb-8">
               {{ isEditing ? 'Edit Notification' : 'Create Notification' }}
             </h2>
 
@@ -176,12 +184,19 @@ const submit = () => {
                 <InputError v-if="form.errors.user_ids" :message="form.errors.user_ids" class="mt-2" />
               </div>
 
-              <div class="flex items-center justify-end mt-6">
-                <PrimaryButton
-                  class="ml-4"
-                  :disabled="form.processing"
+              <div class="flex flex-col sm:flex-row sm:justify-end sm:items-center gap-3 mt-6">
+                <button
+                  type="button"
+                  @click="router.visit(route('admin.notifications.index'))"
+                  class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-medium text-xs text-gray-700 uppercase tracking-wider hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-150 ease-in-out"
                 >
-                  {{ isEditing ? 'Update' : 'Create' }}
+                  Cancel
+                </button>
+                <PrimaryButton
+                  :disabled="form.processing"
+                  class="inline-flex items-center px-4 py-2 bg-blue-500 border border-transparent rounded-md font-medium text-xs text-white uppercase tracking-wider hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-150 ease-in-out"
+                >
+                  {{ isEditing ? 'Update Notification' : 'Create Notification' }}
                 </PrimaryButton>
               </div>
             </form>
@@ -261,14 +276,14 @@ const submit = () => {
           <button
             @click="closeUserSelectionModal"
             type="button"
-            class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition duration-150 ease-in-out"
           >
             Cancel
           </button>
           <button
             @click="applyUserSelection"
             type="button"
-            class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition duration-150 ease-in-out"
           >
             Apply Selection
           </button>
