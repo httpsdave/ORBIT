@@ -451,8 +451,8 @@ function exportAdvisersToCSV() {
     <AuthenticatedLayout>
         <template #header>
             <div class="flex items-center justify-between">
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">Admin Dashboard</h2>
-                <div class="text-sm text-gray-500">{{ formatCurrentDateTime }}</div>
+                <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Admin Dashboard</h2>
+                <div class="text-sm text-gray-500 dark:text-gray-400">{{ formatCurrentDateTime }}</div>
             </div>
         </template>
 
@@ -465,19 +465,19 @@ function exportAdvisersToCSV() {
         </div>
 
         <!-- Greeting Card -->
-        <div class="bg-white overflow-hidden shadow-sm rounded-lg mb-6">
-            <div class="p-6 bg-white border-b border-gray-200">
+        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg mb-6">
+            <div class="p-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
-                        <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <div class="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
                             </svg>
                         </div>
                     </div>
                     <div class="ml-4">
-                        <h2 class="text-2xl font-semibold text-gray-800">{{ greeting }}, {{ userName || 'Administrator' }}!</h2>
-                        <p class="mt-1 text-gray-600">Welcome to Orbit. Here's an overview of your system.</p>
+                        <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-200">{{ greeting }}, {{ userName || 'Administrator' }}!</h2>
+                        <p class="mt-1 text-gray-600 dark:text-gray-400">Welcome to Orbit. Here's an overview of your system.</p>
                     </div>
                 </div>
             </div>
@@ -488,38 +488,38 @@ function exportAdvisersToCSV() {
         <!-- Stats Cards -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             <div v-for="(card, index) in statsCards" :key="index" 
-                 :class="`bg-white overflow-hidden shadow-sm rounded-lg border-l-4 border-${card.color}-500 transition hover:shadow-md`">
+                 :class="`bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg border-l-4 border-${card.color}-500 transition hover:shadow-md`">
                 <div class="p-5">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
                             <!-- Users Group Icon -->
-                            <div v-if="card.icon === 'users-group'" class="w-12 h-12 rounded-full flex items-center justify-center bg-blue-100">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <div v-if="card.icon === 'users-group'" class="w-12 h-12 rounded-full flex items-center justify-center bg-blue-100 dark:bg-blue-900/50">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                                 </svg>
                             </div>
                             <!-- Building Icon -->
-                            <div v-else-if="card.icon === 'building'" class="w-12 h-12 rounded-full flex items-center justify-center bg-green-100">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <div v-else-if="card.icon === 'building'" class="w-12 h-12 rounded-full flex items-center justify-center bg-green-100 dark:bg-green-900/50">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-500 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                                 </svg>
                             </div>
                             <!-- Clock Icon -->
-                            <div v-else-if="card.icon === 'clock'" class="w-12 h-12 rounded-full flex items-center justify-center bg-yellow-100">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <div v-else-if="card.icon === 'clock'" class="w-12 h-12 rounded-full flex items-center justify-center bg-yellow-100 dark:bg-yellow-900/50">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500 dark:text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                             </div>
                             <!-- Calendar Icon for Past Events -->
-                            <div v-else-if="card.icon === 'calendar'" class="w-12 h-12 rounded-full flex items-center justify-center bg-red-100">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <div v-else-if="card.icon === 'calendar'" class="w-12 h-12 rounded-full flex items-center justify-center bg-red-100 dark:bg-red-900/50">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
                             </div>
                         </div>
                         <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-500">{{ card.title }}</p>
-                            <p class="text-3xl font-bold text-gray-900">{{ card.value }}</p>
+                            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ card.title }}</p>
+                            <p class="text-3xl font-bold text-gray-900 dark:text-gray-100">{{ card.value }}</p>
                         </div>
                     </div>
                 </div>
@@ -528,10 +528,10 @@ function exportAdvisersToCSV() {
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <!-- Student Organizations Chart -->
-            <div class="lg:col-span-2 bg-white overflow-hidden shadow-sm rounded-lg">
+            <div class="lg:col-span-2 bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
                 <div class="p-6">
                     <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-lg font-medium text-gray-800">
+                        <h3 class="text-lg font-medium text-gray-800 dark:text-gray-200">
                             <template v-if="activeChart === 'bar'">Members per Organization</template>
                             <template v-else>Student Organizations by College</template>
                         </h3>
@@ -539,10 +539,10 @@ function exportAdvisersToCSV() {
                             <button 
                                 @click="activeChart = 'bar'" 
                                 :class="[
-                                    'px-4 py-2 text-sm font-medium rounded-l-md border border-gray-200', 
+                                    'px-4 py-2 text-sm font-medium rounded-l-md border border-gray-200 dark:border-gray-600', 
                                     activeChart === 'bar' 
                                         ? 'bg-blue-500 text-white border-blue-500' 
-                                        : 'bg-white text-gray-700 hover:bg-gray-50'
+                                        : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
                                 ]"
                             >
                                 Bar
@@ -550,10 +550,10 @@ function exportAdvisersToCSV() {
                             <button 
                                 @click="activeChart = 'pie'" 
                                 :class="[
-                                    'px-4 py-2 text-sm font-medium border border-gray-200 border-l-0', 
+                                    'px-4 py-2 text-sm font-medium border border-gray-200 dark:border-gray-600 border-l-0', 
                                     activeChart === 'pie' 
                                         ? 'bg-blue-500 text-white border-blue-500' 
-                                        : 'bg-white text-gray-700 hover:bg-gray-50'
+                                        : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
                                 ]"
                             >
                                 Pie
@@ -561,10 +561,10 @@ function exportAdvisersToCSV() {
                             <button 
                                 @click="activeChart = 'advisers'" 
                                 :class="[
-                                    'px-4 py-2 text-sm font-medium rounded-r-md border border-gray-200 border-l-0', 
+                                    'px-4 py-2 text-sm font-medium rounded-r-md border border-gray-200 dark:border-gray-600 border-l-0', 
                                     activeChart === 'advisers' 
                                         ? 'bg-blue-500 text-white border-blue-500' 
-                                        : 'bg-white text-gray-700 hover:bg-gray-50'
+                                        : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
                                 ]"
                             >
                                 Advisers
@@ -589,7 +589,7 @@ function exportAdvisersToCSV() {
                         <button
                             @click="exportAdvisersToCSV"
                             class="mb-4 p-2 bg-green-500 text-white rounded-full hover:bg-green-600 transition flex items-center"
-                            :class="{ 'opacity-60 pointer-events-none bg-gray-200 text-gray-400': !props.advisersData.length }"
+                            :class="{ 'opacity-60 pointer-events-none bg-gray-200 dark:bg-gray-600 text-gray-400 dark:text-gray-500': !props.advisersData.length }"
                             :disabled="!props.advisersData.length"
                             title="Export as CSV"
                             aria-label="Export as CSV"
@@ -598,23 +598,23 @@ function exportAdvisersToCSV() {
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" />
                             </svg>
                         </button>
-                        <table class="min-w-full divide-y divide-gray-200">
+                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                             <thead>
                                 <tr>
-                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Organization</th>
-                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Adviser</th>
-                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Second Adviser</th>
-                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Members</th>
-                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Officers</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Organization</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Adviser</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Second Adviser</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Members</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Officers</th>
                                 </tr>
                             </thead>
-                            <tbody class="bg-white divide-y divide-gray-100">
+                            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-100 dark:divide-gray-700">
                                 <tr v-for="(row, idx) in props.advisersData" :key="idx">
-                                    <td class="px-4 py-2 text-sm text-gray-700">{{ row.organization }}</td>
-                                    <td class="px-4 py-2 text-sm text-gray-700">{{ row.adviser_name || '—' }}</td>
-                                    <td class="px-4 py-2 text-sm text-gray-700">{{ row.second_adviser || '—' }}</td>
-                                    <td class="px-4 py-2 text-sm text-gray-700 text-center">{{ row.members_count ?? '—' }}</td>
-                                    <td class="px-4 py-2 text-sm text-gray-700 text-center">{{ row.officers_count ?? '—' }}</td>
+                                    <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-300">{{ row.organization }}</td>
+                                    <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-300">{{ row.adviser_name || '—' }}</td>
+                                    <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-300">{{ row.second_adviser || '—' }}</td>
+                                    <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-300 text-center">{{ row.members_count ?? '—' }}</td>
+                                    <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-300 text-center">{{ row.officers_count ?? '—' }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -623,21 +623,21 @@ function exportAdvisersToCSV() {
             </div>
 
             <!-- Event Information -->
-            <div class="bg-white overflow-hidden shadow-sm rounded-lg">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
                 <div class="p-6">
                     <div class="flex items-center mb-4 justify-between">
                         <div class="flex items-center">
-                            <div :class="props.todayEvent ? 'p-2 rounded-md bg-green-100 text-green-600 mr-3' : 'p-2 rounded-md bg-blue-100 text-blue-600 mr-3'">
+                            <div :class="props.todayEvent ? 'p-2 rounded-md bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-400 mr-3' : 'p-2 rounded-md bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 mr-3'">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" :stroke="props.todayEvent ? '#16a34a' : '#3b82f6'">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
                             </div>
-                            <h3 class="text-lg font-medium text-gray-800">
+                            <h3 class="text-lg font-medium text-gray-800 dark:text-gray-200">
                                 {{ props.todayEvent ? "Today's Event" : "Upcoming Event" }}
                             </h3>
                         </div>
                         <!-- Minimalist Events Held Badge -->
-                        <div class="flex items-center space-x-1 bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-xs font-semibold">
+                        <div class="flex items-center space-x-1 bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 px-3 py-1 rounded-full text-xs font-semibold">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
@@ -645,48 +645,48 @@ function exportAdvisersToCSV() {
                         </div>
                     </div>
                     
-                    <div v-if="displayEvent" class="border rounded-lg p-4 bg-white shadow-sm cursor-pointer hover:bg-blue-50 transition">
+                    <div v-if="displayEvent" class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-white dark:bg-gray-800 shadow-sm cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-700 transition">
                       <Link :href="route('calendar')" class="block">
-                        <h4 class="font-medium text-lg text-gray-800 mb-3">{{ displayEvent.title }}</h4>
-                        <div class="text-sm text-gray-600 mt-2 space-y-2">
+                        <h4 class="font-medium text-lg text-gray-800 dark:text-gray-200 mb-3">{{ displayEvent.title }}</h4>
+                        <div class="text-sm text-gray-600 dark:text-gray-400 mt-2 space-y-2">
                           <div class="flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
                             <span>Start: {{ formatDate(displayEvent.start_date) }}</span>
                           </div>
                           <div class="flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                             <span>End: {{ formatDate(displayEvent.end_date) }}</span>
                           </div>
                         </div>
-                        <div class="mt-4 border-t border-gray-100 pt-3">
-                          <p class="text-sm text-gray-700">{{ displayEvent.description }}</p>
+                        <div class="mt-4 border-t border-gray-100 dark:border-gray-700 pt-3">
+                          <p class="text-sm text-gray-700 dark:text-gray-300">{{ displayEvent.description }}</p>
                         </div>
                       </Link>
                     </div>
                     
-                    <div v-else class="border rounded-lg p-6 bg-gray-50 text-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div v-else class="border border-gray-200 dark:border-gray-700 rounded-lg p-6 bg-gray-50 dark:bg-gray-700 text-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
-                        <p class="mt-4 text-gray-600">No upcoming events scheduled</p>
-                        <a :href="route('calendar')" class="inline-block mt-3 px-4 py-2 bg-green-500 text-white text-sm font-medium rounded-md hover:bg-green-600 transition focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                        <p class="mt-4 text-gray-600 dark:text-gray-400">No upcoming events scheduled</p>
+                        <a :href="route('calendar')" class="inline-block mt-3 px-4 py-2 bg-green-500 text-white text-sm font-medium rounded-md hover:bg-green-600 transition focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800">
                             Create Event
                         </a>
                     </div>
                     
                     <div class="mt-6 flex space-x-3">
-                        <a :href="route('admin.users')" class="inline-flex items-center px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-md hover:bg-blue-600 transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                        <a :href="route('admin.users')" class="inline-flex items-center px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-md hover:bg-blue-600 transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                             </svg>
                             Manage Organizations
                         </a>
-                        <a :href="route('applications.index')" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-50 transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <a :href="route('applications.index')" class="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
                             View Applications
