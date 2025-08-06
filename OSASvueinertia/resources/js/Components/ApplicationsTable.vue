@@ -461,10 +461,10 @@ watch(showSignedDocumentModal, (val) => {
     
     <!-- Deleting document overlay -->
     <div v-if="isDeleting" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div class="bg-white p-6 rounded-lg shadow-xl w-80">
-        <h3 class="text-gray-800 font-semibold mb-4">Deleting document...</h3>
+      <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl w-80">
+        <h3 class="text-gray-800 dark:text-gray-100 font-semibold mb-4">Deleting document...</h3>
         <div class="flex justify-center">
-          <svg class="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <svg class="animate-spin h-8 w-8 text-blue-600 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>
@@ -496,18 +496,18 @@ watch(showSignedDocumentModal, (val) => {
             {{ app.status }}
           </span>
         </div>
-        <div class="flex flex-wrap gap-2 text-xs text-gray-600 dark:text-gray-400">
-          <span v-if="isAdmin"><span class="font-medium">Org:</span> {{ app.user.name }}</span>
-          <span><span class="font-medium">Submitted:</span> {{ formatDate(app.created_at) }}</span>
+        <div class="flex flex-wrap gap-2 text-xs text-gray-500 dark:text-gray-300 font-medium">
+          <span v-if="isAdmin"><span class="font-semibold text-gray-700 dark:text-gray-200">Org:</span> {{ app.user.name }}</span>
+          <span><span class="font-semibold text-gray-700 dark:text-gray-200">Submitted:</span> {{ formatDate(app.created_at) }}</span>
         </div>
         <div class="flex flex-wrap gap-2 text-xs mt-1">
-          <span v-if="app.signed_document_path" class="text-green-600 flex items-center gap-1">
+          <span v-if="app.signed_document_path" class="text-green-600 dark:text-green-400 flex items-center gap-1 font-medium">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.707a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
             </svg>
             Signed Document
           </span>
-          <span v-else class="text-gray-500 flex items-center gap-1">
+          <span v-else class="text-gray-500 dark:text-gray-400 flex items-center gap-1 font-medium">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M18 10A8 8 0 112 10a8 8 0 0116 0zm-8-3a1 1 0 100 2 1 1 0 000-2zm2 7a1 1 0 10-2 0v-4a1 1 0 112 0v4z" clip-rule="evenodd"/>
             </svg>
@@ -518,49 +518,49 @@ watch(showSignedDocumentModal, (val) => {
           <button
             @click.stop="toggleDropdown(app, $event)"
             :aria-label="'Actions for ' + formTypeToName(app.form_type)"
-            class="relative inline-flex items-center justify-center rounded-full p-2 text-gray-500 hover:text-blue-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-200 transition group"
+            class="relative inline-flex items-center justify-center rounded-full p-2 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-400 transition group"
             :data-dropdown-trigger="app.id"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="#1f2937">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
               <circle cx="10" cy="4" r="2.2"/>
               <circle cx="10" cy="10" r="2.2"/>
               <circle cx="10" cy="16" r="2.2"/>
             </svg>
-            <span class="absolute left-1/2 -bottom-8 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity duration-300 whitespace-nowrap z-50">
+            <span class="absolute left-1/2 -bottom-8 transform -translate-x-1/2 bg-gray-800 dark:bg-gray-700 text-white dark:text-gray-200 text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity duration-300 whitespace-nowrap z-50">
               Actions
             </span>
           </button>
         </div>
         <!-- MOBILE INLINE DROPDOWN -->
-        <div v-if="activeMobileDropdownId === app.id" class="mobile-dropdown-menu mt-2 bg-gray-50 border border-gray-200 rounded-lg shadow p-3 flex flex-col gap-2 z-10" @click.stop>
-          <button v-if="isAdmin" @click="activeMobileDropdownId = null; handleAction(app, 'updateStatus')" class="w-full text-left px-2 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-600" viewBox="0 0 20 20" fill="currentColor">
+        <div v-if="activeMobileDropdownId === app.id" class="mobile-dropdown-menu mt-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg shadow p-3 flex flex-col gap-2 z-10" @click.stop>
+          <button v-if="isAdmin" @click="activeMobileDropdownId = null; handleAction(app, 'updateStatus')" class="w-full text-left px-2 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-600 dark:text-purple-400" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3-9a1 1 0 10-2 0v4a1 1 0 102 0V9z" clip-rule="evenodd" />
               <path d="M10 6a1 1 0 100 2 1 1 0 000-2z" />
             </svg>
             Update Status
           </button>
-          <button v-if="!app.signed_document_path" @click="openUploadModal(app)" class="w-full text-left px-2 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-600" viewBox="0 0 20 20" fill="currentColor">
+          <button v-if="!app.signed_document_path" @click="openUploadModal(app)" class="w-full text-left px-2 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-600 dark:text-indigo-400" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
             </svg>
             Upload Document
           </button>
-          <button v-if="app.signed_document_path" @click="activeMobileDropdownId = null; deleteDocument(app.id)" class="w-full text-left px-2 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200">
+          <button v-if="app.signed_document_path" @click="activeMobileDropdownId = null; deleteDocument(app.id)" class="w-full text-left px-2 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-orange-600" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zm3 8a1 1 0 11-2 0 1 1 0 012 0zm-8 2a1 1 0 100 2h10a1 1 0 100-2H4z" clip-rule="evenodd" />
             </svg>
             Delete Document
           </button>
-          <button v-if="app.signed_document_path" @click="activeMobileDropdownId = null; viewSignedDocument(app)" class="w-full text-left px-2 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-teal-600" viewBox="0 0 20 20" fill="currentColor">
+          <button v-if="app.signed_document_path" @click="activeMobileDropdownId = null; viewSignedDocument(app)" class="w-full text-left px-2 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-teal-600 dark:text-teal-400" viewBox="0 0 20 20" fill="currentColor">
               <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2h-1.528A6 6 0 004 9.528V4z" />
               <path fill-rule="evenodd" d="M8 10a4 4 0 00-3.446 6.032l-1.261 1.26a1 1 0 101.415 1.415l1.261-1.261A4 4 0 006 10z" clip-rule="evenodd" />
             </svg>
             View Document
           </button>
-          <Link v-if="isAdmin || (!isAdmin && app.status !== 'Approved')" :href="`/applications/${app.id}/edit`" @click="activeMobileDropdownId = null" class="w-full text-left px-2 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-500" viewBox="0 0 20 20" fill="currentColor">
+          <Link v-if="isAdmin || (!isAdmin && app.status !== 'Approved')" :href="`/applications/${app.id}/edit`" @click="activeMobileDropdownId = null" class="w-full text-left px-2 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-500 dark:text-amber-400" viewBox="0 0 20 20" fill="currentColor">
               <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
             </svg>
             Edit Application
@@ -569,25 +569,25 @@ watch(showSignedDocumentModal, (val) => {
             v-if="getPdfRoute(app) || getReportPath(app)"
             :href="getPdfRoute(app) ? getPdfRoute(app) : (`/storage/${getReportPath(app)}`)"
             @click="activeMobileDropdownId = null" 
-            class="w-full text-left px-2 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200 cursor-pointer"
+            class="w-full text-left px-2 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200 cursor-pointer"
             target="_blank"
             download
           >
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600 dark:text-blue-400" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
             </svg>
             Download PDF
           </a>
           <span
             v-else
-            class="w-full text-left px-2 py-2 text-sm text-gray-400 flex items-center gap-2 cursor-not-allowed"
+            class="w-full text-left px-2 py-2 text-sm text-gray-400 dark:text-gray-500 flex items-center gap-2 cursor-not-allowed"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 dark:text-gray-500" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
             </svg>
             Download PDF
           </span>
-          <button v-if="isAdmin || (!isAdmin && app.status !== 'Approved')" @click="activeMobileDropdownId = null; handleAction(app, 'delete')" class="w-full text-left px-2 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 transition duration-200 border-t border-gray-100 mt-1 pt-1">
+          <button v-if="isAdmin || (!isAdmin && app.status !== 'Approved')" @click="activeMobileDropdownId = null; handleAction(app, 'delete')" class="w-full text-left px-2 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 flex items-center gap-2 transition duration-200 border-t border-gray-100 dark:border-gray-600 mt-1 pt-1">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
             </svg>
@@ -615,21 +615,21 @@ watch(showSignedDocumentModal, (val) => {
             <div class="font-medium text-base text-gray-900 dark:text-gray-100 truncate">
               {{ formTypeToName(app.form_type) }}
               <span v-if="isAdmin" class="inline-flex items-center">
-                <svg class="mx-1" width="10" height="10" viewBox="0 0 10 10" fill="#374151" xmlns="http://www.w3.org/2000/svg" style="display:inline"><polygon points="0,0 10,5 0,10"/></svg>
+                <svg class="mx-1 text-gray-400 dark:text-gray-500" width="10" height="10" viewBox="0 0 10 10" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style="display:inline"><polygon points="0,0 10,5 0,10"/></svg>
                 {{ app.user.name }}
               </span>
             </div>
-            <div class="text-sm text-gray-600 truncate">{{ app.form_type }}</div>
-            <div class="flex flex-wrap gap-2 text-xs text-gray-500 mt-1">
-              <span>Submitted: {{ formatDate(app.created_at) }}</span>
+            <div class="text-sm text-gray-500 dark:text-gray-300 font-medium truncate">{{ app.form_type }}</div>
+            <div class="flex flex-wrap gap-2 text-xs text-gray-500 dark:text-gray-300 mt-1 font-medium">
+              <span><span class="font-semibold text-gray-700 dark:text-gray-200">Submitted:</span> {{ formatDate(app.created_at) }}</span>
               <span v-if="app.status">&bull; <span :class="`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(app.status)}`">{{ app.status }}</span></span>
-              <span v-if="app.signed_document_path" class="text-green-600 flex items-center gap-1">
+              <span v-if="app.signed_document_path" class="text-green-600 dark:text-green-400 flex items-center gap-1">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
                   <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.707a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                 </svg>
                 Signed Document
               </span>
-              <span v-else class="text-gray-500 flex items-center gap-1">
+              <span v-else class="text-gray-500 dark:text-gray-400 flex items-center gap-1">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
                   <path fill-rule="evenodd" d="M18 10A8 8 0 112 10a8 8 0 0116 0zm-8-3a1 1 0 100 2 1 1 0 000-2zm2 7a1 1 0 10-2 0v-4a1 1 0 112 0v4z" clip-rule="evenodd"/>
                 </svg>
@@ -642,14 +642,14 @@ watch(showSignedDocumentModal, (val) => {
           <button
             @click.stop="toggleDropdown(app, $event)"
             :aria-label="'Actions for ' + formTypeToName(app.form_type)"
-            class="relative inline-flex items-center justify-center rounded-full p-2 text-gray-500 hover:text-blue-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-200 transition group"
+            class="relative inline-flex items-center justify-center rounded-full p-2 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-400 transition group"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="#1f2937">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
               <circle cx="10" cy="4" r="2.2"/>
               <circle cx="10" cy="10" r="2.2"/>
               <circle cx="10" cy="16" r="2.2"/>
             </svg>
-            <span class="absolute left-1/2 -bottom-8 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity duration-300 whitespace-nowrap z-50">
+            <span class="absolute left-1/2 -bottom-8 transform -translate-x-1/2 bg-gray-800 dark:bg-gray-700 text-white dark:text-gray-200 text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity duration-300 whitespace-nowrap z-50">
               Actions
             </span>
           </button>
@@ -661,7 +661,7 @@ watch(showSignedDocumentModal, (val) => {
       <div 
         ref="dropdownRef"
         v-if="activeDropdownApp"
-        class="fixed z-50 bg-white rounded-lg shadow-lg border border-gray-200 py-1 w-full max-w-xs sm:w-64"
+        class="fixed z-50 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 w-full max-w-xs sm:w-64"
         :style="{ top: `${dropdownPosition.top}px`, left: `${dropdownPosition.left}px`, visibility: activeDropdownApp ? 'visible' : 'hidden' }"
         @click.stop
       >
@@ -669,9 +669,9 @@ watch(showSignedDocumentModal, (val) => {
         <button 
           v-if="isAdmin"
           @click="handleAction(activeDropdownApp, 'updateStatus')"
-          class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200"
+          class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-600" viewBox="0 0 20 20" fill="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-600 dark:text-purple-400" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3-9a1 1 0 10-2 0v4a1 1 0 102 0V9z" clip-rule="evenodd" />
             <path d="M10 6a1 1 0 100 2 1 1 0 000-2z" />
           </svg>
@@ -681,9 +681,9 @@ watch(showSignedDocumentModal, (val) => {
         <button
           v-if="!activeDropdownApp.signed_document_path"
           @click="openUploadModal(activeDropdownApp)"
-          class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200"
+          class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200 font-medium"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-600" viewBox="0 0 20 20" fill="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-600 dark:text-indigo-400" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
           </svg>
           Upload Document
@@ -692,9 +692,9 @@ watch(showSignedDocumentModal, (val) => {
         <button 
           v-if="activeDropdownApp.signed_document_path"
           @click="deleteDocument(activeDropdownApp.id)"
-          class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200"
+          class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200 font-medium"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-orange-600" viewBox="0 0 20 20" fill="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-orange-600 dark:text-orange-400" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zm3 8a1 1 0 11-2 0 1 1 0 012 0zm-8 2a1 1 0 100 2h10a1 1 0 100-2H4z" clip-rule="evenodd" />
           </svg>
           Delete Document
@@ -703,9 +703,9 @@ watch(showSignedDocumentModal, (val) => {
         <button 
           v-if="activeDropdownApp.signed_document_path"
           @click="viewSignedDocument(activeDropdownApp)"
-          class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200"
+          class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200 font-medium"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-teal-600" viewBox="0 0 20 20" fill="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-teal-600 dark:text-teal-400" viewBox="0 0 20 20" fill="currentColor">
             <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2h-1.528A6 6 0 004 9.528V4z" />
             <path fill-rule="evenodd" d="M8 10a4 4 0 00-3.446 6.032l-1.261 1.26a1 1 0 101.415 1.415l1.261-1.261A4 4 0 006 10z" clip-rule="evenodd" />
           </svg>
@@ -715,9 +715,9 @@ watch(showSignedDocumentModal, (val) => {
         <Link 
           v-if="isAdmin || (!isAdmin && activeDropdownApp.status !== 'Approved')"
           :href="`/applications/${activeDropdownApp.id}/edit`" 
-          class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200"
+          class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200 font-medium"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-500" viewBox="0 0 20 20" fill="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-500 dark:text-amber-400" viewBox="0 0 20 20" fill="currentColor">
             <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
           </svg>
           Edit Application
@@ -726,20 +726,20 @@ watch(showSignedDocumentModal, (val) => {
         <a
           v-if="getPdfRoute(activeDropdownApp) || getReportPath(activeDropdownApp)"
           :href="getPdfRoute(activeDropdownApp) ? getPdfRoute(activeDropdownApp) : (`/storage/${getReportPath(activeDropdownApp)}`)"
-          class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 transition duration-200 cursor-pointer"
+          class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200 cursor-pointer font-medium"
           target="_blank"
           download
         >
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600 dark:text-blue-400" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
           </svg>
           Download PDF
         </a>
         <span
           v-else
-          class="w-full text-left px-4 py-2 text-sm text-gray-400 flex items-center gap-2 cursor-not-allowed"
+          class="w-full text-left px-4 py-2 text-sm text-gray-400 dark:text-gray-500 flex items-center gap-2 cursor-not-allowed font-medium"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 dark:text-gray-500" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
           </svg>
           Download PDF
@@ -748,7 +748,7 @@ watch(showSignedDocumentModal, (val) => {
         <button 
           v-if="isAdmin || (!isAdmin && activeDropdownApp.status !== 'Approved')"
           @click="handleAction(activeDropdownApp, 'delete')" 
-          class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 transition duration-200 border-t border-gray-100 mt-1 pt-1"
+          class="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 flex items-center gap-2 transition duration-200 border-t border-gray-100 dark:border-gray-600 mt-1 pt-1 font-medium"
         >
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
