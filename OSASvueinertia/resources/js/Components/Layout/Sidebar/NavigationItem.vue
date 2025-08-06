@@ -75,10 +75,10 @@ onBeforeUnmount(() => {
       v-if="item && item.route"
       :href="route(item.route)" 
       @click="handleNavigationClick"
-      class="flex items-center px-4 py-2 text-gray-600 font-medium hover:text-blue-600 transition-all duration-300 rounded-lg hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-400 group"
+      class="flex items-center px-4 py-2 text-gray-600 dark:text-gray-300 font-medium hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 rounded-lg hover:bg-blue-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400 group"
       :class="[
         ((item.exactMatch === false && item.checkStartsWith && isRouteActive(item.route, false, true)) ||
-        (!item.checkStartsWith && route().current(item.route))) ? 'text-blue-600 bg-blue-50 shadow-sm' : '',
+        (!item.checkStartsWith && route().current(item.route))) ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/50 shadow-sm' : '',
         {'justify-center': !sidebarExpanded && !showingSidebar}
       ]"
       :aria-current="(item.exactMatch === false && item.checkStartsWith && isRouteActive(item.route, false, true)) ||
@@ -102,7 +102,7 @@ onBeforeUnmount(() => {
           transform: 'translateY(-50%)',
           zIndex: 9999
         }"
-        class="bg-gray-800 text-white text-xs rounded py-1 px-2 shadow-lg opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none"
+        class="bg-gray-800 dark:bg-gray-700 text-white dark:text-gray-200 text-xs rounded py-1 px-2 shadow-lg opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none"
       >
         {{ item.name }}
       </span>

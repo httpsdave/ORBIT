@@ -15,7 +15,7 @@ defineProps({
 </script>
 
 <template>
-  <header class="bg-white border-b border-gray-200 shadow-sm z-30 md:hidden sticky top-0">
+  <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm z-30 md:hidden sticky top-0">
     <div class="px-4 py-4 flex items-center justify-between">
       <div class="flex items-center">
         <Link 
@@ -43,7 +43,7 @@ defineProps({
               v-if="$page.props.auth.user.profile_photo_url"
               :src="$page.props.auth.user.profile_photo_url"
               alt="Profile Photo"
-              class="h-10 w-10 rounded-full object-cover border border-gray-200 shadow-inner"
+              class="h-10 w-10 rounded-full object-cover border border-gray-200 dark:border-gray-600 shadow-inner"
             />
             <div
               v-else
@@ -53,7 +53,7 @@ defineProps({
             </div>
           </div>
           <div v-if="isAdmin" class="hidden sm:block">
-            <span class="px-2 py-0.5 text-xs font-medium bg-indigo-100 text-indigo-700 rounded-full border border-indigo-200 shadow-inner">
+            <span class="px-2 py-0.5 text-xs font-medium bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 rounded-full border border-indigo-200 dark:border-indigo-700 shadow-inner">
               Admin
             </span>
           </div>

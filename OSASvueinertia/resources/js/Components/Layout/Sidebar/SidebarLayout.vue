@@ -408,7 +408,7 @@ onUnmounted(() => {
           <Link 
             :href="route(calendarItem.route)"
             @click="handleCalendarClick"
-            class="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300 group relative"
+            class="p-2 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300 group relative"
             aria-label="Calendar"
           >
             <div class="relative">
@@ -434,7 +434,7 @@ onUnmounted(() => {
               </transition>
             </div>
             <!-- Tooltip for calendar -->
-            <span class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+            <span class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-800 dark:bg-gray-700 text-white dark:text-gray-200 text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
               Calendar
             </span>
           </Link>
@@ -466,16 +466,16 @@ onUnmounted(() => {
                 </div>
               </div>
               <div class="ml-2 hidden sm:block">
-                <div class="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-300">
+                <div class="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
                   {{ user?.name || 'User' }}
                 </div>
-                <div v-if="isAdmin" class="text-xs font-medium text-indigo-700 bg-indigo-100 px-2 py-0.5 rounded-full border border-indigo-200">
+                <div v-if="isAdmin" class="text-xs font-medium text-indigo-700 dark:text-indigo-300 bg-indigo-100 dark:bg-indigo-900/50 px-2 py-0.5 rounded-full border border-indigo-200 dark:border-indigo-700">
                   Admin
                 </div>
               </div>
               <!-- Dropdown indicator -->
               <svg 
-                class="ml-1 h-4 w-4 text-gray-400 transition-transform duration-300 hidden sm:block"
+                class="ml-1 h-4 w-4 text-gray-400 dark:text-gray-500 transition-transform duration-300 hidden sm:block"
                 :class="{'rotate-180': isDropdownOpen}"
                 xmlns="http://www.w3.org/2000/svg" 
                 fill="none" 
@@ -534,8 +534,8 @@ onUnmounted(() => {
           </div>
           
           <!-- Fallback if no user is available -->
-          <div v-else class="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div v-else class="h-8 w-8 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
           </div>
@@ -613,15 +613,15 @@ onUnmounted(() => {
         <button
           @click="cancelSignOut"
           type="button"
-          class="inline-flex items-center justify-center px-4 py-2 bg-gray-200 text-sm font-medium text-gray-700 rounded-xl shadow-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group"
+          class="inline-flex items-center justify-center px-4 py-2 bg-gray-200 dark:bg-gray-600 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-xl shadow-md hover:bg-gray-300 dark:hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-all duration-300 relative overflow-hidden group"
         >
-          <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
+          <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white dark:bg-gray-400 rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
           Cancel
         </button>
         <button
           @click="proceedSignOut"
           type="button"
-          class="inline-flex items-center justify-center px-4 py-2 bg-red-600 text-sm font-medium text-white rounded-xl shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group"
+          class="inline-flex items-center justify-center px-4 py-2 bg-red-600 text-sm font-medium text-white rounded-xl shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-all duration-300 relative overflow-hidden group"
         >
           <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
           Sign Out

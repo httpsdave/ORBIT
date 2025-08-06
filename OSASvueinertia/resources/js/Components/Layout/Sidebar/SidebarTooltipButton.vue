@@ -19,7 +19,7 @@
           transform: 'translateY(-50%)',
           zIndex: 9999
         }"
-        class="bg-gray-800 text-white text-xs rounded py-1 px-2 shadow-lg opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none"
+        class="bg-gray-800 dark:bg-gray-700 text-white dark:text-gray-200 text-xs rounded py-1 px-2 shadow-lg opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none"
       >
         {{ tooltip }}
       </span>
