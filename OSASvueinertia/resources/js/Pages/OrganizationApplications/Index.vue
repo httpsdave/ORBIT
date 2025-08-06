@@ -430,13 +430,13 @@ const cancelDeleteDocument = () => {
   <AuthenticatedLayout>
     <template #header>
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 w-full">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-100 leading-tight">
           {{ isAdmin ? 'Manage Applications' : 'Your Applications' }}
         </h2>
         <div class="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto items-stretch sm:items-center relative">
           <Link
             href="/applications/create"
-            class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-sm font-medium text-white rounded-xl shadow-md hover:shadow-blue-300/30 hover:from-blue-400 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:from-blue-600 active:to-blue-700 transition-all duration-300 relative overflow-hidden group w-full sm:w-auto"
+            class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-sm font-medium text-white rounded-xl shadow-md hover:shadow-blue-300/30 hover:from-blue-400 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 active:from-blue-600 active:to-blue-700 transition-all duration-300 relative overflow-hidden group w-full sm:w-auto"
           >
             <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white dark:bg-gray-800 rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
@@ -481,7 +481,7 @@ const cancelDeleteDocument = () => {
           <button
             v-if="isAdmin"
             @click="openEndYearModal"
-            class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-sm font-medium text-white rounded-xl shadow-md hover:from-red-600 hover:to-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group w-full sm:w-auto"
+            class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-sm font-medium text-white rounded-xl shadow-md hover:from-red-600 hover:to-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-all duration-300 relative overflow-hidden group w-full sm:w-auto"
           >
             <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
@@ -558,18 +558,18 @@ const cancelDeleteDocument = () => {
       <!-- Search Bar -->
       <div class="relative">
         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
         </div>
         <input
           type="text"
           v-model="searchQuery"
-          class="block w-full pl-12 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150"
+          class="block w-full pl-12 pr-12 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 transition duration-150 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
           placeholder="Search applications by organization, president, form type, or status..."
         />
         <div v-if="searchQuery" class="absolute inset-y-0 right-0 pr-4 flex items-center">
-          <button @click="clearSearch" class="text-gray-400 hover:text-gray-600">
+          <button @click="clearSearch" class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
             </svg>
@@ -581,10 +581,10 @@ const cancelDeleteDocument = () => {
       <div v-if="isAdmin" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <!-- Status Filter -->
         <div class="flex flex-col gap-1">
-          <label class="text-sm font-medium text-gray-700">Status</label>
+          <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
           <select 
             v-model="statusFilter"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
           >
             <option value="">All Statuses</option>
             <option v-for="option in statusOptions" :key="option.value" :value="option.value">
@@ -595,10 +595,10 @@ const cancelDeleteDocument = () => {
 
         <!-- Form Type Filter -->
         <div class="flex flex-col gap-1">
-          <label class="text-sm font-medium text-gray-700">Form Type</label>
+          <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Form Type</label>
           <select 
             v-model="formTypeFilter"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
           >
             <option value="">All Types</option>
             <option v-for="option in formTypeOptions" :key="option.value" :value="option.value">
@@ -609,10 +609,10 @@ const cancelDeleteDocument = () => {
 
         <!-- Organization Filter -->
         <div v-if="users.length > 0" class="flex flex-col gap-1">
-          <label class="text-sm font-medium text-gray-700">Organization</label>
+          <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Organization</label>
           <select 
             v-model="organizationFilter"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
           >
             <option value="">All Organizations</option>
             <option v-for="option in organizationOptions" :key="option.value" :value="option.value">
@@ -625,7 +625,7 @@ const cancelDeleteDocument = () => {
         <div v-if="hasActiveFilters" class="flex flex-col justify-end">
           <button
             @click="clearAllFilters"
-            class="w-full px-3 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-md transition duration-200 flex items-center justify-center gap-1 border border-gray-300"
+            class="w-full px-3 py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition duration-200 flex items-center justify-center gap-1 border border-gray-300 dark:border-gray-600"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -637,17 +637,17 @@ const cancelDeleteDocument = () => {
 
       <!-- Active Filters Display -->
       <div v-if="hasActiveFilters" class="flex flex-wrap gap-2 items-center text-sm">
-        <span class="text-gray-600 font-medium">Active filters:</span>
-        <span v-if="searchQuery" class="px-2 py-1 bg-blue-100 text-blue-800 rounded-md text-xs">
+        <span class="text-gray-600 dark:text-gray-400 font-medium">Active filters:</span>
+        <span v-if="searchQuery" class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-md text-xs">
           Search: "{{ searchQuery }}"
         </span>
-        <span v-if="statusFilter" class="px-2 py-1 bg-green-100 text-green-800 rounded-md text-xs">
+        <span v-if="statusFilter" class="px-2 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-md text-xs">
           Status: {{ statusFilter }}
         </span>
-        <span v-if="formTypeFilter" class="px-2 py-1 bg-purple-100 text-purple-800 rounded-md text-xs truncate max-w-xs">
+        <span v-if="formTypeFilter" class="px-2 py-1 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 rounded-md text-xs truncate max-w-xs">
           Form: {{ formTypeFilter }}
         </span>
-        <span v-if="organizationFilter" class="px-2 py-1 bg-orange-100 text-orange-800 rounded-md text-xs truncate max-w-xs">
+        <span v-if="organizationFilter" class="px-2 py-1 bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 rounded-md text-xs truncate max-w-xs">
           Organization: {{ organizationOptions.find(opt => opt.value === organizationFilter)?.label }}
         </span>
       </div>
@@ -683,39 +683,39 @@ const cancelDeleteDocument = () => {
       <div class="p-6">
         <div class="flex items-center mb-4">
           <div class="flex-shrink-0">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
             </svg>
           </div>
           <div class="ml-3">
-            <h3 class="text-lg font-medium text-gray-900">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">
               End the Academic Year
             </h3>
           </div>
         </div>
         <div class="mt-2">
-          <p class="text-sm text-gray-500 mb-4">
+          <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
             This action will archive all current applications and end the academic year. This process cannot be undone easily.
           </p>
           <div class="space-y-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Academic Year</label>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Academic Year</label>
               <input
                 v-model="endYearForm.academic_year"
                 type="text"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 dark:focus:border-red-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                 placeholder="e.g., 2024-2025"
               />
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Confirmation</label>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Confirmation</label>
               <input
                 v-model="endYearForm.confirmation"
                 type="text"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 dark:focus:border-red-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                 placeholder="Type 'END_YEAR' to confirm"
               />
-              <p class="text-xs text-gray-500 mt-1">
+              <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                 Type <strong>END_YEAR</strong> to confirm this action
               </p>
             </div>
@@ -724,7 +724,7 @@ const cancelDeleteDocument = () => {
         <div class="mt-6 flex justify-end space-x-3">
           <button
             @click="showEndYearModal = false"
-            class="px-4 py-2 bg-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-400 transition"
+            class="px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-md hover:bg-gray-400 dark:hover:bg-gray-500 transition"
           >
             Cancel
           </button>
@@ -740,29 +740,30 @@ const cancelDeleteDocument = () => {
     </Modal>
 
     <!-- Delete Document Confirmation Modal -->
+        <!-- Delete Document Confirmation Modal -->
     <Modal :show="showDeleteDocumentModal" @close="cancelDeleteDocument">
       <div class="p-6">
         <div class="flex items-center mb-4">
           <div class="flex-shrink-0">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </div>
           <div class="ml-3">
-            <h3 class="text-lg font-medium text-gray-900">
-              Delete Signed Document
+            <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">
+              Delete Document
             </h3>
           </div>
         </div>
         <div class="mt-2">
-          <p class="text-sm text-gray-500 mb-4">
+          <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
             Are you sure you want to delete this signed document? This action cannot be undone.
           </p>
         </div>
         <div class="mt-6 flex justify-end space-x-3">
           <button
             @click="cancelDeleteDocument"
-            class="px-4 py-2 bg-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-400 transition"
+            class="px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-md hover:bg-gray-400 dark:hover:bg-gray-500 transition"
           >
             Cancel
           </button>
@@ -775,6 +776,32 @@ const cancelDeleteDocument = () => {
         </div>
       </div>
     </Modal>
+    <!-- Deleting document progress modal -->
+    <div v-if="isDeletingDocument" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl w-80">
+        <h3 class="text-gray-800 dark:text-gray-100 font-semibold mb-4">Deleting document...</h3>
+        <div class="flex justify-center">
+          <svg class="animate-spin h-8 w-8 text-blue-600 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add a subtle, center-aligned archive link at the bottom -->
+    <div class="flex justify-center mt-10 mb-6">
+      <a
+        :href="isAdmin ? route('admin.archive.index') : route('archive.index')"
+        class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg shadow-sm transition duration-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+        aria-label="View Archive"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+        </svg>
+        <span>{{ isAdmin ? 'Archive Management' : 'View Archive' }}</span>
+      </a>
+    </div>
     <!-- Deleting document progress modal -->
     <div v-if="isDeletingDocument" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div class="bg-white p-6 rounded-lg shadow-xl w-80">
