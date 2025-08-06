@@ -23,6 +23,7 @@ const formTemplates = [
   { type: 'LSPU-OSAS-SF-007', label: 'List of Officers' },
   { type: 'LSPU-OSAS-SF-009', label: 'Activity Attendance Sheet' },
   { type: 'LSPU-OSAS-SF-EVAL', label: 'Evaluation Form' },
+  { type: 'LSPU-ACAD-RL', label: 'Academic Recognition List' },
 ];
 const openPreview = (formType) => {
   // Device detection for mobile
