@@ -121,9 +121,9 @@ const submit = () => {
 
     <div class="py-6">
       <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
           <div class="p-6">
-            <h2 class="text-xl font-medium text-gray-800 mb-8">
+            <h2 class="text-xl font-medium text-gray-800 dark:text-gray-200 mb-8">
               {{ isEditing ? 'Edit Notification' : 'Create Notification' }}
             </h2>
 
@@ -188,7 +188,7 @@ const submit = () => {
                 <button
                   type="button"
                   @click="router.visit(route('admin.notifications.index'))"
-                  class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-medium text-xs text-gray-700 uppercase tracking-wider hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-150 ease-in-out"
+                  class="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md font-medium text-xs text-gray-700 dark:text-gray-300 uppercase tracking-wider hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition duration-150 ease-in-out"
                 >
                   Cancel
                 </button>
@@ -207,15 +207,15 @@ const submit = () => {
 
     <!-- User Selection Modal -->
     <Modal :show="showUserModal" @close="closeUserSelectionModal">
-      <div class="p-6">
+      <div class="p-6 bg-white dark:bg-gray-800">
         <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg font-medium leading-6 text-gray-900">
+          <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100">
             Select Users
           </h3>
           <button
             @click="closeUserSelectionModal"
             type="button"
-            class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            class="rounded-md bg-white dark:bg-gray-800 text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
           >
             <span class="sr-only">Close</span>
             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -225,14 +225,14 @@ const submit = () => {
         </div>
 
         <!-- Select all option -->
-        <div class="flex items-center justify-between mb-4 p-3 bg-gray-50 rounded-md">
-          <span class="text-sm font-medium text-gray-700">Select all users</span>
+        <div class="flex items-center justify-between mb-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
+          <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Select all users</span>
           <div class="flex items-center space-x-3">
             <button
               v-if="tempUserSelection.length > 0"
               @click="clearAllUsers"
               type="button"
-              class="text-xs text-red-600 hover:text-red-800"
+              class="text-xs text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300"
             >
               Clear all
             </button>
@@ -240,34 +240,34 @@ const submit = () => {
               type="checkbox"
               :checked="isAllUsersSelected"
               @change="isAllUsersSelected ? clearAllUsers() : selectAllUsers()"
-              class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+              class="h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-indigo-600 focus:ring-indigo-500 dark:bg-gray-700"
             />
           </div>
         </div>
 
         <!-- Users list -->
-        <div class="max-h-64 overflow-y-auto border border-gray-200 rounded-md">
-          <div v-if="props.users.length === 0" class="p-4 text-center text-gray-500">
+        <div class="max-h-64 overflow-y-auto border border-gray-200 dark:border-gray-600 rounded-md">
+          <div v-if="props.users.length === 0" class="p-4 text-center text-gray-500 dark:text-gray-400">
             No users available
           </div>
           <label
             v-for="user in props.users"
             :key="user.id"
-            class="flex items-center px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+            class="flex items-center px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer border-b border-gray-100 dark:border-gray-600 last:border-b-0"
           >
             <input
               type="checkbox"
               :value="user.id"
               :checked="tempUserSelection.includes(user.id)"
               @change="toggleUser(user.id)"
-              class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 mr-3"
+              class="h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-indigo-600 focus:ring-indigo-500 mr-3 dark:bg-gray-700"
             />
-            <span class="text-sm text-gray-900">{{ user.name }}</span>
+            <span class="text-sm text-gray-900 dark:text-gray-100">{{ user.name }}</span>
           </label>
         </div>
 
         <!-- Selected count -->
-        <div class="mt-3 text-sm text-gray-600">
+        <div class="mt-3 text-sm text-gray-600 dark:text-gray-400">
           {{ tempUserSelection.length }} of {{ props.users.length }} users selected
         </div>
 
@@ -276,14 +276,14 @@ const submit = () => {
           <button
             @click="closeUserSelectionModal"
             type="button"
-            class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition duration-150 ease-in-out"
+            class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition duration-150 ease-in-out"
           >
             Cancel
           </button>
           <button
             @click="applyUserSelection"
             type="button"
-            class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition duration-150 ease-in-out"
+            class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition duration-150 ease-in-out"
           >
             Apply Selection
           </button>
