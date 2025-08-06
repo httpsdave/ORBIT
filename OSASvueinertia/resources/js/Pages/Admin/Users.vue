@@ -131,17 +131,17 @@ const deleteUser = () => {
                 <div class="w-1/4 h-1 bg-yellow-500 " style="animation-delay: 0.6s;"></div>
                 <div class="w-1/4 h-1 bg-red-500 " style="animation-delay: 0.8s;"></div>
             </div>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                 User Management
             </h2>
         </template>
 
         <div class="py-6 md:py-12">
            
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-4 sm:p-6">
-                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 pb-4 border-b border-gray-100">
-                            <h3 class="text-lg font-medium text-gray-900 mb-4 sm:mb-0">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 pb-4 border-b border-gray-100 dark:border-gray-700">
+                            <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4 sm:mb-0">
                                 
                                 <span class="ml-2">All Users</span>
                             </h3>
@@ -156,20 +156,20 @@ const deleteUser = () => {
                             </PrimaryButton>
                         </div>
                         
-                        <div class="overflow-x-auto bg-white rounded-lg">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
+                        <div class="overflow-x-auto bg-white dark:bg-gray-800 rounded-lg">
+                            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                <thead class="bg-gray-50 dark:bg-gray-700">
                                     <tr>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Email</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Role</th>
                                         <!-- <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student Organization</th> -->
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
-                                    <tr v-for="user in users" :key="user.id" class="hover:bg-gray-50 transition-colors duration-150">
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                    <tr v-for="user in users" :key="user.id" class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
                                             <div class="flex items-center gap-2">
                                                 <template v-if="user.profile_photo_url">
                                                     <img
@@ -193,10 +193,10 @@ const deleteUser = () => {
                                                 </span>
                                             </div>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ user.email }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ user.email }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
-                                                  :class="user.role.slug === 'admin' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'">
+                                                  :class="user.role.slug === 'admin' ? 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200' : 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'">
                                                 {{ user.role.name }}
                                             </span>
                                         </td>
@@ -226,7 +226,7 @@ const deleteUser = () => {
                                         </td>
                                     </tr>
                                     <tr v-if="users.length === 0">
-                                        <td colspan="4" class="px-6 py-8 text-center text-gray-500">
+                                        <td colspan="4" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
                                             No users found.
                                         </td>
                                     </tr>
@@ -247,7 +247,7 @@ const deleteUser = () => {
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                         </svg>
                     </div>
-                    <h2 class="text-lg font-medium text-gray-900">
+                    <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
                         Create New User
                     </h2>
                 </div>
@@ -310,7 +310,7 @@ const deleteUser = () => {
                         <InputLabel for="role" value="Role" />
                         <select
                             id="role"
-                            class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                            class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                             v-model="form.role_id"
                             @change="watchRoleChange"
                             required
@@ -323,7 +323,7 @@ const deleteUser = () => {
 
                     <!-- Student Organization select removed -->
 
-                    <div class="flex items-center justify-end pt-4 border-t border-gray-100">
+                    <div class="flex items-center justify-end pt-4 border-t border-gray-100 dark:border-gray-700">
                         <SecondaryButton @click="cancelCreate" class="mr-2">
                             Cancel
                         </SecondaryButton>
@@ -348,7 +348,7 @@ const deleteUser = () => {
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                         </svg>
                     </div>
-                    <h2 class="text-lg font-medium text-gray-900">
+                    <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
                         Edit User
                     </h2>
                 </div>
@@ -383,7 +383,7 @@ const deleteUser = () => {
                         <InputLabel for="edit_role" value="Role" />
                         <select
                             id="edit_role"
-                            class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                            class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                             v-model="editForm.role_id"
                             @change="watchRoleChange"
                             required
@@ -396,7 +396,7 @@ const deleteUser = () => {
 
                     <!-- Password fields removed for privacy -->
 
-                    <div class="flex items-center justify-end pt-4 border-t border-gray-100">
+                    <div class="flex items-center justify-end pt-4 border-t border-gray-100 dark:border-gray-700">
                         <SecondaryButton @click="cancelEdit" class="mr-2">
                             Cancel
                         </SecondaryButton>
@@ -421,31 +421,31 @@ const deleteUser = () => {
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                         </svg>
                     </div>
-                    <h2 class="text-lg font-medium text-gray-900">
+                    <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
                         Delete User
                     </h2>
                 </div>
 
-                <p class="mt-1 text-sm text-gray-600">
+                <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
                     Are you sure you want to delete this user? This action cannot be undone.
                 </p>
 
-                <div v-if="userToDelete" class="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                    <p class="mb-1"><span class="font-medium text-gray-700">Name:</span> {{ userToDelete.name }}</p>
-                    <p class="mb-1"><span class="font-medium text-gray-700">Email:</span> {{ userToDelete.email }}</p>
-                    <p v-if="userToDelete.role"><span class="font-medium text-gray-700">Role:</span> {{ userToDelete.role.name }}</p>
+                <div v-if="userToDelete" class="mt-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+                    <p class="mb-1"><span class="font-medium text-gray-700 dark:text-gray-300">Name:</span> {{ userToDelete.name }}</p>
+                    <p class="mb-1"><span class="font-medium text-gray-700 dark:text-gray-300">Email:</span> {{ userToDelete.email }}</p>
+                    <p v-if="userToDelete.role"><span class="font-medium text-gray-700 dark:text-gray-300">Role:</span> {{ userToDelete.role.name }}</p>
                 </div>
 
                 <!-- Confirmation input -->
                 <div class="mt-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Confirmation</label>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Confirmation</label>
                     <input
                         v-model="deleteConfirmation"
                         type="text"
-                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
                         :placeholder="userToDelete ? `Type '${userToDelete.email}' to confirm` : ''"
                     />
-                    <p class="text-xs text-gray-500 mt-1">
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                         Type <strong>{{ userToDelete ? userToDelete.email : '' }}</strong> to confirm this action
                     </p>
                 </div>
