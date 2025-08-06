@@ -2,7 +2,7 @@
   <AuthenticatedLayout>
     <Head title="Manage Colleges" />
     
-    <div class="py-8 bg-gray-50">
+    <div class="py-8 bg-gray-50 dark:bg-gray-900">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Animated colored banner -->
         <div class="flex w-full mb-6 overflow-hidden rounded-lg shadow-md">
@@ -13,9 +13,9 @@
         </div>
 
         <div class="flex justify-between items-center mb-6">
-          <h1 class="text-3xl font-bold text-gray-800 flex items-center">
+          <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-200 flex items-center">
             <span class="mr-2">Manage Colleges</span>
-            <span class="text-sm bg-blue-100 text-blue-800 py-1 px-2 rounded-full">
+            <span class="text-sm bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 py-1 px-2 rounded-full">
               {{ colleges.length }} total
             </span>
           </h1>
@@ -33,29 +33,29 @@
 
         <!-- Alert Messages -->
         <div v-if="$page.props.flash && $page.props.flash.message" 
-            class="mb-6 p-4 bg-green-50 border-l-4 border-green-500 text-green-700 rounded-md flex items-center shadow-sm">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            class="mb-6 p-4 bg-green-50 dark:bg-green-900 border-l-4 border-green-500 text-green-700 dark:text-green-200 rounded-md flex items-center shadow-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-green-500 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
           </svg>
           {{ $page.props.flash.message }}
         </div>
         
         <div v-if="$page.props.flash && $page.props.flash.error" 
-            class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-md flex items-center shadow-sm">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            class="mb-6 p-4 bg-red-50 dark:bg-red-900 border-l-4 border-red-500 text-red-700 dark:text-red-200 rounded-md flex items-center shadow-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-red-500 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
           {{ $page.props.flash.error }}
         </div>
 
         <!-- No colleges placeholder -->
-        <div v-if="colleges.length === 0" class="bg-white rounded-xl shadow-md p-8 text-center">
+        <div v-if="colleges.length === 0" class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-8 text-center">
           <div class="flex flex-col items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-300 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-300 dark:text-gray-600 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
             </svg>
-            <p class="text-gray-500 text-lg">No colleges found</p>
-            <p class="text-gray-400 text-sm mt-1">Click "Add New College" to create one</p>
+            <p class="text-gray-500 dark:text-gray-400 text-lg">No colleges found</p>
+            <p class="text-gray-400 dark:text-gray-500 text-sm mt-1">Click "Add New College" to create one</p>
           </div>
         </div>
 
@@ -66,7 +66,7 @@
             :key="college.id"
             class="relative"
           >
-            <div class="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden flex flex-col">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden flex flex-col">
               <!-- Colored top border, random color per college -->
               <div class="h-1 w-full rounded-t-xl" :class="{
                   'bg-blue-500': college.id % 4 === 0,
@@ -77,44 +77,44 @@
               
               <div class="p-6 flex-1 flex flex-col">
                 <div class="flex items-start justify-between">
-                  <h2 class="text-xl font-semibold text-gray-800 leading-tight flex-1 min-w-0 mr-2">
+                  <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 leading-tight flex-1 min-w-0 mr-2">
                     <span class="break-words">{{ college.name }}</span>
                   </h2>
                   <span v-if="college.acronym" 
-                        class="flex-shrink-0 bg-gray-100 text-gray-600 text-sm px-2 py-1 rounded-md">
+                        class="flex-shrink-0 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-sm px-2 py-1 rounded-md">
                     {{ college.acronym }}
                   </span>
                 </div>
                 
-                <p v-if="college.description" class="text-gray-600 mt-3 text-sm line-clamp-3">
+                <p v-if="college.description" class="text-gray-600 dark:text-gray-400 mt-3 text-sm line-clamp-3">
                   {{ college.description }}
                 </p>
-                <div v-else class="text-gray-400 italic text-sm mt-3">No description available</div>
+                <div v-else class="text-gray-400 dark:text-gray-500 italic text-sm mt-3">No description available</div>
               </div>
               
-              <div class="px-6 py-3 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
+              <div class="px-6 py-3 bg-gray-50 dark:bg-gray-700 border-t border-gray-100 dark:border-gray-600 flex justify-between items-center">
                 <div class="flex space-x-2">
                   <button 
                     @click="openEditModal(college)" 
-                    class="p-1.5 bg-gray-100 border border-gray-300 text-gray-700 text-sm rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 transition-colors duration-150 ease-in-out"
+                    class="p-1.5 bg-gray-100 dark:bg-gray-600 border border-gray-300 dark:border-gray-500 text-gray-700 dark:text-gray-300 text-sm rounded-md hover:bg-gray-200 dark:hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 dark:focus:ring-offset-gray-800 transition-colors duration-150 ease-in-out"
                     title="Edit"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                     </svg>
                   </button>
                   <button 
                     @click="openDeleteModal(college)" 
-                    class="p-1.5 bg-gray-100 border border-gray-300 text-gray-700 text-sm rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 transition-colors duration-150 ease-in-out"
+                    class="p-1.5 bg-gray-100 dark:bg-gray-600 border border-gray-300 dark:border-gray-500 text-gray-700 dark:text-gray-300 text-sm rounded-md hover:bg-gray-200 dark:hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 dark:focus:ring-offset-gray-800 transition-colors duration-150 ease-in-out"
                     title="Delete"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-500 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
                   </button>
                 </div>
                 
-                <div v-if="college.student_orgs_count" class="flex items-center text-sm text-gray-500">
+                <div v-if="college.student_orgs_count" class="flex items-center text-sm text-gray-500 dark:text-gray-400">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                   </svg>
@@ -140,14 +140,14 @@
     <!-- Create Modal -->
     <Modal :show="isCreateModalOpen" @close="isCreateModalOpen = false" :closeable="true" max-width="md">
       <div class="p-6">
-        <div class="flex items-center justify-between border-b border-gray-200 pb-3 mb-6">
-          <h2 class="text-lg font-bold text-gray-900 flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div class="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-3 mb-6">
+          <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
             </svg>
             Add New College
           </h2>
-          <button @click="isCreateModalOpen = false" class="text-gray-400 hover:text-gray-600 focus:outline-none">
+          <button @click="isCreateModalOpen = false" class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 focus:outline-none">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -157,12 +157,12 @@
         <form @submit.prevent="handleCreateSubmit" enctype="multipart/form-data" class="space-y-6">
           <div class="grid md:grid-cols-2 gap-6">
             <div>
-              <label for="name" class="block text-sm font-medium text-gray-700 mb-1">College Name</label>
+              <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">College Name</label>
               <input 
                 type="text" 
                 id="name" 
                 v-model="form.name" 
-                class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 rounded-md shadow-sm transition-colors duration-200"
+                class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 rounded-md shadow-sm transition-colors duration-200"
                 placeholder="Enter college name"
                 required
               />
@@ -170,12 +170,12 @@
             </div>
             
             <div>
-              <label for="acronym" class="block text-sm font-medium text-gray-700 mb-1">Acronym</label>
+              <label for="acronym" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Acronym</label>
               <input 
                 type="text" 
                 id="acronym" 
                 v-model="form.acronym" 
-                class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 rounded-md shadow-sm transition-colors duration-200"
+                class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 rounded-md shadow-sm transition-colors duration-200"
                 placeholder="e.g. CAS, COE"
                 required
               />
@@ -184,11 +184,11 @@
           </div>
           
           <div>
-            <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+            <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
             <textarea 
               id="description" 
               v-model="form.description" 
-              class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 rounded-md shadow-sm resize-none transition-colors duration-200"
+              class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 rounded-md shadow-sm resize-none transition-colors duration-200"
               rows="3"
               placeholder="Enter a brief description of the college"
             ></textarea>
@@ -196,8 +196,8 @@
           </div>
           
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">College Logo</label>
-            <div class="mt-2 p-4 border border-gray-300 rounded-md bg-gray-50">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">College Logo</label>
+            <div class="mt-2 p-4 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700">
               <div class="flex items-center gap-6">
                 <!-- Logo Preview -->
                 <div class="flex-shrink-0">
@@ -242,7 +242,7 @@
                   </div>
                   
                   <!-- Logo Guidelines -->
-                  <p class="text-xs text-gray-500 mt-2">
+                  <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
                     Recommended: Square image, at least 200x200 pixels. Maximum file size: 2MB. Leave empty to use default logo.
                   </p>
                 </div>
@@ -251,7 +251,7 @@
             <div v-if="errors && errors.logo" class="text-red-500 text-sm mt-1">{{ errors.logo }}</div>
           </div>
           
-          <div class="flex items-center pt-4 border-t border-gray-100">
+          <div class="flex items-center pt-4 border-t border-gray-100 dark:border-gray-700">
             <button 
               type="button" 
               @click="isCreateModalOpen = false" 
@@ -280,14 +280,14 @@
     <!-- Edit Modal -->
     <Modal :show="isEditModalOpen" @close="isEditModalOpen = false" :closeable="true" max-width="md">
       <div class="p-6">
-        <div class="flex items-center justify-between border-b border-gray-200 pb-3 mb-6">
-          <h2 class="text-lg font-bold text-gray-900 flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div class="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-3 mb-6">
+          <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
             </svg>
             Edit College
           </h2>
-          <button @click="isEditModalOpen = false" class="text-gray-400 hover:text-gray-600 focus:outline-none">
+          <button @click="isEditModalOpen = false" class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 focus:outline-none">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -297,24 +297,24 @@
         <form @submit.prevent="handleEditSubmit" class="space-y-6">
           <div class="grid md:grid-cols-2 gap-6">
             <div>
-              <label for="edit-name" class="block text-sm font-medium text-gray-700 mb-1">College Name</label>
+              <label for="edit-name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">College Name</label>
               <input 
                 type="text" 
                 id="edit-name" 
                 v-model="editForm.name" 
-                class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 rounded-md shadow-sm transition-colors duration-200"
+                class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 rounded-md shadow-sm transition-colors duration-200"
                 required
               />
               <div v-if="editErrors && editErrors.name" class="text-red-500 text-sm mt-1">{{ editErrors.name }}</div>
             </div>
             
             <div>
-              <label for="edit-acronym" class="block text-sm font-medium text-gray-700 mb-1">Acronym</label>
+              <label for="edit-acronym" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Acronym</label>
               <input 
                 type="text" 
                 id="edit-acronym" 
                 v-model="editForm.acronym" 
-                class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 rounded-md shadow-sm transition-colors duration-200"
+                class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 rounded-md shadow-sm transition-colors duration-200"
                 required
               />
               <div v-if="editErrors && editErrors.acronym" class="text-red-500 text-sm mt-1">{{ editErrors.acronym }}</div>
@@ -322,19 +322,19 @@
           </div>
           
           <div>
-            <label for="edit-description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+            <label for="edit-description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
             <textarea 
               id="edit-description" 
               v-model="editForm.description" 
-              class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 rounded-md shadow-sm resize-none transition-colors duration-200"
+              class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 rounded-md shadow-sm resize-none transition-colors duration-200"
               rows="3"
             ></textarea>
             <div v-if="editErrors && editErrors.description" class="text-red-500 text-sm mt-1">{{ editErrors.description }}</div>
           </div>
           
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">College Logo</label>
-            <div class="mt-2 p-4 border border-gray-300 rounded-md bg-gray-50">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">College Logo</label>
+            <div class="mt-2 p-4 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700">
               <div class="flex items-center gap-6">
                 <!-- Logo Preview -->
                 <div class="flex-shrink-0">
@@ -379,7 +379,7 @@
                   </div>
                   
                   <!-- Logo Guidelines -->
-                  <p class="text-xs text-gray-500 mt-2">
+                  <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
                     Recommended: Square image, at least 200x200 pixels. Maximum file size: 2MB. Leave empty to keep current logo.
                   </p>
                 </div>
@@ -388,7 +388,7 @@
             <div v-if="editErrors && editErrors.logo" class="text-red-500 text-sm mt-1">{{ editErrors.logo }}</div>
           </div>
           
-          <div class="flex items-center pt-4 border-t border-gray-100">
+          <div class="flex items-center pt-4 border-t border-gray-100 dark:border-gray-700">
             <button 
               type="button" 
               @click="isEditModalOpen = false" 
@@ -417,14 +417,14 @@
     <!-- Delete Confirmation Modal -->
     <Modal :show="isDeleteModalOpen" @close="isDeleteModalOpen = false" :closeable="true" max-width="md">
       <div class="p-6">
-        <div class="flex items-center justify-between border-b border-gray-200 pb-3 mb-6">
-          <h2 class="text-lg font-bold text-gray-900 flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div class="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-3 mb-6">
+          <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-red-500 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
             </svg>
             Delete College
           </h2>
-          <button @click="isDeleteModalOpen = false" class="text-gray-400 hover:text-gray-600 focus:outline-none">
+          <button @click="isDeleteModalOpen = false" class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 focus:outline-none">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -434,8 +434,8 @@
         <div class="flex flex-col items-center justify-center min-h-[180px]">
           <!-- Warning Icon -->
           <div class="mb-6">
-            <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 dark:bg-red-900">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
               </svg>
             </div>
@@ -443,18 +443,18 @@
           
           <!-- Warning Message -->
           <div class="text-center mb-6">
-            <h3 class="text-lg font-semibold text-gray-900 mb-2">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
               Delete College
             </h3>
-            <p class="text-sm text-gray-600 mb-4">
-              Are you sure you want to delete <span class="font-bold text-red-600">{{ collegeToDelete ? collegeToDelete.name : '' }}</span>?
+            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              Are you sure you want to delete <span class="font-bold text-red-600 dark:text-red-400">{{ collegeToDelete ? collegeToDelete.name : '' }}</span>?
             </p>
-            <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+            <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
               <div class="flex items-start">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500 mt-0.5 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500 dark:text-red-400 mt-0.5 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
-                <div class="text-sm text-red-700">
+                <div class="text-sm text-red-700 dark:text-red-300">
                   <p class="font-medium">This action cannot be undone.</p>
                   <p class="mt-1">All data associated with this college will be permanently removed.</p>
                 </div>
@@ -467,16 +467,16 @@
             <button 
               type="button" 
               @click="isDeleteModalOpen = false" 
-              class="inline-flex items-center justify-center px-6 py-2 bg-gray-200 text-sm font-medium text-gray-700 rounded-xl shadow-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group"
+              class="inline-flex items-center justify-center px-6 py-2 bg-gray-200 dark:bg-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-xl shadow-md hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 dark:focus:ring-gray-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-all duration-300 relative overflow-hidden group"
             >
-              <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
+              <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white dark:bg-gray-600 rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
               Cancel
             </button>
             <button 
               type="button" 
               @click="handleDelete" 
               :disabled="deleteProcessing" 
-              class="inline-flex items-center justify-center px-6 py-2 bg-gradient-to-r from-red-500 to-red-600 text-sm font-medium text-white rounded-xl shadow-md hover:shadow-red-300/30 hover:from-red-400 hover:to-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 active:from-red-600 active:to-red-700 transition-all duration-300 relative overflow-hidden group disabled:opacity-50"
+              class="inline-flex items-center justify-center px-6 py-2 bg-gradient-to-r from-red-500 to-red-600 text-sm font-medium text-white rounded-xl shadow-md hover:shadow-red-300/30 hover:from-red-400 hover:to-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 active:from-red-600 active:to-red-700 transition-all duration-300 relative overflow-hidden group disabled:opacity-50"
             >
               <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
               <svg v-if="deleteProcessing" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
