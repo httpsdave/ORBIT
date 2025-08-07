@@ -201,7 +201,12 @@ onBeforeUnmount(() => {
                             <TextInput
                                 id="password"
                                 :type="passwordVisible ? 'text' : 'password'"
-                                class="pl-12 pr-12 py-4 text-base rounded-lg w-full border-0 focus:border-blue-400 focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 transition-all duration-300 bg-white bg-opacity-10 backdrop-blur-sm text-white placeholder-gray-300"
+                                :class="[
+                                    'pl-12 pr-12 py-4 text-base rounded-lg w-full border-0 focus:border-blue-400 focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 transition-all duration-300 backdrop-blur-sm',
+                                    isDarkMode 
+                                        ? 'bg-white bg-opacity-10 text-white placeholder-gray-300' 
+                                        : 'bg-gray-800 bg-opacity-80 text-white placeholder-gray-400'
+                                ]"
                                 v-model="form.password"
                                 placeholder="Enter your password"
                                 required

@@ -112,10 +112,10 @@ const handleToggleMouseDown = (event) => {
 </script>
 
 <template>
-    <section class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+    <section class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-100 dark:border-gray-700">
         <!-- Specific section description with colored accent -->
         <div class="border-l-4 border-green-500 pl-3 mb-6">
-            <p class="text-sm text-gray-600">
+            <p class="text-sm text-gray-600 dark:text-gray-400">
                 Change your current password to a new secure password. All fields are required for verification.
             </p>
         </div>
@@ -138,7 +138,7 @@ const handleToggleMouseDown = (event) => {
                     <InputLabel 
                         for="current_password" 
                         value="Current Password" 
-                        class="text-gray-700 font-medium" 
+                        class="text-gray-700 dark:text-gray-300 font-medium" 
                     />
                     <div class="relative">
                         <TextInput
@@ -146,7 +146,7 @@ const handleToggleMouseDown = (event) => {
                             ref="currentPasswordInput"
                             v-model="form.current_password"
                             :type="showCurrentPassword ? 'text' : 'password'"
-                            class="mt-1 block w-full border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50 rounded-md shadow-sm pr-10"
+                            class="mt-1 block w-full border-gray-300 dark:border-gray-600 focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50 rounded-md shadow-sm pr-10 dark:bg-gray-700 dark:text-gray-300"
                             autocomplete="current-password"
                             @focus="handleFocus('current')"
                             @blur="handleBlur"
@@ -158,7 +158,7 @@ const handleToggleMouseDown = (event) => {
                                 type="button"
                                 @click="toggleCurrentPassword"
                                 @mousedown="handleToggleMouseDown"
-                                class="text-gray-400 hover:text-gray-600 focus:outline-none focus:text-gray-600 transition-colors duration-200"
+                                class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none focus:text-gray-600 dark:focus:text-gray-300 transition-colors duration-200"
                                 :aria-label="showCurrentPassword ? 'Hide password' : 'Show password'"
                             >
                                 <!-- Eye icon for show password -->
@@ -203,7 +203,7 @@ const handleToggleMouseDown = (event) => {
                             <!-- Show lock icon when field is not focused -->
                             <svg
                                 v-else
-                                class="h-5 w-5 text-gray-400"
+                                class="h-5 w-5 text-gray-400 dark:text-gray-500"
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 20 20"
                                 fill="currentColor"
@@ -223,7 +223,7 @@ const handleToggleMouseDown = (event) => {
                     <InputLabel 
                         for="password" 
                         value="New Password" 
-                        class="text-gray-700 font-medium" 
+                        class="text-gray-700 dark:text-gray-300 font-medium" 
                     />
                     <div class="relative">
                         <TextInput
@@ -231,7 +231,7 @@ const handleToggleMouseDown = (event) => {
                             ref="passwordInput"
                             v-model="form.password"
                             :type="showNewPassword ? 'text' : 'password'"
-                            class="mt-1 block w-full border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50 rounded-md shadow-sm pr-10"
+                            class="mt-1 block w-full border-gray-300 dark:border-gray-600 focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50 rounded-md shadow-sm pr-10 dark:bg-gray-700 dark:text-gray-300"
                             autocomplete="new-password"
                             @focus="handleFocus('new')"
                             @blur="handleBlur"
@@ -243,7 +243,7 @@ const handleToggleMouseDown = (event) => {
                                 type="button"
                                 @click="toggleNewPassword"
                                 @mousedown="handleToggleMouseDown"
-                                class="text-gray-400 hover:text-gray-600 focus:outline-none focus:text-gray-600 transition-colors duration-200"
+                                class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 focus:outline-none focus:text-gray-600 dark:focus:text-gray-400 transition-colors duration-200"
                                 :aria-label="showNewPassword ? 'Hide password' : 'Show password'"
                             >
                                 <!-- Eye icon for show password -->
@@ -288,7 +288,7 @@ const handleToggleMouseDown = (event) => {
                             <!-- Show lock icon when field is not focused -->
                             <svg
                                 v-else
-                                class="h-5 w-5 text-gray-400"
+                                class="h-5 w-5 text-gray-400 dark:text-gray-500"
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 20 20"
                                 fill="currentColor"
@@ -299,10 +299,10 @@ const handleToggleMouseDown = (event) => {
                     </div>
                     <!-- Password strength bar and label moved below input+icon container -->
                     <div v-if="form.password">
-                        <div class="mt-1 h-0.5 w-full rounded bg-gray-200 overflow-hidden flex">
+                        <div class="mt-1 h-0.5 w-full rounded bg-gray-200 dark:bg-gray-600 overflow-hidden flex">
                             <div :class="[passwordStrength.color, passwordStrength.width, 'h-0.5 rounded transition-all duration-300']"></div>
                         </div>
-                        <div class="text-xs mt-1 font-semibold text-gray-600">{{ passwordStrength.label }} Password</div>
+                        <div class="text-xs mt-1 font-semibold text-gray-600 dark:text-gray-400">{{ passwordStrength.label }} Password</div>
                     </div>
                     <InputError :message="form.errors.password" class="mt-2" />
                     <!-- Password requirements as errors -->
@@ -321,14 +321,14 @@ const handleToggleMouseDown = (event) => {
                     <InputLabel
                         for="password_confirmation"
                         value="Confirm Password"
-                        class="text-gray-700 font-medium"
+                        class="text-gray-700 dark:text-gray-300 font-medium"
                     />
                     <div class="relative">
                         <TextInput
                             id="password_confirmation"
                             v-model="form.password_confirmation"
                             :type="showConfirmPassword ? 'text' : 'password'"
-                            class="mt-1 block w-full border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50 rounded-md shadow-sm pr-10"
+                            class="mt-1 block w-full border-gray-300 dark:border-gray-600 focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50 rounded-md shadow-sm pr-10 dark:bg-gray-700 dark:text-gray-300"
                             autocomplete="new-password"
                             @focus="handleFocus('confirm')"
                             @blur="handleBlur"
@@ -340,7 +340,7 @@ const handleToggleMouseDown = (event) => {
                                 type="button"
                                 @click="toggleConfirmPassword"
                                 @mousedown="handleToggleMouseDown"
-                                class="text-gray-400 hover:text-gray-600 focus:outline-none focus:text-gray-600 transition-colors duration-200"
+                                class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 focus:outline-none focus:text-gray-600 dark:focus:text-gray-400 transition-colors duration-200"
                                 :aria-label="showConfirmPassword ? 'Hide password' : 'Show password'"
                             >
                                 <!-- Eye icon for show password -->
@@ -385,7 +385,7 @@ const handleToggleMouseDown = (event) => {
                             <!-- Show lock icon when field is not focused -->
                             <svg
                                 v-else
-                                class="h-5 w-5 text-gray-400"
+                                class="h-5 w-5 text-gray-400 dark:text-gray-500"
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 20 20"
                                 fill="currentColor"
@@ -402,9 +402,9 @@ const handleToggleMouseDown = (event) => {
             </div>
 
             <!-- Password tips/requirements section -->
-            <div class="py-3 px-4 bg-gray-50 rounded-md border border-gray-100">
-                <h3 class="text-sm font-medium text-gray-700 mb-2">Password Requirements:</h3>
-                <ul class="space-y-1 text-xs text-gray-600">
+            <div class="py-3 px-4 bg-gray-50 dark:bg-gray-700 rounded-md border border-gray-100 dark:border-gray-600">
+                <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Password Requirements:</h3>
+                <ul class="space-y-1 text-xs text-gray-600 dark:text-gray-400">
                     <li class="flex items-center">
                         <svg class="h-4 w-4 mr-1 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
@@ -426,7 +426,7 @@ const handleToggleMouseDown = (event) => {
                 </ul>
             </div>
 
-            <div class="flex items-center pt-4 border-t border-gray-100">
+            <div class="flex items-center pt-4 border-t border-gray-100 dark:border-gray-700">
                 <PrimaryButton 
                     :disabled="form.processing"
                     class="bg-green-500 hover:bg-green-600 focus:bg-green-600"

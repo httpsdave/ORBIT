@@ -178,17 +178,17 @@ function cancelSave() {
 </script>
 
 <template>
-    <section class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+    <section class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-100 dark:border-gray-700">
         <!-- Specific section description with colored accent -->
         <div class="border-l-4 border-blue-500 pl-3 mb-6">
-            <p class="text-sm text-gray-600">
+            <p class="text-sm text-gray-600 dark:text-gray-400">
                 Manage your personal details, profile photo, and organization description. <span v-if="isAdmin">As an admin, you can also update your name and email address.</span>
             </p>
         </div>
         <!-- Status bar for verification status -->
         <div 
             v-if="mustVerifyEmail && user.email_verified_at === null"
-            class="mb-6 bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded-md"
+            class="mb-6 bg-yellow-50 dark:bg-yellow-900/30 border-l-4 border-yellow-500 p-4 rounded-md"
         >
             <div class="flex">
                 <div class="flex-shrink-0">
@@ -197,20 +197,20 @@ function cancelSave() {
                     </svg>
                 </div>
                 <div class="ml-3">
-                    <p class="text-sm text-yellow-700">
+                    <p class="text-sm text-yellow-700 dark:text-yellow-300">
                         Your email address is unverified.
                         <Link
                             :href="route('verification.send')"
                             method="post"
                             as="button"
-                            class="font-medium text-blue-500 underline hover:text-blue-700 focus:outline-none"
+                            class="font-medium text-blue-500 dark:text-blue-400 underline hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none"
                         >
                             Click here to re-send the verification email.
                         </Link>
                     </p>
                     <p
                         v-show="status === 'verification-link-sent'"
-                        class="mt-2 text-sm font-medium text-green-500"
+                        class="mt-2 text-sm font-medium text-green-500 dark:text-green-400"
                     >
                         A new verification link has been sent to your email address.
                     </p>
@@ -221,20 +221,20 @@ function cancelSave() {
         <form @submit.prevent="submit" class="space-y-6">
             <div class="grid md:grid-cols-2 gap-6">
                 <div>
-                    <InputLabel for="name" value="Name" class="text-gray-700 font-medium" />
+                    <InputLabel for="name" value="Name" class="text-gray-700 dark:text-gray-300 font-medium" />
                     <TextInput
                         id="name"
                         type="text"
-                        class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 rounded-md shadow-sm"
+                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 rounded-md shadow-sm dark:bg-gray-700 dark:text-gray-300"
                         v-model="form.name"
                         :disabled="isAdmin ? !isEditingProfile : (!isEditingProfile || !canChangeName)"
-                        :class="(isAdmin ? !isEditingProfile : (!isEditingProfile || !canChangeName)) ? 'bg-gray-100 text-gray-400 cursor-not-allowed select-none pointer-events-none' : ''"
+                        :class="(isAdmin ? !isEditingProfile : (!isEditingProfile || !canChangeName)) ? 'bg-gray-100 dark:bg-gray-600 text-gray-400 dark:text-gray-500 cursor-not-allowed select-none pointer-events-none' : ''"
                         required
                         autofocus
                         autocomplete="name"
                     />
                     <InputError class="mt-2" :message="form.errors.name" />
-                    <div v-if="!isAdmin && !canChangeName" class="text-xs text-red-500 mt-1">
+                    <div v-if="!isAdmin && !canChangeName" class="text-xs text-red-500 dark:text-red-400 mt-1">
                         <span v-if="daysLeft > 0 || hoursLeft > 0">
                             You can change your name in <span class="font-semibold">{{ daysLeft }}</span> day<span v-if="daysLeft !== 1">s</span>
                             <span v-if="hoursLeft > 0"> and <span class="font-semibold">{{ hoursLeft }}</span> hour<span v-if="hoursLeft !== 1">s</span></span>.
@@ -245,14 +245,14 @@ function cancelSave() {
                 </div>
 
                 <div>
-                    <InputLabel for="email" value="Email" class="text-gray-700 font-medium" />
+                    <InputLabel for="email" value="Email" class="text-gray-700 dark:text-gray-300 font-medium" />
                     <TextInput
                         id="email"
                         type="email"
-                        class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 rounded-md shadow-sm"
+                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 rounded-md shadow-sm dark:bg-gray-700 dark:text-gray-300"
                         v-model="form.email"
                         :disabled="!isAdmin || !isEditingProfile"
-                        :class="(!isAdmin || !isEditingProfile) ? 'bg-gray-100 text-gray-400 cursor-not-allowed select-none pointer-events-none' : ''"
+                        :class="(!isAdmin || !isEditingProfile) ? 'bg-gray-100 dark:bg-gray-600 text-gray-400 dark:text-gray-500 cursor-not-allowed select-none pointer-events-none' : ''"
                         required
                         autocomplete="email"
                     />
@@ -261,19 +261,19 @@ function cancelSave() {
             </div>
 
             <div v-if="showDescription">
-                <InputLabel for="description" value="Organization Description" class="text-gray-700 font-medium" />
+                <InputLabel for="description" value="Organization Description" class="text-gray-700 dark:text-gray-300 font-medium" />
                 <div v-if="!isEditingDescription && (!isAdmin && !isEditingProfile)" class="flex items-center justify-between group">
-                    <div class="text-gray-800 min-h-[2.5rem]">
+                    <div class="text-gray-800 dark:text-gray-200 min-h-[2.5rem]">
                         <span v-if="form.description">{{ form.description }}</span>
-                        <span v-else class="italic text-gray-400">No description available</span>
+                        <span v-else class="italic text-gray-400 dark:text-gray-500">No description available</span>
                     </div>
                 </div>
                 <div v-else-if="!isEditingDescription && (isAdmin || isEditingProfile)" class="flex items-center justify-between group">
-                    <div class="text-gray-800 min-h-[2.5rem]">
+                    <div class="text-gray-800 dark:text-gray-200 min-h-[2.5rem]">
                         <span v-if="form.description">{{ form.description }}</span>
-                        <span v-else class="italic text-gray-400">No description available</span>
+                        <span v-else class="italic text-gray-400 dark:text-gray-500">No description available</span>
                     </div>
-                    <button type="button" @click="startEditDescription" class="ml-2 text-blue-500 hover:text-blue-700 opacity-70 group-hover:opacity-100 transition p-1 rounded-full" title="Edit Description">
+                    <button type="button" @click="startEditDescription" class="ml-2 text-blue-500 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 opacity-70 group-hover:opacity-100 transition p-1 rounded-full" title="Edit Description">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536M9 13h3l8-8a2.828 2.828 0 10-4-4l-8 8v3z" />
                         </svg>
@@ -285,28 +285,28 @@ function cancelSave() {
                         v-model="form.description"
                         rows="3"
                         :disabled="!isAdmin && !isEditingProfile"
-                        :class="(!isAdmin && !isEditingProfile) ? 'bg-gray-100 text-gray-400 cursor-not-allowed select-none pointer-events-none' : ''"
-                        class="mt-1 block w-full border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 rounded-md shadow-sm resize-none"
+                        :class="(!isAdmin && !isEditingProfile) ? 'bg-gray-100 dark:bg-gray-600 text-gray-400 dark:text-gray-500 cursor-not-allowed select-none pointer-events-none' : ''"
+                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 rounded-md shadow-sm resize-none dark:bg-gray-700 dark:text-gray-300"
                         placeholder="Write a short description about your organization..."
                     ></textarea>
                     <InputError class="mt-2" :message="form.errors.description" />
                     <div class="flex gap-2 mt-2" v-if="isAdmin || isEditingProfile">
-                        <button type="button" @click="saveDescription" class="px-4 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm font-medium">Save</button>
-                        <button type="button" @click="cancelEditDescription" class="px-4 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 text-sm font-medium">Cancel</button>
+                        <button type="button" @click="saveDescription" class="px-4 py-1 bg-blue-500 dark:bg-blue-600 text-white rounded hover:bg-blue-600 dark:hover:bg-blue-700 text-sm font-medium">Save</button>
+                        <button type="button" @click="cancelEditDescription" class="px-4 py-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-300 dark:hover:bg-gray-600 text-sm font-medium">Cancel</button>
                     </div>
                 </div>
             </div>
 
             <div>
-                <InputLabel value="Profile Photo" class="text-gray-700 font-medium" />
-                <div class="mt-2 p-4 border border-gray-300 rounded-md bg-gray-50">
+                <InputLabel value="Profile Photo" class="text-gray-700 dark:text-gray-300 font-medium" />
+                <div class="mt-2 p-4 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700">
                     <div class="flex items-center gap-6">
                         <!-- Profile Photo Preview -->
                         <div class="flex-shrink-0">
                             <div class="relative group">
                                 <img 
                                     :src="photoPreview || '/images/lspu_logo_better.png'" 
-                                    class="w-24 h-24 rounded-full object-cover border-4 border-blue-200 shadow-md transition-all duration-200 group-hover:border-blue-300" 
+                                    class="w-24 h-24 rounded-full object-cover border-4 border-blue-200 dark:border-blue-600 shadow-md transition-all duration-200 group-hover:border-blue-300 dark:group-hover:border-blue-500" 
                                 />
                                 <div 
                                     v-if="photoPreview"
@@ -347,7 +347,7 @@ function cancelSave() {
                                 v-if="(user.profile_photo_url || photoPreview) && isEditingProfile"
                                 type="button"
                                 @click="handleRemovePhoto"
-                                class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 hover:border-red-300 hover:text-red-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150"
+                                class="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-500 hover:border-red-300 hover:text-red-600 dark:hover:text-red-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150"
                             >
                                 <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -355,7 +355,7 @@ function cancelSave() {
                                 Remove Photo
                             </button>
                             <!-- Photo Guidelines -->
-                            <p class="text-xs text-gray-500 mt-2">
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
                                 Recommended: Square image, at least 200x200 pixels. Maximum file size: 2MB.
                             </p>
                         </div>
@@ -364,27 +364,27 @@ function cancelSave() {
                 <InputError class="mt-2" :message="form.errors.profile_photo" />
             </div>
             <Modal :show="showConfirmModal" @close="cancelSave">
-                <div class="p-6 flex flex-col items-center justify-center min-h-[180px]">
-                    <h2 class="text-lg font-semibold mb-4 text-center">Confirm Changes</h2>
-                    <p class="mb-6 text-center">Are you sure you want to save these changes to your profile?</p>
-                    <p v-if="!isAdmin" class="mb-4 text-sm text-blue-500 text-center">
+                <div class="p-6 flex flex-col items-center justify-center min-h-[180px] bg-white dark:bg-gray-800">
+                    <h2 class="text-lg font-semibold mb-4 text-center text-gray-900 dark:text-gray-100">Confirm Changes</h2>
+                    <p class="mb-6 text-center text-gray-700 dark:text-gray-300">Are you sure you want to save these changes to your profile?</p>
+                    <p v-if="!isAdmin" class="mb-4 text-sm text-blue-500 dark:text-blue-400 text-center">
                         Note: You can only change your name once every 14 days.
                     </p>
                     <div class="flex justify-center gap-2 w-full">
                         <button @click="cancelSave" type="button"
-                            class="inline-flex items-center justify-center px-4 py-2 bg-gray-200 text-sm font-medium text-gray-700 rounded-xl shadow-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group">
+                            class="inline-flex items-center justify-center px-4 py-2 bg-gray-200 dark:bg-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-xl shadow-md hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group">
                             <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
                             Cancel
                         </button>
                         <button @click="confirmSave" type="button"
-                            class="inline-flex items-center justify-center px-4 py-2 bg-blue-500 text-sm font-medium text-white rounded-xl shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group">
+                            class="inline-flex items-center justify-center px-4 py-2 bg-blue-500 dark:bg-blue-600 text-sm font-medium text-white rounded-xl shadow-md hover:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group">
                             <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
                             Yes, Save
                         </button>
                     </div>
                 </div>
             </Modal>
-            <div class="flex items-center pt-4 border-t border-gray-100">
+            <div class="flex items-center pt-4 border-t border-gray-100 dark:border-gray-700">
                 <PrimaryButton 
                     v-if="isEditingProfile"
                     :disabled="form.processing"
