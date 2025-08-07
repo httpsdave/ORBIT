@@ -4,7 +4,7 @@
     <div v-if="isLoading" class="flex items-center justify-center py-12">
       <div class="text-center">
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-        <p class="text-gray-600">Loading statistics...</p>
+        <p class="text-gray-600 dark:text-gray-400">Loading statistics...</p>
       </div>
     </div>
 
@@ -18,7 +18,7 @@
         <p class="text-gray-600 dark:text-gray-400 mb-4">There was an error loading the event statistics.</p>
         <button 
           @click="refreshData" 
-          class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200"
+          class="px-4 py-2 bg-blue-500 dark:bg-blue-600 text-white rounded-lg hover:bg-blue-600 dark:hover:bg-blue-700 transition-colors duration-200"
         >
           Try Again
         </button>
@@ -81,7 +81,7 @@
                 <li>
                   <button
                     @click="selectedTimeRange = '90'; updateChartData(); showTimeRangeDropdown = false"
-                    :class="['w-full text-left px-4 py-2 text-sm transition', selectedTimeRange === '90' ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-700']"
+                    :class="['w-full text-left px-4 py-2 text-sm transition', selectedTimeRange === '90' ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-medium' : 'text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-700 dark:hover:text-blue-300']"
                   >
                     Last 3 months
                   </button>
@@ -89,7 +89,7 @@
                 <li>
                   <button
                     @click="selectedTimeRange = '365'; updateChartData(); showTimeRangeDropdown = false"
-                    :class="['w-full text-left px-4 py-2 text-sm transition', selectedTimeRange === '365' ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-700']"
+                    :class="['w-full text-left px-4 py-2 text-sm transition', selectedTimeRange === '365' ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-medium' : 'text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-700 dark:hover:text-blue-300']"
                   >
                     Last year
                   </button>
@@ -97,7 +97,7 @@
                 <li>
                   <button
                     @click="selectedTimeRange = 'all'; updateChartData(); showTimeRangeDropdown = false"
-                    :class="['w-full text-left px-4 py-2 text-sm transition', selectedTimeRange === 'all' ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-700']"
+                    :class="['w-full text-left px-4 py-2 text-sm transition', selectedTimeRange === 'all' ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-medium' : 'text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-700 dark:hover:text-blue-300']"
                   >
                     All time
                   </button>
@@ -112,7 +112,7 @@
           <!-- Export Button -->
           <button
             @click="exportStatistics"
-            class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-sm font-medium text-white rounded-xl shadow-md hover:from-green-600 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group w-full sm:w-auto"
+            class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 dark:from-green-600 dark:to-green-700 text-sm font-medium text-white rounded-xl shadow-md hover:from-green-600 hover:to-green-700 dark:hover:from-green-700 dark:hover:to-green-800 focus:outline-none focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-all duration-300 relative overflow-hidden group w-full sm:w-auto"
           >
             <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white dark:bg-gray-800 rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
             <svg class="w-4 h-4 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">

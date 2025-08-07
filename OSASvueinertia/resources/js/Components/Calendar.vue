@@ -8,7 +8,7 @@
     <div class="w-1/4 h-1.5 bg-red-500 " style="animation-delay: 0.8s;"></div>
   </div>
   
-  <h1 class="text-2xl font-bold mb-6 text-gray-800">Event Calendar</h1>
+  <h1 class="text-2xl font-bold mb-6 text-gray-800 dark:text-gray-100">Event Calendar</h1>
   
   <div class="mb-6 grid gap-6 md:grid-cols-2">
     <!-- Left panel - only visible to admins -->
@@ -35,14 +35,14 @@
 <!-- View Toggle and Actions -->
 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
   <!-- View Toggle Switch -->
-  <div class="flex items-center bg-gray-100 rounded-lg p-1">
+  <div class="flex items-center bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
     <button 
       @click="currentView = 'calendar'"
       :class="[
         'flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200',
         currentView === 'calendar' 
-          ? 'bg-white text-blue-600 shadow-sm' 
-          : 'text-gray-600 hover:text-gray-800'
+          ? 'bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400 shadow-sm' 
+          : 'text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100'
       ]"
     >
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -55,8 +55,8 @@
       :class="[
         'flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200',
         currentView === 'statistics' 
-          ? 'bg-white text-blue-600 shadow-sm' 
-          : 'text-gray-600 hover:text-gray-800'
+          ? 'bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400 shadow-sm' 
+          : 'text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100'
       ]"
     >
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -69,7 +69,7 @@
   <!-- Event History Button -->
   <button 
     @click="showPastEventsModal = true" 
-    class="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+    class="flex items-center space-x-2 px-4 py-2 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200"
   >
     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
@@ -140,12 +140,12 @@
       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
       @click.self="cancelEdit"
     >
-      <div class="bg-white rounded-lg shadow-lg p-6 max-w-md w-full mx-4">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 max-w-md w-full mx-4">
       <div class="flex justify-between items-center mb-4">
-        <h2 class="text-lg font-semibold text-gray-800">
+        <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">
           {{ isEditing ? 'Edit Event' : 'Create New Event' }}
         </h2>
-        <button @click="cancelEdit" class="text-gray-400 hover:text-gray-600 p-2 rounded-lg hover:bg-gray-100 transition-all duration-200">
+        <button @click="cancelEdit" class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
@@ -153,44 +153,44 @@
       </div>
       <div class="space-y-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Event Title</label>
-          <input v-model="eventForm.title" type="text" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50" />
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Event Title</label>
+          <input v-model="eventForm.title" type="text" class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" />
         </div>
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
-            <input v-model="eventForm.date" type="date" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50" />
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Start Date</label>
+            <input v-model="eventForm.date" type="date" class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Start Time</label>
-            <input v-model="eventForm.start_time" type="time" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50" />
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Start Time</label>
+            <input v-model="eventForm.start_time" type="time" class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" />
           </div>
         </div>
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
-            <input v-model="eventForm.end_date" type="date" :min="eventForm.date" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50" />
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">End Date</label>
+            <input v-model="eventForm.end_date" type="date" :min="eventForm.date" class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">End Time</label>
-            <input v-model="eventForm.end_time" type="time" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50" />
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">End Time</label>
+            <input v-model="eventForm.end_time" type="time" class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" />
           </div>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
-          <textarea v-model="eventForm.description" rows="3" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"></textarea>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
+          <textarea v-model="eventForm.description" rows="3" class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"></textarea>
         </div>
         <div class="pt-4 flex justify-end space-x-3">
           <button 
             @click="cancelEdit" 
-            class="inline-flex items-center justify-center px-4 py-2 bg-white border border-gray-300 text-sm font-medium text-gray-700 rounded-xl shadow-sm hover:bg-gray-50 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group"
+            class="inline-flex items-center justify-center px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-xl shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 hover:text-gray-900 dark:hover:text-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-all duration-300 relative overflow-hidden group"
           >
-            <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-gray-100 rounded-full group-hover:w-96 group-hover:h-96 opacity-20"></span>
+            <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-gray-100 dark:bg-gray-600 rounded-full group-hover:w-96 group-hover:h-96 opacity-20"></span>
             <span class="relative z-10">Cancel</span>
           </button>
           <button 
             @click="isEditing ? updateEvent() : saveEvent()" 
-            class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-sm font-medium text-white rounded-xl shadow-md hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group"
+            class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-sm font-medium text-white rounded-xl shadow-md hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-all duration-300 relative overflow-hidden group"
           >
             <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
             <span class="relative z-10">{{ isEditing ? 'Update Event' : 'Save Event' }}</span>
@@ -379,6 +379,28 @@
       --fc-today-bg-color: #EFF6FF; /* blue-50 */
       --fc-highlight-color: #F3F4F6; /* gray-100 */
       --fc-list-event-hover-bg-color: #F3F4F6; /* gray-100 */
+      --fc-neutral-bg-color: #ffffff; /* light mode background */
+      --fc-neutral-text-color: #374151; /* light mode text */
+    }
+
+    /* Dark mode FullCalendar styling */
+    .dark :deep(.full-calendar-custom) {
+      --fc-border-color: #4b5563 !important; /* gray-600 */
+      --fc-button-bg-color: #3B82F6 !important; /* blue-500 */
+      --fc-button-border-color: #3B82F6 !important; /* blue-500 */
+      --fc-button-hover-bg-color: #2563EB !important; /* blue-600 */
+      --fc-button-hover-border-color: #2563EB !important; /* blue-600 */
+      --fc-button-active-bg-color: #1D4ED8 !important; /* blue-700 */
+      --fc-button-active-border-color: #1D4ED8 !important; /* blue-700 */
+      --fc-event-bg-color: #3B82F6 !important; /* blue-500 */
+      --fc-event-border-color: #3B82F6 !important; /* blue-500 */
+      --fc-today-bg-color: rgba(59, 130, 246, 0.15) !important; /* blue with opacity for dark mode */
+      --fc-highlight-color: #374151 !important; /* gray-700 */
+      --fc-list-event-hover-bg-color: #374151 !important; /* gray-700 */
+      --fc-neutral-bg-color: #1f2937 !important; /* dark mode background */
+      --fc-neutral-text-color: #f3f4f6 !important; /* dark mode text */
+      background-color: #1f2937 !important; /* Force dark background */
+      color: #f3f4f6 !important; /* Force light text */
     }
     
     :deep(.fc .fc-button) {
@@ -393,9 +415,172 @@
       font-weight: 600;
       color: #1F2937; /* gray-800 */
     }
+
+    /* Light mode calendar text styling */
+    :deep(.fc) {
+      color: #374151; /* gray-700 */
+    }
+
+    :deep(.fc-daygrid-day-number) {
+      color: #374151; /* gray-700 */
+      font-weight: 500;
+    }
+
+    :deep(.fc-col-header-cell-cushion) {
+      color: #6b7280; /* gray-500 */
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+    }
+
+    :deep(.fc-daygrid-day-top) {
+      color: #374151; /* gray-700 */
+    }
+
+    /* Dark mode calendar text styling - More specific selectors with !important */
+    .dark :deep(.fc) {
+      color: #f3f4f6 !important; /* gray-100 */
+    }
+
+    .dark :deep(.fc-daygrid-day-number) {
+      color: #f3f4f6 !important; /* gray-100 */
+      font-weight: 500 !important;
+    }
+
+    .dark :deep(.fc-col-header-cell-cushion) {
+      color: #d1d5db !important; /* gray-300 */
+      font-weight: 600 !important;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+    }
+
+    .dark :deep(.fc-daygrid-day-top) {
+      color: #f3f4f6 !important; /* gray-100 */
+    }
+
+    .dark :deep(.fc .fc-toolbar-title) {
+      color: #f3f4f6 !important; /* gray-100 */
+    }
+
+    .dark :deep(.fc-col-header-cell) {
+      color: #d1d5db !important; /* gray-300 */
+    }
+
+    .dark :deep(.fc-daygrid-day-frame) {
+      color: #f3f4f6 !important; /* gray-100 */
+    }
+
+    .dark :deep(.fc-daygrid-day) {
+      color: #f3f4f6 !important; /* gray-100 */
+    }
+
+    .dark :deep(.fc-button-primary) {
+      background-color: #3B82F6 !important;
+      border-color: #3B82F6 !important;
+      color: #ffffff !important;
+    }
+
+    .dark :deep(.fc-button-primary:not(:disabled):active),
+    .dark :deep(.fc-button-primary:not(:disabled).fc-button-active) {
+      background-color: #1D4ED8 !important;
+      border-color: #1D4ED8 !important;
+    }
+
+    /* Additional dark mode fixes for calendar borders and cells */
+    .dark :deep(.fc-theme-standard td, .fc-theme-standard th) {
+      border-color: #4b5563 !important; /* gray-600 */
+    }
+
+    .dark :deep(.fc-scrollgrid) {
+      border-color: #4b5563 !important; /* gray-600 */
+    }
+
+    .dark :deep(.fc-daygrid-day) {
+      background-color: transparent !important;
+      color: #f3f4f6 !important; /* gray-100 */
+    }
+
+    .dark :deep(.fc-daygrid-day:hover) {
+      background-color: rgba(59, 130, 246, 0.1) !important; /* subtle blue hover */
+    }
+
+    /* More specific selectors for all calendar text elements */
+    .dark :deep(.fc-daygrid-day-number),
+    .dark :deep(.fc-daygrid-day a),
+    .dark :deep(.fc-col-header-cell a),
+    .dark :deep(.fc-daygrid-day-top a) {
+      color: #f3f4f6 !important; /* gray-100 */
+      text-decoration: none !important;
+    }
+
+    /* Ensure all borders in dark mode are visible */
+    .dark :deep(.fc-scrollgrid-section table),
+    .dark :deep(.fc-scrollgrid-section tbody),
+    .dark :deep(.fc-scrollgrid-section tr),
+    .dark :deep(.fc-scrollgrid-section td),
+    .dark :deep(.fc-scrollgrid-section th) {
+      border-color: #4b5563 !important; /* gray-600 */
+    }
+
+    /* Fix event text contrast in dark mode */
+    .dark :deep(.fc-event) {
+      background-color: #3B82F6 !important;
+      border-color: #3B82F6 !important;
+      color: #ffffff !important;
+    }
+
+    .dark :deep(.fc-event-title) {
+      color: #ffffff !important;
+    }
+
+    .dark :deep(.fc-event-time) {
+      color: #ffffff !important;
+    }
+
+    /* Force override for stubborn FullCalendar default styles */
+    .dark :deep(.fc-theme-standard .fc-scrollgrid) {
+      border-color: #4b5563 !important;
+      background-color: #1f2937 !important;
+    }
+
+    .dark :deep(.fc-theme-standard .fc-scrollgrid td) {
+      border-color: #4b5563 !important;
+      background-color: transparent !important;
+    }
+
+    .dark :deep(.fc-theme-standard .fc-scrollgrid th) {
+      border-color: #4b5563 !important;
+      background-color: #374151 !important;
+    }
+
+    /* Target the specific day number elements more aggressively */
+    .dark :deep(.fc-daygrid-day-number),
+    .dark :deep(.fc-daygrid-day .fc-daygrid-day-number) {
+      color: #f3f4f6 !important;
+      opacity: 1 !important;
+      font-weight: 500 !important;
+    }
+
+    /* Ensure header text is visible */
+    .dark :deep(.fc-col-header-cell),
+    .dark :deep(.fc-col-header-cell .fc-col-header-cell-cushion) {
+      color: #d1d5db !important;
+      background-color: #374151 !important;
+    }
     
     :deep(.fc .fc-daygrid-day.fc-day-today) {
       background-color: var(--fc-today-bg-color);
+    }
+
+    /* Enhanced today highlighting for dark mode */
+    .dark :deep(.fc .fc-daygrid-day.fc-day-today) {
+      background-color: rgba(59, 130, 246, 0.15) !important; /* blue with opacity */
+      border: 1px solid rgba(59, 130, 246, 0.3) !important; /* subtle blue border */
+    }
+
+    .dark :deep(.fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number) {
+      color: #93c5fd !important; /* blue-300 for today's number */
+      font-weight: 600 !important;
     }
     
     :deep(.fc .fc-col-header-cell-cushion) {
@@ -1499,5 +1684,69 @@ function exportPastEventsCsv(pastEvents) {
     max-height: 80vh;
     overflow-y: auto;
   }
+}
+</style>
+
+<style>
+/* Global dark mode overrides for FullCalendar - not scoped to ensure they override */
+.dark .fc-daygrid-day-number {
+  color: #f3f4f6 !important;
+  opacity: 1 !important;
+  font-weight: 500 !important;
+}
+
+.dark .fc-col-header-cell-cushion {
+  color: #d1d5db !important;
+  font-weight: 600 !important;
+}
+
+.dark .fc-toolbar-title {
+  color: #f3f4f6 !important;
+}
+
+.dark .fc-theme-standard td {
+  border-color: #4b5563 !important;
+  background-color: transparent !important;
+}
+
+.dark .fc-theme-standard th {
+  border-color: #4b5563 !important;
+  background-color: #374151 !important;
+}
+
+.dark .fc-scrollgrid {
+  border-color: #4b5563 !important;
+  background-color: #1f2937 !important;
+}
+
+.dark .fc-daygrid-day {
+  color: #f3f4f6 !important;
+}
+
+.dark .fc-daygrid-day a {
+  color: #f3f4f6 !important;
+  text-decoration: none !important;
+}
+
+.dark .fc-col-header-cell a {
+  color: #d1d5db !important;
+  text-decoration: none !important;
+}
+
+.dark .fc-button-primary {
+  background-color: #3B82F6 !important;
+  border-color: #3B82F6 !important;
+  color: #ffffff !important;
+}
+
+/* Today highlighting for dark mode */
+.dark .fc-daygrid-day.fc-day-today {
+  background-color: rgba(59, 130, 246, 0.15) !important;
+  border: 1px solid rgba(59, 130, 246, 0.3) !important;
+}
+
+.dark .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
+  color: #93c5fd !important; /* blue-300 */
+  font-weight: 600 !important;
 }
 </style>
