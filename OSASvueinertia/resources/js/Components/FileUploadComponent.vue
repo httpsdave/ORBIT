@@ -42,17 +42,17 @@
         </div>
 
         <!-- File Preview Container -->
-        <div class="relative bg-white overflow-hidden" style="min-height: 400px; max-height: calc(90vh - 120px);">
+        <div class="relative bg-white dark:bg-gray-800 overflow-hidden" style="min-height: 400px; max-height: calc(90vh - 120px);">
           <!-- File Preview -->
           <div v-if="!showExtractedText && !isExtracting" class="relative h-full">
             <img 
-              v-if="filePreview && fileType === 'image'" 
+              v-if="filePreview && (fileType === 'image' || fileType === 'pdf')" 
               :src="filePreview" 
               alt="File preview"
               class="w-full h-full object-contain bg-gray-50 dark:bg-gray-700 transition-opacity duration-300"
             />
             <div 
-              v-else-if="fileType === 'pdf'"
+              v-else-if="fileType === 'pdf' && !filePreview"
               class="w-full h-full bg-gray-50 dark:bg-gray-700 flex items-center justify-center transition-opacity duration-300"
               style="min-height: 400px;"
             >
@@ -67,7 +67,7 @@
             </div>
             
             <!-- Scanning overlay -->
-            <div class="absolute inset-0 bg-blue-50 dark:bg-blue-900 bg-opacity-50 pointer-events-none">
+            <div class="absolute inset-0 bg-blue-50 dark:bg-blue-900 bg-opacity-30 dark:bg-opacity-40 pointer-events-none">
               <!-- Scanning line -->
               <div 
                 class="absolute left-0 right-0 h-1 sm:h-2 bg-gradient-to-r from-transparent via-blue-400 to-transparent shadow-lg scan-line"
@@ -78,7 +78,7 @@
           
           <!-- Extracting Animation -->
           <div v-if="isExtracting" class="relative h-full bg-white dark:bg-gray-800 flex items-center justify-center">
-            <div class="text-center text-gray-700">
+            <div class="text-center text-gray-700 dark:text-gray-300">
               <div class="mb-8">
                 <svg class="w-24 h-24 sm:w-32 sm:h-32 mx-auto mb-6 text-blue-500 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -92,18 +92,18 @@
               ></div>
               
               <div class="mt-8">
-                <h4 class="text-2xl font-semibold mb-4 text-gray-800">Extracting Event Details</h4>
-                <p class="text-lg text-gray-600 mb-2">Analyzing extracted text...</p>
-                <p class="text-sm text-gray-500">Identifying dates, times, and event information</p>
+                <h4 class="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-100">Extracting Event Details</h4>
+                <p class="text-lg text-gray-600 dark:text-gray-300 mb-2">Analyzing extracted text...</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Identifying dates, times, and event information</p>
               </div>
             </div>
           </div>
           
           <!-- Extracted Text Display -->
-          <div v-if="showExtractedText && !isExtracting" class="h-full bg-white p-6 overflow-y-auto">
+          <div v-if="showExtractedText && !isExtracting" class="h-full bg-white dark:bg-gray-800 p-6 overflow-y-auto">
             <div class="mb-4">
-              <h4 class="text-lg font-semibold text-gray-800 mb-2">Extracted Text from Document</h4>
-              <p class="text-sm text-gray-600 mb-4">Review the extracted text before proceeding to event extraction:</p>
+              <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2">Extracted Text from Document</h4>
+              <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">Review the extracted text before proceeding to event extraction:</p>
             </div>
             
                         <div class="p-6 bg-gray-50 dark:bg-gray-700 max-h-64 overflow-y-auto rounded-md border border-gray-200 dark:border-gray-600">
@@ -194,7 +194,7 @@
   <div class="mt-4">
     <button 
       @click="createNewEvent" 
-      class="w-full flex items-center justify-center px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+      class="w-full flex items-center justify-center px-4 py-3 bg-blue-500 dark:bg-blue-600 text-white rounded-lg hover:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800 focus:ring-blue-400 dark:focus:ring-blue-500 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
       :disabled="isProcessing"
     >
       <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
