@@ -244,37 +244,37 @@
       <!-- Event Distribution -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         <!-- Monthly Distribution -->
-        <div class="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
-          <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-4">Monthly Distribution</h3>
+        <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
+          <h3 class="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Monthly Distribution</h3>
           <div class="space-y-3 max-h-48 sm:max-h-64 overflow-y-auto pr-2 custom-scrollbar">
             <div v-for="month in monthlyDistribution" :key="month.month" class="flex items-center">
-              <div class="w-16 sm:w-20 text-xs sm:text-sm text-gray-600 flex-shrink-0">{{ month.month }}</div>
+              <div class="w-16 sm:w-20 text-xs sm:text-sm text-gray-600 dark:text-gray-400 flex-shrink-0">{{ month.month }}</div>
               <div class="flex-1 mx-2 sm:mx-3">
-                <div class="bg-gray-200 rounded-full h-2">
+                <div class="bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                   <div 
-                    class="bg-green-500 h-2 rounded-full transition-all duration-500" 
+                    class="bg-green-500 dark:bg-green-400 h-2 rounded-full transition-all duration-500" 
                     :style="{ width: month.percentage + '%' }"
                   ></div>
                 </div>
               </div>
-              <div class="w-6 sm:w-8 text-xs sm:text-sm text-gray-900 font-medium flex-shrink-0">{{ month.count }}</div>
+              <div class="w-6 sm:w-8 text-xs sm:text-sm text-gray-900 dark:text-gray-100 font-medium flex-shrink-0">{{ month.count }}</div>
             </div>
           </div>
         </div>
 
         <!-- Recent Activity -->
-        <div class="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
-          <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
+        <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
+          <h3 class="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Recent Activity</h3>
           <div class="space-y-3">
             <div v-for="activity in recentActivity.slice(0, 3)" :key="activity.id" class="flex items-start space-x-3">
-              <div class="flex-shrink-0 w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+              <div class="flex-shrink-0 w-2 h-2 bg-blue-500 dark:bg-blue-400 rounded-full mt-2"></div>
               <div class="flex-1 min-w-0">
-                <p class="text-sm font-medium text-gray-900 truncate">{{ activity.title }}</p>
-                <p class="text-xs text-gray-500">{{ formatDate(activity.start_date, 'MMM DD, YYYY') }}</p>
+                <p class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{{ activity.title }}</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400">{{ formatDate(activity.start_date, 'MMM DD, YYYY') }}</p>
               </div>
             </div>
             <div v-if="recentActivity.length === 0" class="text-center py-4">
-              <p class="text-sm text-gray-500">No recent activity</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400">No recent activity</p>
             </div>
           </div>
         </div>
