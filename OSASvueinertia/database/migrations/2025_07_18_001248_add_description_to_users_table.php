@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            // $table->text('description')->nullable()->after('profile_photo_path'); // Already exists, remove to prevent duplicate
+            $table->text('description')->nullable()->after('profile_photo_path');
         });
     }
 
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            // $table->dropColumn('description'); // Already exists, remove to prevent error
+            $table->dropColumn('description');
         });
     }
 };
