@@ -20,10 +20,11 @@ class PublicStudentOrgController extends Controller
         // Get the admin role id
         $adminRoleId = \App\Models\Role::where('slug', 'admin')->value('id');
 
-        // Get all users who are not admins and have a college_id set
+        // Get all users who are not admins, have a college_id set, and are active
         $organizations = \App\Models\User::with('college')
             ->where('role_id', '!=', $adminRoleId)
             ->whereNotNull('college_id')
+            ->where('status', 'active')
             ->get();
 
         return Inertia::render('StudentOrgs/Index', [
@@ -36,6 +37,11 @@ class PublicStudentOrgController extends Controller
      */
     public function show(User $studentOrg)
     {
+        // Check if the organization is active
+        if ($studentOrg->status !== 'active') {
+            abort(404, 'Organization not found or inactive.');
+        }
+        
         $studentOrg->load('college');
         
         // Get organization details from latest approved applications

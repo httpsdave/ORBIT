@@ -12,7 +12,10 @@
             </div>
 
             <div class="pl-4 pr-4 sm:pl-8 sm:pr-6 lg:pl-16 lg:pr-12">
-                <h1 class="text-3xl font-bold mb-8" :class="isDarkMode ? 'text-white' : 'text-gray-900'">Student Organizations</h1>
+                <h1 class="text-3xl font-bold mb-2" :class="isDarkMode ? 'text-white' : 'text-gray-900'">Student Organizations</h1>
+                <p class="text-sm mb-6" :class="isDarkMode ? 'text-gray-400' : 'text-gray-600'">
+                    Showing active student organizations only
+                </p>
 
                 <div class="mb-6 max-w-md">
                     <input
@@ -35,7 +38,10 @@
                         v-for="org in filteredOrganizations"
                         :key="org.id"
                         class="rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden flex flex-col"
-                        :class="isDarkMode ? 'bg-gray-800' : 'bg-white'"
+                        :class="[
+                            isDarkMode ? 'bg-gray-800' : 'bg-white',
+                            org.status !== 'active' ? 'opacity-75' : ''
+                        ]"
                     >
                         <!-- Colored top border, cycling colors -->
                         <div class="h-1 w-full"
@@ -70,7 +76,12 @@
                             </div>
                         </div>
                         <div class="px-6 py-3 border-t flex justify-between items-center rounded-b-lg" :class="isDarkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-100'">
-                            <span class="px-2 py-1 rounded-full text-xs font-medium" :class="isDarkMode ? 'bg-green-900 text-green-200' : 'bg-green-100 text-green-800'">Active</span>
+                            <span class="px-2 py-1 rounded-full text-xs font-medium" 
+                                  :class="org.status === 'active' 
+                                    ? (isDarkMode ? 'bg-green-900 text-green-200' : 'bg-green-100 text-green-800')
+                                    : (isDarkMode ? 'bg-red-900 text-red-200' : 'bg-red-100 text-red-800')">
+                                {{ org.status === 'active' ? 'Active' : 'Inactive' }}
+                            </span>
                             <Link :href="route('student-orgs.show', org.id)" class="text-sm font-medium transition-colors duration-300" :class="isDarkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-800'">View Details</Link>
                         </div>
                     </div>
