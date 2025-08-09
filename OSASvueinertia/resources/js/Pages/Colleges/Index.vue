@@ -26,20 +26,18 @@
                 </div>
 
                 <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div
-                        v-for="college in colleges"
-                        :key="college.id"
-                        class="relative bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg dark:hover:shadow-gray-900/50 transition-all duration-300 flex flex-col"
-                    >
-                        <!-- Colored top border, random color per college -->
-                        <div class="h-1 w-full rounded-t-xl" :class="{
-                            'bg-blue-500': college.id % 4 === 0,
-                            'bg-green-500': college.id % 4 === 1,
-                            'bg-yellow-500': college.id % 4 === 2,
-                            'bg-red-500': college.id % 4 === 3,
-                        }"></div>
-                        
-                        <div class="p-6 flex-1 flex flex-col">
+                <div
+                    v-for="college in colleges"
+                    :key="college.id"
+                    class="relative bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg dark:hover:shadow-gray-900/50 transition-all duration-300 flex flex-col overflow-hidden"
+                >
+                    <!-- Colored top border, random color per college -->
+                    <div class="h-1 w-full" :class="{
+                        'bg-blue-500': college.id % 4 === 0,
+                        'bg-green-500': college.id % 4 === 1,
+                        'bg-yellow-500': college.id % 4 === 2,
+                        'bg-red-500': college.id % 4 === 3,
+                    }"></div>                        <div class="p-6 flex-1 flex flex-col">
                             <div class="flex items-start justify-between">
                                 <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100 leading-tight flex-1 min-w-0 mr-2">
                                     <Link
