@@ -20,6 +20,11 @@ const props = defineProps({
   logoSize: {
     type: String,
     default: 'extra-large' // 'default', 'medium', 'large'
+  },
+  // User prop to avoid Vue warning (though we use $page.props.auth.user internally)
+  user: {
+    type: Object,
+    default: null
   }
 });
 
@@ -46,6 +51,9 @@ const unreadNotificationsCount = computed(() => {
 const showingSidebar = ref(false);
 const sidebarExpanded = ref(true);
 const windowWidth = ref(window.innerWidth); // Track window width
+
+// Track if sidebar was expanded via toggle button (for content push behavior)
+const expandedViaToggle = ref(true);
 
 // Sign out confirmation modal state
 const showSignOutModal = ref(false);
@@ -186,6 +194,7 @@ const toggleSidebar = () => {
 // Toggle sidebar expanded state with localStorage persistence
 const toggleSidebarExpanded = () => {
   sidebarExpanded.value = !sidebarExpanded.value;
+  expandedViaToggle.value = sidebarExpanded.value; // Track that this was done via toggle
   // Save preference to localStorage
   try {
     localStorage.setItem('sidebarExpanded', String(sidebarExpanded.value));
@@ -194,18 +203,20 @@ const toggleSidebarExpanded = () => {
   }
 };
 
-// Handle sidebar click - expands the sidebar when collapsed
+// Handle sidebar click - expands the sidebar when collapsed (without content push)
 const handleSidebarClick = (event) => {
-  // Only toggle if sidebar is collapsed and we're on desktop
+  // Only expand if sidebar is collapsed and we're on desktop
   if (!sidebarExpanded.value && window.innerWidth >= 768) {
     // Check if the click is on a navigation item or its children
     const isNavigationClick = event.target.closest('a[href]') || 
                              event.target.closest('button') ||
                              event.target.closest('[role="button"]');
     
-    // Only toggle if it's not a navigation click
+    // Only expand if it's not a navigation click
     if (!isNavigationClick) {
-      toggleSidebarExpanded();
+      // Temporarily expand without saving to localStorage and without content push
+      sidebarExpanded.value = true;
+      expandedViaToggle.value = false; // Mark as temporary expansion (no content push)
     }
   }
 };
@@ -223,17 +234,15 @@ const closeSidebarOnClickOutside = (event) => {
       closeSidebar();
     }
   } else if (window.innerWidth >= 768 && sidebarExpanded.value) {
-    // For desktop mode, check if click is outside the sidebar to collapse it
+    // For desktop mode, check if click is outside the sidebar
     const sidebarElement = document.getElementById('sidebar');
     const desktopToggleButton = event.target.closest('button[aria-label="Toggle sidebar"]');
     
-    // Don't collapse if clicking on the desktop toggle button
+    // Don't collapse if clicking on the desktop toggle button or inside sidebar
     if (sidebarElement && !sidebarElement.contains(event.target) && !desktopToggleButton) {
-      sidebarExpanded.value = false;
-      try {
-        localStorage.setItem('sidebarExpanded', 'false');
-      } catch (e) {
-        console.error('Could not save sidebar preference');
+      // Only collapse if sidebar was not expanded via toggle button (temporary expansion)
+      if (!expandedViaToggle.value) {
+        sidebarExpanded.value = false;
       }
     }
   }
@@ -253,17 +262,21 @@ const checkWindowSize = () => {
   if (window.innerWidth < 768) {
     sidebarExpanded.value = false;
     showingSidebar.value = false;
+    expandedViaToggle.value = false;
   } else if (window.innerWidth >= 768) {
     // Only restore the saved preference when on desktop
     try {
       const savedExpanded = localStorage.getItem('sidebarExpanded');
       if (savedExpanded !== null) {
         sidebarExpanded.value = savedExpanded === 'true';
+        expandedViaToggle.value = savedExpanded === 'true'; // Track initial state
       } else {
         sidebarExpanded.value = true; // Default to expanded
+        expandedViaToggle.value = true; // Default to toggle-based
       }
     } catch (e) {
       sidebarExpanded.value = true; // Default if localStorage fails
+      expandedViaToggle.value = true;
     }
   }
 };
@@ -280,12 +293,9 @@ const handleKeyDown = (event) => {
     if (showingSidebar.value && window.innerWidth < 768) {
       closeSidebar();
     } else if (sidebarExpanded.value && window.innerWidth >= 768) {
-      // Collapse sidebar with Escape key on desktop
-      sidebarExpanded.value = false;
-      try {
-        localStorage.setItem('sidebarExpanded', 'false');
-      } catch (e) {
-        console.error('Could not save sidebar preference');
+      // Only collapse if sidebar was not expanded via toggle button (temporary expansion)
+      if (!expandedViaToggle.value) {
+        sidebarExpanded.value = false;
       }
     }
     // Also close dropdown if open
@@ -593,7 +603,7 @@ onUnmounted(() => {
         'z-30 transition-all duration-300 ease-out border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-lg shadow-blue-200/20 dark:shadow-gray-900/50 flex flex-col',
         // Desktop positioning logic - always fixed positioned
         'md:fixed md:left-0 md:pt-16 md:h-screen',
-        // Width logic - hover overlays, expanded overlays but appears to push content
+        // Width logic - always overlays content when expanded via click
         sidebarExpanded ? 'md:w-64' : 'md:w-20',
         // Mobile positioning - use transform for smooth animation
         'fixed left-0 w-64 h-full pt-16 md:transform-none',
@@ -628,8 +638,8 @@ onUnmounted(() => {
     <div 
         :class="[
           'flex-1 flex flex-col pt-16',
-          // Only push content when sidebar is expanded (not when hovering)
-          sidebarExpanded ? 'md:ml-64' : 'md:ml-20'
+          // Push content only when expanded via toggle button
+          (sidebarExpanded && expandedViaToggle) ? 'md:ml-64' : 'md:ml-20'
         ]"
       >
       <!-- Page Content -->
