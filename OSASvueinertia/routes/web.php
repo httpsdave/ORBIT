@@ -101,7 +101,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/colleges/{college}', [PublicCollegeController::class, 'show'])->name('colleges.show');
     
     Route::get('/student-orgs', [PublicStudentOrgController::class, 'index'])->name('student-orgs.index');
-    Route::get('/student-orgs/{studentOrg:user}', [PublicStudentOrgController::class, 'show'])->name('student-orgs.show');
+    Route::get('/student-orgs/{studentOrg}', [PublicStudentOrgController::class, 'show'])->name('student-orgs.show');
 
 
     // Upload signed document
