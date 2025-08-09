@@ -155,6 +155,7 @@ Route::middleware(['auth'])->group(function () {
          
         // College Management Routes
         Route::get('/colleges', [CollegeController::class, 'index'])->name('admin.colleges.index');
+        Route::get('/colleges/{college}', [CollegeController::class, 'show'])->name('admin.colleges.show');
         Route::post('/colleges', [CollegeController::class, 'store'])->name('admin.colleges.store');
         Route::put('/colleges/{college}', [CollegeController::class, 'update'])->name('admin.colleges.update');
         Route::delete('/colleges/{college}', [CollegeController::class, 'destroy'])->name('admin.colleges.destroy');

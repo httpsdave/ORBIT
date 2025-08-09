@@ -22,6 +22,18 @@ class CollegeController extends Controller
     }
 
     /**
+     * Display the specified college.
+     */
+    public function show(College $college)
+    {
+        $college->load('users');
+        
+        return Inertia::render('Admin/Colleges/Show', [
+            'college' => $college
+        ]);
+    }
+
+    /**
      * Store a newly created college.
      */
     public function store(Request $request)
