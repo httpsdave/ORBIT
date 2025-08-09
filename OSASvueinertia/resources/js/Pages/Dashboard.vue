@@ -86,9 +86,21 @@ const getStatusColor = (status) => {
   return colors[status.toLowerCase()] || 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 border-blue-200 dark:border-blue-700';
 };
 
-// Get activity icon
+// Get activity icon and color based on activity type
 const getActivityIcon = (type) => {
   const icons = {
+    'submission': `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        </svg>`,
+    'update': `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+        </svg>`,
+    'approval': `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>`,
+    'rejection': `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>`,
     'application': `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
         </svg>`,
@@ -99,7 +111,23 @@ const getActivityIcon = (type) => {
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
         </svg>`
   };
+  
   return icons[type] || icons['application'];
+};
+
+// Get activity icon container classes based on activity type
+const getActivityIconClasses = (type) => {
+  const classes = {
+    'submission': 'h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-blue-500 dark:text-blue-400',
+    'update': 'h-10 w-10 rounded-full bg-yellow-100 dark:bg-yellow-900/50 flex items-center justify-center text-yellow-500 dark:text-yellow-400',
+    'approval': 'h-10 w-10 rounded-full bg-green-100 dark:bg-green-900/50 flex items-center justify-center text-green-500 dark:text-green-400',
+    'rejection': 'h-10 w-10 rounded-full bg-red-100 dark:bg-red-900/50 flex items-center justify-center text-red-500 dark:text-red-400',
+    'application': 'h-10 w-10 rounded-full bg-purple-100 dark:bg-purple-900/50 flex items-center justify-center text-purple-500 dark:text-purple-400',
+    'profile': 'h-10 w-10 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center text-indigo-500 dark:text-indigo-400',
+    'event': 'h-10 w-10 rounded-full bg-cyan-100 dark:bg-cyan-900/50 flex items-center justify-center text-cyan-500 dark:text-cyan-400'
+  };
+  
+  return classes[type] || classes['application'];
 };
 
 // Greeting based on time of day
@@ -341,12 +369,18 @@ const activeTab = ref('applications');
                       class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-white dark:bg-gray-800 shadow-sm">
                       <div class="flex">
                         <div class="flex-shrink-0 mr-4">
-                          <div class="h-10 w-10 rounded-full bg-yellow-100 dark:bg-yellow-900/50 flex items-center justify-center text-yellow-500 dark:text-yellow-400" v-html="getActivityIcon(activity.type)">
+                          <div :class="getActivityIconClasses(activity.type)" v-html="getActivityIcon(activity.type)">
                           </div>
                         </div>
-                        <div>
+                        <div class="flex-1">
                           <p class="text-sm font-medium text-gray-800 dark:text-gray-200">{{ activity.description }}</p>
-                          <p class="text-xs text-gray-500 dark:text-gray-400">{{ formatDate(activity.created_at) }}</p>
+                          <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ formatDate(activity.created_at) }}</p>
+                          <!-- Show status badge if applicable -->
+                          <div v-if="activity.status" class="mt-2">
+                            <span :class="getStatusColor(activity.status)" class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border">
+                              {{ activity.status }}
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>
