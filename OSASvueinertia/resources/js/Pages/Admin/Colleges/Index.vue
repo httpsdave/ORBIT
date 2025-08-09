@@ -61,18 +61,20 @@
 
         <!-- Colleges Grid -->
         <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div
-          v-for="college in colleges"
-          :key="college.id"
-          class="relative bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg dark:hover:shadow-gray-900/50 transition-all duration-300 flex flex-col overflow-hidden"
-        >
-          <!-- Colored top border, random color per college -->
-          <div class="h-1 w-full" :class="{
-              'bg-blue-500': college.id % 4 === 0,
-              'bg-green-500': college.id % 4 === 1,
-              'bg-yellow-500': college.id % 4 === 2,
-              'bg-red-500': college.id % 4 === 3,
-          }"></div>            <div class="p-6 flex-1 flex flex-col">
+          <div
+            v-for="college in colleges"
+            :key="college.id"
+            class="relative bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg dark:hover:shadow-gray-900/50 transition-all duration-300 flex flex-col"
+          >
+            <!-- Colored top border, random color per college -->
+            <div class="h-1 w-full rounded-t-xl" :class="{
+                'bg-blue-500': college.id % 4 === 0,
+                'bg-green-500': college.id % 4 === 1,
+                'bg-yellow-500': college.id % 4 === 2,
+                'bg-red-500': college.id % 4 === 3,
+            }"></div>
+            
+            <div class="p-6 flex-1 flex flex-col">
               <div class="flex items-start justify-between">
                 <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100 leading-tight flex-1 min-w-0 mr-2">
                   <span class="break-words">{{ college.name }}</span>
@@ -122,11 +124,12 @@
               
               <Link
                 :href="route('colleges.show', college.id)"
-                class="inline-flex items-center justify-center px-6 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-sm font-medium text-white rounded-xl shadow-md hover:shadow-blue-300/30 hover:from-blue-400 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 active:from-blue-600 active:to-blue-700 transition-all duration-300 relative overflow-hidden group mr-20"
+                class="inline-flex items-center justify-center px-3 sm:px-4 lg:px-6 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-xs sm:text-sm font-medium text-white rounded-xl shadow-md hover:shadow-blue-300/30 hover:from-blue-400 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 active:from-blue-600 active:to-blue-700 transition-all duration-300 relative overflow-hidden group mr-16 sm:mr-20 whitespace-nowrap"
               >
                 <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
-                View Details
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <span class="hidden sm:inline">View Details</span>
+                <span class="sm:hidden">View</span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:h-4 sm:w-4 ml-1 sm:ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                 </svg>
               </Link>
