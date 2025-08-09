@@ -114,15 +114,21 @@ class EventController extends Controller
      */
     public function getEvents()
     {
-        // Get events that haven't ended yet (future and current events)
-        $events = Event::where('end_date', '>=', Carbon::today())
-                      ->orWhere(function($query) {
-                          // Include events with no end_date that started today or later
-                          $query->whereNull('end_date')
-                                ->whereDate('start_date', '>=', Carbon::today());
-                      })
-                      ->orderBy('start_date', 'asc')
-                      ->get();
+        // Get events that haven't ended yet (future and current events) and are not cancelled
+        $events = Event::where(function($query) {
+                        $query->where('end_date', '>=', Carbon::today())
+                              ->orWhere(function($subQuery) {
+                                  // Include events with no end_date that started today or later
+                                  $subQuery->whereNull('end_date')
+                                          ->whereDate('start_date', '>=', Carbon::today());
+                              });
+                    })
+                    ->where(function($query) {
+                        $query->where('status', '!=', 'cancelled')
+                              ->orWhereNull('status');
+                    })
+                    ->orderBy('start_date', 'asc')
+                    ->get();
         
         return response()->json($events);
     }

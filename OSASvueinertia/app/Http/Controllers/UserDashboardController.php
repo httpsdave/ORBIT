@@ -37,10 +37,18 @@ class UserDashboardController extends Controller
         // Get today's event - matching the Admin approach
         $todayEvent = Event::where('start_date', '<=', Carbon::now())
             ->where('end_date', '>=', Carbon::now())
+            ->where(function($query) {
+                $query->where('status', '!=', 'cancelled')
+                      ->orWhereNull('status');
+            })
             ->first();
             
         // Get upcoming events - making sure they are truly upcoming
         $upcomingEvents = Event::where('start_date', '>', Carbon::now())
+            ->where(function($query) {
+                $query->where('status', '!=', 'cancelled')
+                      ->orWhereNull('status');
+            })
             ->orderBy('start_date', 'asc')
             ->take(5)
             ->get();

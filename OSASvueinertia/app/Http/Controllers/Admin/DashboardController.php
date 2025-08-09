@@ -30,12 +30,20 @@ class DashboardController extends Controller
         // Get today's event
         $todayEvent = Event::where('start_date', '<=', Carbon::now())
             ->where('end_date', '>=', Carbon::now())
+            ->where(function($query) {
+                $query->where('status', '!=', 'cancelled')
+                      ->orWhereNull('status');
+            })
             ->first();
             
         // Get upcoming event (if no today's event)
         $upcomingEvent = null;
         if (!$todayEvent) {
             $upcomingEvent = Event::where('start_date', '>', Carbon::now())
+                ->where(function($query) {
+                    $query->where('status', '!=', 'cancelled')
+                          ->orWhereNull('status');
+                })
                 ->orderBy('start_date', 'asc')
                 ->first();
         }
