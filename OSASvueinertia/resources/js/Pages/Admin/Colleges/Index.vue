@@ -64,63 +64,74 @@
           <div
             v-for="college in colleges"
             :key="college.id"
-            class="relative"
+            class="relative bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg dark:hover:shadow-gray-900/50 transition-all duration-300 flex flex-col"
           >
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden flex flex-col">
-              <!-- Colored top border, random color per college -->
-              <div class="h-1 w-full rounded-t-xl" :class="{
-                  'bg-blue-500': college.id % 4 === 0,
-                  'bg-green-500': college.id % 4 === 1,
-                  'bg-yellow-500': college.id % 4 === 2,
-                  'bg-red-500': college.id % 4 === 3,
-              }"></div>
-              
-              <div class="p-6 flex-1 flex flex-col">
-                <div class="flex items-start justify-between">
-                  <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 leading-tight flex-1 min-w-0 mr-2">
-                    <span class="break-words">{{ college.name }}</span>
-                  </h2>
-                  <span v-if="college.acronym" 
-                        class="flex-shrink-0 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-sm px-2 py-1 rounded-md">
-                    {{ college.acronym }}
-                  </span>
-                </div>
-                
-                <p v-if="college.description" class="text-gray-600 dark:text-gray-400 mt-3 text-sm line-clamp-3">
-                  {{ college.description }}
-                </p>
-                <div v-else class="text-gray-400 dark:text-gray-500 italic text-sm mt-3">No description available</div>
+            <!-- Colored top border, random color per college -->
+            <div class="h-1 w-full rounded-t-xl" :class="{
+                'bg-blue-500': college.id % 4 === 0,
+                'bg-green-500': college.id % 4 === 1,
+                'bg-yellow-500': college.id % 4 === 2,
+                'bg-red-500': college.id % 4 === 3,
+            }"></div>
+            
+            <div class="p-6 flex-1 flex flex-col">
+              <div class="flex items-start justify-between">
+                <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100 leading-tight flex-1 min-w-0 mr-2">
+                  <span class="break-words">{{ college.name }}</span>
+                </h2>
+                <span v-if="college.acronym" 
+                      class="flex-shrink-0 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-sm px-2 py-1 rounded-md">
+                  {{ college.acronym }}
+                </span>
               </div>
               
-              <div class="px-6 py-3 bg-gray-50 dark:bg-gray-700 border-t border-gray-100 dark:border-gray-600 flex justify-between items-center">
-                <div class="flex space-x-2">
-                  <button 
-                    @click="openEditModal(college)" 
-                    class="p-1.5 bg-gray-100 dark:bg-gray-600 border border-gray-300 dark:border-gray-500 text-gray-700 dark:text-gray-300 text-sm rounded-md hover:bg-gray-200 dark:hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 dark:focus:ring-offset-gray-800 transition-colors duration-150 ease-in-out"
-                    title="Edit"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                  </button>
-                  <button 
-                    @click="openDeleteModal(college)" 
-                    class="p-1.5 bg-gray-100 dark:bg-gray-600 border border-gray-300 dark:border-gray-500 text-gray-700 dark:text-gray-300 text-sm rounded-md hover:bg-gray-200 dark:hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 dark:focus:ring-offset-gray-800 transition-colors duration-150 ease-in-out"
-                    title="Delete"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-500 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                  </button>
-                </div>
-                
-                <div v-if="college.student_orgs_count" class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+              <p v-if="college.description" class="text-gray-600 dark:text-gray-400 mt-3 text-sm line-clamp-3">
+                {{ college.description }}
+              </p>
+              <div v-else class="text-gray-400 dark:text-gray-500 italic text-sm mt-3">No description available</div>
+              
+              <div class="mt-auto pt-4 flex items-center text-sm">
+                <span class="flex items-center text-gray-500 dark:text-gray-400">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                   </svg>
-                  {{ college.student_orgs_count }} {{ college.student_orgs_count === 1 ? 'Organization' : 'Organizations' }}
-                </div>
+                  {{ college.users_count }} {{ college.users_count === 1 ? 'Organization' : 'Organizations' }}
+                </span>
               </div>
+            </div>
+            
+            <div class="px-6 py-3 bg-gray-50 dark:bg-gray-700 border-t border-gray-100 dark:border-gray-600 flex justify-between items-center">
+              <div class="flex space-x-2">
+                <button 
+                  @click="openEditModal(college)" 
+                  class="p-1.5 bg-gray-100 dark:bg-gray-600 border border-gray-300 dark:border-gray-500 text-gray-700 dark:text-gray-300 text-sm rounded-md hover:bg-gray-200 dark:hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 dark:focus:ring-offset-gray-800 transition-colors duration-150 ease-in-out"
+                  title="Edit"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                </button>
+                <button 
+                  @click="openDeleteModal(college)" 
+                  class="p-1.5 bg-gray-100 dark:bg-gray-600 border border-gray-300 dark:border-gray-500 text-gray-700 dark:text-gray-300 text-sm rounded-md hover:bg-gray-200 dark:hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 dark:focus:ring-offset-gray-800 transition-colors duration-150 ease-in-out"
+                  title="Delete"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-500 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              </div>
+              
+              <Link
+                :href="route('colleges.show', college.id)"
+                class="inline-flex items-center justify-center px-6 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-sm font-medium text-white rounded-xl shadow-md hover:shadow-blue-300/30 hover:from-blue-400 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 active:from-blue-600 active:to-blue-700 transition-all duration-300 relative overflow-hidden group mr-20"
+              >
+                <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
+                View Details
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
             </div>
             
             <!-- College Logo/Avatar - Positioned to overflow -->
@@ -493,7 +504,7 @@
 </template>
 
 <script>
-import { Head } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Modal from '@/Components/Modal.vue';
 
@@ -501,7 +512,8 @@ export default {
   components: {
     AuthenticatedLayout,
     Modal,
-    Head
+    Head,
+    Link
   },
   
   props: {
@@ -737,5 +749,11 @@ export default {
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   background-color: white;
   flex-shrink: 0;
+}
+
+:global(.dark) .college-logo {
+  border-color: #374151; /* gray-700 */
+  background-color: #374151; /* gray-700 */
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
 }
 </style>
