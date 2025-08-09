@@ -62,4 +62,21 @@ class StudentOrgController extends Controller
         return redirect()->route('admin.student-orgs.index')
             ->with('message', 'User removed from college successfully.');
     }
+
+    /**
+     * Toggle the status of a user (organization).
+     */
+    public function toggleStatus(Request $request)
+    {
+        $validated = $request->validate([
+            'user_id' => 'required|exists:users,id',
+        ]);
+
+        $user = User::findOrFail($validated['user_id']);
+        $user->status = $user->status === 'active' ? 'inactive' : 'active';
+        $user->save();
+
+        return redirect()->route('admin.student-orgs.index')
+            ->with('message', 'Organization status updated successfully.');
+    }
 }

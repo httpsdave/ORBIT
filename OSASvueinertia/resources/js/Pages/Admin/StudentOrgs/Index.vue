@@ -149,6 +149,9 @@
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                               Role
                             </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                              Status
+                            </th>
                             <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                               Actions
                             </th>
@@ -182,6 +185,54 @@
                                 ]"
                               >
                                 {{ user.role ? user.role.name : 'No role' }}
+                              </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                              <!-- Status Toggle Button -->
+                              <button
+                                @click="toggleUserStatus(user)"
+                                :class="[
+                                  'relative inline-flex items-center rounded-full transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800',
+                                  user.status === 'active' ? 'bg-green-200 hover:bg-green-300' : 'bg-gray-200 hover:bg-gray-300',
+                                  'h-6 w-11'
+                                ]"
+                                :title="`Toggle status to ${user.status === 'active' ? 'inactive' : 'active'}`"
+                              >
+                                <!-- Toggle Knob -->
+                                <span
+                                  :class="[
+                                    'inline-block rounded-full shadow-sm transform transition-all duration-300 ease-in-out',
+                                    user.status === 'active' ? 'translate-x-5 bg-green-600' : 'translate-x-0 bg-gray-400',
+                                    'h-4 w-4'
+                                  ]"
+                                >
+                                  <!-- Icon inside the knob -->
+                                  <span class="flex items-center justify-center h-full w-full text-white">
+                                    <!-- Check Icon for Active -->
+                                    <svg
+                                      v-if="user.status === 'active'"
+                                      class="h-2.5 w-2.5"
+                                      fill="currentColor"
+                                      viewBox="0 0 20 20"
+                                    >
+                                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                    
+                                    <!-- X Icon for Inactive -->
+                                    <svg
+                                      v-else
+                                      class="h-2.5 w-2.5"
+                                      fill="currentColor"
+                                      viewBox="0 0 20 20"
+                                    >
+                                      <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                    </svg>
+                                  </span>
+                                </span>
+                              </button>
+                              <!-- Status Label -->
+                              <span class="ml-2 text-xs font-medium" :class="user.status === 'active' ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'">
+                                {{ user.status === 'active' ? 'Active' : 'Inactive' }}
                               </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -276,6 +327,11 @@
                 <div class="text-sm text-gray-500 dark:text-gray-400 ml-3">
                   {{ user.role ? user.role.name : 'No role' }}
                 </div>
+                <div class="text-sm text-gray-500 dark:text-gray-400 ml-3">
+                  <span :class="user.status === 'active' ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'">
+                    {{ user.status === 'active' ? 'Active' : 'Inactive' }}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -316,6 +372,11 @@
                 <div class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{{ user.name || 'Unknown Organization' }}</div>
                 <div class="text-sm text-gray-500 dark:text-gray-400 truncate">{{ user.email || 'No email' }}</div>
                 <div class="text-xs text-gray-400 dark:text-gray-500">{{ user.role ? user.role.name : 'No role' }}</div>
+                <div class="text-xs text-gray-400 dark:text-gray-500">
+                  <span :class="user.status === 'active' ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'">
+                    {{ user.status === 'active' ? 'Active' : 'Inactive' }}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -351,6 +412,11 @@
               <div class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{{ orgToRemove.name || 'Unknown Organization' }}</div>
               <div class="text-sm text-gray-500 dark:text-gray-400 truncate">{{ orgToRemove.email || 'No email' }}</div>
               <div class="text-xs text-gray-400 dark:text-gray-500">{{ orgToRemove.role ? orgToRemove.role.name : 'No role' }}</div>
+              <div class="text-xs text-gray-400 dark:text-gray-500">
+                <span :class="orgToRemove.status === 'active' ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'">
+                  {{ orgToRemove.status === 'active' ? 'Active' : 'Inactive' }}
+                </span>
+              </div>
             </div>
           </div>
           <div class="flex justify-end space-x-2 mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
@@ -571,6 +637,23 @@ export default {
       this.searchQuery = '';
       this.selectedUsers = [];
       this.showUserSelectionModal = true;
+    },
+    toggleUserStatus(user) {
+      // Create a form to submit the status toggle
+      const form = useForm({
+        user_id: user.id
+      });
+      
+      form.post(route('admin.student-orgs.toggle-status'), {
+        preserveScroll: true,
+        onSuccess: () => {
+          // Update the user's status locally for immediate feedback
+          user.status = user.status === 'active' ? 'inactive' : 'active';
+        },
+        onError: (errors) => {
+          console.error('Error toggling status:', errors);
+        }
+      });
     }
   }
 };

@@ -21,6 +21,7 @@ class User extends Authenticatable
         'college_id',
         'description',
         'last_name_change_at',
+        'status',
     ];
 
     protected $appends = ['profile_photo_url'];

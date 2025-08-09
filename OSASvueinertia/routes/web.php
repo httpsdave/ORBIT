@@ -150,6 +150,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/student-orgs', [StudentOrgController::class, 'index'])->name('admin.student-orgs.index');
         Route::post('/student-orgs/assign-user', [StudentOrgController::class, 'assignUserToCollege'])->name('admin.student-orgs.assign-user');
         Route::post('/student-orgs/remove-user', [StudentOrgController::class, 'removeUserFromCollege'])->name('admin.student-orgs.remove-user');
+        Route::post('/student-orgs/toggle-status', [StudentOrgController::class, 'toggleStatus'])->name('admin.student-orgs.toggle-status');
         Route::get('/student-orgs/all', [StudentOrgController::class, 'getAll'])->name('admin.student-orgs.all');
          
         // College Management Routes
