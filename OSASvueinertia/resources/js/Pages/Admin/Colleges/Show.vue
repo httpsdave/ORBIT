@@ -111,7 +111,7 @@
                                 <div class="flex justify-between items-start">
                                     <h3 class="font-semibold text-gray-800 dark:text-gray-100">
                                         <Link 
-                                            :href="route('student-orgs.show', org.id)" 
+                                            :href="route('admin.student-orgs.show', org.id)" 
                                             class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                                         >
                                             {{ org.name }}
@@ -154,7 +154,7 @@
                                     </span>
                                     
                                     <Link
-                                        :href="route('student-orgs.show', org.id)"
+                                        :href="route('admin.student-orgs.show', org.id)"
                                         class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium flex items-center"
                                     >
                                         Details

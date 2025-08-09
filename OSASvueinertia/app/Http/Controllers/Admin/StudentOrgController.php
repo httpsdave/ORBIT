@@ -24,6 +24,55 @@ class StudentOrgController extends Controller
     }
 
     /**
+     * Display the specified student organization.
+     */
+    public function show(User $user)
+    {
+        $user->load(['college', 'role']);
+        
+        // Get organization details from latest approved applications
+        // Latest approved List of Members form
+        $latestMembersApp = \App\Models\OrganizationApplication::with('members')
+            ->where('user_id', $user->id)
+            ->where('status', 'Approved')
+            ->where('form_type', 'LSPU-OSAS-SF-005')
+            ->orderByDesc('created_at')
+            ->first();
+            
+        // Latest approved List of Officers form
+        $latestOfficersApp = \App\Models\OrganizationApplication::with('officers')
+            ->where('user_id', $user->id)
+            ->where('status', 'Approved')
+            ->where('form_type', 'LSPU-OSAS-SF-007')
+            ->orderByDesc('created_at')
+            ->first();
+        
+        // Get adviser information from the latest available form (prefer members, fallback to officers)
+        $adviser_name = $latestMembersApp->adviser_name ?? $latestOfficersApp->adviser_name ?? null;
+        $second_adviser = $latestMembersApp->second_adviser ?? $latestOfficersApp->second_adviser ?? null;
+        
+        // Get members and officers from the latest approved forms
+        $members = $latestMembersApp ? $latestMembersApp->members : collect();
+        $officers = $latestOfficersApp ? $latestOfficersApp->officers : collect();
+        
+        // Prepare organization details
+        $organizationDetails = [
+            'adviser_name' => $adviser_name,
+            'second_adviser' => $second_adviser,
+            'members_count' => $members->count(),
+            'officers_count' => $officers->count(),
+            'members' => $members,
+            'officers' => $officers,
+            'has_approved_data' => $latestMembersApp || $latestOfficersApp
+        ];
+        
+        return Inertia::render('Admin/StudentOrgs/Show', [
+            'studentOrg' => $user,
+            'organizationDetails' => $organizationDetails
+        ]);
+    }
+
+    /**
      * Assign one or more users to a college (set college_id).
      */
     public function assignUserToCollege(Request $request)
