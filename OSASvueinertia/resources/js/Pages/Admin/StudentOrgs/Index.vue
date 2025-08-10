@@ -4,81 +4,204 @@
       
         <template #header>
           <!-- Color Banner -->
-          <div class="flex w-full mb-4 overflow-hidden rounded-lg shadow-lg">
-            <div class="w-1/4 h-1.5 bg-blue-500 " style="animation-delay: 0.2s;"></div>
-            <div class="w-1/4 h-1.5 bg-green-500 " style="animation-delay: 0.4s;"></div>
-            <div class="w-1/4 h-1.5 bg-yellow-500 " style="animation-delay: 0.6s;"></div>
-            <div class="w-1/4 h-1.5 bg-red-500 " style="animation-delay: 0.8s;"></div>
+          <div class="flex w-full mb-3 sm:mb-4 overflow-hidden rounded-lg shadow-lg">
+            <div class="w-1/4 h-1 sm:h-1.5 bg-blue-500" style="animation-delay: 0.2s;"></div>
+            <div class="w-1/4 h-1 sm:h-1.5 bg-green-500" style="animation-delay: 0.4s;"></div>
+            <div class="w-1/4 h-1 sm:h-1.5 bg-yellow-500" style="animation-delay: 0.6s;"></div>
+            <div class="w-1/4 h-1 sm:h-1.5 bg-red-500" style="animation-delay: 0.8s;"></div>
           </div>
 
-          <div class="flex justify-between items-center">
-          <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            Manage Student Organizations
-          </h2>
-          <button
-            type="button"
-            @click="openUserSelectionModalForNewOrg"
-            class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-sm font-medium text-white rounded-xl shadow-md hover:shadow-blue-300/30 hover:from-blue-400 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 active:from-blue-600 active:to-blue-700 transition-all duration-300 relative overflow-hidden group"
-          >
-            <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white dark:bg-gray-800 rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-            </svg>
-            Add New Organization
-          </button>
-        </div>
+          <div class="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:justify-between sm:items-center">
+            <h2 class="font-semibold text-lg sm:text-xl text-gray-800 dark:text-gray-200 leading-tight">
+              Manage Student Organizations
+            </h2>
+            <button
+              type="button"
+              @click="openUserSelectionModalForNewOrg"
+              class="flex items-center justify-center px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 shadow-sm text-sm font-medium w-full sm:w-auto"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+              <span class="hidden sm:inline">Add New Organization</span>
+              <span class="sm:hidden">Add Organization</span>
+            </button>
+          </div>
         </template>
-          <!-- Alert Messages -->
-          <div v-if="$page.props.flash && $page.props.flash.message" 
-               class="mb-4 bg-green-100 dark:bg-green-900 border-l-4 border-green-500 text-green-700 dark:text-green-200 p-4 rounded shadow-sm" 
-               role="alert">
-            <div class="flex">
-              <div class="flex-shrink-0">
-                <svg class="h-5 w-5 text-green-500 dark:text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                </svg>
-              </div>
-              <div class="ml-3">
-                <p class="text-sm">{{ $page.props.flash.message }}</p>
+
+        <div class="py-2 sm:py-4 md:py-6 lg:py-8">
+          <div class="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 xl:px-8">
+            <!-- Alert Messages -->
+            <div v-if="$page.props.flash && $page.props.flash.message" 
+                 class="mb-3 sm:mb-4 bg-green-100 dark:bg-green-900 border-l-4 border-green-500 text-green-700 dark:text-green-200 p-3 sm:p-4 rounded shadow-sm" 
+                 role="alert">
+              <div class="flex">
+                <div class="flex-shrink-0">
+                  <svg class="h-4 w-4 sm:h-5 sm:w-5 text-green-500 dark:text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                  </svg>
+                </div>
+                <div class="ml-2 sm:ml-3">
+                  <p class="text-sm">{{ $page.props.flash.message }}</p>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div v-if="$page.props.flash && $page.props.flash.error" 
-               class="mb-4 bg-red-100 dark:bg-red-900 border-l-4 border-red-500 text-red-700 dark:text-red-200 p-4 rounded shadow-sm" 
-               role="alert">
-            <div class="flex">
-              <div class="flex-shrink-0">
-                <svg class="h-5 w-5 text-red-500 dark:text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-                </svg>
-              </div>
-              <div class="ml-3">
-                <p class="text-sm">{{ $page.props.flash.error }}</p>
+            <div v-if="$page.props.flash && $page.props.flash.error" 
+                 class="mb-3 sm:mb-4 bg-red-100 dark:bg-red-900 border-l-4 border-red-500 text-red-700 dark:text-red-200 p-3 sm:p-4 rounded shadow-sm" 
+                 role="alert">
+              <div class="flex">
+                <div class="flex-shrink-0">
+                  <svg class="h-4 w-4 sm:h-5 sm:w-5 text-red-500 dark:text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                  </svg>
+                </div>
+                <div class="ml-2 sm:ml-3">
+                  <p class="text-sm">{{ $page.props.flash.error }}</p>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-            <div class="p-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-              <div class="flex justify-between items-center mb-6">
-                <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-                  Student Organizations by College
-                </h3>
+          <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
+            <div class="p-3 sm:p-4 lg:p-6 bg-white dark:bg-gray-800">
+              <div class="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-gray-100 dark:border-gray-700">
+                <div>
+                  <h3 class="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100">
+                    Student Organizations by College
+                  </h3>
+                  <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1">Manage organizations across all colleges</p>
+                </div>
                 <div class="text-sm text-gray-500 dark:text-gray-400">
                   {{ getTotalUsersCount() }} Total Organizations
                 </div>
               </div>
 
-              <!-- Colleges Accordion -->
-              <div class="space-y-3">
+              <!-- Mobile Card View (hidden on large screens and above) -->
+              <div class="block xl:hidden space-y-2 sm:space-y-3">
+                <div v-for="college in colleges" :key="`mobile-${college.id}`" class="bg-gray-50 dark:bg-gray-700 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-gray-200 dark:border-gray-600 shadow-sm hover:shadow-md transition-all duration-200">
+                  <div 
+                    @click="toggleCollege(college.id, $event)"
+                    class="flex justify-between items-center cursor-pointer"
+                  >
+                    <div class="flex items-center flex-1 min-w-0">
+                      <div class="min-w-0 flex-1">
+                        <h4 class="font-semibold text-gray-900 dark:text-gray-100 text-sm sm:text-base lg:text-lg truncate">{{ college.acronym }}</h4>
+                        <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-400 truncate">{{ college.name }}</p>
+                      </div>
+                    </div>
+                    <div class="flex items-center ml-2 sm:ml-3 flex-shrink-0">
+                      <span class="mr-1.5 sm:mr-2 text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full flex-shrink-0" 
+                            :class="college.users.length > 0 ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-200' : 'bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-400'">
+                        {{ college.users.length }}
+                      </span>
+                      <svg
+                        :class="{'transform rotate-180': openColleges.includes(college.id)}"
+                        class="w-4 h-4 sm:w-5 sm:h-5 transition-transform text-gray-500 dark:text-gray-400 flex-shrink-0"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                      </svg>
+                    </div>
+                  </div>
+
+                  <!-- Mobile Organizations List -->
+                  <div v-if="openColleges.includes(college.id)" class="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-200 dark:border-gray-600">
+                    <div v-if="college.users.length === 0" class="text-center text-gray-500 dark:text-gray-400 py-4 sm:py-6">
+                      <svg class="mx-auto h-8 w-8 sm:h-10 sm:w-10 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                      </svg>
+                      <p class="mt-1 sm:mt-2 text-xs sm:text-sm font-medium">No organizations</p>
+                      <button
+                        @click="openUserSelectionModalForCollege(college.id)"
+                        class="mt-2 sm:mt-3 inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-medium rounded-lg shadow-sm transition-colors duration-200 w-full sm:w-auto"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                        Add Organization
+                      </button>
+                    </div>
+                    <div v-else class="space-y-2 sm:space-y-3">
+                      <div class="flex flex-col xs:flex-row xs:justify-between xs:items-center mb-2 sm:mb-3 space-y-1 xs:space-y-0">
+                        <span class="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">Organizations ({{ college.users.length }})</span>
+                        <button
+                          @click="openUserSelectionModalForCollege(college.id)"
+                          class="inline-flex items-center px-2.5 sm:px-3 py-1 sm:py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg shadow-sm transition-colors duration-200 w-full xs:w-auto justify-center xs:justify-start"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                          </svg>
+                          Add
+                        </button>
+                      </div>
+                      <div v-for="user in college.users" :key="`mobile-org-${user.id}`" class="bg-white dark:bg-gray-600 rounded-lg p-2.5 sm:p-3 border border-gray-200 dark:border-gray-500 shadow-sm">
+                        <div class="flex items-center justify-between">
+                          <div class="flex items-center space-x-2 flex-1 min-w-0">
+                            <div v-if="user.profile_photo_url" class="flex-shrink-0 h-7 w-7 sm:h-8 sm:w-8">
+                              <img class="h-7 w-7 sm:h-8 sm:w-8 rounded-full object-cover border border-gray-200 dark:border-gray-500" :src="user.profile_photo_url" alt="" />
+                            </div>
+                            <div v-else class="h-7 w-7 sm:h-8 sm:w-8 bg-gradient-to-br from-blue-500 to-green-400 rounded-full flex items-center justify-center text-white font-medium shadow-inner text-xs flex-shrink-0">
+                              {{ user.name ? user.name.charAt(0).toUpperCase() : 'O' }}
+                            </div>
+                            <div class="min-w-0 flex-1">
+                              <div class="text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                                {{ user.name || 'Unknown Organization' }}
+                              </div>
+                              <div class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ user.email || 'No email' }}</div>
+                            </div>
+                          </div>
+                          <div class="flex items-center space-x-1.5 sm:space-x-2 ml-2 flex-shrink-0">
+                            <!-- Status Toggle -->
+                            <button
+                              @click="toggleUserStatus(user)"
+                              :class="[
+                                'relative inline-flex items-center rounded-full transition-all duration-300 focus:outline-none',
+                                user.status === 'active' ? 'bg-green-200 dark:bg-green-700' : 'bg-gray-200 dark:bg-gray-600',
+                                'h-5 w-8 sm:h-6 sm:w-10'
+                              ]"
+                              :title="`Toggle status to ${user.status === 'active' ? 'inactive' : 'active'}`"
+                            >
+                              <span
+                                :class="[
+                                  'inline-block rounded-full shadow-sm transform transition-all duration-300',
+                                  user.status === 'active' ? 'translate-x-3 sm:translate-x-4 bg-green-600' : 'translate-x-0 bg-gray-400',
+                                  'h-3 w-3 sm:h-4 sm:w-4'
+                                ]"
+                              ></span>
+                            </button>
+                            <button
+                              @click="removeUserFromCollege(user.id)"
+                              class="inline-flex items-center justify-center text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-150 p-1 sm:p-1.5 rounded-lg"
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div v-if="colleges.length === 0" class="text-center py-12">
+                  <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0h3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                  </svg>
+                  <p class="mt-4 text-lg font-medium text-gray-900 dark:text-gray-100">No colleges found</p>
+                  <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Get started by adding colleges to the system.</p>
+                </div>
+              </div>
+
+              <!-- Desktop Accordion View (hidden on mobile and tablet) -->
+              <div class="hidden xl:block space-y-3">
                 <div v-for="college in colleges" :key="college.id" class="border border-gray-200 dark:border-gray-700 rounded-md overflow-hidden shadow-sm hover:shadow transition-shadow duration-200" data-college-accordion>
                   <div 
                     @click="toggleCollege(college.id, $event)"
                     class="flex justify-between items-center p-4 cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-150"
                   >
                     <div class="flex items-center">
-                      
                       <div>
                         <span class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ college.acronym }}</span>
                         <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">{{ college.name }}</span>
@@ -252,42 +375,45 @@
                     </div>
                   </div>
                 </div>
+                <div v-if="colleges.length === 0" class="text-center py-8 text-gray-500 dark:text-gray-400">
+                  No colleges found.
+                </div>
               </div>
             </div>
           </div>
-        
-      
+          </div>
+        </div>
 
       <!-- User Selection Modal -->
       <Modal :show="showUserSelectionModal" @close="closeUserSelectionModal" maxWidth="lg">
-        <div class="p-6">
-          <div class="flex items-center justify-between mb-5">
-            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
+        <div class="p-4 sm:p-6">
+          <div class="flex items-center justify-between mb-4 sm:mb-5">
+            <h2 class="text-base sm:text-lg font-medium text-gray-900 dark:text-gray-100 pr-4">
               Select Organization to Add to {{ selectedCollegeId ? selectedCollegeName : 'a College' }}
             </h2>
-            <button @click="closeUserSelectionModal" class="text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400">
-              <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <button @click="closeUserSelectionModal" class="text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 flex-shrink-0">
+              <svg class="h-5 w-5 sm:h-6 sm:w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
 
           <!-- Search Input -->
-          <div class="mb-4">
+          <div class="mb-3 sm:mb-4">
             <input
               v-model="searchQuery"
               type="text"
               placeholder="Search organizations by name or email..."
-              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
 
           <!-- College Selection (always show to allow changing selection) -->
-          <div class="mb-4">
+          <div class="mb-3 sm:mb-4">
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Select College</label>
             <select
               v-model="selectedCollegeId"
-              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               required
             >
               <option :value="null" disabled>Choose a college...</option>
@@ -298,36 +424,48 @@
           </div>
 
           <!-- Users List -->
-          <div class="max-h-96 overflow-y-auto">
-            <div v-if="filteredUsers.length === 0" class="text-center text-gray-500 dark:text-gray-400 py-8">
-              <p>No organizations found.</p>
+          <div class="max-h-64 sm:max-h-96 overflow-y-auto">
+            <div v-if="filteredUsers.length === 0" class="text-center text-gray-500 dark:text-gray-400 py-6 sm:py-8">
+              <p class="text-sm">No organizations found.</p>
             </div>
             <div v-else class="space-y-2">
               <div
                 v-for="user in filteredUsers"
                 :key="user.id"
                 @click="toggleUserSelection(user)"
-                :class="['flex items-center p-3 border border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors', selectedUsers.some(u => u.id === user.id) ? 'bg-blue-50 dark:bg-blue-900/30 border-blue-400 dark:border-blue-500' : '']"
+                :class="['flex items-center p-2.5 sm:p-3 border border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors', selectedUsers.some(u => u.id === user.id) ? 'bg-blue-50 dark:bg-blue-900/30 border-blue-400 dark:border-blue-500' : '']"
               >
-                <input type="checkbox" :checked="selectedUsers.some(u => u.id === user.id)" @change.stop="toggleUserSelection(user)" class="mr-3" />
+                <input type="checkbox" :checked="selectedUsers.some(u => u.id === user.id)" @change.stop="toggleUserSelection(user)" class="mr-2 sm:mr-3" />
                 <!-- User Avatar -->
-                <div class="flex-shrink-0 mr-3">
-                  <div v-if="user.profile_photo_url" class="h-10 w-10">
-                    <img class="h-10 w-10 rounded-full object-cover border border-gray-200 dark:border-gray-600" :src="user.profile_photo_url" alt="" />
+                <div class="flex-shrink-0 mr-2 sm:mr-3">
+                  <div v-if="user.profile_photo_url" class="h-8 w-8 sm:h-10 sm:w-10">
+                    <img class="h-8 w-8 sm:h-10 sm:w-10 rounded-full object-cover border border-gray-200 dark:border-gray-600" :src="user.profile_photo_url" alt="" />
                   </div>
-                  <div v-else class="h-10 w-10 bg-gradient-to-br from-blue-500 to-green-400 rounded-full flex items-center justify-center text-white font-medium shadow-inner">
+                  <div v-else class="h-8 w-8 sm:h-10 sm:w-10 bg-gradient-to-br from-blue-500 to-green-400 rounded-full flex items-center justify-center text-white font-medium shadow-inner text-xs sm:text-sm">
                     {{ user.name ? user.name.charAt(0).toUpperCase() : 'O' }}
                   </div>
                 </div>
                 <!-- User Info -->
                 <div class="flex-1 min-w-0">
                   <div class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{{ user.name || 'Unknown Organization' }}</div>
-                  <div class="text-sm text-gray-500 dark:text-gray-400 truncate">{{ user.email || 'No email' }}</div>
+                  <div class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 truncate">{{ user.email || 'No email' }}</div>
+                  <!-- Mobile: Show role and status on separate lines -->
+                  <div class="sm:hidden mt-1 space-y-1">
+                    <div class="text-xs text-gray-500 dark:text-gray-400">
+                      Role: {{ user.role ? user.role.name : 'No role' }}
+                    </div>
+                    <div class="text-xs">
+                      <span :class="user.status === 'active' ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'">
+                        {{ user.status === 'active' ? 'Active' : 'Inactive' }}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-                <div class="text-sm text-gray-500 dark:text-gray-400 ml-3">
+                <!-- Desktop: Show role and status in separate columns -->
+                <div class="hidden sm:block text-sm text-gray-500 dark:text-gray-400 ml-3">
                   {{ user.role ? user.role.name : 'No role' }}
                 </div>
-                <div class="text-sm text-gray-500 dark:text-gray-400 ml-3">
+                <div class="hidden sm:block text-sm text-gray-500 dark:text-gray-400 ml-3">
                   <span :class="user.status === 'active' ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'">
                     {{ user.status === 'active' ? 'Active' : 'Inactive' }}
                   </span>
@@ -336,15 +474,14 @@
             </div>
           </div>
 
-          <div class="flex items-center justify-end mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
-            <SecondaryButton @click="closeUserSelectionModal" class="mr-3" type="button">Cancel</SecondaryButton>
+          <div class="flex flex-col sm:flex-row items-center justify-end mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-gray-200 dark:border-gray-700 space-y-2 sm:space-y-0 sm:space-x-3">
+            <SecondaryButton @click="closeUserSelectionModal" class="w-full sm:w-auto order-2 sm:order-1" type="button">Cancel</SecondaryButton>
             <button
-              class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl shadow-md hover:from-blue-400 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-all duration-300 relative overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed"
+              class="inline-flex items-center justify-center px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow-md transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm w-full sm:w-auto order-1 sm:order-2"
               :disabled="selectedUsers.length === 0"
               @click="openConfirmModal"
               type="button"
             >
-              <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white dark:bg-gray-800 rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
               Add Selected Organizations
             </button>
           </div>
@@ -353,24 +490,24 @@
 
       <!-- Confirmation Modal -->
       <Modal :show="showConfirmModal" @close="closeConfirmModal" maxWidth="sm">
-        <div class="p-6">
-          <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Confirm Add Organizations</h2>
-          <p class="mb-2 text-gray-600 dark:text-gray-400">Are you sure you want to add the following organizations to <strong>{{ selectedCollegeName }}</strong>?</p>
-          <div class="max-h-64 overflow-y-auto space-y-3">
-            <div v-for="user in selectedUsers" :key="user.id" class="flex items-center p-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700">
+        <div class="p-4 sm:p-6">
+          <h2 class="text-base sm:text-lg font-medium text-gray-900 dark:text-gray-100 mb-3 sm:mb-4">Confirm Add Organizations</h2>
+          <p class="mb-2 text-sm text-gray-600 dark:text-gray-400">Are you sure you want to add the following organizations to <strong>{{ selectedCollegeName }}</strong>?</p>
+          <div class="max-h-48 sm:max-h-64 overflow-y-auto space-y-2 sm:space-y-3">
+            <div v-for="user in selectedUsers" :key="user.id" class="flex items-center p-2.5 sm:p-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700">
               <!-- User Avatar -->
-              <div class="flex-shrink-0 mr-3">
-                <div v-if="user.profile_photo_url" class="h-10 w-10">
-                  <img class="h-10 w-10 rounded-full object-cover border border-gray-200 dark:border-gray-600" :src="user.profile_photo_url" alt="" />
+              <div class="flex-shrink-0 mr-2 sm:mr-3">
+                <div v-if="user.profile_photo_url" class="h-8 w-8 sm:h-10 sm:w-10">
+                  <img class="h-8 w-8 sm:h-10 sm:w-10 rounded-full object-cover border border-gray-200 dark:border-gray-600" :src="user.profile_photo_url" alt="" />
                 </div>
-                <div v-else class="h-10 w-10 bg-gradient-to-br from-blue-500 to-green-400 rounded-full flex items-center justify-center text-white font-medium shadow-inner">
+                <div v-else class="h-8 w-8 sm:h-10 sm:w-10 bg-gradient-to-br from-blue-500 to-green-400 rounded-full flex items-center justify-center text-white font-medium shadow-inner text-xs sm:text-sm">
                   {{ user.name ? user.name.charAt(0).toUpperCase() : 'O' }}
                 </div>
               </div>
               <!-- User Info -->
               <div class="flex-1 min-w-0">
                 <div class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{{ user.name || 'Unknown Organization' }}</div>
-                <div class="text-sm text-gray-500 dark:text-gray-400 truncate">{{ user.email || 'No email' }}</div>
+                <div class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 truncate">{{ user.email || 'No email' }}</div>
                 <div class="text-xs text-gray-400 dark:text-gray-500">{{ user.role ? user.role.name : 'No role' }}</div>
                 <div class="text-xs text-gray-400 dark:text-gray-500">
                   <span :class="user.status === 'active' ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'">
@@ -380,14 +517,13 @@
               </div>
             </div>
           </div>
-          <div class="flex justify-end space-x-2 mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
-            <SecondaryButton @click="closeConfirmModal">Cancel</SecondaryButton>
+          <div class="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-2 mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-gray-200 dark:border-gray-700">
+            <SecondaryButton @click="closeConfirmModal" class="w-full sm:w-auto order-2 sm:order-1">Cancel</SecondaryButton>
             <button
-              class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl shadow-md hover:from-blue-400 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-all duration-300 relative overflow-hidden group"
+              class="inline-flex items-center justify-center px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow-md transition-colors duration-200 text-sm w-full sm:w-auto order-1 sm:order-2"
               @click="confirmAssignUsers"
               type="button"
             >
-              <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white dark:bg-gray-800 rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
               Confirm
             </button>
           </div>
@@ -396,21 +532,21 @@
 
       <!-- Remove Confirmation Modal -->
       <Modal :show="showRemoveConfirmModal" @close="closeRemoveConfirmModal" maxWidth="sm">
-        <div class="p-6">
-          <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Remove Organization</h2>
-          <p class="mb-4 text-gray-600 dark:text-gray-400">Are you sure you want to remove the following organization from <strong>{{ selectedCollegeName }}</strong>?</p>
-          <div v-if="orgToRemove" class="flex items-center p-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 mb-4">
-            <div class="flex-shrink-0 mr-3">
-              <div v-if="orgToRemove.profile_photo_url" class="h-10 w-10">
-                <img class="h-10 w-10 rounded-full object-cover border border-gray-200 dark:border-gray-600" :src="orgToRemove.profile_photo_url" alt="" />
+        <div class="p-4 sm:p-6">
+          <h2 class="text-base sm:text-lg font-medium text-gray-900 dark:text-gray-100 mb-3 sm:mb-4">Remove Organization</h2>
+          <p class="mb-3 sm:mb-4 text-sm text-gray-600 dark:text-gray-400">Are you sure you want to remove the following organization from <strong>{{ selectedCollegeName }}</strong>?</p>
+          <div v-if="orgToRemove" class="flex items-center p-2.5 sm:p-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 mb-3 sm:mb-4">
+            <div class="flex-shrink-0 mr-2 sm:mr-3">
+              <div v-if="orgToRemove.profile_photo_url" class="h-8 w-8 sm:h-10 sm:w-10">
+                <img class="h-8 w-8 sm:h-10 sm:w-10 rounded-full object-cover border border-gray-200 dark:border-gray-600" :src="orgToRemove.profile_photo_url" alt="" />
               </div>
-              <div v-else class="h-10 w-10 bg-gradient-to-br from-blue-500 to-green-400 rounded-full flex items-center justify-center text-white font-medium shadow-inner">
+              <div v-else class="h-8 w-8 sm:h-10 sm:w-10 bg-gradient-to-br from-blue-500 to-green-400 rounded-full flex items-center justify-center text-white font-medium shadow-inner text-xs sm:text-sm">
                 {{ orgToRemove.name ? orgToRemove.name.charAt(0).toUpperCase() : 'O' }}
               </div>
             </div>
             <div class="flex-1 min-w-0">
               <div class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{{ orgToRemove.name || 'Unknown Organization' }}</div>
-              <div class="text-sm text-gray-500 dark:text-gray-400 truncate">{{ orgToRemove.email || 'No email' }}</div>
+              <div class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 truncate">{{ orgToRemove.email || 'No email' }}</div>
               <div class="text-xs text-gray-400 dark:text-gray-500">{{ orgToRemove.role ? orgToRemove.role.name : 'No role' }}</div>
               <div class="text-xs text-gray-400 dark:text-gray-500">
                 <span :class="orgToRemove.status === 'active' ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'">
@@ -419,14 +555,13 @@
               </div>
             </div>
           </div>
-          <div class="flex justify-end space-x-2 mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
-            <SecondaryButton @click="closeRemoveConfirmModal">Cancel</SecondaryButton>
+          <div class="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-2 mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-gray-200 dark:border-gray-700">
+            <SecondaryButton @click="closeRemoveConfirmModal" class="w-full sm:w-auto order-2 sm:order-1">Cancel</SecondaryButton>
             <button
-              class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl shadow-md hover:from-red-400 hover:to-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-all duration-300 relative overflow-hidden group"
+              class="inline-flex items-center justify-center px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg shadow-md transition-colors duration-200 text-sm w-full sm:w-auto order-1 sm:order-2"
               @click="confirmRemoveOrg"
               type="button"
             >
-              <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white dark:bg-gray-800 rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
               Remove
             </button>
           </div>
