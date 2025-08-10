@@ -300,19 +300,19 @@ function cancelSave() {
             <div>
                 <InputLabel value="Profile Photo" class="text-gray-700 dark:text-gray-300 font-medium" />
                 <div class="mt-2 p-4 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700">
-                    <div class="flex items-center gap-6">
+                    <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6">
                         <!-- Profile Photo Preview -->
                         <div class="flex-shrink-0">
                             <div class="relative group">
                                 <img 
                                     :src="photoPreview || '/images/lspu_logo_better.png'" 
-                                    class="w-24 h-24 rounded-full object-cover border-4 border-blue-200 dark:border-blue-600 shadow-md transition-all duration-200 group-hover:border-blue-300 dark:group-hover:border-blue-500" 
+                                    class="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover border-4 border-blue-200 dark:border-blue-600 shadow-md transition-all duration-200 group-hover:border-blue-300 dark:group-hover:border-blue-500" 
                                 />
                                 <div 
                                     v-if="photoPreview"
                                     class="absolute inset-0 bg-black bg-opacity-40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center"
                                 >
-                                    <svg class="w-6 h-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
                                     </svg>
@@ -320,9 +320,9 @@ function cancelSave() {
                             </div>
                         </div>
                         <!-- Photo Controls -->
-                        <div class="flex-1 space-y-3">
+                        <div class="flex-1 w-full sm:w-auto space-y-3">
                             <!-- Choose Photo Button -->
-                            <div class="relative">
+                            <div class="relative w-full">
                                 <input 
                                     type="file" 
                                     accept="image/*" 
@@ -333,7 +333,7 @@ function cancelSave() {
                                 />
                                 <label 
                                     for="profile-photo-input"
-                                    :class="['inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-sm font-medium text-white rounded-xl shadow-md hover:shadow-blue-300/30 hover:from-blue-400 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:from-blue-600 active:to-blue-700 transition-all duration-300 relative overflow-hidden group cursor-pointer', !isEditingProfile ? 'opacity-50 pointer-events-none cursor-not-allowed' : '']"
+                                    :class="['inline-flex items-center justify-center w-full sm:w-auto px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-sm font-medium text-white rounded-xl shadow-md hover:shadow-blue-300/30 hover:from-blue-400 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:from-blue-600 active:to-blue-700 transition-all duration-300 relative overflow-hidden group cursor-pointer', !isEditingProfile ? 'opacity-50 pointer-events-none cursor-not-allowed' : '']"
                                 >
                                     <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
                                     <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -347,7 +347,7 @@ function cancelSave() {
                                 v-if="(user.profile_photo_url || photoPreview) && isEditingProfile"
                                 type="button"
                                 @click="handleRemovePhoto"
-                                class="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-500 hover:border-red-300 hover:text-red-600 dark:hover:text-red-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150"
+                                class="inline-flex items-center justify-center w-full sm:w-auto px-4 py-2 bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-500 hover:border-red-300 hover:text-red-600 dark:hover:text-red-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150"
                             >
                                 <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -355,7 +355,7 @@ function cancelSave() {
                                 Remove Photo
                             </button>
                             <!-- Photo Guidelines -->
-                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center sm:text-left">
                                 Recommended: Square image, at least 200x200 pixels. Maximum file size: 2MB.
                             </p>
                         </div>
