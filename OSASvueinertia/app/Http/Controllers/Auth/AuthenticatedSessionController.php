@@ -19,6 +19,12 @@ class AuthenticatedSessionController extends Controller
      */
     public function create(): Response
     {
+        // Force clear any corrupted session data to fix 419 CSRF errors
+        if (request()->session()->isStarted()) {
+            request()->session()->invalidate();
+            request()->session()->regenerateToken();
+        }
+        
         return Inertia::render('Auth/Logz', [
             'canResetPassword' => Route::has('password.request'),
             'status' => session('status'),
@@ -30,6 +36,10 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
+        // Clear any existing session before authentication to fix 419 CSRF errors
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        
         $request->authenticate();
 
         $request->session()->regenerate();
