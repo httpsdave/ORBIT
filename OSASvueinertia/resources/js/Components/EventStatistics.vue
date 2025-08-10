@@ -109,8 +109,9 @@
             <div v-if="showTimeRangeDropdown" class="fixed inset-0 z-40" @click="showTimeRangeDropdown = false"></div>
           </div>
           
-          <!-- Export Button -->
+          <!-- Export Button (Admin Only) -->
           <button
+            v-if="isAdmin"
             @click="exportStatistics"
             class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 dark:from-green-600 dark:to-green-700 text-sm font-medium text-white rounded-xl shadow-md hover:from-green-600 hover:to-green-700 dark:hover:from-green-700 dark:hover:to-green-800 focus:outline-none focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-all duration-300 relative overflow-hidden group w-full sm:w-auto"
           >
