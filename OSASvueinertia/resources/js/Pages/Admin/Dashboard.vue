@@ -526,20 +526,20 @@ function exportAdvisersToCSV() {
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6">
             <!-- Student Organizations Chart -->
-            <div class="lg:col-span-2 bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
-                <div class="p-6">
-                    <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-lg font-medium text-gray-800 dark:text-gray-200">
+            <div class="xl:col-span-2 bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
+                <div class="p-3 sm:p-4 lg:p-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-6 space-y-3 sm:space-y-0">
+                        <h3 class="text-base sm:text-lg font-medium text-gray-800 dark:text-gray-200">
                             <template v-if="activeChart === 'bar'">Members per Organization</template>
                             <template v-else>Student Organizations by College</template>
                         </h3>
-                        <div class="inline-flex rounded-md shadow-sm">
+                        <div class="inline-flex rounded-md shadow-sm w-full sm:w-auto">
                             <button 
                                 @click="activeChart = 'bar'" 
                                 :class="[
-                                    'px-4 py-2 text-sm font-medium rounded-l-xl border transition-all duration-300', 
+                                    'flex-1 sm:flex-none px-2 sm:px-4 py-2 text-xs sm:text-sm font-medium rounded-l-xl border transition-all duration-300', 
                                     activeChart === 'bar' 
                                         ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white border-blue-500 shadow-md' 
                                         : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600'
@@ -550,7 +550,7 @@ function exportAdvisersToCSV() {
                             <button 
                                 @click="activeChart = 'pie'" 
                                 :class="[
-                                    'px-4 py-2 text-sm font-medium border border-l-0 transition-all duration-300', 
+                                    'flex-1 sm:flex-none px-2 sm:px-4 py-2 text-xs sm:text-sm font-medium border border-l-0 transition-all duration-300', 
                                     activeChart === 'pie' 
                                         ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white border-blue-500 shadow-md' 
                                         : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600'
@@ -561,7 +561,7 @@ function exportAdvisersToCSV() {
                             <button 
                                 @click="activeChart = 'advisers'" 
                                 :class="[
-                                    'px-4 py-2 text-sm font-medium rounded-r-xl border border-l-0 transition-all duration-300', 
+                                    'flex-1 sm:flex-none px-2 sm:px-4 py-2 text-xs sm:text-sm font-medium rounded-r-xl border border-l-0 transition-all duration-300', 
                                     activeChart === 'advisers' 
                                         ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white border-blue-500 shadow-md' 
                                         : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600'
@@ -572,14 +572,14 @@ function exportAdvisersToCSV() {
                         </div>
                     </div>
                     
-                    <div v-if="activeChart === 'pie'" class="h-80">
+                    <div v-if="activeChart === 'pie'" class="h-64 sm:h-80">
                         <Pie 
                             :data="pieChartData" 
                             :options="pieChartOptions" 
                         />
                     </div>
                     
-                    <div v-else-if="activeChart === 'bar'" class="h-80">
+                    <div v-else-if="activeChart === 'bar'" class="h-64 sm:h-80">
                         <Bar 
                             :data="membersBarChartData" 
                             :options="barChartOptions" 
@@ -588,112 +588,122 @@ function exportAdvisersToCSV() {
                     <div v-else-if="activeChart === 'advisers'" class="overflow-x-auto">
                         <button
                             @click="exportAdvisersToCSV"
-                            class="mb-4 inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-sm font-medium text-white rounded-xl shadow-md hover:shadow-green-300/30 hover:from-green-400 hover:to-green-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 active:from-green-600 active:to-green-700 transition-all duration-300 relative overflow-hidden group disabled:opacity-60 disabled:pointer-events-none disabled:bg-gray-200 disabled:text-gray-400"
+                            class="mb-4 inline-flex items-center justify-center px-3 sm:px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-xs sm:text-sm font-medium text-white rounded-xl shadow-md hover:shadow-green-300/30 hover:from-green-400 hover:to-green-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 active:from-green-600 active:to-green-700 transition-all duration-300 relative overflow-hidden group disabled:opacity-60 disabled:pointer-events-none disabled:bg-gray-200 disabled:text-gray-400 w-full sm:w-auto"
                             :disabled="!props.advisersData.length"
                             title="Export as CSV"
                             aria-label="Export as CSV"
                         >
                             <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" />
                             </svg>
                             Export CSV
                         </button>
-                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                            <thead>
-                                <tr>
-                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Organization</th>
-                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Adviser</th>
-                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Second Adviser</th>
-                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Members</th>
-                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Officers</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-100 dark:divide-gray-700">
-                                <tr v-for="(row, idx) in props.advisersData" :key="idx">
-                                    <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-300">{{ row.organization }}</td>
-                                    <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-300">{{ row.adviser_name || '—' }}</td>
-                                    <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-300">{{ row.second_adviser || '—' }}</td>
-                                    <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-300 text-center">{{ row.members_count ?? '—' }}</td>
-                                    <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-300 text-center">{{ row.officers_count ?? '—' }}</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                <thead>
+                                    <tr>
+                                        <th class="px-2 sm:px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Organization</th>
+                                        <th class="px-2 sm:px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase hidden sm:table-cell">Adviser</th>
+                                        <th class="px-2 sm:px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase hidden md:table-cell">Second Adviser</th>
+                                        <th class="px-2 sm:px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Members</th>
+                                        <th class="px-2 sm:px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase hidden sm:table-cell">Officers</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-100 dark:divide-gray-700">
+                                    <tr v-for="(row, idx) in props.advisersData" :key="idx">
+                                        <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 dark:text-gray-300">
+                                            <div class="truncate max-w-[120px] sm:max-w-none" :title="row.organization">
+                                                {{ row.organization }}
+                                            </div>
+                                        </td>
+                                        <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 dark:text-gray-300 hidden sm:table-cell">{{ row.adviser_name || '—' }}</td>
+                                        <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 dark:text-gray-300 hidden md:table-cell">{{ row.second_adviser || '—' }}</td>
+                                        <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 dark:text-gray-300 text-center">{{ row.members_count ?? '—' }}</td>
+                                        <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 dark:text-gray-300 text-center hidden sm:table-cell">{{ row.officers_count ?? '—' }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Event Information -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
-                <div class="p-6">
-                    <div class="flex items-center mb-4 justify-between">
+                <div class="p-3 sm:p-4 lg:p-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center mb-4 justify-between space-y-2 sm:space-y-0">
                         <div class="flex items-center">
                             <div :class="props.todayEvent ? 'p-2 rounded-md bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-400 mr-3' : 'p-2 rounded-md bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 mr-3'">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" :stroke="props.todayEvent ? '#16a34a' : '#3b82f6'">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" :stroke="props.todayEvent ? '#16a34a' : '#3b82f6'">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
                             </div>
-                            <h3 class="text-lg font-medium text-gray-800 dark:text-gray-200">
+                            <h3 class="text-base sm:text-lg font-medium text-gray-800 dark:text-gray-200">
                                 {{ props.todayEvent ? "Today's Event" : "Upcoming Event" }}
                             </h3>
                         </div>
                         <!-- Minimalist Events Held Badge -->
-                        <div class="flex items-center space-x-1 bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 px-3 py-1 rounded-full text-xs font-semibold">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <div class="flex items-center space-x-1 bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 px-2 sm:px-3 py-1 rounded-full text-xs font-semibold">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:h-4 sm:w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
-                            <span>Events Held: {{ props.pastEventsCount }}</span>
+                            <span class="hidden sm:inline">Events Held: </span>
+                            <span class="sm:hidden">Events: </span>
+                            <span>{{ props.pastEventsCount }}</span>
                         </div>
                     </div>
                     
-                    <div v-if="displayEvent" class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-white dark:bg-gray-800 shadow-sm cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-700 transition">
+                    <div v-if="displayEvent" class="border border-gray-200 dark:border-gray-700 rounded-lg p-3 sm:p-4 bg-white dark:bg-gray-800 shadow-sm cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-700 transition">
                       <Link :href="route('calendar')" class="block">
-                        <h4 class="font-medium text-lg text-gray-800 dark:text-gray-200 mb-3">{{ displayEvent.title }}</h4>
-                        <div class="text-sm text-gray-600 dark:text-gray-400 mt-2 space-y-2">
+                        <h4 class="font-medium text-base sm:text-lg text-gray-800 dark:text-gray-200 mb-3">{{ displayEvent.title }}</h4>
+                        <div class="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-2 space-y-2">
                           <div class="flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:h-4 sm:w-4 mr-2 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
                             <span>Start: {{ formatDate(displayEvent.start_date) }}</span>
                           </div>
                           <div class="flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:h-4 sm:w-4 mr-2 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                             <span>End: {{ formatDate(displayEvent.end_date) }}</span>
                           </div>
                         </div>
                         <div class="mt-4 border-t border-gray-100 dark:border-gray-700 pt-3">
-                          <p class="text-sm text-gray-700 dark:text-gray-300">{{ displayEvent.description }}</p>
+                          <p class="text-xs sm:text-sm text-gray-700 dark:text-gray-300 line-clamp-3">{{ displayEvent.description }}</p>
                         </div>
                       </Link>
                     </div>
                     
-                    <div v-else class="border border-gray-200 dark:border-gray-700 rounded-lg p-6 bg-gray-50 dark:bg-gray-700 text-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div v-else class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 sm:p-6 bg-gray-50 dark:bg-gray-700 text-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 sm:h-12 sm:w-12 mx-auto text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
-                        <p class="mt-4 text-gray-600 dark:text-gray-400">No upcoming events scheduled</p>
-                        <a :href="route('calendar')" class="inline-block mt-3 px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-sm font-medium text-white rounded-xl shadow-md hover:shadow-green-300/30 hover:from-green-400 hover:to-green-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group">
+                        <p class="mt-4 text-sm sm:text-base text-gray-600 dark:text-gray-400">No upcoming events scheduled</p>
+                        <a :href="route('calendar')" class="inline-block mt-3 px-3 sm:px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-xs sm:text-sm font-medium text-white rounded-xl shadow-md hover:shadow-green-300/30 hover:from-green-400 hover:to-green-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group">
                             <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
                             Create Event
                         </a>
                     </div>
                     
-                    <div class="mt-6 flex space-x-3">
-                        <a :href="route('admin.users')" class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-sm font-medium text-white rounded-xl shadow-md hover:shadow-blue-300/30 hover:from-blue-400 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:from-blue-600 active:to-blue-700 transition-all duration-300 relative overflow-hidden group">
+                    <div class="mt-4 sm:mt-6 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
+                        <a :href="route('admin.users')" class="inline-flex items-center justify-center px-3 sm:px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-xs sm:text-sm font-medium text-white rounded-xl shadow-md hover:shadow-blue-300/30 hover:from-blue-400 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:from-blue-600 active:to-blue-700 transition-all duration-300 relative overflow-hidden group">
                             <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:h-4 sm:w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                             </svg>
-                            Manage Organizations
+                            <span class="hidden sm:inline">Manage Organizations</span>
+                            <span class="sm:hidden">Organizations</span>
                         </a>
-                        <a :href="route('applications.index')" class="inline-flex items-center justify-center px-4 py-2 bg-white dark:bg-gray-800 border border-blue-500 dark:border-blue-400 text-blue-700 dark:text-blue-300 text-sm font-medium rounded-xl shadow-md hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-800 dark:hover:text-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group">
+                        <a :href="route('applications.index')" class="inline-flex items-center justify-center px-3 sm:px-4 py-2 bg-white dark:bg-gray-800 border border-blue-500 dark:border-blue-400 text-blue-700 dark:text-blue-300 text-xs sm:text-sm font-medium rounded-xl shadow-md hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-800 dark:hover:text-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group">
                             <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-blue-500 rounded-full group-hover:w-96 group-hover:h-96 opacity-5"></span>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:h-4 sm:w-4 mr-2 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
-                            View Applications
+                            <span class="hidden sm:inline">View Applications</span>
+                            <span class="sm:hidden">Applications</span>
                         </a>
                     </div>
                 </div>
@@ -712,4 +722,11 @@ function exportAdvisersToCSV() {
     }
 }
 
+.line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
 </style>
