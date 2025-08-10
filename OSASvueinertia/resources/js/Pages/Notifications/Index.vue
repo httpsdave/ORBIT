@@ -124,7 +124,7 @@ const formatType = (type) => {
     <Head title="Notifications" />
     
     <!-- Colored banner -->
-    <div class="flex w-full mb-6 overflow-hidden rounded-md shadow-sm">
+    <div class="flex w-full mb-6 overflow-hidden rounded-xl shadow-sm">
       <div class="w-1/4 h-1 bg-blue-500 " style="animation-delay: 0.2s;"></div>
       <div class="w-1/4 h-1 bg-green-500 " style="animation-delay: 0.4s;"></div>
       <div class="w-1/4 h-1 bg-yellow-500 " style="animation-delay: 0.6s;"></div>
@@ -133,7 +133,7 @@ const formatType = (type) => {
 
     <div class="py-6">
       <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-xl">
           <div class="p-4 sm:p-6">
             <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
               <div class="flex items-center">
@@ -145,7 +145,7 @@ const formatType = (type) => {
               <button 
                 v-if="unreadCount > 0"
                 @click="markAllAsRead" 
-                class="inline-flex items-center px-3 sm:px-4 py-2 bg-blue-500 border border-transparent rounded-md font-medium text-xs text-white uppercase tracking-wider hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition duration-150 ease-in-out"
+                class="inline-flex items-center px-3 sm:px-4 py-2 bg-blue-500 border border-transparent rounded-lg font-medium text-xs text-white uppercase tracking-wider hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition duration-150 ease-in-out"
               >
                 <span class="hidden sm:inline">Mark all as read</span>
                 <span class="sm:hidden">Mark all read</span>
@@ -153,7 +153,7 @@ const formatType = (type) => {
             </div>
 
             <!-- Filters -->
-            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg mb-6 border border-gray-100 dark:border-gray-600 overflow-hidden">
+            <div class="bg-gray-50 dark:bg-gray-700 rounded-xl mb-6 border border-gray-100 dark:border-gray-600 overflow-hidden">
               <div class="p-3 sm:p-4">
                 <div class="flex flex-col sm:flex-row items-start sm:items-end gap-3 sm:gap-4">
                   <div class="w-full sm:w-auto">
@@ -162,7 +162,7 @@ const formatType = (type) => {
                       id="type-filter" 
                       v-model="filters.type" 
                       @change="applyFilters"
-                      class="block w-full sm:w-auto pl-3 pr-10 py-2 text-sm border-gray-200 dark:border-gray-600 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md dark:bg-gray-600 dark:text-gray-100"
+                      class="block w-full sm:w-auto pl-3 pr-10 py-2 text-sm border-gray-200 dark:border-gray-600 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-lg dark:bg-gray-600 dark:text-gray-100"
                     >
                       <option value="all">All Types</option>
                       <option value="info">Info</option>
@@ -177,7 +177,7 @@ const formatType = (type) => {
                       id="read-filter" 
                       v-model="filters.read" 
                       @change="applyFilters"
-                      class="block w-full sm:w-auto pl-3 pr-10 py-2 text-sm border-gray-200 dark:border-gray-600 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md dark:bg-gray-600 dark:text-gray-100"
+                      class="block w-full sm:w-auto pl-3 pr-10 py-2 text-sm border-gray-200 dark:border-gray-600 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-lg dark:bg-gray-600 dark:text-gray-100"
                     >
                       <option value="all">All</option>
                       <option value="read">Read</option>
@@ -206,7 +206,7 @@ const formatType = (type) => {
                 v-for="notification in filteredNotifications"
                 :key="notification.id"
                 @click="showNotificationPopup(notification)"
-                class="w-full block border rounded-lg overflow-hidden transition duration-200 ease-in-out hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-800 transform hover:scale-[1.01]"
+                class="w-full block border rounded-xl overflow-hidden transition duration-200 ease-in-out hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-800 transform hover:scale-[1.01]"
                 :class="[notification.is_read ? 'border-gray-100 dark:border-gray-700' : 'border-blue-200 dark:border-blue-600 shadow-sm', getNotificationClass(notification.type)]"
               >
                 <div class="p-3 sm:p-4">
@@ -278,7 +278,7 @@ const formatType = (type) => {
                 ></div>
 
                 <!-- Modal panel -->
-                <div class="inline-block align-middle bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full mx-auto">
+                <div class="inline-block align-middle bg-white dark:bg-gray-800 rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full mx-auto">
                   <!-- Header with close button -->
                   <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 flex items-center justify-between border-b border-gray-200 dark:border-gray-600">
                     <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100 truncate pr-4" id="modal-title">

@@ -37,7 +37,7 @@
     <!-- Dropdown Menu -->
     <div 
       v-show="isOpen"
-      class="absolute right-0 mt-2 w-64 sm:w-72 md:w-80 max-w-[calc(100vw-1rem)] bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50 max-h-72 sm:max-h-80 md:max-h-96 overflow-hidden"
+      class="absolute right-0 mt-2 w-64 sm:w-72 md:w-80 max-w-[calc(100vw-1rem)] bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 z-50 max-h-72 sm:max-h-80 md:max-h-96 overflow-hidden"
       @click.stop
     >
       <!-- Header -->
