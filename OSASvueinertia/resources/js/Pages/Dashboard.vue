@@ -183,131 +183,131 @@ const activeTab = ref('applications');
   
     <AuthenticatedLayout>
       <template #header>
-        <div class="flex justify-between items-center">
-          <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">My Dashboard</h2>
-          <div class="text-sm text-gray-500 dark:text-gray-400">{{ formatCurrentDateTime }}</div>
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-2 sm:space-y-0">
+          <h2 class="font-semibold text-lg sm:text-xl text-gray-800 dark:text-gray-200 leading-tight">My Dashboard</h2>
+          <div class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 order-first sm:order-last">{{ formatCurrentDateTime }}</div>
         </div>
       </template>
   
-      <div class="py-8">
+      <div class="py-4 sm:py-6 lg:py-8">
         
           <!-- Colored Banner - Matching admin dashboard -->
-          <div class="flex w-full mb-6 overflow-hidden rounded-lg shadow-md">
-              <div class="w-1/4 h-1.5 bg-blue-500 " style="animation-delay: 0.2s;"></div>
-              <div class="w-1/4 h-1.5 bg-green-500 " style="animation-delay: 0.4s;"></div>
-              <div class="w-1/4 h-1.5 bg-yellow-500 " style="animation-delay: 0.6s;"></div>
-              <div class="w-1/4 h-1.5 bg-red-500 " style="animation-delay: 0.8s;"></div>
+          <div class="flex w-full mb-4 sm:mb-6 overflow-hidden rounded-lg shadow-md">
+              <div class="w-1/4 h-1 sm:h-1.5 bg-blue-500 " style="animation-delay: 0.2s;"></div>
+              <div class="w-1/4 h-1 sm:h-1.5 bg-green-500 " style="animation-delay: 0.4s;"></div>
+              <div class="w-1/4 h-1 sm:h-1.5 bg-yellow-500 " style="animation-delay: 0.6s;"></div>
+              <div class="w-1/4 h-1 sm:h-1.5 bg-red-500 " style="animation-delay: 0.8s;"></div>
           </div>
 
           <!-- Greeting Card (no stats inside) -->
           <div 
-            class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg mb-6 transform transition-all duration-500 ease-in-out"
+            class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg mb-4 sm:mb-6 transform transition-all duration-500 ease-in-out"
             :class="{ 'translate-y-0 opacity-100': isVisible, 'translate-y-4 opacity-0': !isVisible }"
           >
-            <div class="p-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-              <div class="flex items-center">
-                <div class="flex-shrink-0">
-                  <div class="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div class="p-4 sm:p-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+              <div class="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
+                <div class="flex-shrink-0 mx-auto sm:mx-0">
+                  <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
                     </svg>
                   </div>
                 </div>
-                <div class="ml-4">
-                  <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-200">{{ greeting }}, {{ $page.props.auth?.user?.name || 'User' }}!</h2>
-                  <p class="mt-1 text-gray-600 dark:text-gray-400">Welcome to orbit. Here's your latest activity and important updates.</p>
+                <div class="text-center sm:text-left">
+                  <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 dark:text-gray-200">{{ greeting }}, {{ $page.props.auth?.user?.name || 'User' }}!</h2>
+                  <p class="mt-1 text-sm sm:text-base text-gray-600 dark:text-gray-400">Welcome to orbit. Here's your latest activity and important updates.</p>
                 </div>
               </div>
             </div>
           </div>
 
           <!-- Stats Cards Row (separate from greeting) -->
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-4 sm:mb-6">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg border-l-4 border-blue-500 transition hover:shadow-md">
-              <div class="p-5">
+              <div class="p-4 sm:p-5">
                 <div class="flex items-center">
                   <div class="flex-shrink-0">
-                    <div class="w-12 h-12 rounded-full flex items-center justify-center bg-blue-100 dark:bg-blue-900/50">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-blue-100 dark:bg-blue-900/50">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                       </svg>
                     </div>
                   </div>
-                  <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Applications</p>
-                    <p class="text-3xl font-bold text-gray-900 dark:text-gray-100">{{ props.myApplications.length }}</p>
+                  <div class="ml-3 sm:ml-4">
+                    <p class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Applications</p>
+                    <p class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">{{ props.myApplications.length }}</p>
                   </div>
                 </div>
               </div>
             </div>
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg border-l-4 border-green-500 transition hover:shadow-md">
-              <div class="p-5">
+              <div class="p-4 sm:p-5">
                 <div class="flex items-center">
                   <div class="flex-shrink-0">
-                    <div class="w-12 h-12 rounded-full flex items-center justify-center bg-green-100 dark:bg-green-900/50">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-500 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-green-100 dark:bg-green-900/50">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 text-green-500 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
                     </div>
                   </div>
-                  <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Upcoming Events</p>
-                    <p class="text-3xl font-bold text-gray-900 dark:text-gray-100">{{ props.upcomingEvents.length + (props.todayEvent ? 1 : 0) }}</p>
+                  <div class="ml-3 sm:ml-4">
+                    <p class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Upcoming Events</p>
+                    <p class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">{{ props.upcomingEvents.length + (props.todayEvent ? 1 : 0) }}</p>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg border-l-4 border-yellow-500 transition hover:shadow-md">
-              <div class="p-5">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg border-l-4 border-yellow-500 transition hover:shadow-md sm:col-span-2 lg:col-span-1">
+              <div class="p-4 sm:p-5">
                 <div class="flex items-center">
                   <div class="flex-shrink-0">
-                    <div class="w-12 h-12 rounded-full flex items-center justify-center bg-yellow-100 dark:bg-yellow-900/50">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500 dark:text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-yellow-100 dark:bg-yellow-900/50">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 text-yellow-500 dark:text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                     </div>
                   </div>
-                  <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Recent Activities</p>
-                    <p class="text-3xl font-bold text-gray-900 dark:text-gray-100">{{ props.recentActivity.length }}</p>
+                  <div class="ml-3 sm:ml-4">
+                    <p class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Recent Activities</p>
+                    <p class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">{{ props.recentActivity.length }}</p>
                   </div>
                 </div>
               </div>
             </div>
           </div>
   
-          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
             <!-- Combined Applications & Activity Card with Tabs -->
             <div 
               class="lg:col-span-2 bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg transform transition-all duration-500 ease-in-out"
               :class="{ 'translate-y-0 opacity-100': isVisible, 'translate-y-4 opacity-0': !isVisible }"
               style="transition-delay: 100ms;"
             >
-              <div class="p-6">
-                <div class="flex justify-between items-center mb-6">
-                  <div class="flex items-center space-x-2">
+              <div class="p-4 sm:p-6">
+                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 space-y-4 sm:space-y-0">
+                  <div class="flex items-center space-x-1 sm:space-x-2 w-full sm:w-auto">
                     <button
-                      class="px-4 py-2 rounded-t-md text-sm font-medium focus:outline-none"
+                      class="flex-1 sm:flex-none px-3 py-2 sm:px-4 sm:py-2 rounded-t-md text-xs sm:text-sm font-medium focus:outline-none transition-colors duration-200"
                       :class="activeTab === 'applications' ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300' : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400'"
                       @click="activeTab = 'applications'"
                     >
                       Applications
                     </button>
                     <button
-                      class="px-4 py-2 rounded-t-md text-sm font-medium focus:outline-none"
+                      class="flex-1 sm:flex-none px-3 py-2 sm:px-4 sm:py-2 rounded-t-md text-xs sm:text-sm font-medium focus:outline-none transition-colors duration-200"
                       :class="activeTab === 'activity' ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300' : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400'"
                       @click="activeTab = 'activity'"
                     >
                       Activity
                     </button>
                   </div>
-                  <div v-if="activeTab === 'applications'">
-                    <Link :href="route('applications.index')" class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-sm font-medium text-white rounded-xl shadow-md hover:shadow-blue-300/30 hover:from-blue-400 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 active:from-blue-600 active:to-blue-700 transition-all duration-300 relative overflow-hidden group">
+                  <div v-if="activeTab === 'applications'" class="w-full sm:w-auto">
+                    <Link :href="route('applications.index')" class="w-full sm:w-auto inline-flex items-center justify-center px-3 py-2 sm:px-4 sm:py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-xs sm:text-sm font-medium text-white rounded-lg sm:rounded-xl shadow-md hover:shadow-blue-300/30 hover:from-blue-400 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 active:from-blue-600 active:to-blue-700 transition-all duration-300 relative overflow-hidden group">
                       <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white dark:bg-gray-800 rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                       </svg>
-                      Create New
+                      <span class="whitespace-nowrap">Create New</span>
                     </Link>
                   </div>
                 </div>
@@ -315,24 +315,24 @@ const activeTab = ref('applications');
                 <div v-if="activeTab === 'applications'">
                   <div v-if="props.myApplications && props.myApplications.length > 0" class="space-y-3">
                     <div v-for="application in props.myApplications.slice(0, 3)" :key="application.id" 
-                      class="flex items-center justify-between border border-gray-100 dark:border-gray-700 rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-200 ease-in-out">
+                      class="flex flex-col sm:flex-row sm:items-center sm:justify-between border border-gray-100 dark:border-gray-700 rounded-lg p-3 sm:p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-200 ease-in-out space-y-3 sm:space-y-0">
                       <div class="flex items-center">
-                        <div class="h-10 w-10 rounded-md bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center mr-4">
-                          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <div class="h-8 w-8 sm:h-10 sm:w-10 rounded-md bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center mr-3 sm:mr-4 flex-shrink-0">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                           </svg>
                         </div>
-                        <div>
-                          <h4 class="font-medium text-gray-800 dark:text-gray-200">{{ application.title }}</h4>
+                        <div class="min-w-0 flex-1">
+                          <h4 class="font-medium text-gray-800 dark:text-gray-200 text-sm sm:text-base truncate">{{ application.title }}</h4>
                           <p class="text-xs text-gray-500 dark:text-gray-400">Updated: {{ formatDate(application.updated_at) }}</p>
                         </div>
                       </div>
-                      <div class="flex items-center space-x-3">
-                        <span :class="`px-3 py-1 rounded-full text-xs font-medium ring-1 ring-inset ${getStatusColor(application.status)}`">
+                      <div class="flex items-center justify-between sm:justify-end space-x-3 flex-shrink-0">
+                        <span :class="`px-2 py-1 sm:px-3 sm:py-1 rounded-full text-xs font-medium ring-1 ring-inset ${getStatusColor(application.status)}`">
                           {{ application.status }}
                         </span>
                         <Link :href="`/applications`" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 bg-blue-50 dark:bg-blue-900/50 hover:bg-blue-100 dark:hover:bg-blue-900/70 p-2 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md">
-                          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                           </svg>
@@ -348,18 +348,20 @@ const activeTab = ref('applications');
                       </Link>
                     </div>
                   </div>
-                  <div v-else class="text-center py-12 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <div v-else class="text-center py-8 sm:py-12 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 sm:h-16 sm:w-16 mx-auto text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
-                    <p class="mt-4 text-gray-600 dark:text-gray-400 mb-6">You don't have any applications yet</p>
-                    <Link :href="route('applications.create')" class="mt-3 inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-sm font-medium text-white rounded-xl shadow-md hover:shadow-blue-300/30 hover:from-blue-400 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 active:from-blue-600 active:to-blue-700 transition-all duration-300 relative overflow-hidden group">
-                      <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                      </svg>
-                      Create Your First Application
-                    </Link>
+                    <p class="mt-4 text-gray-600 dark:text-gray-400 mb-4 sm:mb-6 text-sm sm:text-base">You don't have any applications yet</p>
+                    <div class="px-4 sm:px-0">
+                      <Link :href="route('applications.create')" class="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2.5 sm:px-6 sm:py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-sm sm:text-base font-medium text-white rounded-lg sm:rounded-xl shadow-md hover:shadow-blue-300/30 hover:from-blue-400 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 active:from-blue-600 active:to-blue-700 transition-all duration-300 relative overflow-hidden group">
+                        <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        <span class="text-center">Create Your First Application</span>
+                      </Link>
+                    </div>
                   </div>
                 </div>
                 <!-- Activity Tab -->
@@ -401,7 +403,7 @@ const activeTab = ref('applications');
               :class="{ 'translate-y-0 opacity-100': isVisible, 'translate-y-4 opacity-0': !isVisible }"
               style="transition-delay: 200ms;"
             >
-              <div class="p-6">
+              <div class="p-4 sm:p-6">
                 <div class="flex items-center mb-4">
                   <div class="p-2 rounded-md bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 mr-3">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
