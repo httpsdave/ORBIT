@@ -27,8 +27,18 @@ class AppServiceProvider extends ServiceProvider
             return new Role();
         });
         
-        // Force HTTPS in production
+        // Force HTTPS in production environments
         if ($this->app->environment('production')) {
+            URL::forceScheme('https');
+        }
+        
+        // Handle Railway's proxy headers for HTTPS detection
+        if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+            URL::forceScheme('https');
+        }
+        
+        // Additional Railway proxy handling
+        if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
             URL::forceScheme('https');
         }
     }
