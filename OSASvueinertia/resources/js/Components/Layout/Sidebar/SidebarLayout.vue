@@ -363,7 +363,7 @@ onUnmounted(() => {
   <div class="flex min-h-screen bg-gray-50 dark:bg-gray-900 relative">
     <!-- Fixed header for both desktop and mobile that spans the entire width -->
     <header class="fixed top-0 left-0 right-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm z-40 h-16">
-      <div class="px-4 sm:px-6 h-full flex items-center justify-between">
+      <div class="px-3 sm:px-4 md:px-6 h-full flex items-center justify-between">
         <div class="flex items-center">
           <!-- Desktop sidebar toggle button - visible only on desktop -->
           <button
@@ -402,9 +402,9 @@ onUnmounted(() => {
               <!-- Enhanced Logo with larger size class -->
               <ApplicationLogo :class="[logoSizeClass, 'block filter drop-shadow transform scale-125']" alt="ORBIT logo" />
             </div>
-            <!-- Company name text with bolder, wider font -->
+            <!-- Company name text with bolder, wider font - hidden on small screens -->
             <span 
-              class="ml-6 font-black text-3xl text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-green-500 uppercase select-none"
+              class="ml-3 sm:ml-6 font-black text-lg sm:text-2xl md:text-3xl text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-green-500 uppercase select-none hidden sm:inline-block"
               style="font-family: 'Montserrat SemiCondensed', 'Inter Tight', 'Arial Narrow', 'Montserrat', 'Inter', 'Poppins', 'Segoe UI', 'Arial', sans-serif; letter-spacing: -0.08em; font-stretch: condensed; transform: scaleX(1.35); display: inline-block;"
             >
               ORBIT
@@ -413,7 +413,7 @@ onUnmounted(() => {
         </div>
         
         <!-- Right side - user profile & actions -->
-        <div class="flex items-center space-x-4">
+        <div class="flex items-center space-x-2 sm:space-x-3 md:space-x-4">
           <!-- Calendar link -->
           <Link 
             :href="route(calendarItem.route)"
