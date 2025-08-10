@@ -2,6 +2,14 @@
 
 echo "Starting application..."
 
+# Debug: Show critical configuration
+echo "=== Critical Configuration ==="
+echo "APP_URL: ${APP_URL:-'❌ NOT SET - THIS CAUSES REDIRECT LOOPS!'}"
+echo "APP_ENV: ${APP_ENV:-'not set'}"
+echo "APP_DEBUG: ${APP_DEBUG:-'not set'}"
+echo "APP_NAME: ${APP_NAME:-'not set'}"
+echo "================================"
+
 # Debug: Show database configuration
 echo "=== Database Configuration ==="
 echo "DB_CONNECTION: ${DB_CONNECTION:-'not set'}"
@@ -11,10 +19,14 @@ echo "DB_DATABASE: ${DB_DATABASE:-'not set'}"
 echo "DB_USERNAME: ${DB_USERNAME:-'not set'}"
 echo "================================"
 
-# Clear any cached configs that might have wrong DB settings
+# Clear ALL caches to prevent redirect loops
+echo "Clearing all caches to prevent redirect issues..."
 php artisan config:clear
+php artisan route:clear
+php artisan view:clear
+php artisan cache:clear
 
-# Test database connection with a simpler method
+# Test database connection
 echo "Testing database connection..."
 MAX_ATTEMPTS=10
 ATTEMPT=1
@@ -22,7 +34,6 @@ ATTEMPT=1
 while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
     echo "Attempt $ATTEMPT/$MAX_ATTEMPTS: Testing database connection..."
     
-    # Try to connect to database with a simple query
     if php -r "
         try {
             \$pdo = new PDO('mysql:host=' . getenv('DB_HOST') . ';port=' . getenv('DB_PORT') . ';dbname=' . getenv('DB_DATABASE'), getenv('DB_USERNAME'), getenv('DB_PASSWORD'));
@@ -46,7 +57,6 @@ if [ $ATTEMPT -gt $MAX_ATTEMPTS ]; then
     echo "Failed to connect to database after $MAX_ATTEMPTS attempts"
     echo "Starting web server anyway for debugging..."
     
-    # Start the web server without database operations
     echo "Starting web server on port ${PORT:-8000}..."
     exec php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
 else
@@ -85,11 +95,17 @@ else
     echo "Creating storage symlink..."
     php artisan storage:link 2>/dev/null || echo "Storage link already exists"
     
-    # Cache configurations for production
-    echo "Caching configurations..."
-    php artisan config:cache
-    php artisan route:cache
-    php artisan view:cache
+    # Only cache if APP_URL is properly set
+    if [ ! -z "$APP_URL" ] && [ "$APP_URL" != "" ]; then
+        echo "APP_URL is set to: $APP_URL"
+        echo "Caching configurations for production..."
+        php artisan config:cache
+        php artisan route:cache
+        php artisan view:cache
+    else
+        echo "⚠️  WARNING: APP_URL is not set! Skipping config cache to prevent redirect loops."
+        echo "Add APP_URL=https://orbit-production.up.railway.app to your Railway environment variables."
+    fi
     
     echo "Application setup completed successfully!"
 fi
