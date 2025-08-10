@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 use App\Models\Role; // Add this import
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -27,19 +28,41 @@ class AppServiceProvider extends ServiceProvider
             return new Role();
         });
         
-        // Force HTTPS in production environments
+        // Railway SSL detection and forcing
+        $this->handleRailwaySSL();
+    }
+    
+    /**
+     * Handle Railway's SSL termination properly
+     */
+    private function handleRailwaySSL(): void
+    {
+        // Force HTTPS in production
         if ($this->app->environment('production')) {
             URL::forceScheme('https');
         }
         
-        // Handle Railway's proxy headers for HTTPS detection
-        if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
-            URL::forceScheme('https');
-        }
-        
-        // Additional Railway proxy handling
-        if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            URL::forceScheme('https');
+        // Railway-specific SSL detection
+        if (request()) {
+            $request = request();
+            
+            // Check various SSL indicators from Railway
+            $isSSL = $request->header('X-Forwarded-Proto') === 'https' ||
+                     $request->header('X-Forwarded-SSL') === 'on' ||
+                     $request->header('X-Forwarded-Port') === '443' ||
+                     $request->server('HTTPS') === 'on';
+                     
+            if ($isSSL) {
+                URL::forceScheme('https');
+                
+                // Set server variables for proper SSL detection
+                $_SERVER['HTTPS'] = 'on';
+                $_SERVER['SERVER_PORT'] = 443;
+                
+                // Update request server bag
+                $request->server->set('HTTPS', 'on');
+                $request->server->set('SERVER_PORT', 443);
+            }
         }
     }
 }

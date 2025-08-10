@@ -20,6 +20,27 @@ use App\Models\User;
 use App\Models\Role;
 use App\Http\Controllers\ArchiveController;
 
+// Debug route to test Railway SSL configuration
+Route::get('/debug-config', function () {
+    return response()->json([
+        'app_url' => config('app.url'),
+        'app_env' => config('app.env'),
+        'session_secure' => config('session.secure'),
+        'session_domain' => config('session.domain'),
+        'headers' => request()->headers->all(),
+        'is_secure' => request()->isSecure(),
+        'scheme' => request()->getScheme(),
+        'host' => request()->getHost(),
+        'full_url' => request()->fullUrl(),
+        'server_vars' => [
+            'HTTPS' => $_SERVER['HTTPS'] ?? 'not set',
+            'SERVER_PORT' => $_SERVER['SERVER_PORT'] ?? 'not set',
+            'HTTP_X_FORWARDED_PROTO' => $_SERVER['HTTP_X_FORWARDED_PROTO'] ?? 'not set',
+            'HTTP_X_FORWARDED_SSL' => $_SERVER['HTTP_X_FORWARDED_SSL'] ?? 'not set',
+        ]
+    ]);
+})->name('debug.config');
+
 // Authentication routes (login, register, password reset)
 require __DIR__.'/auth.php';
 

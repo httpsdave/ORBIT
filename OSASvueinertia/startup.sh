@@ -4,10 +4,14 @@ echo "Starting application..."
 
 # Debug: Show critical configuration
 echo "=== Critical Configuration ==="
-echo "APP_URL: ${APP_URL:-'❌ NOT SET - THIS CAUSES REDIRECT LOOPS!'}"
+echo "APP_URL: ${APP_URL:-'❌ NOT SET'}"
 echo "APP_ENV: ${APP_ENV:-'not set'}"
 echo "APP_DEBUG: ${APP_DEBUG:-'not set'}"
-echo "APP_NAME: ${APP_NAME:-'not set'}"
+echo "SESSION_SECURE_COOKIE: ${SESSION_SECURE_COOKIE:-'not set'}"
+echo "SESSION_DOMAIN: ${SESSION_DOMAIN:-'not set'}"
+echo "TRUSTED_PROXIES: ${TRUSTED_PROXIES:-'not set'}"
+echo "FORCE_HTTPS: ${FORCE_HTTPS:-'not set'}"
+echo "SSL_VERIFY: ${SSL_VERIFY:-'not set'}"
 echo "================================"
 
 # Debug: Show database configuration
@@ -19,8 +23,29 @@ echo "DB_DATABASE: ${DB_DATABASE:-'not set'}"
 echo "DB_USERNAME: ${DB_USERNAME:-'not set'}"
 echo "================================"
 
-# Clear ALL caches to prevent redirect loops
-echo "Clearing all caches to prevent redirect issues..."
+# NUCLEAR CACHE CLEARING - Remove all cached files manually
+echo "🧹 NUCLEAR CACHE CLEARING - Removing all cache files..."
+rm -rf bootstrap/cache/*.php
+rm -rf storage/framework/cache/data/*
+rm -rf storage/framework/sessions/*
+rm -rf storage/framework/views/*
+rm -rf storage/logs/*.log
+
+# Clear Laravel caches multiple times
+echo "🧹 Clearing Laravel caches (Round 1)..."
+php artisan config:clear
+php artisan route:clear
+php artisan view:clear
+php artisan cache:clear
+php artisan event:clear
+
+echo "🧹 Clearing Laravel caches (Round 2)..."
+php artisan config:clear
+php artisan route:clear
+php artisan view:clear
+php artisan cache:clear
+
+echo "🧹 Clearing Laravel caches (Round 3)..."
 php artisan config:clear
 php artisan route:clear
 php artisan view:clear
@@ -94,22 +119,17 @@ else
     # Create storage symlink
     echo "Creating storage symlink..."
     php artisan storage:link 2>/dev/null || echo "Storage link already exists"
-    
-    # Only cache if APP_URL is properly set
-    if [ ! -z "$APP_URL" ] && [ "$APP_URL" != "" ]; then
-        echo "APP_URL is set to: $APP_URL"
-        echo "Caching configurations for production..."
-        php artisan config:cache
-        php artisan route:cache
-        php artisan view:cache
-    else
-        echo "⚠️  WARNING: APP_URL is not set! Skipping config cache to prevent redirect loops."
-        echo "Add APP_URL=https://orbit-production.up.railway.app to your Railway environment variables."
-    fi
-    
-    echo "Application setup completed successfully!"
 fi
 
-# Start the application
+# Test configuration before caching
+echo "🔍 Testing current configuration..."
+php artisan about --only=environment
+php artisan config:show app.url
+
+# DO NOT CACHE ANYTHING - Run without caching to avoid redirect loops
+echo "⚠️  RUNNING WITHOUT CONFIG CACHE TO PREVENT REDIRECT LOOPS"
+echo "Application setup completed!"
+
+# Start the application WITHOUT caching
 echo "Starting web server on port ${PORT:-8000}..."
 exec php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
