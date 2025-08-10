@@ -156,9 +156,9 @@
     </div>
 
     <!-- Create Modal -->
-    <Modal :show="isCreateModalOpen" @close="isCreateModalOpen = false" :closeable="true" max-width="md">
-      <div class="p-4 sm:p-6">
-        <div class="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-3 mb-4 sm:mb-6">
+    <Modal :show="isCreateModalOpen" @close="isCreateModalOpen = false" :closeable="true" max-width="lg">
+      <div class="p-3 sm:p-4 lg:p-6 max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-2 sm:pb-3 mb-3 sm:mb-4 lg:mb-6">
           <h2 class="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -172,8 +172,8 @@
           </button>
         </div>
         
-        <form @submit.prevent="handleCreateSubmit" enctype="multipart/form-data" class="space-y-4 sm:space-y-6">
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+        <form @submit.prevent="handleCreateSubmit" enctype="multipart/form-data" class="space-y-3 sm:space-y-4 lg:space-y-6">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 lg:gap-6">
             <div>
               <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">College Name</label>
               <input 
@@ -215,14 +215,14 @@
           
           <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">College Logo</label>
-            <div class="mt-2 p-4 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700">
-              <div class="flex items-center gap-6">
+            <div class="mt-2 p-3 sm:p-4 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700">
+              <div class="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
                 <!-- Logo Preview -->
                 <div class="flex-shrink-0">
                   <div class="relative group">
                     <img 
                       :src="logoPreview || '/images/lspu_logo_better.png'" 
-                      class="w-24 h-24 rounded-full object-cover border-4 border-blue-200 shadow-md transition-all duration-200 group-hover:border-blue-300" 
+                      class="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover border-4 border-blue-200 shadow-md transition-all duration-200 group-hover:border-blue-300" 
                     />
                     <div 
                       v-if="logoPreview"
@@ -260,7 +260,7 @@
                   </div>
                   
                   <!-- Logo Guidelines -->
-                  <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                  <p class="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center sm:text-left">
                     Recommended: Square image, at least 200x200 pixels. Maximum file size: 2MB. Leave empty to use default logo.
                   </p>
                 </div>
@@ -294,8 +294,8 @@
     </Modal>
 
     <!-- Edit Modal -->
-    <Modal :show="isEditModalOpen" @close="isEditModalOpen = false" :closeable="true" max-width="md">
-      <div class="p-4 sm:p-6">
+    <Modal :show="isEditModalOpen" @close="isEditModalOpen = false" :closeable="true" max-width="lg">
+      <div class="p-3 sm:p-4 lg:p-6 max-h-[90vh] overflow-y-auto">
         <div class="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-3 mb-4 sm:mb-6">
           <h2 class="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -310,8 +310,8 @@
           </button>
         </div>
         
-        <form @submit.prevent="handleEditSubmit" class="space-y-4 sm:space-y-6">
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+        <form @submit.prevent="handleEditSubmit" class="space-y-3 sm:space-y-4 lg:space-y-6">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 lg:gap-6">
             <div>
               <label for="edit-name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">College Name</label>
               <input 
@@ -350,14 +350,14 @@
           
           <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">College Logo</label>
-            <div class="mt-2 p-4 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700">
-              <div class="flex items-center gap-6">
+            <div class="mt-2 p-3 sm:p-4 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700">
+              <div class="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
                 <!-- Logo Preview -->
                 <div class="flex-shrink-0">
                   <div class="relative group">
                     <img 
                       :src="editLogoPreview || getCollegeLogo(collegeToEdit?.acronym, collegeToEdit?.logo_path)" 
-                      class="w-24 h-24 rounded-full object-cover border-4 border-blue-200 shadow-md transition-all duration-200 group-hover:border-blue-300" 
+                      class="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover border-4 border-blue-200 shadow-md transition-all duration-200 group-hover:border-blue-300" 
                     />
                     <div 
                       v-if="editLogoPreview || collegeToEdit?.logo_path"
@@ -395,7 +395,7 @@
                   </div>
                   
                   <!-- Logo Guidelines -->
-                  <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                  <p class="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center sm:text-left">
                     Recommended: Square image, at least 200x200 pixels. Maximum file size: 2MB. Leave empty to keep current logo.
                   </p>
                 </div>
@@ -430,7 +430,7 @@
 
     <!-- Delete Confirmation Modal -->
     <Modal :show="isDeleteModalOpen" @close="isDeleteModalOpen = false" :closeable="true" max-width="md">
-      <div class="p-4 sm:p-6">
+      <div class="p-3 sm:p-4 lg:p-6 max-h-[90vh] overflow-y-auto">
         <div class="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-3 mb-4 sm:mb-6">
           <h2 class="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-red-500 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -445,25 +445,25 @@
           </button>
         </div>
         
-        <div class="flex flex-col items-center justify-center min-h-[180px]">
+        <div class="flex flex-col items-center justify-center min-h-[120px] sm:min-h-[180px]">
           <!-- Warning Icon -->
-          <div class="mb-6">
-            <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 dark:bg-red-900">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div class="mb-4 sm:mb-6">
+            <div class="mx-auto flex items-center justify-center h-12 w-12 sm:h-16 sm:w-16 rounded-full bg-red-100 dark:bg-red-900">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 sm:h-8 sm:w-8 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
               </svg>
             </div>
           </div>
           
           <!-- Warning Message -->
-          <div class="text-center mb-6">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+          <div class="text-center mb-4 sm:mb-6">
+            <h3 class="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
               Delete College
             </h3>
-            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+            <p class="text-sm text-gray-600 dark:text-gray-400 mb-3 sm:mb-4 px-2">
               Are you sure you want to delete <span class="font-bold text-red-600 dark:text-red-400">{{ collegeToDelete ? collegeToDelete.name : '' }}</span>?
             </p>
-            <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+            <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3 sm:p-4">
               <div class="flex items-start">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500 dark:text-red-400 mt-0.5 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
