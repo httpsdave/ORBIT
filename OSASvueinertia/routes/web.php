@@ -20,6 +20,33 @@ use App\Models\User;
 use App\Models\Role;
 use App\Http\Controllers\ArchiveController;
 
+// Cookie reset route to clear corrupted browser cookies - IMPORTANT FOR 419 FIXES
+Route::get('/clear-cookies', function () {
+    $response = redirect('/login')->with('message', 'Cookies cleared! Please try logging in again.');
+    
+    // Clear all possible corrupted session cookies
+    $cookieOptions = [
+        'path' => '/',
+        'domain' => config('session.domain'),
+        'secure' => config('session.secure'),
+        'httpOnly' => true,
+        'sameSite' => config('session.same_site'),
+    ];
+    
+    // Force expire all session-related cookies
+    $response->withCookie(cookie('laravel_session', '', -1, ...array_values($cookieOptions)));
+    $response->withCookie(cookie('orbit_session', '', -1, ...array_values($cookieOptions)));
+    $response->withCookie(cookie('XSRF-TOKEN', '', -1, '/', config('session.domain'), false, false));
+    
+    // Also regenerate the session if it exists
+    if (request()->session()->isStarted()) {
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+    }
+    
+    return $response;
+})->name('clear.cookies');
+
 // Debug route to test Railway SSL configuration
 Route::get('/debug-config', function () {
     return response()->json([
@@ -37,7 +64,10 @@ Route::get('/debug-config', function () {
             'SERVER_PORT' => $_SERVER['SERVER_PORT'] ?? 'not set',
             'HTTP_X_FORWARDED_PROTO' => $_SERVER['HTTP_X_FORWARDED_PROTO'] ?? 'not set',
             'HTTP_X_FORWARDED_SSL' => $_SERVER['HTTP_X_FORWARDED_SSL'] ?? 'not set',
-        ]
+        ],
+        'session_started' => request()->session()->isStarted(),
+        'csrf_token' => csrf_token(),
+        'cookies' => request()->cookies->all(),
     ]);
 })->name('debug.config');
 
