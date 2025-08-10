@@ -151,7 +151,7 @@ const submit = () => {
     <div class="section">
         <p class="mb-1">Sir:</p>
         
-        <p class="indented">The <span class="blank-line text-center border-b border-black min-w-[200px] inline-block">{{ form.organization_name }}</span> wishes to seek renewal of its recognition to function as a Student Organization in the College of <span class="blank-line text-center border-b border-black min-w-[200px] inline-block">{{ form.college }}</span> for Academic Year 20<span class="blank-line text-center border-b border-black inline-block" style="min-width: 50px">{{ form.academic_year_start }}</span>-20<span class="blank-line text-center border-b border-black inline-block" style="min-width: 50px">{{ form.academic_year_end }}</span>.</p>
+        <p class="indented">The <span class="blank-line">{{ form.organization_name }}</span> wishes to seek renewal of its recognition to function as a Student Organization in the College of <span class="blank-line">{{ form.college }}</span> for Academic Year 20<span class="blank-line year">{{ form.academic_year_start }}</span>-20<span class="blank-line year">{{ form.academic_year_end }}</span>.</p>
         
         <p class="indented">In this connection, we respectfully request your good office to grant us permission to operate in our institution, subject to the existing rules & regulation of our University.</p>
         
@@ -161,27 +161,27 @@ const submit = () => {
     <div class="section text-right">
         <p class="mb-1">Very respectfully yours,</p>
         <div class="signature">
-            <p class="mb-0"><span class="signature-line text-center border-b border-black min-w-[250px] inline-block">{{ form.president_name }}</span></p>
+            <p class="mb-0"><span class="signature-line">{{ form.president_name }}</span></p>
             <p class="mb-0">Organization President</p>
         </div>
     </div>
 
     <div class="section text-center">
-        <p class="mb-0"><span class="signature-line text-center border-b border-black min-w-[250px] inline-block">{{ form.organization_name }}</span></p>
+        <p class="mb-0"><span class="signature-line">{{ form.organization_name }}</span></p>
         <p class="mb-0">Name of Organization</p>
     </div>
 
     <div class="section text-left">
         <p class="mb-1">Noted:</p>
         <div class="signature">
-            <p class="mb-0"><span class="signature-line text-center border-b border-black min-w-[250px] inline-block">{{ form.adviser_name }}</span></p>
+            <p class="mb-0"><span class="signature-line">{{ form.adviser_name }}</span></p>
             <p class="mb-0">Adviser's Student Organization</p>
         </div>
     </div>
 
     <div class="section text-right">
         <div class="signature">
-            <p class="mb-0"><span class="signature-line text-center border-b border-black min-w-[250px] inline-block">{{ form.dean_name }}</span></p>
+            <p class="mb-0"><span class="signature-line">{{ form.dean_name }}</span></p>
             <p class="mb-0">Dean/Assoc. Dean of College</p>
         </div>
     </div>
@@ -189,7 +189,7 @@ const submit = () => {
     <div class="section text-center">
         <p class="mb-1">Recommending Approval:</p>
         <div class="signature">
-            <p class="mb-0"><span class="signature-line text-center border-b border-black min-w-[250px] inline-block">{{ form.coordinator_name }}</span></p>
+            <p class="mb-0"><span class="signature-line">{{ form.coordinator_name }}</span></p>
             <p class="mb-0">Coordinator, Student Organization Unit</p>
         </div>
     </div>
@@ -197,7 +197,7 @@ const submit = () => {
     <div class="section text-center">
         <p class="mb-1">Approved / Disapproved:</p>
         <div class="signature">
-            <p class="mb-0"><span class="signature-line text-center border-b border-black min-w-[250px] inline-block">{{ form.director_name }}</span></p>
+            <p class="mb-0"><span class="signature-line">{{ form.director_name }}</span></p>
             <p class="mb-0">Chairperson, Office of Student Affairs and Services</p>
         </div>
     </div>
@@ -222,13 +222,29 @@ const submit = () => {
 
               <div>
                   <label class="block font-bold">Academic Year Start</label>
-                  <input v-model="form.academic_year_start" class="border p-2 w-full" required placeholder="23">
+                  <input 
+                    v-model="form.academic_year_start" 
+                    class="border p-2 w-full" 
+                    required 
+                    placeholder="23"
+                    autocomplete="off"
+                    maxlength="2"
+                    type="text"
+                  >
                   <p v-if="errors.academic_year_start" class="text-red-500 text-sm mt-1">{{ errors.academic_year_start }}</p>
               </div>
 
               <div>
                   <label class="block font-bold">Academic Year End</label>
-                  <input v-model="form.academic_year_end" class="border p-2 w-full" required placeholder="24">
+                  <input 
+                    v-model="form.academic_year_end" 
+                    class="border p-2 w-full" 
+                    required 
+                    placeholder="24"
+                    autocomplete="off"
+                    maxlength="2"
+                    type="text"
+                  >
                   <p v-if="errors.academic_year_end" class="text-red-500 text-sm mt-1">{{ errors.academic_year_end }}</p>
               </div>
 
@@ -287,3 +303,89 @@ const submit = () => {
     </div>
 </div>
 </template>
+
+<style scoped>
+/* Set Font to Times New Roman, Font Size to 10pt, and Line Spacing to 1.0 */
+.form-content {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 10pt;
+    line-height: 1.0;
+}
+
+.indented {
+    text-indent: 1.27cm;
+}
+
+.blank-line {
+    display: inline-block;
+    min-width: 200px;
+    border-bottom: 1px solid black;
+    padding-bottom: 2px;
+    text-align: center;
+    background: transparent;
+    position: relative;
+    z-index: 1;
+}
+
+.blank-line.year {
+    min-width: 50px;
+}
+
+.signature-line {
+    display: inline-block;
+    min-width: 250px;
+    border-bottom: 1px solid black;
+    padding-bottom: 2px;
+    text-align: center;
+    background: transparent;
+}
+
+/* Prevent autocomplete dropdowns and overlays */
+input[autocomplete="off"]::-webkit-contacts-auto-fill-button,
+input[autocomplete="off"]::-webkit-credentials-auto-fill-button {
+    display: none !important;
+}
+
+input[autocomplete="off"]::-webkit-textfield-decoration-container {
+    display: none !important;
+}
+
+/* Remove any webkit autofill styling */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px white inset !important;
+    -webkit-text-fill-color: black !important;
+    background-color: transparent !important;
+    background-image: none !important;
+}
+
+/* Ensure no overlay appears on focus */
+input:focus {
+    outline: 2px solid #2563eb;
+    outline-offset: -2px;
+    box-shadow: none !important;
+    background: white !important;
+}
+
+/* Remove any datalist styling that might cause overlays */
+input::-webkit-calendar-picker-indicator {
+    display: none !important;
+}
+
+input::-webkit-list-button {
+    display: none !important;
+}
+
+/* Ensure proper printing */
+@media print {
+    .form-content {
+        page-break-before: always;
+    }
+    
+    .blank-line, .signature-line {
+        background: transparent !important;
+    }
+}
+</style>
