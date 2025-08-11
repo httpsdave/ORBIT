@@ -269,7 +269,7 @@ const formatType = (type) => {
 
             <!-- Notification Popup Modal -->
             <div v-if="showModal" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-              <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+              <div class="flex items-center justify-center min-h-screen px-4 py-4 text-center">
                 <!-- Background overlay -->
                 <div 
                   class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" 
@@ -278,7 +278,7 @@ const formatType = (type) => {
                 ></div>
 
                 <!-- Modal panel -->
-                <div class="inline-block align-middle bg-white dark:bg-gray-800 rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full mx-auto">
+                <div class="relative inline-block align-middle bg-white dark:bg-gray-800 rounded-xl text-left overflow-hidden shadow-xl transform transition-all w-full max-w-lg mx-auto">
                   <!-- Header with close button -->
                   <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 flex items-center justify-between border-b border-gray-200 dark:border-gray-600">
                     <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100 truncate pr-4" id="modal-title">
@@ -347,7 +347,7 @@ const formatType = (type) => {
                           {{ selectedNotification.created_at }}
                         </p>
                         <div class="prose prose-sm max-w-none">
-                          <p class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                          <p class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">
                             {{ selectedNotification.message }}
                           </p>
                         </div>

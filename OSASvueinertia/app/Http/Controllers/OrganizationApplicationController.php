@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\OrganizationApplication;
+use App\Models\Notification;
 use App\Services\FormDataService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -750,6 +751,10 @@ class OrganizationApplicationController extends Controller
         'feedback' => 'nullable|string|max:1000',
     ]);
 
+    // Store the old status and feedback to check what changed
+    $oldStatus = $application->status;
+    $oldFeedback = $application->feedback;
+    
     $application->status = $validated['status'];  // Use validated data
     
     if (!empty($validated['feedback'])) {
@@ -760,6 +765,18 @@ class OrganizationApplicationController extends Controller
     $application->reviewed_at = now();
     
     $application->save();
+
+    // Create notifications based on what changed
+    $statusChanged = $oldStatus !== $validated['status'];
+    $feedbackChanged = !empty($validated['feedback']) && $oldFeedback !== $validated['feedback'];
+    
+    if ($statusChanged) {
+        // Status changed - create status change notification (includes feedback if provided)
+        $this->createStatusChangeNotification($application, $validated['status'], $validated['feedback'] ?? null);
+    } elseif ($feedbackChanged) {
+        // Only feedback changed - create feedback notification
+        $this->createFeedbackNotification($application, $validated['feedback']);
+    }
 
     if ($request->expectsJson()) {
         return response()->json([
@@ -789,8 +806,16 @@ class OrganizationApplicationController extends Controller
             'feedback' => 'required|string|max:1000',
         ]);
 
+        // Store old feedback to check if it changed
+        $oldFeedback = $application->feedback;
+        
         $application->feedback = $request->feedback;
         $application->save();
+
+        // Create notification for new feedback (if it's different from old feedback)
+        if ($oldFeedback !== $request->feedback && auth()->user()->isAdmin()) {
+            $this->createFeedbackNotification($application, $request->feedback);
+        }
 
         if ($request->expectsJson()) {
             return response()->json([
@@ -1303,5 +1328,127 @@ class OrganizationApplicationController extends Controller
             return redirect()->route('applications.index')->with('success', 'Application submitted successfully!');
         }
         return redirect()->route('applications.index')->with('success', 'Application submitted successfully!');
+    }
+
+    /**
+     * Create automatic notification when application status changes
+     */
+    private function createStatusChangeNotification($application, $newStatus, $feedback = null)
+    {
+        // Get form type name for the notification
+        $formTypeNames = [
+            'LSPU-OSAS-SF-001' => 'Organization Recognition',
+            'LSPU-OSAS-SF-002' => 'Renewal Application',
+            'LSPU-OSAS-SF-003' => 'Commitment Form',
+            'LSPU-OSAS-SF-004' => 'Plan of Activities',
+            'LSPU-OSAS-SF-005' => 'Members List',
+            'LSPU-OSAS-SF-006' => 'Certification Form',
+            'LSPU-OSAS-SF-007' => 'Officers List',
+            'LSPU-OSAS-SF-009' => 'Student Activity Attendance Sheet',
+            'LSPU-OSAS-SF-EVAL' => 'Evaluation Summary',
+            'LSPU-OSAS-SF-ACCOMPLISHMENT' => 'Accomplishment Report',
+            'LSPU-OSAS-SF-NARRATIVE' => 'Narrative Report',
+            'LSPU-OSAS-SF-BYLAWS' => 'Constitution & By-Laws',
+            'LSPU-OSAS-SF-FINANCIAL' => 'Financial Report',
+            'LSPU-ACAD-RL' => 'Event Letter',
+        ];
+
+        $formTypeName = $formTypeNames[$application->form_type] ?? $application->form_type;
+
+        // Determine notification type and message based on status
+        switch (strtolower($newStatus)) {
+            case 'approved':
+                $notificationType = 'success';
+                $title = 'Application Approved';
+                $message = "Great news! Your {$formTypeName} has been approved!";
+                if ($feedback) {
+                    $message .= "\n\nFeedback: {$feedback}";
+                }
+                break;
+
+            case 'disapproved':
+                $notificationType = 'info';
+                $title = 'Application Disapproved';
+                $message = "Your {$formTypeName} has been disapproved.";
+                if ($feedback) {
+                    $message .= "\n\nFeedback: {$feedback}";
+                } else {
+                    $message .= " Please check your application details and contact us if you have any questions.";
+                }
+                break;
+
+            case 'pending':
+                $notificationType = 'info';
+                $title = 'Application Status Update';
+                $message = "Your {$formTypeName} status has been updated to pending review.";
+                if ($feedback) {
+                    $message .= "\n\nFeedback: {$feedback}";
+                }
+                break;
+
+            default:
+                return; // Don't create notification for unknown status
+        }
+
+        // Create the notification
+        $notification = Notification::create([
+            'title' => $title,
+            'message' => $message,
+            'type' => $notificationType,
+            'is_active' => true,
+        ]);
+
+        // Attach the notification to the specific user
+        $notification->users()->attach($application->user_id, [
+            'is_read' => false,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+    }
+
+    /**
+     * Create notification specifically for feedback updates
+     */
+    private function createFeedbackNotification($application, $feedback)
+    {
+        // Get form type name for the notification
+        $formTypeNames = [
+            'LSPU-OSAS-SF-001' => 'Organization Recognition',
+            'LSPU-OSAS-SF-002' => 'Renewal Application',
+            'LSPU-OSAS-SF-003' => 'Commitment Form',
+            'LSPU-OSAS-SF-004' => 'Plan of Activities',
+            'LSPU-OSAS-SF-005' => 'Members List',
+            'LSPU-OSAS-SF-006' => 'Certification Form',
+            'LSPU-OSAS-SF-007' => 'Officers List',
+            'LSPU-OSAS-SF-009' => 'Student Activity Attendance Sheet',
+            'LSPU-OSAS-SF-EVAL' => 'Evaluation Summary',
+            'LSPU-OSAS-SF-ACCOMPLISHMENT' => 'Accomplishment Report',
+            'LSPU-OSAS-SF-NARRATIVE' => 'Narrative Report',
+            'LSPU-OSAS-SF-BYLAWS' => 'Constitution & By-Laws',
+            'LSPU-OSAS-SF-FINANCIAL' => 'Financial Report',
+            'LSPU-ACAD-RL' => 'Event Letter',
+        ];
+
+        $formTypeName = $formTypeNames[$application->form_type] ?? $application->form_type;
+
+        // Create feedback notification
+        $title = 'New Feedback Received';
+        $message = "You have received new feedback for your {$formTypeName}.";
+        $message .= "\n\nFeedback: {$feedback}";
+
+        // Create the notification
+        $notification = Notification::create([
+            'title' => $title,
+            'message' => $message,
+            'type' => 'info',
+            'is_active' => true,
+        ]);
+
+        // Attach the notification to the specific user
+        $notification->users()->attach($application->user_id, [
+            'is_read' => false,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
     }
 }

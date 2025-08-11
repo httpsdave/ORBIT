@@ -546,7 +546,7 @@ watch(showSignedDocumentModal, (val) => {
             </svg>
             Upload Document
           </button>
-          <button v-if="app.signed_document_path" @click="activeMobileDropdownId = null; deleteDocument(app.id)" class="w-full text-left px-2 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200">
+          <button v-if="app.signed_document_path && app.status.toLowerCase() !== 'approved'" @click="activeMobileDropdownId = null; deleteDocument(app.id)" class="w-full text-left px-2 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-orange-600" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zm3 8a1 1 0 11-2 0 1 1 0 012 0zm-8 2a1 1 0 100 2h10a1 1 0 100-2H4z" clip-rule="evenodd" />
             </svg>
@@ -688,9 +688,9 @@ watch(showSignedDocumentModal, (val) => {
           </svg>
           Upload Document
         </button>
-        <!-- Delete document option (only if signed_document_path exists) -->
+        <!-- Delete document option (only if signed_document_path exists and status is not approved) -->
         <button 
-          v-if="activeDropdownApp.signed_document_path"
+          v-if="activeDropdownApp.signed_document_path && activeDropdownApp.status.toLowerCase() !== 'approved'"
           @click="deleteDocument(activeDropdownApp.id)"
           class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200 font-medium"
         >
