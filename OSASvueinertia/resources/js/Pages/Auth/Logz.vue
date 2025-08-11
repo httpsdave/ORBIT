@@ -101,7 +101,7 @@ onBeforeUnmount(() => {
     <!-- Full screen container with split layout -->
     <div class="min-h-screen flex relative overflow-hidden">
         <!-- Background slideshow for left side -->
-        <div class="absolute inset-0 right-24 md:right-36 lg:right-48 z-0">
+        <div class="absolute inset-0 right-20 sm:right-24 md:right-32 lg:right-40 xl:right-48 z-0">
             <transition-group name="fade">
                 <div 
                     v-for="(image, index) in slideshowImages" 
@@ -117,17 +117,17 @@ onBeforeUnmount(() => {
         </div>
         
         <!-- Left side - Main content area -->
-        <div class="flex-1 relative z-20 flex items-center justify-end pr-8 md:pr-16 lg:pr-24 pl-8 md:pl-16">
+        <div class="flex-1 relative z-20 flex items-center justify-center sm:justify-end px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
             <!-- Content container positioned to the right -->
             <div 
                 ref="formElement"
-                class="w-full max-w-lg opacity-0 transition-all duration-700 ml-auto"
+                class="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg opacity-0 transition-all duration-700 sm:ml-auto"
                 :class="isDarkMode ? 'text-white' : 'text-gray-100'"
             >
                 <!-- Header section -->
-                <div class="mb-8 md:mb-12">
+                <div class="mb-6 sm:mb-8 md:mb-10 lg:mb-12 text-center sm:text-left">
                     <!-- Main heading -->
-                    <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-3" :class="isDarkMode ? 'text-white' : 'text-white'">
+                    <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3" :class="isDarkMode ? 'text-white' : 'text-white'">
                         Welcome to
                         <span class="block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-green-400">
                             LSPU ORBIT
@@ -135,7 +135,7 @@ onBeforeUnmount(() => {
                     </h1>
                     
                     <!-- Colored accent line -->
-                    <div class="flex mb-4 w-32">
+                    <div class="flex mb-4 w-24 sm:w-32 mx-auto sm:mx-0">
                         <div class="w-1/4 h-1 bg-blue-500"></div>
                         <div class="w-1/4 h-1 bg-green-500"></div>
                         <div class="w-1/4 h-1 bg-blue-500"></div>
@@ -143,15 +143,15 @@ onBeforeUnmount(() => {
                     </div>
                     
                     <!-- Subtitle -->
-                    <p class="text-base md:text-lg leading-relaxed" :class="isDarkMode ? 'text-gray-300' : 'text-gray-200'">
+                    <p class="text-sm sm:text-base md:text-lg leading-relaxed" :class="isDarkMode ? 'text-gray-300' : 'text-gray-200'">
                         Sign in to access your account and manage your organization activities.
                     </p>
                 </div>
                 
                 <!-- Status message -->
-                <div v-if="status" class="mb-6 p-4 bg-green-500 bg-opacity-20 border-l-4 border-green-500 text-green-400 text-sm font-medium animate-fadeIn backdrop-blur-sm rounded-r-lg">
+                <div v-if="status" class="mb-4 sm:mb-6 p-3 sm:p-4 bg-green-500 bg-opacity-20 border-l-4 border-green-500 text-green-400 text-xs sm:text-sm font-medium animate-fadeIn backdrop-blur-sm rounded-r-lg">
                     <div class="flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-3 flex-shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 sm:mr-3 flex-shrink-0">
                             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                             <polyline points="22,4 12,14.01 9,11.01"></polyline>
                         </svg>
@@ -160,14 +160,14 @@ onBeforeUnmount(() => {
                 </div>
 
                 <!-- Form -->
-                <form @submit.prevent="submit" class="space-y-6" novalidate>
+                <form @submit.prevent="submit" class="space-y-4 sm:space-y-6" novalidate>
                     <div>
-                        <label for="email" class="block text-sm font-medium mb-3" :class="isDarkMode ? 'text-gray-300' : 'text-gray-200'">
+                        <label for="email" class="block text-xs sm:text-sm font-medium mb-2 sm:mb-3" :class="isDarkMode ? 'text-gray-300' : 'text-gray-200'">
                             Email Address
                         </label>
                         <div class="relative group">
-                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-focus-within:text-blue-400 transition-colors duration-300" :class="isDarkMode ? 'text-gray-500' : 'text-gray-400'">
+                            <div class="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-focus-within:text-blue-400 transition-colors duration-300" :class="isDarkMode ? 'text-gray-500' : 'text-gray-400'">
                                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                                     <circle cx="12" cy="7" r="4"></circle>
                                 </svg>
@@ -175,7 +175,7 @@ onBeforeUnmount(() => {
                             <TextInput
                                 id="email"
                                 type="email"
-                                class="pl-12 pr-4 py-4 text-base rounded-lg w-full border-0 focus:border-blue-400 focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 transition-all duration-300 bg-white bg-opacity-10 backdrop-blur-sm text-white placeholder-gray-300"
+                                class="pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 text-sm sm:text-base rounded-lg w-full border-0 focus:border-blue-400 focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 transition-all duration-300 bg-white bg-opacity-10 backdrop-blur-sm text-white placeholder-gray-300"
                                 v-model="form.email"
                                 placeholder="Enter your email address"
                                 required
@@ -188,12 +188,12 @@ onBeforeUnmount(() => {
                     </div>
 
                     <div>
-                        <label for="password" class="block text-sm font-medium mb-3" :class="isDarkMode ? 'text-gray-300' : 'text-gray-200'">
+                        <label for="password" class="block text-xs sm:text-sm font-medium mb-2 sm:mb-3" :class="isDarkMode ? 'text-gray-300' : 'text-gray-200'">
                             Password
                         </label>
                         <div class="relative group">
-                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-focus-within:text-blue-400 transition-colors duration-300" :class="isDarkMode ? 'text-gray-500' : 'text-gray-400'">
+                            <div class="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-focus-within:text-blue-400 transition-colors duration-300" :class="isDarkMode ? 'text-gray-500' : 'text-gray-400'">
                                     <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                                     <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                                 </svg>
@@ -202,7 +202,7 @@ onBeforeUnmount(() => {
                                 id="password"
                                 :type="passwordVisible ? 'text' : 'password'"
                                 :class="[
-                                    'pl-12 pr-12 py-4 text-base rounded-lg w-full border-0 focus:border-blue-400 focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 transition-all duration-300 backdrop-blur-sm',
+                                    'pl-10 sm:pl-12 pr-10 sm:pr-12 py-3 sm:py-4 text-sm sm:text-base rounded-lg w-full border-0 focus:border-blue-400 focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 transition-all duration-300 backdrop-blur-sm',
                                     isDarkMode 
                                         ? 'bg-white bg-opacity-10 text-white placeholder-gray-300' 
                                         : 'bg-gray-800 bg-opacity-80 text-white placeholder-gray-400'
@@ -216,15 +216,15 @@ onBeforeUnmount(() => {
                             <button 
                                 type="button" 
                                 @click="togglePasswordVisibility" 
-                                class="absolute inset-y-0 right-0 pr-4 flex items-center hover:text-blue-400 transition-colors duration-300"
+                                class="absolute inset-y-0 right-0 pr-3 sm:pr-4 flex items-center hover:text-blue-400 transition-colors duration-300"
                                 :class="isDarkMode ? 'text-gray-500' : 'text-gray-400'"
                                 aria-label="Toggle password visibility"
                             >
-                                <svg v-if="!passwordVisible" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <svg v-if="!passwordVisible" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                                     <circle cx="12" cy="12" r="3"></circle>
                                 </svg>
-                                <svg v-else xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <svg v-else xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
                                     <line x1="1" y1="1" x2="23" y2="23"></line>
                                 </svg>
@@ -234,7 +234,7 @@ onBeforeUnmount(() => {
                     </div>
 
                     <!-- Remember me and forgot password -->
-                    <div class="flex items-center justify-between">
+                    <div class="flex flex-col space-y-3 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
                         <label class="flex items-center group cursor-pointer">
                             <Checkbox 
                                 name="remember" 
@@ -242,7 +242,7 @@ onBeforeUnmount(() => {
                                 class="text-blue-500 rounded focus:ring-blue-500 border-gray-400" 
                             />
                             <span 
-                                class="ml-3 text-sm group-hover:text-gray-200 transition-colors duration-300" 
+                                class="ml-2 sm:ml-3 text-xs sm:text-sm group-hover:text-gray-200 transition-colors duration-300" 
                                 :class="isDarkMode ? 'text-gray-400' : 'text-gray-300'"
                             >
                                 Remember me
@@ -252,7 +252,7 @@ onBeforeUnmount(() => {
                         <Link
                             v-if="canResetPassword"
                             :href="route('password.request')"
-                            class="text-sm hover:text-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 rounded-md transition duration-300"
+                            class="text-xs sm:text-sm hover:text-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 rounded-md transition duration-300"
                             :class="isDarkMode ? 'text-gray-400' : 'text-gray-300'"
                         >
                             Forgot Password?
@@ -260,10 +260,10 @@ onBeforeUnmount(() => {
                     </div>
 
                     <!-- Action buttons -->
-                    <div class="space-y-4">
+                    <div class="space-y-3 sm:space-y-4">
                         <button
                             type="submit"
-                            class="w-full text-white font-semibold py-4 px-6 rounded-lg transition-all duration-300 flex items-center justify-center relative overflow-hidden group shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 transform hover:scale-105"
+                            class="w-full text-white font-semibold py-3 sm:py-4 px-4 sm:px-6 rounded-lg transition-all duration-300 flex items-center justify-center relative overflow-hidden group shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 transform hover:scale-105"
                             :class="[
                                 isDarkMode 
                                     ? 'bg-gradient-to-r from-blue-500 to-green-600 hover:from-blue-400 hover:to-green-500' 
@@ -275,13 +275,13 @@ onBeforeUnmount(() => {
                         >
                             <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
                             <span v-if="isLoading" class="absolute inset-0 flex items-center justify-center">
-                                <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <svg class="animate-spin h-4 w-4 sm:h-5 sm:w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                 </svg>
                             </span>
-                            <span :class="{ 'opacity-0': isLoading }" class="flex items-center relative z-10">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-3">
+                            <span :class="{ 'opacity-0': isLoading }" class="flex items-center relative z-10 text-sm sm:text-base">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 sm:mr-3">
                                     <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
                                     <polyline points="10 17 15 12 10 7"></polyline>
                                     <line x1="15" y1="12" x2="3" y2="12"></line>
@@ -293,7 +293,7 @@ onBeforeUnmount(() => {
                 </form>
                 
                 <!-- Footer info -->
-                <div class="mt-12 pt-6 border-t border-white border-opacity-20">
+                <div class="mt-8 sm:mt-12 pt-4 sm:pt-6 border-t border-white border-opacity-20 text-center sm:text-left">
                     <p class="text-xs" :class="isDarkMode ? 'text-gray-400' : 'text-gray-300'">
                         Account access is managed by administrators. Contact your administrator for assistance.
                     </p>
@@ -306,7 +306,7 @@ onBeforeUnmount(() => {
         
         <!-- Right side - Wide gradient panel -->
         <div 
-            class="w-24 md:w-36 lg:w-48 flex-shrink-0 relative overflow-hidden transition-all duration-1000 ease-in-out"
+            class="w-20 sm:w-24 md:w-32 lg:w-40 xl:w-48 flex-shrink-0 relative overflow-hidden transition-all duration-1000 ease-in-out"
             :class="[
                 isDarkMode 
                     ? gradientIndex === 0 
@@ -327,27 +327,27 @@ onBeforeUnmount(() => {
             </div>
             
             <!-- Vertical logo and text -->
-            <div class="absolute inset-0 flex flex-col items-center justify-center text-white p-3">
-                <div class="mb-6 lg:mb-12">
-                    <img src="/images/lspu_logo_better.png" alt="LSPU Logo" class="w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 object-cover filter drop-shadow-lg">
+            <div class="absolute inset-0 flex flex-col items-center justify-center text-white p-2 sm:p-3">
+                <div class="mb-4 sm:mb-6 lg:mb-8 xl:mb-12">
+                    <img src="/images/lspu_logo_better.png" alt="LSPU Logo" class="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 xl:w-24 xl:h-24 object-cover filter drop-shadow-lg">
                 </div>
                 
                 <!-- Vertical text -->
                 <div class="writing-mode-vertical text-center">
-                    <div class="text-base md:text-lg lg:text-xl font-bold mb-3 tracking-widest transform rotate-180" style="writing-mode: vertical-rl;">
+                    <div class="text-sm sm:text-base md:text-lg lg:text-xl font-bold mb-2 sm:mb-3 tracking-widest transform rotate-180" style="writing-mode: vertical-rl;">
                         LOGIN
                     </div>
-                    <div class="w-0.5 h-10 bg-white opacity-70 mx-auto mb-3"></div>
-                    <div class="text-sm md:text-base lg:text-lg font-medium tracking-widest transform rotate-180" style="writing-mode: vertical-rl;">
+                    <div class="w-0.5 h-6 sm:h-8 lg:h-10 bg-white opacity-70 mx-auto mb-2 sm:mb-3"></div>
+                    <div class="text-xs sm:text-sm md:text-base lg:text-lg font-medium tracking-widest transform rotate-180" style="writing-mode: vertical-rl;">
                         ACCESS
                     </div>
                 </div>
             </div>
             
             <!-- Top social link -->
-            <div class="absolute top-4 left-0 right-0 flex justify-center">
-                <a href="https://www.facebook.com/SPCC.OSAS" target="_blank" rel="noopener noreferrer" class="bg-white bg-opacity-20 backdrop-blur-sm hover:bg-opacity-40 p-2 rounded-full transition-all duration-300 hover:scale-110" aria-label="Facebook">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white">
+            <div class="absolute top-3 sm:top-4 left-0 right-0 flex justify-center">
+                <a href="https://www.facebook.com/SPCC.OSAS" target="_blank" rel="noopener noreferrer" class="bg-white bg-opacity-20 backdrop-blur-sm hover:bg-opacity-40 p-1.5 sm:p-2 rounded-full transition-all duration-300 hover:scale-110" aria-label="Facebook">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white">
                         <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
                     </svg>
                 </a>
@@ -355,12 +355,12 @@ onBeforeUnmount(() => {
         </div>
         
         <!-- Slideshow navigation - Top left corner -->
-        <div class="absolute top-6 left-6 flex space-x-2 z-30">
+        <div class="absolute top-4 sm:top-6 left-4 sm:left-6 flex space-x-1.5 sm:space-x-2 z-30">
             <button 
                 v-for="(_, index) in slideshowImages" 
                 :key="index"
                 @click="activeSlide = index" 
-                class="w-2 h-2 rounded-full transition-all duration-300"
+                class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full transition-all duration-300"
                 :class="[
                     activeSlide === index 
                         ? 'bg-blue-400 scale-125' 
@@ -371,7 +371,7 @@ onBeforeUnmount(() => {
         </div>
         
         <!-- Gradient indicator - Bottom right -->
-        <div class="absolute bottom-6 right-6 w-4 h-4 rounded-full transition-all duration-1000 ease-in-out z-30" 
+        <div class="absolute bottom-4 sm:bottom-6 right-4 sm:right-6 w-3 h-3 sm:w-4 sm:h-4 rounded-full transition-all duration-1000 ease-in-out z-30" 
              :class="gradientIndex === 0 ? 'bg-blue-400' : 'bg-green-400'"></div>
     </div>
 </template>
