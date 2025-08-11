@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full pb-8">
+  <div class="w-full pb-4 sm:pb-8 px-2 sm:px-0">
   <!-- Colored banner -->
   <div class="flex w-full mb-4 overflow-hidden rounded-lg shadow-sm">
     <div class="w-1/4 h-1.5 bg-blue-500 " style="animation-delay: 0.2s;"></div>
@@ -8,9 +8,9 @@
     <div class="w-1/4 h-1.5 bg-red-500 " style="animation-delay: 0.8s;"></div>
   </div>
   
-  <h1 class="text-2xl font-bold mb-6 text-gray-800 dark:text-gray-100">Event Calendar</h1>
+  <h1 class="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-gray-800 dark:text-gray-100 px-2 sm:px-0">Event Calendar</h1>
   
-  <div class="mb-6 grid gap-6 md:grid-cols-2">
+  <div class="mb-4 sm:mb-6 grid gap-4 sm:gap-6 md:grid-cols-2 px-2 sm:px-0">
     <!-- Left panel - only visible to admins -->
     <div v-if="isAdmin" class="md:col-span-1">
         <div v-if="isAdmin" class="md:col-span-1">
@@ -32,8 +32,8 @@
     
 </div>
 
-<!-- View Toggle and Actions -->
-<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
+<!-- View Toggle and Actions - Mobile Optimized -->
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 gap-3 sm:gap-4 px-2 sm:px-0">
   <!-- View Toggle Switch -->
   <div class="flex items-center bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
     <button 
@@ -78,8 +78,8 @@
   </button>
 </div>
 
-  <!-- Main Content Container with 3D Flip Animation -->
-  <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden min-h-96" style="perspective: 1000px;">
+  <!-- Main Content Container with 3D Flip Animation - Mobile Optimized -->
+  <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden min-h-96 mx-2 sm:mx-0" style="perspective: 1000px;">
     <!-- Calendar View -->
     <div 
       :class="[
@@ -96,15 +96,92 @@
          ]"
          style="backface-visibility: hidden; will-change: opacity;"
        >
-        <div class="p-5">
+        <div class="p-3 sm:p-5">
           <!-- Custom calendar header with your color scheme -->
-          <div class="mb-6">
+          <div class="mb-4 sm:mb-6">
             <!-- Colored banner for the calendar -->
             <div class="flex w-full mb-4 overflow-hidden rounded-lg">
               <div class="w-1/4 h-1.5 bg-blue-500"></div>
               <div class="w-1/4 h-1.5 bg-green-500"></div>
               <div class="w-1/4 h-1.5 bg-yellow-500"></div>
               <div class="w-1/4 h-1.5 bg-red-500"></div>
+            </div>
+            
+            <!-- Date Picker for Quick Navigation - Mobile Optimized -->
+            <div class="mb-4 space-y-3">
+              <!-- Mobile: Stack everything vertically -->
+              <div class="block sm:hidden space-y-3">
+                <div class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Quick Jump:
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                  <select
+                    v-model="selectedMonth"
+                    @change="navigateToDate"
+                    class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  >
+                    <option v-for="(month, index) in months" :key="index" :value="index">
+                      {{ month }}
+                    </option>
+                  </select>
+                  <select
+                    v-model="selectedYear"
+                    @change="navigateToDate"
+                    class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  >
+                    <option v-for="year in yearOptions" :key="year" :value="year">
+                      {{ year }}
+                    </option>
+                  </select>
+                </div>
+                <button
+                  @click="goToToday"
+                  class="w-full inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200 border border-gray-300 dark:border-gray-600"
+                >
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  Go to Today
+                </button>
+              </div>
+
+              <!-- Desktop: Horizontal layout -->
+              <div class="hidden sm:flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                    Quick Jump:
+                  </label>
+                  <div class="flex items-center gap-2">
+                    <select
+                      v-model="selectedMonth"
+                      @change="navigateToDate"
+                      class="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 min-w-0"
+                    >
+                      <option v-for="(month, index) in months" :key="index" :value="index">
+                        {{ month }}
+                      </option>
+                    </select>
+                    <select
+                      v-model="selectedYear"
+                      @change="navigateToDate"
+                      class="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 min-w-0"
+                    >
+                      <option v-for="year in yearOptions" :key="year" :value="year">
+                        {{ year }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                <button
+                  @click="goToToday"
+                  class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200 whitespace-nowrap"
+                >
+                  <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  Today
+                </button>
+              </div>
             </div>
           </div>
           
@@ -724,6 +801,26 @@ export default {
     const events = ref(props.initialEvents || []);
     const displayedEvents = ref([]);
     
+    // Calendar refs and navigation
+    const fullCalendar = ref(null);
+    const selectedMonth = ref(new Date().getMonth());
+    const selectedYear = ref(new Date().getFullYear());
+    
+    // Month names for the dropdown
+    const months = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    
+    // Generate year options (current year ± 10 years)
+    const yearOptions = computed(() => {
+      const currentYear = new Date().getFullYear();
+      const years = [];
+      for (let year = currentYear - 10; year <= currentYear + 10; year++) {
+        years.push(year);
+      }
+      return years;
+    });
   
     const extractedData = ref(null);
     
@@ -852,6 +949,7 @@ export default {
       selectAllow: () => props.isAdmin, // Additional check for selection
       dateClick: handleDateClick,
       select: handleDateSelect,
+      datesSet: updateDatePickerFromCalendar, // Keep date picker in sync
       // eventDrop: handleEventDrop (no longer needed)
     });
     
@@ -1154,6 +1252,31 @@ export default {
       return dayjs(dateString).format(format);
     }
     
+    // Date navigation functions
+    function navigateToDate() {
+      if (fullCalendar.value) {
+        const targetDate = new Date(selectedYear.value, selectedMonth.value, 1);
+        fullCalendar.value.getApi().gotoDate(targetDate);
+      }
+    }
+    
+    function goToToday() {
+      if (fullCalendar.value) {
+        const today = new Date();
+        selectedMonth.value = today.getMonth();
+        selectedYear.value = today.getFullYear();
+        fullCalendar.value.getApi().today();
+      }
+    }
+    
+    function updateDatePickerFromCalendar() {
+      if (fullCalendar.value) {
+        const currentDate = fullCalendar.value.getApi().getDate();
+        selectedMonth.value = currentDate.getMonth();
+        selectedYear.value = currentDate.getFullYear();
+      }
+    }
+    
     // Functions for non-admin event details modal
     function viewEventDetails(event) {
       selectedEvent.value = event;
@@ -1418,6 +1541,16 @@ function exportPastEventsCsv(pastEvents) {
       showEventDetailsModal,
       selectedEvent,
       currentView,
+      // Date picker navigation
+      fullCalendar,
+      selectedMonth,
+      selectedYear,
+      months,
+      yearOptions,
+      navigateToDate,
+      goToToday,
+      updateDatePickerFromCalendar,
+      // Event functions
       saveEvent,
       editEvent,
       updateEvent,
@@ -1645,30 +1778,60 @@ function exportPastEventsCsv(pastEvents) {
   
   /* Fix calendar overflow on mobile */
   :deep(.fc) {
-    font-size: 0.875rem;
+    font-size: 0.75rem;
   }
   
   :deep(.fc .fc-toolbar) {
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
   }
   
   :deep(.fc .fc-toolbar-chunk) {
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  /* Make toolbar buttons smaller on mobile */
+  :deep(.fc .fc-button) {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+    min-width: auto;
+  }
+  
+  /* Improve toolbar title on mobile */
+  :deep(.fc .fc-toolbar-title) {
+    font-size: 1rem;
+    text-align: center;
+    margin: 0.25rem 0;
   }
   
   /* Ensure events are properly visible */
   :deep(.fc-event) {
-    font-size: 0.75rem;
+    font-size: 0.625rem;
     padding: 1px 2px;
+    line-height: 1.2;
+  }
+  
+  /* Better day number sizing */
+  :deep(.fc-daygrid-day-number) {
+    font-size: 0.75rem;
+    padding: 0.125rem;
+  }
+  
+  /* Improve column headers */
+  :deep(.fc-col-header-cell-cushion) {
+    font-size: 0.625rem;
+    padding: 0.25rem 0.125rem;
   }
   
   /* Fix modal positioning on mobile */
   .modal-container {
-    padding: 1rem;
-    max-height: calc(100vh - 2rem);
+    padding: 0.75rem;
+    max-height: calc(100vh - 1.5rem);
     overflow-y: auto;
   }
   
@@ -1677,6 +1840,16 @@ function exportPastEventsCsv(pastEvents) {
     min-height: auto !important;
     height: auto !important;
     overflow: visible !important;
+  }
+  
+  /* Improve calendar cell sizing */
+  :deep(.fc-daygrid-day) {
+    min-height: 2rem;
+  }
+  
+  /* Better spacing for day content */
+  :deep(.fc-daygrid-day-frame) {
+    min-height: 2rem;
   }
 }
 
@@ -1692,6 +1865,66 @@ function exportPastEventsCsv(pastEvents) {
     height: auto !important;
     min-height: auto !important;
   }
+  
+  /* Further reduce calendar font sizes */
+  :deep(.fc) {
+    font-size: 0.625rem;
+  }
+  
+  :deep(.fc .fc-button) {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.625rem;
+    border-radius: 0.375rem;
+  }
+  
+  :deep(.fc .fc-toolbar-title) {
+    font-size: 0.875rem;
+  }
+  
+  /* Optimize day cells for small screens */
+  :deep(.fc-daygrid-day) {
+    min-height: 1.75rem;
+  }
+  
+  :deep(.fc-daygrid-day-number) {
+    font-size: 0.625rem;
+    padding: 0.0625rem;
+  }
+  
+  :deep(.fc-col-header-cell-cushion) {
+    font-size: 0.5rem;
+    padding: 0.125rem 0.0625rem;
+  }
+  
+  /* Make events even smaller */
+  :deep(.fc-event) {
+    font-size: 0.5rem;
+    padding: 0 1px;
+    line-height: 1.1;
+  }
+  
+  /* Adjust calendar wrapper padding */
+  .calendar-wrapper {
+    padding: 0.5rem;
+  }
+}
+
+/* Landscape mobile optimization */
+@media (max-width: 768px) and (orientation: landscape) {
+  :deep(.fc .fc-toolbar) {
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+  
+  :deep(.fc .fc-toolbar-chunk) {
+    flex-wrap: nowrap;
+  }
+  
+  :deep(.fc .fc-button) {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.625rem;
+  }
 }
 
 /* Fix viewport height issues */
@@ -1700,6 +1933,33 @@ function exportPastEventsCsv(pastEvents) {
   .modal-content {
     max-height: 80vh;
     overflow-y: auto;
+  }
+}
+
+/* Touch-friendly improvements */
+@media (pointer: coarse) {
+  :deep(.fc .fc-button) {
+    min-height: 2.5rem;
+    min-width: 2.5rem;
+    touch-action: manipulation;
+  }
+  
+  :deep(.fc-daygrid-day) {
+    min-height: 2.5rem;
+    touch-action: manipulation;
+  }
+  
+  :deep(.fc-event) {
+    min-height: 1.25rem;
+    touch-action: manipulation;
+  }
+}
+
+/* High DPI screen optimizations */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  :deep(.fc) {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 </style>
