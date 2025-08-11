@@ -271,12 +271,12 @@ const checkWindowSize = () => {
         sidebarExpanded.value = savedExpanded === 'true';
         expandedViaToggle.value = savedExpanded === 'true'; // Track initial state
       } else {
-        sidebarExpanded.value = true; // Default to expanded
-        expandedViaToggle.value = true; // Default to toggle-based
+        sidebarExpanded.value = false; // Default to collapsed
+        expandedViaToggle.value = false; // Default to toggle-based
       }
     } catch (e) {
-      sidebarExpanded.value = true; // Default if localStorage fails
-      expandedViaToggle.value = true;
+      sidebarExpanded.value = false; // Default if localStorage fails
+      expandedViaToggle.value = false;
     }
   }
 };
