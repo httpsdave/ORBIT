@@ -431,7 +431,7 @@ const cancelDeleteDocument = () => {
     <template #header>
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 w-full">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-100 leading-tight">
-          {{ isAdmin ? 'Manage Applications' : 'Your Applications' }}
+          {{ isAdmin ? 'Manage Submissions' : 'Your Submissions' }}
         </h2>
         <div class="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto items-stretch sm:items-center relative">
           <Link
@@ -566,7 +566,7 @@ const cancelDeleteDocument = () => {
           type="text"
           v-model="searchQuery"
           class="block w-full pl-12 pr-12 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 transition duration-150 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
-          placeholder="Search applications by organization, president, form type, or status..."
+          placeholder="Search submissions by organization, president, form type, or status..."
         />
         <div v-if="searchQuery" class="absolute inset-y-0 right-0 pr-4 flex items-center">
           <button @click="clearSearch" class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300">
