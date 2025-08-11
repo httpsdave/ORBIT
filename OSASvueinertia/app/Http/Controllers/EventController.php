@@ -154,25 +154,121 @@ class EventController extends Controller
         // Extract text based on file type
         $text = '';
         $extension = $file->getClientOriginalExtension();
+        $ocrMethod = 'tesseract'; // Track which OCR method was used
         
         if (in_array($extension, ['jpg', 'jpeg', 'png'])) {
-            // For images, use Tesseract OCR
-            $text = (new TesseractOCR(storage_path('app/public/' . $filePath)))
-                ->run();
+            // Try Tesseract OCR first
+            try {
+                $text = (new TesseractOCR(storage_path('app/public/' . $filePath)))
+                    ->run();
+            } catch (\Exception $e) {
+                // If Tesseract fails, fall back to OCR.Space
+                try {
+                    $text = $this->extractTextWithOCRSpace($file);
+                    $ocrMethod = 'ocrspace';
+                } catch (\Exception $ocrSpaceException) {
+                    return response()->json([
+                        'error' => 'Failed to extract text from image. Both Tesseract and OCR.Space failed.',
+                        'tesseract_error' => $e->getMessage(),
+                        'ocrspace_error' => $ocrSpaceException->getMessage()
+                    ], 500);
+                }
+            }
         } else if ($extension === 'pdf') {
             // For PDFs, use PDF Parser
-            $parser = new Parser();
-            $pdf = $parser->parseFile(storage_path('app/public/' . $filePath));
-            $text = $pdf->getText();
+            try {
+                $parser = new Parser();
+                $pdf = $parser->parseFile(storage_path('app/public/' . $filePath));
+                $text = $pdf->getText();
+            } catch (\Exception $e) {
+                return response()->json([
+                    'error' => 'Failed to parse PDF file.',
+                    'pdf_error' => $e->getMessage()
+                ], 500);
+            }
         }
 
         // Extract event information from the text using the service
         $extractedInfo = $this->eventExtractionService->parseEventInformation($text);
         
-        // Add the file path and raw text to the response
+        // Add the file path, raw text, and OCR method to the response
         $extractedInfo['source_document'] = $filePath;
         $extractedInfo['raw_text'] = $text;
+        $extractedInfo['ocr_method'] = $ocrMethod;
 
         return response()->json($extractedInfo);
+    }
+
+    /**
+     * Extract text from image using OCR.Space API
+     */
+    private function extractTextWithOCRSpace($file)
+    {
+        $apiKey = 'K84437262088957';
+        $url = 'https://api.ocr.space/parse/image';
+        
+        // Prepare the file for upload
+        $filePath = $file->getRealPath();
+        $fileName = $file->getClientOriginalName();
+        
+        // Create cURL request
+        $ch = curl_init();
+        
+        $postData = [
+            'apikey' => $apiKey,
+            'language' => 'eng',
+            'isOverlayRequired' => 'false',
+            'filetype' => strtolower($file->getClientOriginalExtension()),
+            'detectOrientation' => 'true',
+            'scale' => 'true',
+            'OCREngine' => '2' // Use OCR Engine 2 for better accuracy
+        ];
+        
+        // Add file to the request
+        $postData['file'] = new \CURLFile($filePath, $file->getMimeType(), $fileName);
+        
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $error = curl_error($ch);
+        curl_close($ch);
+        
+        if ($error) {
+            throw new \Exception("cURL Error: " . $error);
+        }
+        
+        if ($httpCode !== 200) {
+            throw new \Exception("OCR.Space API returned HTTP code: " . $httpCode);
+        }
+        
+        $result = json_decode($response, true);
+        
+        if (!$result) {
+            throw new \Exception("Failed to decode OCR.Space response");
+        }
+        
+        if ($result['IsErroredOnProcessing']) {
+            throw new \Exception("OCR.Space processing error: " . ($result['ErrorMessage'] ?? 'Unknown error'));
+        }
+        
+        if (empty($result['ParsedResults'])) {
+            throw new \Exception("No text found in the image");
+        }
+        
+        // Extract text from all parsed results
+        $extractedText = '';
+        foreach ($result['ParsedResults'] as $parsedResult) {
+            if (isset($parsedResult['ParsedText'])) {
+                $extractedText .= $parsedResult['ParsedText'] . "\n";
+            }
+        }
+        
+        return trim($extractedText);
     }
 }
