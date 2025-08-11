@@ -368,12 +368,14 @@
     /* Custom FullCalendar styling to match your color scheme */
     :deep(.full-calendar-custom) {
       --fc-border-color: #e5e7eb; /* gray-200 */
-      --fc-button-bg-color: #3B82F6; /* blue-500 */
-      --fc-button-border-color: #3B82F6; /* blue-500 */
-      --fc-button-hover-bg-color: #2563EB; /* blue-600 */
-      --fc-button-hover-border-color: #2563EB; /* blue-600 */
-      --fc-button-active-bg-color: #1D4ED8; /* blue-700 */
-      --fc-button-active-border-color: #1D4ED8; /* blue-700 */
+      --fc-button-bg-color: #ffffff; /* white */
+      --fc-button-border-color: #d1d5db; /* gray-300 */
+      --fc-button-text-color: #374151; /* gray-700 */
+      --fc-button-hover-bg-color: #f9fafb; /* gray-50 */
+      --fc-button-hover-border-color: #9ca3af; /* gray-400 */
+      --fc-button-active-bg-color: #3B82F6; /* blue-500 */
+      --fc-button-active-border-color: #3B82F6; /* blue-500 */
+      --fc-button-active-text-color: #ffffff; /* white */
       --fc-event-bg-color: #3B82F6; /* blue-500 */
       --fc-event-border-color: #3B82F6; /* blue-500 */
       --fc-today-bg-color: #EFF6FF; /* blue-50 */
@@ -386,12 +388,14 @@
     /* Dark mode FullCalendar styling */
     .dark :deep(.full-calendar-custom) {
       --fc-border-color: #4b5563 !important; /* gray-600 */
-      --fc-button-bg-color: #3B82F6 !important; /* blue-500 */
-      --fc-button-border-color: #3B82F6 !important; /* blue-500 */
-      --fc-button-hover-bg-color: #2563EB !important; /* blue-600 */
-      --fc-button-hover-border-color: #2563EB !important; /* blue-600 */
-      --fc-button-active-bg-color: #1D4ED8 !important; /* blue-700 */
-      --fc-button-active-border-color: #1D4ED8 !important; /* blue-700 */
+      --fc-button-bg-color: #374151 !important; /* gray-700 */
+      --fc-button-border-color: #4b5563 !important; /* gray-600 */
+      --fc-button-text-color: #f3f4f6 !important; /* gray-100 */
+      --fc-button-hover-bg-color: #4b5563 !important; /* gray-600 */
+      --fc-button-hover-border-color: #6b7280 !important; /* gray-500 */
+      --fc-button-active-bg-color: #3B82F6 !important; /* blue-500 */
+      --fc-button-active-border-color: #3B82F6 !important; /* blue-500 */
+      --fc-button-active-text-color: #ffffff !important; /* white */
       --fc-event-bg-color: #3B82F6 !important; /* blue-500 */
       --fc-event-border-color: #3B82F6 !important; /* blue-500 */
       --fc-today-bg-color: rgba(59, 130, 246, 0.15) !important; /* blue with opacity for dark mode */
@@ -405,9 +409,22 @@
     
     :deep(.fc .fc-button) {
       font-weight: 500;
-      border-radius: 0.375rem;
+      border-radius: 0.5rem;
       padding: 0.5rem 1rem;
-      transition: all 0.2s;
+      transition: all 0.2s ease;
+      border: 1px solid transparent;
+      font-size: 0.875rem;
+      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    }
+    
+    :deep(.fc .fc-button:hover) {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(59, 130, 246, 0.15);
+    }
+    
+    :deep(.fc .fc-button:active) {
+      transform: translateY(0);
+      box-shadow: 0 2px 4px rgba(59, 130, 246, 0.1);
     }
     
     :deep(.fc .fc-toolbar-title) {
