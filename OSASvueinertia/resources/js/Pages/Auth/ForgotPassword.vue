@@ -4,8 +4,6 @@ import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ref, onMounted, onBeforeUnmount } from 'vue';
-import { useTheme } from '@/Composables/useTheme';
-
 defineProps({
     status: {
         type: String,
@@ -18,13 +16,12 @@ const form = useForm({
 
 const isLoading = ref(false);
 const formElement = ref(null);
+// Set dark mode as default
+const isDarkMode = ref(true);
 const activeSlide = ref(0);
 const slideInterval = ref(null);
 const gradientIndex = ref(0);
 const gradientInterval = ref(null);
-
-// Use global theme system instead of local isDarkMode
-const { isDark: isDarkMode } = useTheme();
 
 // Slideshow images matching login page
 const slideshowImages = [
@@ -94,13 +91,9 @@ onBeforeUnmount(() => {
         <div 
             class="w-20 sm:w-24 md:w-32 lg:w-40 xl:w-48 flex-shrink-0 relative overflow-hidden transition-all duration-1000 ease-in-out"
             :class="[
-                isDarkMode 
-                    ? gradientIndex === 0 
-                        ? 'bg-gradient-to-b from-orange-500 via-yellow-500 to-red-500' 
-                        : 'bg-gradient-to-b from-purple-500 via-pink-500 to-orange-500'
-                    : gradientIndex === 0 
-                        ? 'bg-gradient-to-b from-orange-400 via-yellow-400 to-red-400' 
-                        : 'bg-gradient-to-b from-purple-400 via-pink-400 to-orange-400'
+                gradientIndex === 0 
+                    ? 'bg-gradient-to-b from-orange-500 via-yellow-500 to-red-500' 
+                    : 'bg-gradient-to-b from-purple-500 via-pink-500 to-orange-500'
             ]"
         >
             <!-- Animated background pattern -->
@@ -148,12 +141,12 @@ onBeforeUnmount(() => {
                     :key="index" 
                     v-show="activeSlide === index"
                     class="absolute inset-0 bg-cover bg-center transition-opacity duration-1000"
-                    :style="{ backgroundImage: `url(${image})`, filter: isDarkMode ? 'brightness(0.3) contrast(1.2)' : 'brightness(0.4) contrast(1.1)' }"
+                    :style="{ backgroundImage: `url(${image})`, filter: 'brightness(0.3) contrast(1.2)' }"
                 >
                 </div>
             </transition-group>
             <!-- Subtle overlay -->
-            <div class="absolute inset-0" :class="isDarkMode ? 'bg-gray-900 bg-opacity-40' : 'bg-white bg-opacity-20'"></div>
+            <div class="absolute inset-0 bg-gray-900 bg-opacity-40"></div>
         </div>
         
         <!-- Right side - Main content area -->
@@ -161,13 +154,12 @@ onBeforeUnmount(() => {
             <!-- Content container -->
             <div 
                 ref="formElement"
-                class="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg opacity-0 transition-all duration-700 sm:mr-auto"
-                :class="isDarkMode ? 'text-white' : 'text-gray-100'"
+                class="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg opacity-0 transition-all duration-700 sm:mr-auto text-white"
             >
                 <!-- Header section -->
                 <div class="mb-6 sm:mb-8 md:mb-10 lg:mb-12 text-center sm:text-left">
                     <!-- Main heading -->
-                    <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3" :class="isDarkMode ? 'text-white' : 'text-white'">
+                    <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 text-white">
                         Forgot Your
                         <span class="block text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-400">
                             Password?
@@ -183,7 +175,7 @@ onBeforeUnmount(() => {
                     </div>
                     
                     <!-- Subtitle -->
-                    <p class="text-sm sm:text-base md:text-lg leading-relaxed" :class="isDarkMode ? 'text-gray-300' : 'text-gray-200'">
+                    <p class="text-sm sm:text-base md:text-lg leading-relaxed text-gray-300">
                         No worries! Enter your email address and we'll send you instructions to reset your password.
                     </p>
                 </div>
@@ -202,12 +194,12 @@ onBeforeUnmount(() => {
                 <!-- Form -->
                 <form @submit.prevent="submit" class="space-y-4 sm:space-y-6" novalidate>
                     <div>
-                        <label for="email" class="block text-xs sm:text-sm font-medium mb-2 sm:mb-3" :class="isDarkMode ? 'text-gray-300' : 'text-gray-200'">
+                        <label for="email" class="block text-xs sm:text-sm font-medium mb-2 sm:mb-3 text-gray-300">
                             Email Address
                         </label>
                         <div class="relative group">
                             <div class="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-focus-within:text-orange-400 transition-colors duration-300" :class="isDarkMode ? 'text-gray-500' : 'text-gray-400'">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-focus-within:text-orange-400 transition-colors duration-300 text-gray-500">
                                     <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
                                     <polyline points="22,6 12,13 2,6"></polyline>
                                 </svg>
@@ -233,9 +225,7 @@ onBeforeUnmount(() => {
                             type="submit"
                             class="w-full text-white font-semibold py-3 sm:py-4 px-4 sm:px-6 rounded-lg transition-all duration-300 flex items-center justify-center relative overflow-hidden group shadow-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-opacity-50 transform hover:scale-105"
                             :class="[
-                                isDarkMode 
-                                    ? 'bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-400 hover:to-red-500' 
-                                    : 'bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-400 hover:to-red-500',
+                                'bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-400 hover:to-red-500',
                                 { 'opacity-80 cursor-not-allowed transform-none': form.processing || isLoading }
                             ]"
                             :disabled="form.processing || isLoading"
@@ -260,8 +250,7 @@ onBeforeUnmount(() => {
                         <!-- Back to login -->
                         <Link
                             :href="route('login')"
-                            class="w-full inline-flex items-center justify-center py-2.5 sm:py-3 px-4 sm:px-6 border border-white border-opacity-30 rounded-lg text-xs sm:text-sm font-medium hover:bg-white hover:bg-opacity-10 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 transition-all duration-300"
-                            :class="isDarkMode ? 'text-gray-300 hover:text-white' : 'text-gray-200 hover:text-white'"
+                            class="w-full inline-flex items-center justify-center py-2.5 sm:py-3 px-4 sm:px-6 border border-white border-opacity-30 rounded-lg text-xs sm:text-sm font-medium hover:bg-white hover:bg-opacity-10 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 transition-all duration-300 text-gray-300 hover:text-white"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1.5 sm:mr-2">
                                 <path d="M19 12H5"></path>
@@ -274,10 +263,10 @@ onBeforeUnmount(() => {
                 
                 <!-- Footer info -->
                 <div class="mt-8 sm:mt-12 pt-4 sm:pt-6 border-t border-white border-opacity-20 text-center sm:text-left">
-                    <p class="text-xs" :class="isDarkMode ? 'text-gray-400' : 'text-gray-300'">
+                    <p class="text-xs text-gray-400">
                         Need help? Contact your system administrator for assistance.
                     </p>
-                    <p class="text-xs mt-2" :class="isDarkMode ? 'text-gray-500' : 'text-gray-400'">
+                    <p class="text-xs mt-2 text-gray-500">
                         © 2025 Laguna State Polytechnic University
                     </p>
                 </div>
