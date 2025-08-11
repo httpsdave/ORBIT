@@ -4,7 +4,7 @@
     class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
     @click.self="cancel"
   >
-    <div class="bg-white rounded-lg shadow-lg p-6 max-w-md w-full mx-4 transform transition-all duration-300 scale-100">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 max-w-md w-full mx-4 transform transition-all duration-300 scale-100">
       <!-- Icon and Header -->
       <div class="flex items-center justify-center mb-4">
         <div class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center"
@@ -18,8 +18,8 @@
       </div>
 
       <div class="text-center mb-6">
-        <h3 class="text-lg font-medium text-gray-900 mb-2">{{ title }}</h3>
-        <p class="text-sm text-gray-600">{{ message }}</p>
+        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">{{ title }}</h3>
+        <p class="text-sm text-gray-600 dark:text-gray-400">{{ message }}</p>
       </div>
 
       <!-- Colored banner -->
@@ -34,19 +34,19 @@
       <div class="flex justify-end space-x-3">
         <button 
           @click="cancel"
-          class="inline-flex items-center justify-center px-4 py-2 bg-white border border-gray-300 text-sm font-medium text-gray-700 rounded-xl shadow-sm hover:bg-gray-50 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group"
+          class="inline-flex items-center justify-center px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-xl shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 hover:text-gray-900 dark:hover:text-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500 dark:focus:ring-gray-400 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-all duration-300 relative overflow-hidden group"
         >
-          <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-gray-100 rounded-full group-hover:w-96 group-hover:h-96 opacity-20"></span>
+          <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-gray-100 dark:bg-gray-600 rounded-full group-hover:w-96 group-hover:h-96 opacity-20"></span>
           <span class="relative z-10">{{ cancelText }}</span>
         </button>
         <button 
           @click="confirm"
           :class="[
-            'inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white rounded-xl shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group',
+            'inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white rounded-xl shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-all duration-300 relative overflow-hidden group',
             confirmButtonClass
           ]"
         >
-          <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
+          <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white dark:bg-gray-800 rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
           <span class="relative z-10">{{ confirmText }}</span>
         </button>
       </div>
@@ -94,22 +94,22 @@ export default {
     const iconClass = computed(() => {
       switch (props.type) {
         case 'warning':
-          return 'bg-yellow-100';
+          return 'bg-yellow-100 dark:bg-yellow-900/30';
         case 'danger':
-          return 'bg-red-100';
+          return 'bg-red-100 dark:bg-red-900/30';
         default:
-          return 'bg-green-100';
+          return 'bg-green-100 dark:bg-green-900/30';
       }
     });
 
     const iconColorClass = computed(() => {
       switch (props.type) {
         case 'warning':
-          return 'text-yellow-600';
+          return 'text-yellow-600 dark:text-yellow-400';
         case 'danger':
-          return 'text-red-600';
+          return 'text-red-600 dark:text-red-400';
         default:
-          return 'text-green-600';
+          return 'text-green-600 dark:text-green-400';
       }
     });
 
