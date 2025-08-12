@@ -1,5 +1,4 @@
 import { ref, watch } from 'vue';
-import { router } from '@inertiajs/vue3';
 
 export function useFormAutoSave(form, formType) {
     const isAutoSaving = ref(false);
@@ -24,14 +23,25 @@ export function useFormAutoSave(form, formType) {
         }
         isAutoSaving.value = true;
         try {
-            await router.post('/auto-save-form-data', {
-                form_type: formType,
-                form_data: formData
-            }, {
-                preserveState: true,
-                preserveScroll: true
+            // Use fetch instead of Inertia router to avoid iframe overlays
+            const response = await fetch('/auto-save-form-data', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({
+                    form_type: formType,
+                    form_data: formData
+                })
             });
-            lastSavedData.value = { ...formData };
+            
+            if (response.ok) {
+                lastSavedData.value = { ...formData };
+            } else {
+                console.error('Auto-save failed:', response.statusText);
+            }
         } catch (error) {
             console.error('Auto-save failed:', error);
         } finally {

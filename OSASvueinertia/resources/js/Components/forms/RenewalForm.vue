@@ -222,29 +222,13 @@ const submit = () => {
 
               <div>
                   <label class="block font-bold">Academic Year Start</label>
-                  <input 
-                    v-model="form.academic_year_start" 
-                    class="border p-2 w-full" 
-                    required 
-                    placeholder="23"
-                    autocomplete="off"
-                    maxlength="2"
-                    type="text"
-                  >
+                  <input v-model="form.academic_year_start" class="border p-2 w-full" required placeholder="23">
                   <p v-if="errors.academic_year_start" class="text-red-500 text-sm mt-1">{{ errors.academic_year_start }}</p>
               </div>
 
               <div>
                   <label class="block font-bold">Academic Year End</label>
-                  <input 
-                    v-model="form.academic_year_end" 
-                    class="border p-2 w-full" 
-                    required 
-                    placeholder="24"
-                    autocomplete="off"
-                    maxlength="2"
-                    type="text"
-                  >
+                  <input v-model="form.academic_year_end" class="border p-2 w-full" required placeholder="24">
                   <p v-if="errors.academic_year_end" class="text-red-500 text-sm mt-1">{{ errors.academic_year_end }}</p>
               </div>
 
@@ -340,42 +324,10 @@ const submit = () => {
     background: transparent;
 }
 
-/* Prevent autocomplete dropdowns and overlays */
-input[autocomplete="off"]::-webkit-contacts-auto-fill-button,
-input[autocomplete="off"]::-webkit-credentials-auto-fill-button {
-    display: none !important;
-}
-
-input[autocomplete="off"]::-webkit-textfield-decoration-container {
-    display: none !important;
-}
-
-/* Remove any webkit autofill styling */
-input:-webkit-autofill,
-input:-webkit-autofill:hover,
-input:-webkit-autofill:focus,
-input:-webkit-autofill:active {
-    -webkit-box-shadow: 0 0 0 30px white inset !important;
-    -webkit-text-fill-color: black !important;
-    background-color: transparent !important;
-    background-image: none !important;
-}
-
-/* Ensure no overlay appears on focus */
+/* Basic input focus styling */
 input:focus {
     outline: 2px solid #2563eb;
     outline-offset: -2px;
-    box-shadow: none !important;
-    background: white !important;
-}
-
-/* Remove any datalist styling that might cause overlays */
-input::-webkit-calendar-picker-indicator {
-    display: none !important;
-}
-
-input::-webkit-list-button {
-    display: none !important;
 }
 
 /* Ensure proper printing */
