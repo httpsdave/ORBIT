@@ -401,6 +401,18 @@
     @cancel="cancelCancelEvent"
   />
 
+  <!-- Past Date Confirmation Modal -->
+  <ConfirmationModal
+    :show="showPastDateConfirmation"
+    title="Past Date Warning"
+    :message="pastDateMessage"
+    type="warning"
+    confirm-text="Continue"
+    cancel-text="Cancel"
+    @confirm="confirmPastDate"
+    @cancel="cancelPastDate"
+  />
+
   <!-- First-time tooltip modal -->
   <Transition name="modal">
     <div 
@@ -862,9 +874,12 @@ export default {
     // Confirmation modals
     const showDeleteConfirmation = ref(false);
     const showCancelConfirmation = ref(false);
+    const showPastDateConfirmation = ref(false);
     const eventToDelete = ref(null);
     const eventToCancel = ref(null);
     const deleteFromPastEvents = ref(false);
+    const pastDateCallback = ref(null);
+    const pastDateMessage = ref('');
     
     // First-time user guidance
     const showFirstClickTooltip = ref(false);
@@ -1227,6 +1242,27 @@ export default {
       eventToDelete.value = null;
     }
     
+    function showPastDateWarning(message, callback) {
+      pastDateMessage.value = message;
+      pastDateCallback.value = callback;
+      showPastDateConfirmation.value = true;
+    }
+    
+    function confirmPastDate() {
+      if (pastDateCallback.value) {
+        pastDateCallback.value();
+      }
+      showPastDateConfirmation.value = false;
+      pastDateCallback.value = null;
+      pastDateMessage.value = '';
+    }
+    
+    function cancelPastDate() {
+      showPastDateConfirmation.value = false;
+      pastDateCallback.value = null;
+      pastDateMessage.value = '';
+    }
+    
     function cancelEvent(eventId) {
       if (!props.isAdmin) return; // Safety check
       
@@ -1377,6 +1413,61 @@ export default {
       eventForm.description = '';
     }
 
+    function createEventForDate(clickedDate, info) {
+      // Set up new event with clicked date
+      isEditing.value = false;
+      currentEditId.value = null;
+      extractedData.value = {};
+      
+      eventForm.title = '';
+      eventForm.date = clickedDate;
+      eventForm.end_date = clickedDate;
+      eventForm.start_time = '';
+      eventForm.end_time = '';
+      eventForm.description = '';
+      
+      // Add smooth visual feedback with modern animation
+      if (info.dayEl) {
+        info.dayEl.style.transform = 'scale(1.05)';
+        info.dayEl.style.backgroundColor = 'rgba(59, 130, 246, 0.15)';
+        info.dayEl.style.transition = 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)';
+        
+        // Reset animation after modal opens
+        setTimeout(() => {
+          if (info.dayEl) {
+            info.dayEl.style.transform = '';
+            info.dayEl.style.backgroundColor = '';
+            info.dayEl.style.transition = '';
+          }
+        }, 300);
+      }
+      
+      console.log(`Event creation initiated for date: ${clickedDate}`);
+    }
+    
+    function createEventForDateRange(startDate, endDate, info) {
+      // Set up new event with selected date range
+      isEditing.value = false;
+      currentEditId.value = null;
+      extractedData.value = {};
+      
+      eventForm.title = '';
+      eventForm.date = startDate;
+      eventForm.end_date = endDate;
+      eventForm.start_time = '';
+      eventForm.end_time = '';
+      eventForm.description = '';
+      
+      console.log(`Event creation initiated for date range: ${startDate} to ${endDate}`);
+      
+      // Clear the selection with smooth animation
+      setTimeout(() => {
+        if (info.view?.calendar) {
+          info.view.calendar.unselect();
+        }
+      }, 100);
+    }
+    
     // Handle calendar date click (single day) with improved animations and error handling
     function handleDateClick(info) {
       if (!props.isAdmin) {
@@ -1400,39 +1491,15 @@ export default {
         
         // Prevent clicks on past dates (optional business rule)
         if (dayjs(clickedDate).isBefore(dayjs(), 'day')) {
-          const proceed = confirm('You are creating an event for a past date. Continue?');
-          if (!proceed) return;
+          showPastDateWarning('You are creating an event for a past date. Continue?', () => {
+            // Continue with event creation
+            createEventForDate(clickedDate, info);
+          });
+          return;
         }
         
-        // Set up new event with clicked date
-        isEditing.value = false;
-        currentEditId.value = null;
-        extractedData.value = {};
-        
-        eventForm.title = '';
-        eventForm.date = clickedDate;
-        eventForm.end_date = clickedDate;
-        eventForm.start_time = '';
-        eventForm.end_time = '';
-        eventForm.description = '';
-        
-        // Add smooth visual feedback with modern animation
-        if (info.dayEl) {
-          info.dayEl.style.transform = 'scale(1.05)';
-          info.dayEl.style.backgroundColor = 'rgba(59, 130, 246, 0.15)';
-          info.dayEl.style.transition = 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)';
-          
-          // Reset animation after modal opens
-          setTimeout(() => {
-            if (info.dayEl) {
-              info.dayEl.style.transform = '';
-              info.dayEl.style.backgroundColor = '';
-              info.dayEl.style.transition = '';
-            }
-          }, 300);
-        }
-        
-        console.log(`Event creation initiated for date: ${clickedDate}`);
+        // If not a past date, create event directly
+        createEventForDate(clickedDate, info);
         
       } catch (error) {
         console.error('Error handling date click:', error);
@@ -1442,7 +1509,14 @@ export default {
           ? 'The selected date is invalid. Please try clicking on a different date.'
           : 'Unable to create event for the selected date. Please try again.';
           
-        alert(errorMessage);
+        statusMessage.value = errorMessage;
+        showStatusBanner.value = true;
+        statusType.value = 'error';
+        
+        // Auto-hide after 5 seconds
+        setTimeout(() => {
+          showStatusBanner.value = false;
+        }, 5000);
         
         // Reset any visual changes on error
         if (info.dayEl) {
@@ -1486,11 +1560,11 @@ export default {
         
         // Warn for past dates
         if (dayjs(startDate).isBefore(dayjs(), 'day')) {
-          const proceed = confirm(`You are creating an event starting in the past (${startDate}). Continue?`);
-          if (!proceed) {
-            info.view.calendar.unselect();
-            return;
-          }
+          showPastDateWarning(`You are creating an event starting in the past (${startDate}). Continue?`, () => {
+            // Continue with event creation
+            createEventForDateRange(startDate, endDate, info);
+          });
+          return;
         }
         
         // Set up new event with selected date range
@@ -1533,7 +1607,14 @@ export default {
             errorMessage = 'Unable to create event for the selected date range. Please try again.';
         }
         
-        alert(errorMessage);
+        statusMessage.value = errorMessage;
+        showStatusBanner.value = true;
+        statusType.value = 'error';
+        
+        // Auto-hide after 5 seconds
+        setTimeout(() => {
+          showStatusBanner.value = false;
+        }, 5000);
         
         // Clear selection on error
         if (info.view?.calendar) {
@@ -1650,13 +1731,19 @@ function exportPastEventsCsv(pastEvents) {
       confirmCancelEvent,
       cancelCancelEvent,
       // First-time tooltip
-      showFirstClickTooltip,
-      dismissTooltip,
-      dismissTooltipPermanently,
-      // Status banner
-      showStatusBanner,
-      statusMessage,
-      statusType
+              showFirstClickTooltip,
+        dismissTooltip,
+        dismissTooltipPermanently,
+        // Status banner
+        showStatusBanner,
+        statusMessage,
+        statusType,
+        // Past date confirmation
+        showPastDateConfirmation,
+        pastDateMessage,
+        showPastDateWarning,
+        confirmPastDate,
+        cancelPastDate
     };
   }
 };
