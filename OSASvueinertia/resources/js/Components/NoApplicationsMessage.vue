@@ -21,14 +21,14 @@ import { Link } from '@inertiajs/vue3';
             </svg>
           </div>
           <div>
-            <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No applications found</h3>
+            <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No submissions found</h3>
             <p class="text-gray-500 dark:text-gray-400 mb-6">Get started and make your first submission.</p>
             <Link href="/applications/create" class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-medium px-6 py-3 rounded-xl transition duration-300 inline-flex items-center shadow-md relative overflow-hidden group">
               <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-56 group-hover:h-56 opacity-10"></span>
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
               </svg>
-              Create New Application
+              Create New
             </Link>
           </div>
         </div>

@@ -458,7 +458,7 @@ const cancelDeleteDocument = () => {
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
             </svg>
-            New Application
+            Create New
           </Link>
           <!-- Preview Forms Dropdown (Users and Admins) -->
           <div class="relative w-full sm:w-auto">
