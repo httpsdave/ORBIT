@@ -1,5 +1,14 @@
 <template>
   <div class="w-full pb-4 sm:pb-8 px-2 sm:px-0">
+  
+  <!-- Status Banner -->
+  <StatusBanner
+    :show="showStatusBanner"
+    :message="statusMessage"
+    :type="statusType"
+    @close="showStatusBanner = false"
+  />
+  
   <!-- Colored banner -->
   <div class="flex w-full mb-4 overflow-hidden rounded-lg shadow-sm">
     <div class="w-1/4 h-1.5 bg-blue-500 " style="animation-delay: 0.2s;"></div>
@@ -439,6 +448,13 @@
     </div>
   </Transition>
   
+  <!-- Status Banner -->
+  <StatusBanner
+    v-if="showStatusBanner"
+    :message="statusMessage"
+    :type="statusType"
+  />
+  
   </div>
 </template>
 <style scoped>
@@ -776,6 +792,7 @@ import TodayUpcomingEvents from './TodayUpcomingEvents.vue';
 import EventHistoryModal from './EventHistoryModal.vue';
 import EventStatistics from './EventStatistics.vue';
 import ConfirmationModal from './ConfirmationModal.vue';
+import StatusBanner from './StatusBanner.vue';
 import axios from 'axios';
 import dayjs from 'dayjs';
 
@@ -786,7 +803,8 @@ export default {
     TodayUpcomingEvents,
     EventHistoryModal,
     EventStatistics,
-    ConfirmationModal
+    ConfirmationModal,
+    StatusBanner
   },
   
   props: {
@@ -800,6 +818,11 @@ export default {
   setup(props) {
     const events = ref(props.initialEvents || []);
     const displayedEvents = ref([]);
+    
+    // Status banner state
+    const showStatusBanner = ref(false);
+    const statusMessage = ref('');
+    const statusType = ref('success');
     
     // Calendar refs and navigation
     const fullCalendar = ref(null);
@@ -1004,15 +1027,29 @@ export default {
           
           // Reset the form
           resetForm();
-          alert('Event saved successfully!');
+          statusMessage.value = 'Event saved successfully!';
+          showStatusBanner.value = true;
+          statusType.value = 'success';
+          
+          // Auto-hide after 5 seconds
+          setTimeout(() => {
+            showStatusBanner.value = false;
+          }, 5000);
         })
         .catch(error => {
           if (error.response && error.response.status === 403) {
             alert('Unauthorized: You do not have permission to perform this action.');
-          } else {
-            console.error('Error saving event:', error);
-            alert('Failed to save event. Please try again.');
-          }
+                      } else {
+              console.error('Error saving event:', error);
+              statusMessage.value = 'Failed to save event. Please try again.';
+              showStatusBanner.value = true;
+              statusType.value = 'error';
+              
+              // Auto-hide after 5 seconds
+              setTimeout(() => {
+                showStatusBanner.value = false;
+              }, 5000);
+            }
         });
     }
     
@@ -1064,17 +1101,31 @@ export default {
             filterExpiredEvents();
           }
           
-          // Reset the form and exit edit mode
-          resetForm();
-          alert('Event updated successfully!');
+                      // Reset the form and exit edit mode
+            resetForm();
+            statusMessage.value = 'Event updated successfully!';
+            showStatusBanner.value = true;
+            statusType.value = 'success';
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+              showStatusBanner.value = false;
+            }, 5000);
         })
         .catch(error => {
           if (error.response && error.response.status === 403) {
             alert('Unauthorized: You do not have permission to perform this action.');
-          } else {
-            console.error('Error updating event:', error);
-            alert('Failed to update event. Please try again.');
-          }
+                      } else {
+              console.error('Error updating event:', error);
+              statusMessage.value = 'Failed to update event. Please try again.';
+              showStatusBanner.value = true;
+              statusType.value = 'error';
+              
+              // Auto-hide after 5 seconds
+              setTimeout(() => {
+                showStatusBanner.value = false;
+              }, 5000);
+            }
         });
     }
     
@@ -1131,6 +1182,16 @@ export default {
             deleteFromPastEvents.value = false;
           }
           
+          // Show success notification
+          statusMessage.value = 'Event deleted successfully!';
+          showStatusBanner.value = true;
+          statusType.value = 'success';
+          
+          // Auto-hide after 5 seconds
+          setTimeout(() => {
+            showStatusBanner.value = false;
+          }, 5000);
+          
           // Reset confirmation modal
           showDeleteConfirmation.value = false;
           eventToDelete.value = null;
@@ -1138,10 +1199,17 @@ export default {
         .catch(error => {
           if (error.response && error.response.status === 403) {
             alert('Unauthorized: You do not have permission to perform this action.');
-          } else {
-            console.error('Error deleting event:', error);
-            alert('Failed to delete event. Please try again.');
-          }
+                      } else {
+              console.error('Error deleting event:', error);
+              statusMessage.value = 'Failed to delete event. Please try again.';
+              showStatusBanner.value = true;
+              statusType.value = 'error';
+              
+              // Auto-hide after 5 seconds
+              setTimeout(() => {
+                showStatusBanner.value = false;
+              }, 5000);
+            }
           showDeleteConfirmation.value = false;
           eventToDelete.value = null;
           deleteFromPastEvents.value = false;
@@ -1196,10 +1264,17 @@ export default {
         .catch(error => {
           if (error.response && error.response.status === 403) {
             alert('Unauthorized: You do not have permission to perform this action.');
-          } else {
-            console.error('Error cancelling event:', error);
-            alert('Failed to cancel event. Please try again.');
-          }
+                      } else {
+              console.error('Error cancelling event:', error);
+              statusMessage.value = 'Failed to cancel event. Please try again.';
+              showStatusBanner.value = true;
+              statusType.value = 'error';
+              
+              // Auto-hide after 5 seconds
+              setTimeout(() => {
+                showStatusBanner.value = false;
+              }, 5000);
+            }
           showCancelConfirmation.value = false;
           eventToCancel.value = null;
         });
@@ -1577,7 +1652,11 @@ function exportPastEventsCsv(pastEvents) {
       // First-time tooltip
       showFirstClickTooltip,
       dismissTooltip,
-      dismissTooltipPermanently
+      dismissTooltipPermanently,
+      // Status banner
+      showStatusBanner,
+      statusMessage,
+      statusType
     };
   }
 };

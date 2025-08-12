@@ -8,6 +8,7 @@ import StatusModal from '@/Components/StatusModal.vue';
 import NoApplicationsMessage from '@/Components/NoApplicationsMessage.vue';
 import Modal from '@/Components/Modal.vue';
 import StatusBanner from '@/Components/StatusBanner.vue';
+import ConfirmationModal from '@/Components/ConfirmationModal.vue';
 
 // --- Add form preview dropdown state and data ---
 const showPreviewDropdown = ref(false);
@@ -113,6 +114,10 @@ const endYearForm = ref({
   academic_year: '',
   confirmation: ''
 });
+
+// Delete confirmation modal state
+const showDeleteConfirmation = ref(false);
+const applicationToDelete = ref(null);
 
 // Get unique values for filter options
 const statusOptions = computed(() => {
@@ -235,25 +240,36 @@ watch(showPreviewModal, (val) => {
 });
 
 const deleteApplication = (id) => {
-  if (confirm('Are you sure you want to delete this application? This action cannot be undone.')) {
-    router.delete(`/applications/${id}`, {
-      onSuccess: () => {
-        filteredApplications.value = filteredApplications.value.filter(app => app.id !== id);
-        localMessage.value = "Application deleted successfully!";
-        statusType.value = 'delete';
-        showMessage.value = true;
-        
-        setTimeout(() => {
-          showMessage.value = false;
-        }, 5000);
-      },
-      onError: () => {
-        localMessage.value = "Failed to delete application.";
-        statusType.value = 'error';
-        showMessage.value = true;
-      }
-    });
-  }
+  applicationToDelete.value = id;
+  showDeleteConfirmation.value = true;
+};
+
+const closeDeleteConfirmation = () => {
+  showDeleteConfirmation.value = false;
+  applicationToDelete.value = null;
+};
+
+const confirmDeleteApplication = () => {
+  if (!applicationToDelete.value) return;
+  router.delete(`/applications/${applicationToDelete.value}`, {
+    onSuccess: () => {
+      filteredApplications.value = filteredApplications.value.filter(app => app.id !== applicationToDelete.value);
+      localMessage.value = "Application deleted successfully!";
+      statusType.value = 'delete';
+      showMessage.value = true;
+      
+      setTimeout(() => {
+        showMessage.value = false;
+      }, 5000);
+      closeDeleteConfirmation();
+    },
+    onError: () => {
+      localMessage.value = "Failed to delete application.";
+      statusType.value = 'error';
+      showMessage.value = true;
+      closeDeleteConfirmation();
+    }
+  });
 };
 
 const openStatusModal = (app) => {
@@ -802,6 +818,18 @@ const cancelDeleteDocument = () => {
         <span>{{ isAdmin ? 'Archive Management' : 'View Archive' }}</span>
       </a>
     </div>
+
+    <!-- Delete Confirmation Modal -->
+    <ConfirmationModal
+      :show="showDeleteConfirmation"
+      title="Delete Application"
+      :message="`Are you sure you want to delete this application? This action cannot be undone.`"
+      type="danger"
+      confirm-text="Delete"
+      cancel-text="Cancel"
+      @confirm="confirmDeleteApplication"
+      @cancel="closeDeleteConfirmation"
+    />
 
   </AuthenticatedLayout>
 </template>
