@@ -470,6 +470,24 @@
   </div>
 </template>
 <style scoped>
+    /* Ensure active (selected) calendar view button has white text on blue background in both light and dark mode */
+    :deep(.fc .fc-button.fc-button-active),
+    :deep(.fc .fc-button:active),
+    :deep(.fc .fc-button-primary.fc-button-active),
+    :deep(.fc .fc-button-primary:active) {
+      background-color: #3B82F6 !important;
+      border-color: #3B82F6 !important;
+      color: #fff !important;
+    }
+
+    .dark :deep(.fc .fc-button.fc-button-active),
+    .dark :deep(.fc .fc-button:active),
+    .dark :deep(.fc .fc-button-primary.fc-button-active),
+    .dark :deep(.fc .fc-button-primary:active) {
+      background-color: #3B82F6 !important;
+      border-color: #3B82F6 !important;
+      color: #fff !important;
+    }
     /* Custom FullCalendar styling to match your color scheme */
     :deep(.full-calendar-custom) {
       --fc-border-color: #e5e7eb; /* gray-200 */
@@ -517,9 +535,11 @@
       border-radius: 0.5rem;
       padding: 0.5rem 1rem;
       transition: all 0.2s ease;
-      border: 1px solid transparent;
+      border: 1px solid #3B82F6 !important;
       font-size: 0.875rem;
       box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      background-color: #3B82F6 !important;
+      color: #fff !important;
     }
     
     :deep(.fc .fc-button:hover) {
