@@ -16,6 +16,15 @@ const props = defineProps({
 
 const emit = defineEmits(['submitted', 'error']);
 
+// Compute current year and next year for placeholders
+const currentYear = computed(() => {
+  return new Date().getFullYear().toString().slice(-2);
+});
+
+const nextYear = computed(() => {
+  return (new Date().getFullYear() + 1).toString().slice(-2);
+});
+
 // Add errors ref object
 const errors = ref({});
 
@@ -375,8 +384,8 @@ function limitTo2Digits(event) {
                 <option value="Summer">Summer</option>
             </select> 
             Sem. / AY 
-            <input v-model="form.academic_year_start" type="text" class="border p-1 w-16 mx-1" placeholder="20__" inputmode="numeric" pattern="[0-9]{2}" maxlength="2" @input="limitTo2Digits" >-
-            <input v-model="form.academic_year_end" type="text" class="border p-1 w-16 mx-1" placeholder="20__" inputmode="numeric" pattern="[0-9]{2}" maxlength="2" @input="limitTo2Digits" >
+            <input v-model="form.academic_year_start" type="text" class="border p-1 w-16 mx-1" :placeholder="currentYear" inputmode="numeric" pattern="[0-9]{2}" maxlength="2" @input="limitTo2Digits" >-
+            <input v-model="form.academic_year_end" type="text" class="border p-1 w-16 mx-1" :placeholder="nextYear" inputmode="numeric" pattern="[0-9]{2}" maxlength="2" @input="limitTo2Digits" >
         </p>
     </div>
 
@@ -592,13 +601,13 @@ function limitTo2Digits(event) {
 
             <div>
                 <label class="block font-bold">Academic Year Start</label>
-                <input v-model="form.academic_year_start" class="border p-2 w-full" placeholder="20__" required inputmode="numeric" pattern="[0-9]{2}" maxlength="2" @input="limitTo2Digits" >
+                <input v-model="form.academic_year_start" class="border p-2 w-full" :placeholder="currentYear" required inputmode="numeric" pattern="[0-9]{2}" maxlength="2" @input="limitTo2Digits" >
                 <div v-if="errors.academic_year_start" class="text-red-500 text-sm mt-1">{{ errors.academic_year_start }}</div>
             </div>
 
             <div>
                 <label class="block font-bold">Academic Year End</label>
-                <input v-model="form.academic_year_end" class="border p-2 w-full" placeholder="20__" required inputmode="numeric" pattern="[0-9]{2}" maxlength="2" @input="limitTo2Digits" >
+                <input v-model="form.academic_year_end" class="border p-2 w-full" :placeholder="nextYear" required inputmode="numeric" pattern="[0-9]{2}" maxlength="2" @input="limitTo2Digits" >
                 <div v-if="errors.academic_year_end" class="text-red-500 text-sm mt-1">{{ errors.academic_year_end }}</div>
             </div>
 

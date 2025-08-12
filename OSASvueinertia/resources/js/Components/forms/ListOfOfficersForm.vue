@@ -14,6 +14,15 @@ const props = defineProps({
   }
 });
 
+// Compute current year and next year for placeholders
+const currentYear = computed(() => {
+  return new Date().getFullYear().toString().slice(-2);
+});
+
+const nextYear = computed(() => {
+  return (new Date().getFullYear() + 1).toString().slice(-2);
+});
+
 // Add errors ref object
 const errors = ref({});
 
@@ -442,13 +451,13 @@ const submit = () => {
 
         <div>
           <label class="block font-bold">Academic Year Start</label>
-          <input v-model="form.academic_year_start" class="border p-2 w-full" placeholder="20__" required>
+          <input v-model="form.academic_year_start" class="border p-2 w-full" :placeholder="currentYear" required>
           <div v-if="errors.academic_year_start" class="text-red-500 text-sm mt-1">{{ errors.academic_year_start }}</div>
         </div>
 
         <div>
           <label class="block font-bold">Academic Year End</label>
-          <input v-model="form.academic_year_end" class="border p-2 w-full" placeholder="20__" required>
+          <input v-model="form.academic_year_end" class="border p-2 w-full" :placeholder="nextYear" required>
           <div v-if="errors.academic_year_end" class="text-red-500 text-sm mt-1">{{ errors.academic_year_end }}</div>
         </div>
 

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onUnmounted } from 'vue';
+import { ref, onUnmounted, computed } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import { useFormAutoSave } from '@/Composables/useFormAutoSave';
 
@@ -15,6 +15,15 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['submitted']);
+
+// Compute current year and next year for placeholders
+const currentYear = computed(() => {
+  return new Date().getFullYear().toString().slice(-2);
+});
+
+const nextYear = computed(() => {
+  return (new Date().getFullYear() + 1).toString().slice(-2);
+});
 
 const form = useForm({
   form_type: 'LSPU-OSAS-SF-002',
@@ -222,13 +231,13 @@ const submit = () => {
 
               <div>
                   <label class="block font-bold">Academic Year Start</label>
-                  <input v-model="form.academic_year_start" class="border p-2 w-full" required placeholder="23">
+                  <input v-model="form.academic_year_start" class="border p-2 w-full" required :placeholder="currentYear">
                   <p v-if="errors.academic_year_start" class="text-red-500 text-sm mt-1">{{ errors.academic_year_start }}</p>
               </div>
 
               <div>
                   <label class="block font-bold">Academic Year End</label>
-                  <input v-model="form.academic_year_end" class="border p-2 w-full" required placeholder="24">
+                  <input v-model="form.academic_year_end" class="border p-2 w-full" required :placeholder="nextYear">
                   <p v-if="errors.academic_year_end" class="text-red-500 text-sm mt-1">{{ errors.academic_year_end }}</p>
               </div>
 
