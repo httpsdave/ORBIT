@@ -376,6 +376,22 @@ const handleDocumentUpload = (uploadResult) => {
   }
 };
 
+const handleSubmitLink = (submitResult) => {
+  if (submitResult.success) {
+    localMessage.value = submitResult.message;
+    statusType.value = 'success';
+    showMessage.value = true;
+    
+    setTimeout(() => {
+      showMessage.value = false;
+    }, 5000);
+  } else {
+    localMessage.value = submitResult.message;
+    statusType.value = 'error';
+    showMessage.value = true;
+  }
+};
+
 const refreshApplications = () => {
   filteredApplications.value = [...props.applications];
 };
@@ -678,6 +694,7 @@ const cancelDeleteDocument = () => {
         @openStatusModal="openStatusModal"
         @deleteApplication="deleteApplication"
         @uploadDocument="handleDocumentUpload"
+        @submitLink="handleSubmitLink"
         @refreshData="refreshApplications"
         @confirmDeleteDocument="handleConfirmDeleteDocument"
       />

@@ -31,6 +31,10 @@ const signedDocumentApp = ref(null);
 const signedDocumentLoading = ref(false);
 const signedDocumentError = ref(null);
 
+// Add new state for link confirmation modal
+const showLinkConfirmationModal = ref(false);
+const linkToOpen = ref(null);
+
 const getStatusColor = (status) => {
   switch(status.toLowerCase()) {
     case 'approved':
@@ -489,13 +493,29 @@ const viewSignedDocument = (app) => {
     activeMobileDropdownId.value = null;
     
     if (getSignedDocumentType(app) === 'link') {
-      // Open link in new tab
-      window.open(app.signed_document_link, '_blank');
+      // Show confirmation modal for links
+      linkToOpen.value = app.signed_document_link;
+      showLinkConfirmationModal.value = true;
     } else {
       // Navigate to the SPA document view for files
       router.visit(`/applications/${app.id}/document`);
     }
   }
+};
+
+// Add method to open link after confirmation
+const openLinkAfterConfirmation = () => {
+  if (linkToOpen.value) {
+    window.open(linkToOpen.value, '_blank');
+  }
+  showLinkConfirmationModal.value = false;
+  linkToOpen.value = null;
+};
+
+// Add method to close link confirmation modal
+const closeLinkConfirmationModal = () => {
+  showLinkConfirmationModal.value = false;
+  linkToOpen.value = null;
 };
 
 // Add new method for viewing feedback
@@ -519,6 +539,15 @@ watch(showPreviewModal, (val) => {
 
 // Add watcher for signed document modal
 watch(showSignedDocumentModal, (val) => {
+  if (val) {
+    document.body.classList.add('overflow-hidden');
+  } else {
+    document.body.classList.remove('overflow-hidden');
+  }
+});
+
+// Add watcher for link confirmation modal
+watch(showLinkConfirmationModal, (val) => {
   if (val) {
     document.body.classList.add('overflow-hidden');
   } else {
@@ -979,5 +1008,57 @@ watch(showSignedDocumentModal, (val) => {
       @upload="uploadDocument"
       @submitLink="submitLink"
     />
+
+    <!-- Link Confirmation Modal -->
+    <transition name="fade">
+      <div v-if="showLinkConfirmationModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60" @click="closeLinkConfirmationModal">
+        <div
+          class="relative bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md mx-4 overflow-hidden"
+          @click.stop
+        >
+          <!-- Header -->
+          <div class="bg-blue-50 dark:bg-blue-900/20 px-6 py-4 border-b border-blue-200 dark:border-blue-800">
+            <div class="flex items-center">
+              <div class="flex-shrink-0 bg-blue-100 dark:bg-blue-900/30 rounded-full p-2 mr-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                </svg>
+              </div>
+              <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Open External Link</h3>
+            </div>
+          </div>
+          
+          <!-- Content -->
+          <div class="px-6 py-4">
+            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              You are about to open an external link. This will open in a new tab.
+            </p>
+            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 mb-4">
+              <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Link URL:</p>
+              <p class="text-sm text-gray-700 dark:text-gray-300 break-all">{{ linkToOpen }}</p>
+            </div>
+            <p class="text-xs text-gray-500 dark:text-gray-400">
+              Make sure you trust this link before proceeding.
+            </p>
+          </div>
+          
+          <!-- Footer -->
+          <div class="bg-gray-50 dark:bg-gray-700 px-6 py-4 flex justify-end space-x-3">
+            <button
+              @click="closeLinkConfirmationModal"
+              class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-lg shadow-sm hover:bg-gray-50 dark:hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition duration-150 ease-in-out"
+            >
+              Cancel
+            </button>
+            <button
+              @click="openLinkAfterConfirmation"
+              class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition duration-150 ease-in-out"
+            >
+              Open Link
+            </button>
+          </div>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
