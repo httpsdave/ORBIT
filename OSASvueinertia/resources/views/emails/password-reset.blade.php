@@ -48,7 +48,7 @@
         .button {
             display: inline-block;
             background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-            color: #ffffff;
+            color: #ffffff !important;
             padding: 12px 30px;
             text-decoration: none;
             border-radius: 8px;
@@ -56,10 +56,14 @@
             text-align: center;
             margin: 20px 0;
             transition: all 0.3s ease;
+            border: none;
+            font-size: 16px;
+            line-height: 1.5;
         }
         .button:hover {
             background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
             transform: translateY(-1px);
+            color: #ffffff !important;
         }
         .footer {
             text-align: center;
