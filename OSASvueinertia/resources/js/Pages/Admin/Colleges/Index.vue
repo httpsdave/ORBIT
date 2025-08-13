@@ -61,7 +61,7 @@
         </div>
 
         <!-- Colleges Grid -->
-        <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+        <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           <div
             v-for="college in colleges"
             :key="college.id"
@@ -103,7 +103,8 @@
             
             <div class="px-4 sm:px-6 py-3 bg-gray-50 dark:bg-gray-700 border-t border-gray-100 dark:border-gray-600">
               <!-- Responsive: Stack buttons vertically on mobile, horizontally on larger screens -->
-              <div class="flex flex-col sm:flex-row sm:items-center sm:space-x-2 space-y-2 sm:space-y-0">
+              <!-- Added pr-16 sm:pr-20 to prevent overlap with college logo -->
+              <div class="flex flex-col sm:flex-row sm:items-center sm:space-x-2 space-y-2 sm:space-y-0 pr-16 sm:pr-20">
                 <Link
                   :href="route('admin.colleges.show', [college.id])"
                   class="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-sm font-medium text-white rounded-lg shadow-md hover:shadow-blue-300/30 hover:from-blue-400 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 active:from-blue-600 active:to-blue-700 transition-all duration-300 relative overflow-hidden group"
