@@ -246,3 +246,16 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::post('/applications/upload-report', [OrganizationApplicationController::class, 'uploadReport'])->name('applications.upload-report');
+
+// Test email route (remove in production)
+Route::get('/test-email', function () {
+    try {
+        Mail::raw('Test email from LSPU ORBIT system', function ($message) {
+            $message->to('test@example.com')
+                    ->subject('Test Email');
+        });
+        return 'Email sent successfully!';
+    } catch (\Exception $e) {
+        return 'Email failed: ' . $e->getMessage();
+    }
+})->middleware('auth');
