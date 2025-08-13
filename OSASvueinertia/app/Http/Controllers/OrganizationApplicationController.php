@@ -642,7 +642,7 @@ class OrganizationApplicationController extends Controller
         
         // Only allow PDF
         $request->validate([
-            'signed_document' => 'required|file|mimes:pdf|max:10240'
+            'signed_document' => 'required|file|mimes:pdf|max:20480' // Updated to 20MB
         ]);
         
         // Delete old document if exists
@@ -661,6 +661,44 @@ class OrganizationApplicationController extends Controller
         return redirect()->back()->with('success', 'Signed document uploaded successfully');
     }
 
+    public function submitLink(Request $request, OrganizationApplication $application)
+    {
+        // Only allow submission if not approved or user is admin
+        if (!auth()->user()->isAdmin() && $application->status === 'Approved') {
+            if ($request->expectsJson()) {
+                return response()->json(['error' => 'You cannot submit a document link after approval.'], 403);
+            }
+            return redirect()->back()->with('error', 'You cannot submit a document link after approval.');
+        }
+        
+        // Validate the link
+        $request->validate([
+            'signed_document_link' => [
+                'required',
+                'url',
+                'regex:/^https:\/\/(drive\.google\.com|docs\.google\.com)\/.+/'
+            ]
+        ], [
+            'signed_document_link.regex' => 'Must be a valid Google Drive or Google Docs link.'
+        ]);
+        
+        // Clear old document path if exists
+        if ($application->signed_document_path) {
+            Storage::disk('public')->delete($application->signed_document_path);
+            $application->signed_document_path = null;
+        }
+        
+        // Save the link
+        $application->signed_document_link = $request->signed_document_link;
+        $application->save();
+        
+        if ($request->expectsJson()) {
+            return response()->json(['success' => true, 'message' => 'Document link submitted successfully']);
+        }
+        
+        return redirect()->back()->with('success', 'Document link submitted successfully');
+    }
+
     public function deleteSignedDocument(Request $request, OrganizationApplication $application)
     {
         // Only allow delete if not approved or user is admin
@@ -671,13 +709,16 @@ class OrganizationApplicationController extends Controller
             return redirect()->back()->with('error', 'You cannot delete the signed document after approval.');
         }
         
-        // Check if document exists
-        if ($application->signed_document_path) {
-            // Delete file from storage
-            Storage::disk('public')->delete($application->signed_document_path);
+        // Check if document exists (file or link)
+        if ($application->signed_document_path || $application->signed_document_link) {
+            // Delete file from storage if exists
+            if ($application->signed_document_path) {
+                Storage::disk('public')->delete($application->signed_document_path);
+            }
             
             // Update database record
             $application->signed_document_path = null;
+            $application->signed_document_link = null;
             $application->save();
             
             if ($request->expectsJson()) {
@@ -697,6 +738,11 @@ class OrganizationApplicationController extends Controller
     // Add a method to view/download the signed document
     public function viewSignedDocument(OrganizationApplication $application)
     {
+        if ($application->signed_document_link) {
+            // Redirect to the link for external documents
+            return redirect($application->signed_document_link);
+        }
+        
         if (!$application->signed_document_path) {
             return redirect()->back()->with('error', 'No signed document available');
         }
@@ -715,15 +761,40 @@ class OrganizationApplicationController extends Controller
             abort(403, 'Unauthorized to view this application.');
         }
 
-        // Check if application has a signed document
-        if (!$application->signed_document_path) {
+        // Check if application has a signed document (file or link)
+        if (!$application->signed_document_path && !$application->signed_document_link) {
             return redirect()->back()->with('error', 'No signed document found for this application.');
+        }
+
+        // If it's a link, redirect to the external document
+        if ($application->signed_document_link) {
+            return redirect($application->signed_document_link);
         }
 
         // Determine back URL based on user role
         $backUrl = auth()->user()->isAdmin() ? route('admin.dashboard') : route('dashboard');
 
         return Inertia::render('DocumentView', [
+            'application' => $application->load('user'),
+            'backUrl' => $backUrl,
+            'isAdmin' => auth()->user()->isAdmin(),
+        ]);
+    }
+
+    /**
+     * Show the feedback view page
+     */
+    public function showFeedbackView(OrganizationApplication $application)
+    {
+        // Check if user has permission to view this application
+        if (!auth()->user()->isAdmin() && $application->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized to view this application.');
+        }
+
+        // Determine back URL based on user role
+        $backUrl = auth()->user()->isAdmin() ? route('admin.dashboard') : route('dashboard');
+
+        return Inertia::render('FeedbackView', [
             'application' => $application->load('user'),
             'backUrl' => $backUrl,
             'isAdmin' => auth()->user()->isAdmin(),

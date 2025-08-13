@@ -67,6 +67,8 @@ class OrganizationApplication extends Model
         'bylaws_path',
         'financial_report_path',
         'event_letter_path',
+        'signed_document_path',
+        'signed_document_link',
 
     ];
 

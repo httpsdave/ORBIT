@@ -7,7 +7,7 @@ const props = defineProps({
   isAdmin: Boolean,
 });
 
-const emit = defineEmits(['openStatusModal', 'deleteApplication', 'uploadDocument', 'refreshData', 'confirmDeleteDocument']);
+const emit = defineEmits(['openStatusModal', 'deleteApplication', 'uploadDocument', 'submitLink', 'refreshData', 'confirmDeleteDocument']);
 
 // Upload document functionality
 const showUploadModal = ref(false);
@@ -274,6 +274,48 @@ const uploadDocument = (file) => {
   });
 };
 
+// Function to submit link
+const submitLink = (linkUrl) => {
+  if (!selectedApplicationForUpload.value) return;
+  
+  isUploading.value = true;
+  uploadProgress.value = 50; // Set to 50% since it's faster than file upload
+  
+  router.post(`/applications/${selectedApplicationForUpload.value.id}/submit-link`, {
+    signed_document_link: linkUrl
+  }, {
+    onSuccess: () => {
+      isUploading.value = false;
+      uploadProgress.value = 100;
+      
+      // Close modal
+      setTimeout(() => {
+        closeUploadModal();
+        uploadProgress.value = 0;
+      }, 1000);
+      
+      // Emit event for parent component to handle success message
+      emit('submitLink', {
+        success: true,
+        message: 'Document link submitted successfully!'
+      });
+      
+      // Refresh data
+      emit('refreshData');
+    },
+    onError: (errors) => {
+      isUploading.value = false;
+      uploadProgress.value = 0;
+      
+      // Emit event for parent component to handle error message
+      emit('submitLink', {
+        success: false,
+        message: errors.signed_document_link || 'Failed to submit document link.'
+      });
+    }
+  });
+};
+
 // Function to delete document
 const deleteDocument = (appId) => {
   activeDropdownApp.value = null;
@@ -337,6 +379,22 @@ const getReportPath = (app) => {
       path = app.signed_document_path;
   }
   return path && path !== '' ? path : null;
+};
+
+// Helper function to check if application has a signed document (file or link)
+const hasSignedDocument = (app) => {
+  return (app.signed_document_path && app.signed_document_path.trim() !== '') || 
+         (app.signed_document_link && app.signed_document_link.trim() !== '');
+};
+
+// Helper function to get signed document type
+const getSignedDocumentType = (app) => {
+  if (app.signed_document_path && app.signed_document_path.trim() !== '') {
+    return 'file';
+  } else if (app.signed_document_link && app.signed_document_link.trim() !== '') {
+    return 'link';
+  }
+  return null;
 };
 
 const getViewUrl = (app) => {
@@ -423,15 +481,31 @@ const viewPdf = (app) => {
   }
 };
 
-// Add new method for viewing signed documents - Navigate to SPA view
+// Add new method for viewing signed documents - Navigate to SPA view or open link
 const viewSignedDocument = (app) => {
-  if (app.signed_document_path && app.signed_document_path.trim() !== '') {
+  if (hasSignedDocument(app)) {
     // Close any open dropdowns
     activeDropdownApp.value = null;
     activeMobileDropdownId.value = null;
-    // Navigate to the new SPA document view
-    router.visit(`/applications/${app.id}/document`);
+    
+    if (getSignedDocumentType(app) === 'link') {
+      // Open link in new tab
+      window.open(app.signed_document_link, '_blank');
+    } else {
+      // Navigate to the SPA document view for files
+      router.visit(`/applications/${app.id}/document`);
+    }
   }
+};
+
+// Add new method for viewing feedback
+const viewFeedback = (app) => {
+  // Close any open dropdowns
+  activeDropdownApp.value = null;
+  activeMobileDropdownId.value = null;
+  
+  // Navigate to the feedback view page
+  router.visit(`/applications/${app.id}/feedback`);
 };
 
 // Watch for modal open/close to lock body scroll
@@ -501,11 +575,11 @@ watch(showSignedDocumentModal, (val) => {
           <span><span class="font-semibold text-gray-700 dark:text-gray-200">Submitted:</span> {{ formatDate(app.created_at) }}</span>
         </div>
         <div class="flex flex-wrap gap-2 text-xs mt-1">
-          <span v-if="app.signed_document_path" class="text-green-600 dark:text-green-400 flex items-center gap-1 font-medium">
+          <span v-if="hasSignedDocument(app)" class="text-green-600 dark:text-green-400 flex items-center gap-1 font-medium">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.707a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
             </svg>
-            Signed Document
+            {{ getSignedDocumentType(app) === 'link' ? 'Document Link' : 'Signed Document' }}
           </span>
           <span v-else class="text-gray-500 dark:text-gray-400 flex items-center gap-1 font-medium">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
@@ -540,24 +614,30 @@ watch(showSignedDocumentModal, (val) => {
             </svg>
             Update Status
           </button>
-          <button v-if="!app.signed_document_path" @click="openUploadModal(app)" class="w-full text-left px-2 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200">
+          <button v-if="!hasSignedDocument(app)" @click="openUploadModal(app)" class="w-full text-left px-2 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-600 dark:text-indigo-400" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
             </svg>
             Upload Document
           </button>
-          <button v-if="app.signed_document_path && app.status.toLowerCase() !== 'approved'" @click="activeMobileDropdownId = null; deleteDocument(app.id)" class="w-full text-left px-2 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200">
+          <button v-if="hasSignedDocument(app) && app.status.toLowerCase() !== 'approved'" @click="activeMobileDropdownId = null; deleteDocument(app.id)" class="w-full text-left px-2 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-orange-600" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zm3 8a1 1 0 11-2 0 1 1 0 012 0zm-8 2a1 1 0 100 2h10a1 1 0 100-2H4z" clip-rule="evenodd" />
             </svg>
             Delete Document
           </button>
-          <button v-if="app.signed_document_path" @click="activeMobileDropdownId = null; viewSignedDocument(app)" class="w-full text-left px-2 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200">
+          <button v-if="hasSignedDocument(app)" @click="activeMobileDropdownId = null; viewSignedDocument(app)" class="w-full text-left px-2 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-teal-600 dark:text-teal-400" viewBox="0 0 20 20" fill="currentColor">
               <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2h-1.528A6 6 0 004 9.528V4z" />
               <path fill-rule="evenodd" d="M8 10a4 4 0 00-3.446 6.032l-1.261 1.26a1 1 0 101.415 1.415l1.261-1.261A4 4 0 006 10z" clip-rule="evenodd" />
             </svg>
-            View Document
+            {{ getSignedDocumentType(app) === 'link' ? 'Open Link' : 'View Document' }}
+          </button>
+          <button v-if="getSignedDocumentType(app) === 'link' || app.feedback" @click="activeMobileDropdownId = null; viewFeedback(app)" class="w-full text-left px-2 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-600 dark:text-purple-400" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd" />
+            </svg>
+            View Feedback
           </button>
           <Link v-if="isAdmin || (!isAdmin && app.status !== 'Approved')" :href="`/applications/${app.id}/edit`" @click="activeMobileDropdownId = null" class="w-full text-left px-2 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-500 dark:text-amber-400" viewBox="0 0 20 20" fill="currentColor">
@@ -623,11 +703,11 @@ watch(showSignedDocumentModal, (val) => {
             <div class="flex flex-wrap gap-2 text-xs text-gray-500 dark:text-gray-400 mt-1 font-medium">
               <span><span class="font-semibold text-gray-700 dark:text-gray-200">Submitted:</span> {{ formatDate(app.created_at) }}</span>
               <span v-if="app.status">&bull; <span :class="`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(app.status)}`">{{ app.status }}</span></span>
-              <span v-if="app.signed_document_path" class="text-green-600 dark:text-green-400 flex items-center gap-1">
+              <span v-if="hasSignedDocument(app)" class="text-green-600 dark:text-green-400 flex items-center gap-1">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
                   <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.707a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                 </svg>
-                Signed Document
+                {{ getSignedDocumentType(app) === 'link' ? 'Document Link' : 'Signed Document' }}
               </span>
               <span v-else class="text-gray-500 dark:text-gray-400 flex items-center gap-1">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
@@ -679,7 +759,7 @@ watch(showSignedDocumentModal, (val) => {
         </button>
         <!-- Upload document option -->
         <button
-          v-if="!activeDropdownApp.signed_document_path"
+          v-if="!hasSignedDocument(activeDropdownApp)"
           @click="openUploadModal(activeDropdownApp)"
           class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200 font-medium"
         >
@@ -688,9 +768,9 @@ watch(showSignedDocumentModal, (val) => {
           </svg>
           Upload Document
         </button>
-        <!-- Delete document option (only if signed_document_path exists and status is not approved) -->
+        <!-- Delete document option (only if signed document exists and status is not approved) -->
         <button 
-          v-if="activeDropdownApp.signed_document_path && activeDropdownApp.status.toLowerCase() !== 'approved'"
+          v-if="hasSignedDocument(activeDropdownApp) && activeDropdownApp.status.toLowerCase() !== 'approved'"
           @click="deleteDocument(activeDropdownApp.id)"
           class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200 font-medium"
         >
@@ -699,9 +779,9 @@ watch(showSignedDocumentModal, (val) => {
           </svg>
           Delete Document
         </button>
-        <!-- View signed document option (only if signed_document_path exists) -->
+        <!-- View signed document option (only if signed document exists) -->
         <button 
-          v-if="activeDropdownApp.signed_document_path"
+          v-if="hasSignedDocument(activeDropdownApp)"
           @click="viewSignedDocument(activeDropdownApp)"
           class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200 font-medium"
         >
@@ -709,7 +789,19 @@ watch(showSignedDocumentModal, (val) => {
             <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2h-1.528A6 6 0 004 9.528V4z" />
             <path fill-rule="evenodd" d="M8 10a4 4 0 00-3.446 6.032l-1.261 1.26a1 1 0 101.415 1.415l1.261-1.261A4 4 0 006 10z" clip-rule="evenodd" />
           </svg>
-          View Document
+          {{ getSignedDocumentType(activeDropdownApp) === 'link' ? 'Open Link' : 'View Document' }}
+        </button>
+
+        <!-- View Feedback option (for link submissions or when feedback exists) -->
+        <button 
+          v-if="getSignedDocumentType(activeDropdownApp) === 'link' || activeDropdownApp.feedback"
+          @click="viewFeedback(activeDropdownApp)"
+          class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200 font-medium"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-600 dark:text-purple-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd" />
+          </svg>
+          View Feedback
         </button>
         <!-- Edit Application -->
         <Link 
@@ -885,6 +977,7 @@ watch(showSignedDocumentModal, (val) => {
       :uploadProgress="uploadProgress"
       @close="closeUploadModal"
       @upload="uploadDocument"
+      @submitLink="submitLink"
     />
   </div>
 </template>

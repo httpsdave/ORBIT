@@ -159,6 +159,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/applications/{application}/upload-document', [OrganizationApplicationController::class, 'uploadSignedDocument'])
     ->name('applications.upload-document');
 
+    // Submit document link
+    Route::post('/applications/{application}/submit-link', [OrganizationApplicationController::class, 'submitLink'])
+    ->name('applications.submit-link');
+
     // View signed document
     Route::get('/applications/{application}/view-document', [OrganizationApplicationController::class, 'viewSignedDocument'])
     ->name('applications.view-document');
@@ -166,6 +170,10 @@ Route::middleware(['auth'])->group(function () {
     // SPA Document view page
     Route::get('/applications/{application}/document', [OrganizationApplicationController::class, 'showDocumentView'])
     ->name('applications.document-view');
+
+    // SPA Feedback view page
+    Route::get('/applications/{application}/feedback', [OrganizationApplicationController::class, 'showFeedbackView'])
+    ->name('applications.feedback-view');
 
     // Delete signed document
     Route::delete('/applications/{application}/delete-document', [OrganizationApplicationController::class, 'deleteSignedDocument'])

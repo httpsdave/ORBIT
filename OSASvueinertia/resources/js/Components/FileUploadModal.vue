@@ -8,16 +8,20 @@ const props = defineProps({
   uploadProgress: Number
 });
 
-const emit = defineEmits(['close', 'upload']);
+const emit = defineEmits(['close', 'upload', 'submitLink']);
 
 const isDragging = ref(false);
 const selectedFile = ref(null);
 const error = ref('');
+const submissionType = ref('upload'); // 'upload' or 'link'
+const linkUrl = ref('');
 
 const resetState = () => {
   selectedFile.value = null;
   error.value = '';
   isDragging.value = false;
+  linkUrl.value = '';
+  submissionType.value = 'upload';
 };
 
 watch(() => props.showModal, (newVal) => {
@@ -46,6 +50,24 @@ const validateFile = (file) => {
   
   if (file.size > 20 * 1024 * 1024) { // 20MB
     error.value = 'File size must be less than 20MB.';
+    return false;
+  }
+  
+  return true;
+};
+
+const validateLink = (url) => {
+  error.value = '';
+  
+  if (!url || url.trim() === '') {
+    error.value = 'Please enter a Google Drive or Google Docs link.';
+    return false;
+  }
+  
+  // Basic validation for Google Drive/Docs links
+  const googleDrivePattern = /^https:\/\/(drive\.google\.com|docs\.google\.com)\/.+/;
+  if (!googleDrivePattern.test(url.trim())) {
+    error.value = 'Must be a valid Google Drive or Google Docs link.';
     return false;
   }
   
@@ -85,8 +107,14 @@ const handleDragLeave = (event) => {
 };
 
 const handleUpload = () => {
-  if (selectedFile.value && validateFile(selectedFile.value)) {
-    emit('upload', selectedFile.value);
+  if (submissionType.value === 'upload') {
+    if (selectedFile.value && validateFile(selectedFile.value)) {
+      emit('upload', selectedFile.value);
+    }
+  } else {
+    if (validateLink(linkUrl.value)) {
+      emit('submitLink', linkUrl.value.trim());
+    }
   }
 };
 
@@ -94,6 +122,13 @@ const handleClose = () => {
   if (!props.isUploading) {
     emit('close');
   }
+};
+
+const switchSubmissionType = (type) => {
+  submissionType.value = type;
+  error.value = '';
+  selectedFile.value = null;
+  linkUrl.value = '';
 };
 </script>
 
@@ -114,7 +149,7 @@ const handleClose = () => {
             Upload Signed Document
           </h3>
           <p class="text-sm text-indigo-100 mt-1">
-            {{ application?.organization_name }}
+            {{ application?.user?.name || application?.organization_name }}
           </p>
         </div>
 
@@ -135,60 +170,106 @@ const handleClose = () => {
             <p class="text-center text-sm text-gray-600">{{ Math.round(uploadProgress) }}% complete</p>
           </div>
 
-          <!-- File Upload Area -->
+          <!-- Submission Options -->
           <div v-else class="space-y-4">
-            <!-- Drag and Drop Area -->
-            <div
-              @drop="handleDrop"
-              @dragover="handleDragOver"
-              @dragleave="handleDragLeave"
-              @click="$refs.fileInput.click()"
-              :class="[
-                'border-2 border-dashed rounded-lg p-6 text-center transition-all duration-200 cursor-pointer',
-                isDragging 
-                  ? 'border-indigo-400 bg-indigo-50' 
-                  : selectedFile 
-                    ? 'border-green-400 bg-green-50' 
-                    : 'border-gray-300 hover:border-indigo-400 hover:bg-gray-50'
-              ]"
-            >
-              <div v-if="selectedFile" class="space-y-2">
-                <svg class="h-12 w-12 text-green-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <p class="text-sm font-medium text-green-700">{{ selectedFile.name }}</p>
-                <p class="text-xs text-green-600">{{ (selectedFile.size / 1024 / 1024).toFixed(2) }} MB</p>
-                <button
-                  @click="selectedFile = null"
-                  class="text-xs text-red-600 hover:text-red-800 underline"
-                >
-                  Remove
-                </button>
-              </div>
-              
-              <div v-else class="space-y-2">
-                <svg class="h-12 w-12 text-gray-400 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                </svg>
-                <div>
-                  <p class="text-sm text-gray-600">
-                    <span class="font-medium text-indigo-600">Click to upload</span> or drag and drop
-                  </p>
-                  <p class="text-xs text-gray-500">PDF files only, max 20MB</p>
-                </div>
-              </div>
+            <!-- Toggle Buttons -->
+            <div class="flex space-x-2">
+              <button
+                @click="switchSubmissionType('upload')"
+                :class="[
+                  'flex-1 py-3 px-4 rounded-lg font-medium text-sm transition-all duration-200',
+                  submissionType === 'upload'
+                    ? 'bg-indigo-600 text-white shadow-md'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                ]"
+              >
+                Upload PDF
+              </button>
+              <button
+                @click="switchSubmissionType('link')"
+                :class="[
+                  'flex-1 py-3 px-4 rounded-lg font-medium text-sm transition-all duration-200',
+                  submissionType === 'link'
+                    ? 'bg-indigo-600 text-white shadow-md'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                ]"
+              >
+                Submit Link
+              </button>
             </div>
 
-            <!-- Hidden File Input -->
-            <input
-              type="file"
-              ref="fileInput"
-              @change="handleFileSelect"
-              accept=".pdf"
-              class="hidden"
-            />
+            <!-- File Upload Area -->
+            <div v-if="submissionType === 'upload'" class="space-y-4">
+              <!-- Drag and Drop Area -->
+              <div
+                @drop="handleDrop"
+                @dragover="handleDragOver"
+                @dragleave="handleDragLeave"
+                @click="$refs.fileInput.click()"
+                :class="[
+                  'border-2 border-dashed rounded-lg p-6 text-center transition-all duration-200 cursor-pointer',
+                  isDragging 
+                    ? 'border-indigo-400 bg-indigo-50' 
+                    : selectedFile 
+                      ? 'border-green-400 bg-green-50' 
+                      : 'border-gray-300 hover:border-indigo-400 hover:bg-gray-50'
+                ]"
+              >
+                <div v-if="selectedFile" class="space-y-2">
+                  <svg class="h-12 w-12 text-green-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <p class="text-sm font-medium text-green-700">{{ selectedFile.name }}</p>
+                  <p class="text-xs text-green-600">{{ (selectedFile.size / 1024 / 1024).toFixed(2) }} MB</p>
+                  <button
+                    @click="selectedFile = null"
+                    class="text-xs text-red-600 hover:text-red-800 underline"
+                  >
+                    Remove
+                  </button>
+                </div>
+                
+                <div v-else class="space-y-2">
+                  <svg class="h-12 w-12 text-gray-400 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                  </svg>
+                  <div>
+                    <p class="text-sm text-gray-600">
+                      <span class="font-medium text-indigo-600">Click to upload</span> or drag and drop
+                    </p>
+                    <p class="text-xs text-gray-500">PDF files only, max 20MB</p>
+                  </div>
+                </div>
+              </div>
 
+              <!-- Hidden File Input -->
+              <input
+                type="file"
+                ref="fileInput"
+                @change="handleFileSelect"
+                accept=".pdf"
+                class="hidden"
+              />
+            </div>
 
+            <!-- Link Submission Area -->
+            <div v-if="submissionType === 'link'" class="space-y-4">
+              <div>
+                <label for="link-input" class="block text-sm font-medium text-gray-700 mb-2">
+                  Google Drive/Docs Link
+                </label>
+                <input
+                  id="link-input"
+                  v-model="linkUrl"
+                  type="url"
+                  placeholder="Paste Google Drive or Docs link here..."
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-200"
+                />
+                <p class="text-xs text-gray-500 mt-1">
+                  Must be a valid Google Drive or Google Docs link.
+                </p>
+              </div>
+            </div>
 
             <!-- Error Message -->
             <div v-if="error" class="bg-red-50 border border-red-200 rounded-lg p-3">
@@ -213,7 +294,7 @@ const handleClose = () => {
           </button>
           <button
             @click="handleUpload"
-            :disabled="!selectedFile || isUploading || !!error"
+            :disabled="isUploading || !!error || (submissionType === 'upload' && !selectedFile) || (submissionType === 'link' && !linkUrl.trim())"
             class="px-5 py-2 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-medium rounded-lg transition duration-200 text-sm flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <svg v-if="isUploading" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
