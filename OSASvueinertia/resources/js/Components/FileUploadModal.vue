@@ -44,8 +44,8 @@ const validateFile = (file) => {
     return false;
   }
   
-  if (file.size > 10 * 1024 * 1024) { // 10MB
-    error.value = 'File size must be less than 10MB.';
+  if (file.size > 20 * 1024 * 1024) { // 20MB
+    error.value = 'File size must be less than 20MB.';
     return false;
   }
   
@@ -174,7 +174,7 @@ const handleClose = () => {
                   <p class="text-sm text-gray-600">
                     <span class="font-medium text-indigo-600">Click to upload</span> or drag and drop
                   </p>
-                  <p class="text-xs text-gray-500">PDF files only, max 10MB</p>
+                  <p class="text-xs text-gray-500">PDF files only, max 20MB</p>
                 </div>
               </div>
             </div>

@@ -356,7 +356,7 @@ function cancelSave() {
                             </button>
                             <!-- Photo Guidelines -->
                             <p class="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center sm:text-left">
-                                Recommended: Square image, at least 200x200 pixels. Maximum file size: 2MB.
+                                Recommended: Square image, at least 200x200 pixels. Maximum file size: 5MB.
                             </p>
                         </div>
                     </div>

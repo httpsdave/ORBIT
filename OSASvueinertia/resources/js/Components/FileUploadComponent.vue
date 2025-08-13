@@ -177,7 +177,7 @@
           <p class="mb-2 text-sm text-gray-600 dark:text-gray-300 text-center px-2">
             <span class="font-medium">Click to upload</span> or drag and drop
           </p>
-          <p class="text-xs text-gray-500 dark:text-gray-400 text-center px-2">PNG, JPG, PDF (MAX. 10MB)</p>
+          <p class="text-xs text-gray-500 dark:text-gray-400 text-center px-2">PNG, JPG, PDF (MAX. 20MB)</p>
         </div>
         <input 
           id="dropzone-file" 
@@ -318,10 +318,10 @@ export default {
     }
     
     function handleFileSelection(file) {
-      // Validate file size (10MB limit)
-      const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+      // Validate file size (20MB limit)
+      const maxSize = 20 * 1024 * 1024; // 20MB in bytes
       if (file.size > maxSize) {
-        alert('File size exceeds 10MB limit. Please choose a smaller file.');
+        alert('File size exceeds 20MB limit. Please choose a smaller file.');
         return;
       }
       
