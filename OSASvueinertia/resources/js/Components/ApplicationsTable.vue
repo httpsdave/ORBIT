@@ -528,6 +528,18 @@ const viewFeedback = (app) => {
   router.visit(`/applications/${app.id}/feedback`);
 };
 
+// Helper function to properly check if feedback exists
+const hasFeedback = (app) => {
+  if (!app || !app.feedback) return false;
+  
+  // Check if feedback is a string and has content after trimming
+  if (typeof app.feedback === 'string') {
+    return app.feedback.trim().length > 0;
+  }
+  
+  return false;
+};
+
 // Watch for modal open/close to lock body scroll
 watch(showPreviewModal, (val) => {
   if (val) {
@@ -662,7 +674,7 @@ watch(showLinkConfirmationModal, (val) => {
             </svg>
             {{ getSignedDocumentType(app) === 'link' ? 'Open Link' : 'View Document' }}
           </button>
-          <button v-if="app.feedback && app.feedback.trim() !== ''" @click="activeMobileDropdownId = null; viewFeedback(app)" class="w-full text-left px-2 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200">
+          <button v-if="hasFeedback(app)" @click="activeMobileDropdownId = null; viewFeedback(app)" class="w-full text-left px-2 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-600 dark:text-purple-400" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd" />
             </svg>
@@ -823,7 +835,7 @@ watch(showLinkConfirmationModal, (val) => {
 
         <!-- View Feedback option (only when feedback exists) -->
         <button 
-          v-if="activeDropdownApp.feedback && activeDropdownApp.feedback.trim() !== ''"
+          v-if="hasFeedback(activeDropdownApp)"
           @click="viewFeedback(activeDropdownApp)"
           class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200 font-medium"
         >

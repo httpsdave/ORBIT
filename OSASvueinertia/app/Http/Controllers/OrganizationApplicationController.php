@@ -828,9 +828,8 @@ class OrganizationApplicationController extends Controller
     
     $application->status = $validated['status'];  // Use validated data
     
-    if (!empty($validated['feedback'])) {
-        $application->feedback = $validated['feedback'];
-    }
+    // Always update feedback field - set to null if empty, otherwise set to the provided value
+    $application->feedback = !empty($validated['feedback']) ? $validated['feedback'] : null;
     
     $application->reviewed_by = auth()->id();
     $application->reviewed_at = now();
