@@ -2,7 +2,7 @@
   <div>
     <AuthenticatedLayout title="Student Organizations">
       
-        <template #header>
+        
           <!-- Color Banner -->
           <div class="flex w-full mb-3 sm:mb-4 overflow-hidden rounded-lg shadow-lg">
             <div class="w-1/4 h-1 sm:h-1.5 bg-blue-500" style="animation-delay: 0.2s;"></div>
@@ -27,7 +27,7 @@
               <span class="sm:hidden">Add Organization</span>
             </button>
           </div>
-        </template>
+        
 
         <div class="py-2 sm:py-4 md:py-6 lg:py-8">
           <div class="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 xl:px-8">
