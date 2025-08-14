@@ -1,6 +1,6 @@
 <script setup>
 import { Head, Link, router } from '@inertiajs/vue3';
-import { ref, computed } from 'vue';
+import { ref, computed, nextTick } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import SelectInput from '@/Components/SelectInput.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
@@ -40,6 +40,14 @@ const props = defineProps({
 
 const showRestoreModal = ref(false);
 const applicationToRestore = ref(null);
+
+// Add dropdown state management
+const activeDropdownApp = ref(null);
+const activeMobileDropdownId = ref(null);
+const dropdownPosition = ref({ top: 0, left: 0 });
+const dropdownButtonEl = ref(null);
+const dropdownRef = ref(null);
+const dropdownDirection = ref('down');
 
 const filterForm = ref({
     user_filter: props.currentUserFilter,
@@ -114,6 +122,71 @@ const getFormTypeLabel = (formType) => {
     };
     return formTypes[formType] || formType;
 };
+
+// Toggle action dropdown
+const toggleDropdown = (app, event) => {
+    if (window.innerWidth < 640) { // Mobile: show inline dropdown
+        if (activeMobileDropdownId.value === app.id) {
+            activeMobileDropdownId.value = null;
+        } else {
+            activeMobileDropdownId.value = app.id;
+        }
+        return;
+    }
+    // Desktop/table: floating dropdown
+    if (activeDropdownApp.value && activeDropdownApp.value.id === app.id) {
+        activeDropdownApp.value = null;
+        dropdownButtonEl.value = null;
+        removeDropdownListeners();
+    } else {
+        activeDropdownApp.value = app;
+        dropdownButtonEl.value = event.currentTarget;
+        updateDropdownPosition();
+        addDropdownListeners();
+    }
+};
+
+async function updateDropdownPosition() {
+    if (!dropdownButtonEl.value) return;
+    const rect = dropdownButtonEl.value.getBoundingClientRect();
+    let dropdownWidth = window.innerWidth < 640 ? Math.min(window.innerWidth - 32, 320) : 256;
+    let left = rect.right - dropdownWidth;
+    if (left + dropdownWidth > window.innerWidth) left = window.innerWidth - dropdownWidth - 16;
+    if (left < 16) left = 16;
+
+    await nextTick();
+    let dropdownHeight = dropdownRef.value ? dropdownRef.value.offsetHeight : 320;
+
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const spaceAbove = rect.top;
+
+    let top;
+    if (spaceBelow >= dropdownHeight + 16) {
+        top = rect.bottom + 6;
+        dropdownDirection.value = 'down';
+    } else if (spaceAbove >= dropdownHeight + 16) {
+        top = rect.top - dropdownHeight - 6;
+        dropdownDirection.value = 'up';
+    } else if (spaceBelow >= spaceAbove) {
+        top = rect.bottom + 6;
+        dropdownDirection.value = 'down';
+    } else {
+        top = Math.max(8, rect.top - dropdownHeight - 6);
+        dropdownDirection.value = 'up';
+    }
+
+    dropdownPosition.value = { top, left };
+}
+
+function addDropdownListeners() {
+    window.addEventListener('scroll', updateDropdownPosition, true);
+    window.addEventListener('resize', updateDropdownPosition);
+}
+
+function removeDropdownListeners() {
+    window.removeEventListener('scroll', updateDropdownPosition, true);
+    window.removeEventListener('resize', updateDropdownPosition);
+}
 </script>
 
 <template>
@@ -196,193 +269,180 @@ const getFormTypeLabel = (formType) => {
             </div>
         </div>
 
-        <!-- Archived Applications Table -->
-        <div class="max-w-7xl mx-auto px-4 sm:px-6">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
-                <div class="p-4 sm:p-6">
-                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-2">
-                        <h3 class="text-lg font-medium text-gray-800 dark:text-gray-200">
-                            Archived Applications ({{ archivedApplications.length }})
-                        </h3>
-                    </div>
+        <!-- Archived Applications -->
+        <div class="relative">
+            <!-- Colored banner -->
+            <div class="max-w-4xl mx-auto px-4 sm:px-6">
+                <div class="flex w-full overflow-hidden shadow-md rounded-t-2xl">
+                    <div class="w-1/4 h-1.5 bg-blue-600 animate-pulse rounded-tl-2xl" style="animation-delay: 0.2s;"></div>
+                    <div class="w-1/4 h-1.5 bg-green-500 animate-pulse" style="animation-delay: 0.4s;"></div>
+                    <div class="w-1/4 h-1.5 bg-amber-500 animate-pulse" style="animation-delay: 0.6s;"></div>
+                    <div class="w-1/4 h-1.5 bg-red-500 animate-pulse rounded-tr-2xl" style="animation-delay: 0.8s;"></div>
+                </div>
+            </div>
 
-                    <div v-if="archivedApplications.length === 0" class="text-center py-8">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-                        </svg>
-                        <p class="mt-4 text-gray-600 dark:text-gray-400">No archived applications found.</p>
-                    </div>
+            <div v-if="archivedApplications.length === 0" class="text-center py-8 max-w-4xl mx-auto px-4 sm:px-6">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                </svg>
+                <p class="mt-4 text-gray-600 dark:text-gray-400">No archived applications found.</p>
+            </div>
 
-                    <!-- Mobile Card Layout -->
-                    <div v-else class="block lg:hidden space-y-4">
-                        <div v-for="application in archivedApplications" :key="application.id" class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
-                            <div class="flex flex-col space-y-3">
-                                <!-- Header with Organization and Status -->
-                                <div class="flex justify-between items-start">
-                                    <div class="flex-1 min-w-0">
-                                        <h4 class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
-                                            {{ application.organization_name }}
-                                        </h4>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                            {{ getFormTypeLabel(application.form_type) }}
-                                        </p>
-                                    </div>
-                                    <span
-                                        :class="[
-                                            'inline-flex px-2 py-1 text-xs font-semibold rounded-full ml-2 flex-shrink-0',
-                                            getStatusColor(application.status)
-                                        ]"
-                                    >
-                                        {{ application.status }}
-                                    </span>
+            <!-- MOBILE CARD LAYOUT -->
+            <div v-if="archivedApplications.length > 0" class="sm:hidden p-2 space-y-4 max-w-4xl mx-auto">
+                <div v-for="application in archivedApplications" :key="application.id" 
+                    class="bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-100 dark:border-gray-700 p-4 flex flex-col gap-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                    <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#2563eb">
+                                        <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h168q13-36 43.5-58t68.5-22q38 0 68.5 22t43.5 58h168q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm80-80h280v-80H280v80Zm0-160h400v-80H280v80Zm0-160h400v-80H280v80Zm200-190q13 0 21.5-8.5T510-820q0-13-8.5-21.5T480-850q-13 0-21.5 8.5T450-820q0 13 8.5 21.5T480-790ZM200-200v-560 560Z"/>
+                                    </svg>
+                                    <div class="text-base font-semibold text-gray-800 dark:text-gray-200">{{ getFormTypeLabel(application.form_type) }}</div>
                                 </div>
-
-                                <!-- Details Grid -->
-                                <div class="grid grid-cols-2 gap-2 text-xs">
-                                    <div>
-                                        <span class="text-gray-500 dark:text-gray-400">Organization:</span>
-                                        <p class="text-gray-900 dark:text-gray-100 font-medium">{{ application.user?.name || 'N/A' }}</p>
-                                    </div>
-                                    <div>
-                                        <span class="text-gray-500 dark:text-gray-400">Academic Year:</span>
-                                        <p class="text-gray-900 dark:text-gray-100 font-medium">{{ application.academic_year_archived || 'N/A' }}</p>
-                                    </div>
-                                    <div>
-                                        <span class="text-gray-500 dark:text-gray-400">Archived By:</span>
-                                        <p class="text-gray-900 dark:text-gray-100 font-medium">{{ application.archived_by_user?.name || 'N/A' }}</p>
-                                    </div>
-                                    <div>
-                                        <span class="text-gray-500 dark:text-gray-400">Archived At:</span>
-                                        <p class="text-gray-900 dark:text-gray-100 font-medium">{{ formatDate(application.archived_at) }}</p>
-                                    </div>
-                                </div>
-
-                                <!-- Actions -->
-                                <div class="flex flex-col sm:flex-row gap-2 pt-2 border-t border-gray-200 dark:border-gray-600">
-                                    <a
-                                        :href="route('applications.pdf', application.id) + '?action=view'"
-                                        class="inline-flex items-center justify-center px-3 py-2 bg-green-500 hover:bg-green-400 text-white text-sm font-medium rounded-lg transition duration-300 relative overflow-hidden group shadow-sm flex-1"
-                                        target="_blank"
-                                    >
-                                        <span class="absolute w-0 h-0 transition-all duration-300 ease-out bg-white rounded-full group-hover:w-16 group-hover:h-16 opacity-10"></span>
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                                            <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                                            <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
-                                        </svg>
-                                        View PDF
-                                    </a>
-                                    <button
-                                        @click="confirmRestore(application)"
-                                        class="inline-flex items-center justify-center px-3 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-lg transition duration-300 relative overflow-hidden group shadow-sm flex-1"
-                                    >
-                                        <span class="absolute w-0 h-0 transition-all duration-300 ease-out bg-white rounded-full group-hover:w-16 group-hover:h-16 opacity-10"></span>
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l-4-4m0 0l4-4m-4 4h11a4 4 0 110 8h-1" />
-                                        </svg>
-                                        Restore
-                                    </button>
-                                </div>
+                                <span :class="`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(application.status)}`">
+                                    {{ application.status }}
+                                </span>
                             </div>
+                            <div class="flex flex-wrap gap-2 text-xs text-gray-500 dark:text-gray-400 font-medium">
+                                <span><span class="font-semibold text-gray-700 dark:text-gray-200">Organization:</span> {{ application.user?.name || 'N/A' }}</span>
+                                <span><span class="font-semibold text-gray-700 dark:text-gray-200">Academic Year:</span> {{ application.academic_year_archived || 'N/A' }}</span>
+                            </div>
+                            <div class="flex flex-wrap gap-2 text-xs text-gray-500 dark:text-gray-400 font-medium">
+                                <span><span class="font-semibold text-gray-700 dark:text-gray-200">Archived By:</span> {{ application.archived_by_user?.name || 'N/A' }}</span>
+                                <span><span class="font-semibold text-gray-700 dark:text-gray-200">Archived At:</span> {{ formatDate(application.archived_at) }}</span>
+                            </div>
+                    <div class="flex gap-2 mt-2 flex-wrap">
+                        <button
+                            @click.stop="toggleDropdown(application, $event)"
+                            :aria-label="'Actions for ' + getFormTypeLabel(application.form_type)"
+                            class="relative inline-flex items-center justify-center rounded-full p-2 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-400 transition group"
+                            :data-dropdown-trigger="application.id"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <circle cx="10" cy="4" r="2.2"/>
+                                <circle cx="10" cy="10" r="2.2"/>
+                                <circle cx="10" cy="16" r="2.2"/>
+                            </svg>
+                            <span class="absolute left-1/2 -bottom-8 transform -translate-x-1/2 bg-gray-800 dark:bg-gray-700 text-white dark:text-gray-200 text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity duration-300 whitespace-nowrap z-50">
+                                Actions
+                            </span>
+                        </button>
+                    </div>
+                    <!-- MOBILE INLINE DROPDOWN -->
+                    <div v-if="activeMobileDropdownId === application.id" class="mobile-dropdown-menu mt-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg shadow p-3 flex flex-col gap-2 z-10" @click.stop>
+                        <a
+                            :href="route('applications.pdf', application.id) + '?action=view'"
+                            @click="activeMobileDropdownId = null"
+                            class="w-full text-left px-2 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200"
+                            target="_blank"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-600 dark:text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                                <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                            </svg>
+                            View PDF
+                        </a>
+                        <button 
+                            @click="activeMobileDropdownId = null; confirmRestore(application)" 
+                            class="w-full text-left px-2 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l-4-4m0 0l4-4m-4 4h11a4 4 0 110 8h-1" />
+                            </svg>
+                            Restore
+                        </button>
+                    </div>
                         </div>
                     </div>
 
-                    <!-- Desktop Table Layout -->
-                    <div v-else class="hidden lg:block overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                            <thead class="bg-gray-50 dark:bg-gray-700">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                        Application
-                                    </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                        Organization
-                                    </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                        Status
-                                    </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                        Academic Year
-                                    </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                        Archived By
-                                    </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                        Archived At
-                                    </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                        Actions
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                                <tr v-for="application in archivedApplications" :key="application.id">
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div>
-                                            <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                                {{ application.organization_name }}
-                                            </div>
-                                            <div class="text-sm text-gray-500 dark:text-gray-400">
-                                                {{ getFormTypeLabel(application.form_type) }}
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm text-gray-900 dark:text-gray-100">
+                    <!-- Desktop Stacked List Layout -->
+                    <div v-if="archivedApplications.length > 0" class="hidden sm:block p-4 max-w-4xl mx-auto">
+                        <div
+                            v-for="application in archivedApplications"
+                            :key="application.id"
+                            class="bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-100 dark:border-gray-700 mb-4 flex flex-col md:flex-row md:items-center md:justify-between hover:shadow-lg transition cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
+                        >
+                            <div class="flex items-center gap-4 p-5 flex-1 min-w-0">
+                                <div class="flex-shrink-0">
+                                    <div class="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full p-3">
+                                        <svg xmlns="http://www.w3.org/2000/svg" height="28px" viewBox="0 -960 960 960" width="28px" fill="#2563eb">
+                                            <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h168q13-36 43.5-58t68.5-22q38 0 68.5 22t43.5 58h168q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm80-80h280v-80H280v80Zm0-160h400v-80H280v80Zm0-160h400v-80H280v80Zm200-190q13 0 21.5-8.5T510-820q0-13-8.5-21.5T480-850q-13 0-21.5 8.5T450-820q0 13 8.5 21.5T480-790ZM200-200v-560 560Z"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <div class="font-medium text-base text-gray-900 dark:text-gray-100 truncate">
+                                        {{ getFormTypeLabel(application.form_type) }}
+                                        <span class="inline-flex items-center">
+                                            <svg class="mx-1 text-gray-400 dark:text-gray-500" width="10" height="10" viewBox="0 0 10 10" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style="display:inline">
+                                                <polygon points="0,0 10,5 0,10"/>
+                                            </svg>
                                             {{ application.user?.name || 'N/A' }}
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span
-                                            :class="[
-                                                'inline-flex px-2 py-1 text-xs font-semibold rounded-full',
-                                                getStatusColor(application.status)
-                                            ]"
-                                        >
-                                            {{ application.status }}
                                         </span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                                        {{ application.academic_year_archived || 'N/A' }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                                        {{ application.archived_by_user?.name || 'N/A' }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                                        {{ formatDate(application.archived_at) }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                        <div class="flex space-x-2">
-                                            <a
-                                                :href="route('applications.pdf', application.id) + '?action=view'"
-                                                class="bg-green-500 hover:bg-green-400 text-white p-2.5 rounded-lg transition duration-300 relative overflow-hidden group shadow-sm"
-                                                target="_blank"
-                                                title="View PDF"
-                                            >
-                                                <span class="absolute w-0 h-0 transition-all duration-300 ease-out bg-white rounded-full group-hover:w-16 group-hover:h-16 opacity-10"></span>
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                                                    <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
-                                                </svg>
-                                            </a>
-                                            <button
-                                                @click="confirmRestore(application)"
-                                                class="bg-blue-600 hover:bg-blue-500 text-white p-2.5 rounded-lg transition duration-300 relative overflow-hidden group shadow-sm"
-                                                title="Restore"
-                                            >
-                                                <span class="absolute w-0 h-0 transition-all duration-300 ease-out bg-white rounded-full group-hover:w-16 group-hover:h-16 opacity-10"></span>
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l-4-4m0 0l4-4m-4 4h11a4 4 0 110 8h-1" />
-                                                </svg>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                                    </div>
+                                    <div class="text-sm text-gray-500 dark:text-gray-400 font-medium truncate">{{ application.form_type }}</div>
+                                    <div class="flex flex-wrap gap-2 text-xs text-gray-500 dark:text-gray-400 mt-1 font-medium">
+                                        <span><span class="font-semibold text-gray-700 dark:text-gray-200">Academic Year:</span> {{ application.academic_year_archived || 'N/A' }}</span>
+                                        <span>&bull; <span :class="`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(application.status)}`">{{ application.status }}</span></span>
+                                        <span><span class="font-semibold text-gray-700 dark:text-gray-200">Archived By:</span> {{ application.archived_by_user?.name || 'N/A' }}</span>
+                                        <span><span class="font-semibold text-gray-700 dark:text-gray-200">Archived At:</span> {{ formatDate(application.archived_at) }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 p-5 pt-0 md:pt-5 md:pl-0 md:pr-6 md:flex-col md:items-end">
+                                <button
+                                    @click.stop="toggleDropdown(application, $event)"
+                                    :aria-label="'Actions for ' + getFormTypeLabel(application.form_type)"
+                                    class="relative inline-flex items-center justify-center rounded-full p-2 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-400 transition group"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <circle cx="10" cy="4" r="2.2"/>
+                                        <circle cx="10" cy="10" r="2.2"/>
+                                        <circle cx="10" cy="16" r="2.2"/>
+                                    </svg>
+                                    <span class="absolute left-1/2 -bottom-8 transform -translate-x-1/2 bg-gray-800 dark:bg-gray-700 text-white dark:text-gray-200 text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity duration-300 whitespace-nowrap z-50">
+                                        Actions
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
         </div>
+
+        <!-- Render the dropdown only once, outside the table -->
+        <Teleport to="body">
+            <div 
+                ref="dropdownRef"
+                v-if="activeDropdownApp"
+                class="fixed z-50 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 w-full max-w-xs sm:w-64"
+                :style="{ top: `${dropdownPosition.top}px`, left: `${dropdownPosition.left}px`, visibility: activeDropdownApp ? 'visible' : 'hidden' }"
+                @click.stop
+            >
+                <!-- View PDF option -->
+                <a
+                    :href="route('applications.pdf', activeDropdownApp.id) + '?action=view'"
+                    class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200 font-medium"
+                    target="_blank"
+                    @click="activeDropdownApp = null"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-600 dark:text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                        <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                    </svg>
+                    View PDF
+                </a>
+                <!-- Restore option -->
+                <button 
+                    @click="activeDropdownApp = null; confirmRestore(activeDropdownApp)"
+                    class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200 font-medium"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l-4-4m0 0l4-4m-4 4h11a4 4 0 110 8h-1" />
+                    </svg>
+                    Restore
+                </button>
+            </div>
+        </Teleport>
 
         <!-- Restore Confirmation Modal -->
         <Modal :show="showRestoreModal" @close="showRestoreModal = false">
