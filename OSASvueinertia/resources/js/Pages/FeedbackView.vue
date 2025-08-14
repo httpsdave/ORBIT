@@ -191,7 +191,7 @@ const hasChanges = computed(() => {
 
 // Methods
 const goBack = () => {
-  router.visit(props.backUrl)
+  router.visit('/applications', { preserveState: false, preserveScroll: true })
 }
 
 const formatDate = (dateString) => {
