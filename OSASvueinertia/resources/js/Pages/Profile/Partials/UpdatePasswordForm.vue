@@ -4,7 +4,7 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { useForm } from '@inertiajs/vue3';
-import { ref, computed } from 'vue';
+import { ref, computed, nextTick } from 'vue';
 import { usePage } from '@inertiajs/vue3';
 
 const user = usePage().props.auth.user;
@@ -80,34 +80,75 @@ const toggleCurrentPassword = (event) => {
     event.preventDefault();
     event.stopPropagation();
     showCurrentPassword.value = !showCurrentPassword.value;
+    // Refocus the input to maintain the eye icon
+    nextTick(() => {
+        if (currentPasswordInput.value) {
+            currentPasswordInput.value.focus();
+        }
+    });
 };
 
 const toggleNewPassword = (event) => {
     event.preventDefault();
     event.stopPropagation();
     showNewPassword.value = !showNewPassword.value;
+    // Refocus the input to maintain the eye icon
+    nextTick(() => {
+        if (passwordInput.value) {
+            passwordInput.value.focus();
+        }
+    });
 };
 
 const toggleConfirmPassword = (event) => {
     event.preventDefault();
     event.stopPropagation();
     showConfirmPassword.value = !showConfirmPassword.value;
+    // Refocus the input to maintain the eye icon
+    nextTick(() => {
+        const confirmInput = document.getElementById('password_confirmation');
+        if (confirmInput) {
+            confirmInput.focus();
+        }
+    });
 };
 
 // Focus and blur handlers
 const handleFocus = (fieldName) => {
+    // Clear any existing blur timeout
+    if (blurTimeout.value) {
+        clearTimeout(blurTimeout.value);
+        blurTimeout.value = null;
+    }
     focusedField.value = fieldName;
 };
 
-const handleBlur = () => {
-    setTimeout(() => {
+const blurTimeout = ref(null);
+
+const handleBlur = (event) => {
+    // Check if the blur is caused by clicking on the toggle button
+    const relatedTarget = event.relatedTarget;
+    if (relatedTarget && relatedTarget.closest('button[type="button"]')) {
+        // Don't blur if clicking on the toggle button
+        return;
+    }
+    
+    // Clear any existing timeout
+    if (blurTimeout.value) {
+        clearTimeout(blurTimeout.value);
+    }
+    
+    // Set a new timeout to clear focus
+    blurTimeout.value = setTimeout(() => {
         focusedField.value = null;
-    }, 150);
+        blurTimeout.value = null;
+    }, 200);
 };
 
 // Prevent blur when clicking toggle button
 const handleToggleMouseDown = (event) => {
     event.preventDefault();
+    event.stopPropagation();
 };
 </script>
 
@@ -149,7 +190,7 @@ const handleToggleMouseDown = (event) => {
                             class="mt-1 block w-full border-gray-300 dark:border-gray-600 focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50 rounded-md shadow-sm pr-10 dark:bg-gray-700 dark:text-gray-300"
                             autocomplete="current-password"
                             @focus="handleFocus('current')"
-                            @blur="handleBlur"
+                            @blur="handleBlur($event)"
                         />
                         <div class="absolute inset-y-0 right-0 flex items-center pr-3 pt-1">
                             <!-- Show toggle button only when field is focused -->
@@ -234,7 +275,7 @@ const handleToggleMouseDown = (event) => {
                             class="mt-1 block w-full border-gray-300 dark:border-gray-600 focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50 rounded-md shadow-sm pr-10 dark:bg-gray-700 dark:text-gray-300"
                             autocomplete="new-password"
                             @focus="handleFocus('new')"
-                            @blur="handleBlur"
+                            @blur="handleBlur($event)"
                         />
                         <div class="absolute inset-y-0 right-0 flex items-center pr-3 pt-1">
                             <!-- Show toggle button only when field is focused -->
@@ -331,7 +372,7 @@ const handleToggleMouseDown = (event) => {
                             class="mt-1 block w-full border-gray-300 dark:border-gray-600 focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50 rounded-md shadow-sm pr-10 dark:bg-gray-700 dark:text-gray-300"
                             autocomplete="new-password"
                             @focus="handleFocus('confirm')"
-                            @blur="handleBlur"
+                            @blur="handleBlur($event)"
                         />
                         <div class="absolute inset-y-0 right-0 flex items-center pr-3 pt-1">
                             <!-- Show toggle button only when field is focused -->
