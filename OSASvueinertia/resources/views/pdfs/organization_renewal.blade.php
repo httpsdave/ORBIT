@@ -46,9 +46,10 @@
         }
 
         .office-title {
-            font-size: 18px; /* Increase the font size */
+            font-size: 16px; /* Match ORGANIZATION RENEWAL FORM font size */
             font-weight: bold;
-            margin-bottom: 5px; /* Minimal spacing to the next line */
+            margin-top: 0px; /* Reduce spacing above by 10px total */
+            margin-bottom: 10px; /* Add 5px more spacing below */
         }
 
         .form-title {
@@ -220,7 +221,7 @@
         <img src="{{ public_path('images/lspu-name.png') }}" alt="Laguna State Polytechnic University" class="university-name"><br>
         <p class="calibri-font">Province of Laguna</p>
         <br>
-        <p class="office-title">Office of Student Affairs and Services</p>
+    <p class="office-title">OFFICE OF STUDENT AFFAIRS AND SERVICES</p>
         <p class="form-title">ORGANIZATION RENEWAL FORM</p>
         <br>
     </div>
@@ -234,9 +235,9 @@
 
     <div class="main-content">
         <div class="section left-align">
-            <p><strong>THE DIRECTOR/CHAIRPERSON</strong></p>
-            <p>OFFICE OF STUDENT AFFAIRS AND SERVICES</p>
-            <p>LSPU</p>
+            <p style="margin-bottom:0px;"><strong>THE DIRECTOR/CHAIRPERSON</strong></p>
+            <p style="margin-bottom:0px;"><strong>OFFICE OF STUDENT AFFAIRS AND SERVICES</strong></p>
+            <p style="margin-bottom:-10px;"><strong>LSPU</strong></p>
         </div>
 
         <div class="section">
@@ -244,13 +245,13 @@
         </div>
 
         <div class="section">
-            <p>Sir:</p>
+            <p>Sir/Madam:</p>
             
-            <p class="indented">The <span class="dynamic-text"><u>{{ $application->organization_name }}</u></span> wishes to seek renewal of its recognition to function as a Student Organization in the College of <span class="dynamic-text"><u>{{ $application->college }}</u></span> for Academic Year 20<span class="dynamic-text"><u>{{ $application->academic_year_start }}</u></span>-20<span class="dynamic-text"><u>{{ $application->academic_year_end }}</u></span>.</p>
+            <p class="indented">The <span class="dynamic-text"><u>{{ $application->organization_name }}</u></span> wishes to seek renewal of its recognition to function as a duly recognized LSPU Organization in the College of <span class="dynamic-text"><u>{{ $application->college }}</u></span> for Academic Year 20<span class="dynamic-text"><u>{{ $application->academic_year_start }}</u></span>-20<span class="dynamic-text"><u>{{ $application->academic_year_end }}</u></span>.</p>
             
-            <p class="indented">In this connection, we respectfully request your good office to grant us permission to operate in our institution, subject to the existing rules & regulation of our University.</p>
+            <p class="indented">In this connection, we are respectfully requesting from your good office to grant us permission to operate in our institution, subject to the existing rules & regulations of our University.</p>
             <br>
-            <p class="indented">Thank you very much.</p>
+            <p class="indented" style="margin-top:-20px;">Thank you very much.</p>
         </div>
 
         <div class="section right-align">
