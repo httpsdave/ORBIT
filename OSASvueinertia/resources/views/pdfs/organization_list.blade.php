@@ -225,7 +225,7 @@
         }
 
         .university-name {
-            max-width: 60%;
+            max-width: 55%;
             height: auto;
             margin: 3px 0;
             display: inline-block;

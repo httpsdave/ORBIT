@@ -43,7 +43,7 @@
         }
 
         .university-name {
-            max-width: 60%; /* Adjust as needed */
+            max-width: 55%; /* Adjust as needed */
             height: auto;
             margin: 4px 0; /* Add some spacing above and below */
             display: inline-block;

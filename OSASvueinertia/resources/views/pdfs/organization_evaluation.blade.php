@@ -42,7 +42,7 @@
             font-size: 11pt;
             font-family: Calibri, Arial, sans-serif;
             font-weight: bold;
-            max-width: 60%;
+            max-width: 55%;
             height: auto;
             margin: 4px 0;
             display: inline-block;
