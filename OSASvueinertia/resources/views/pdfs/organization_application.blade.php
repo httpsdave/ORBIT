@@ -213,7 +213,7 @@
         <br>
        <strong> OFFICE OF STUDENT AFFAIRS AND SERVICES</strong><br>
         <br>
-        <span class="sub-header"><strong>APPLICATION FOR RECOGNITION/RENEWAL OF ACCREDITED STUDENT ORGANIZATION</strong></span>
+        <span class="sub-header"><strong>APPLICATION FOR ORGANIZATION RECOGNITION/RENEWAL OF ACCREDITED STUDENT ORGANIZATION</strong></span>
     </div>
 
     <div class="section right-align">
@@ -228,7 +228,7 @@
     <div class="section justified">
         <p>Sir:</p>
         <p class="indented">I have the honor to apply for recognition/renewal of <u>{{ $application->organization_name }}</u>, a duly recognized organization in this University.</p>
-        <p class="indented">In compliance with CHED Memo Order #9 s. 2013, Subj.: Enhanced Policies & Guidelines on Student Affairs and Services (Article VIII - Student Development, Section 19. Student Organizations and Activities), I am submitting for proper action the following requirements for recognition and accreditation:</p>
+        <p class="indented">In compliance with CHED Memo Order #9 s. 2013, Subj.: Enhanced Policies & Guidelines on Student Affairs and Services (Article VIII - Student Development, Section 19. Student Organizations and Activities), I am submitting for proper action the following requirements for recognition and accreditation, to wit:</p>
     </div>
 
     <div class="section list-indented">
@@ -238,6 +238,7 @@
         <p>4. List of officers with signature, student I.D. Nos. and attached 2x2 I.D. picture (4 copies)</p>
         <p>5. List of members with signature, student I.D. number and attached 1x1 ID picture (4 copies)</p>
         <p>6. Accomplishment report (for renewal of accreditation) (4 copies)</p>
+        <p>7. Financial Report (if any) (4 copies)</p>
     </div>
 
     <div class="section justified">
