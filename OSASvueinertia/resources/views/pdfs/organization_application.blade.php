@@ -225,7 +225,7 @@
         <p><strong>THE DIRECTOR/CHAIRPERSON</strong><br>Office of Student Affairs and Services<br>LSPU</p>
     </div>
 
-    <div style="height: 12px;"></div>
+    <div style="height: 7px;"></div>
     <div class="section justified">
         <p>Sir/Madam:</p>
     <div style="height: 12px;"></div>
