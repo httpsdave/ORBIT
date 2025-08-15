@@ -218,7 +218,7 @@
 
     <div class="section right-align">
         <p><u>{{ \Carbon\Carbon::parse($application->application_date)->format('F d, Y') }}</u></p>
-        <p>Date</p>
+        <p style="margin-top: 0; text-align: left; width: max-content; padding-left: 540px;">Date</p>
     </div>
     
     <div>
