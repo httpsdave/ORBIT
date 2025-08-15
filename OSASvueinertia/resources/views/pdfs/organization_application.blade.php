@@ -234,10 +234,11 @@
     </div>
 
     <div class="section list-indented">
-    <p style="position: relative; left: -5px;">1. Letter of application for Organization Recognition (for new organizations) / Organization Renewal Form (for organizations seeking renewal) <span style="position: absolute; right: 50px;">- 4 copies</span></p>
+    <p style="position: relative; left: -5px;">1. Letter of application for Organization Recognition (for new organizations) / Organization 
+     <p style="position: relative; left: 10px;"> Renewal Form (for organizations seeking renewal) <span style="position: absolute; right: 64px;">- 4 copies</span></p>
     <p style="position: relative; left: -5px;">2. Constitution and By-Laws of the Organization <span style="position: absolute; right: 50px;">- 4 copies</span></p>
     <p style="position: relative; left: -5px;">3. Plan of activities for one (1) year <span style="position: absolute; right: 50px;">- 4 copies</span></p>
-    <p style="position: relative; left: -5px;">4. Accomplishment reports (for renewal of accredtation) <span style="position: absolute; right: 50px;">- 4 copies</span></p>
+    <p style="position: relative; left: -5px;">4. Accomplishment reports (for renewal of accreditation) <span style="position: absolute; right: 50px;">- 4 copies</span></p>
     <p style="position: relative; left: -5px;">5. Adviser(s) Commitment Form <span style="position: absolute; right: 50px;">- 4 copies</span></p>
     <p style="position: relative; left: -5px;">6. Certification from respective Dean/Associate Dean <span style="position: absolute; right: 50px;">- 4 copies</span></p>
     <p style="position: relative; left: -5px;">7. Financial Report (if any) <span style="position: absolute; right: 50px;">- 4 copies</span></p>
