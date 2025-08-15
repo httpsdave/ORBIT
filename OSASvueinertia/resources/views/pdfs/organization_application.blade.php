@@ -226,7 +226,7 @@
     </div>
 
     <div class="section justified">
-        <p>Sir:</p>
+        <p>Sir/Madam:</p>
         <p class="indented">I have the honor to apply for recognition/renewal of the organization <u>{{ $application->organization_name }}</u>, to be duly recognized by Laguna State Polytechnic University.</p>
         <p class="indented">In compliance with CHED Memo Order No. 9s. 2013, Subj.: Enhanced Policies & Guidelines on Student Affairs and Services (Article VIII-Student Development, Section 19. Student Organizations and Activities), I am submitting for proper action the following requirements for recognition and accreditation, to wit:</p>
     </div>
@@ -242,7 +242,7 @@
     </div>
 
     <div class="section justified">
-        <p class="indented">It is understood that the provision of the LSPU Supplementary Rules and Regulations Governing Student Organization in this official Recognition is good only for one (1) school year, subject to renewal unless revoked prior to this expiration.</p>
+        <p class="indented">It is understood that the provision to the LSPU Supplementary Rules and Regulations Governing Student Organization in this official Recognition is good only for one (1) school year, subject to renewal unless revoked prior its expiration.</p>
     </div>
 
     <div class="section respectfully-yours">
@@ -260,7 +260,7 @@
     </div>
 
     <div class="section left-align">
-        <p>Noted:</p>
+        <p>NOTED:</p>
     </div>
 
     <table style="width: 100%; margin-top: 10px;">
