@@ -260,10 +260,10 @@
     </div>
 
     <div class="section left-align">
-        <p>NOTED:</p>
+    <p style="margin-top: 20px; margin-bottom: 0;">NOTED:</p>
     </div>
 
-    <table style="width: 100%; margin-top: 10px;">
+    <table style="width: 100%; margin-top: 2px;">
         <tr style="vertical-align: top;">
             <td style="width: 50%; text-align: left;">
                 <div class="signature left-align">
