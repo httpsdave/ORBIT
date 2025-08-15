@@ -279,22 +279,22 @@
         </tr>
     </table>
 
-    <div class="section center-align">
-        <p>Recommending Approval:</p>
+
+
+    <div class="section center-align" style="margin-bottom: 0;">
+    <p style="margin-bottom: 0;"><strong>Recommending Approval:</strong></p>
+    </div>
+    <div class="signature center-align" style="margin-top: 0;">
+        <p style="margin-bottom: 0;"><strong><span class="signature-line">{{ $application->coordinator_name ?? 'N/A' }}</span></strong></p>
+        <p style="margin-top: 0; margin-bottom: 0;"><span class="title-text long-title">Coordinator, Student Organization Unit</span></p>
     </div>
 
-    <div class="signature center-align">
-        <p><strong><span class="signature-line">{{ $application->coordinator_name ?? 'N/A' }}</span></strong></p>
-        <p><span class="title-text long-title">Coordinator, Student Organization Unit</span></p>
+    <div class="section center-align last-section" style="margin-bottom: 0;">
+    <p style="margin-bottom: 0;"><strong>Approved/Disapproved:</strong></p>
     </div>
-
-    <div class="section center-align last-section">
-        <p>Approved/Disapproved:</p>
-    </div>
-
-    <div class="signature center-align last-signature">
-        <p><strong><span class="signature-line">{{ $application->director_name ?? 'N/A' }}</span></strong></p>
-        <p><span class="title-text long-title">Director, Office of Student Affairs and Services</span></p>
+    <div class="signature center-align last-signature" style="margin-top: 0;">
+        <p style="margin-bottom: 0;"><strong><span class="signature-line">{{ $application->director_name ?? 'N/A' }}</span></strong></p>
+        <p style="margin-top: 0; margin-bottom: 0;"><span class="title-text long-title">Director/Chairperson, Office of Student Affairs and Services</span></p>
     </div>
 
     <div class="footer">
