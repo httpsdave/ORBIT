@@ -227,17 +227,17 @@
 
     <div class="section justified">
         <p>Sir:</p>
-        <p class="indented">I have the honor to apply for recognition/renewal of <u>{{ $application->organization_name }}</u>, a duly recognized organization in this University.</p>
-        <p class="indented">In compliance with CHED Memo Order #9 s. 2013, Subj.: Enhanced Policies & Guidelines on Student Affairs and Services (Article VIII - Student Development, Section 19. Student Organizations and Activities), I am submitting for proper action the following requirements for recognition and accreditation, to wit:</p>
+        <p class="indented">I have the honor to apply for recognition/renewal of the organization <u>{{ $application->organization_name }}</u>, to be duly recognized by Laguna State Polytechnic University.</p>
+        <p class="indented">In compliance with CHED Memo Order No. 9s. 2013, Subj.: Enhanced Policies & Guidelines on Student Affairs and Services (Article VIII-Student Development, Section 19. Student Organizations and Activities), I am submitting for proper action the following requirements for recognition and accreditation, to wit:</p>
     </div>
 
     <div class="section list-indented">
-        <p>1. Letter for application for recognition (4 copies)</p>
-        <p>2. Constitution and By - Laws of the Organization (4 copies)</p>
-        <p>3. Program of activities for one (1) year (4 copies)</p>
-        <p>4. List of officers with signature, student I.D. Nos. and attached 2x2 I.D. picture (4 copies)</p>
-        <p>5. List of members with signature, student I.D. number and attached 1x1 ID picture (4 copies)</p>
-        <p>6. Accomplishment report (for renewal of accreditation) (4 copies)</p>
+        <p>1. Letter of application for Organization Recognition (for new organizations) / Organization Renewal Form (for organizations seeking renewal) (4 copies)</p>
+        <p>2. Constitution and By-Laws of the Organization (4 copies)</p>
+        <p>3. Plan of activities for one (1) year (4 copies)</p>
+        <p>4. Accomplishment reports (for renewal of accredtation) (4 copies)</p>
+        <p>5. Adviser(s) Commitment Form (4 copies)</p>
+        <p>6. Certification from respective Dean/Associate Dean (4 copies)</p>
         <p>7. Financial Report (if any) (4 copies)</p>
     </div>
 
