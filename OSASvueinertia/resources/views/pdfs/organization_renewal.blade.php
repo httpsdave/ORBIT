@@ -16,7 +16,7 @@
 
         body {
             font-family: 'Times New Roman', serif;
-            font-size: 11.5pt;
+            font-size: 11pt;
             line-height: 1.1;
             margin: 0;
             padding: 0;
@@ -221,9 +221,16 @@
         <p class="calibri-font">Province of Laguna</p>
         <br>
         <p class="office-title">Office of Student Affairs and Services</p>
-        <p class="form-title">RENEWAL FORM</p>
+        <p class="form-title">ORGANIZATION RENEWAL FORM</p>
         <br>
     </div>
+
+    <div class="section right-align">
+        <p><u>{{ \Carbon\Carbon::parse($application->application_date)->format('F d, Y') }}</u></p>
+        <p style="margin-top: 0; text-align: left; width: max-content; padding-left: 540px;">Date</p>
+    </div>
+    
+    <div style="height: 7px;"></div>
 
     <div class="main-content">
         <div class="section left-align">
