@@ -262,15 +262,22 @@
         <p>Noted:</p>
     </div>
 
-    <div class="signature left-align">
-        <p><span class="signature-line">{{ $application->adviser_name ?? 'N/A' }}</span></p>
-        <p><span class="title-text">Adviser, Student Organization</span></p>
-    </div>
-
-    <div class="signature right-align">
-        <p><span class="signature-line">{{ $application->dean_name ?? 'N/A' }}</span></p>
-        <p><span class="title-text">Dean/Assoc. Dean of College</span></p>
-    </div>
+    <table style="width: 100%; margin-top: 10px;">
+        <tr style="vertical-align: top;">
+            <td style="width: 50%; text-align: left;">
+                <div class="signature left-align">
+                    <p><span class="signature-line">{{ $application->adviser_name ?? 'N/A' }}</span></p>
+                    <p><span class="title-text">Adviser, Student Organization</span></p>
+                </div>
+            </td>
+            <td style="width: 50%; text-align: right;">
+                <div class="signature right-align">
+                    <p><span class="signature-line">{{ $application->dean_name ?? 'N/A' }}</span></p>
+                    <p><span class="title-text">Dean/Assoc. Dean of College</span></p>
+                </div>
+            </td>
+        </tr>
+    </table>
 
     <div class="section center-align">
         <p>Recommending Approval:</p>
