@@ -40,7 +40,7 @@ const form = useForm({
   form_type: 'LSPU-OSAS-SF-002',
   organization_name: props.initialFormData.organization_name || '',
   college: props.initialFormData.college || '',
-  application_date: props.initialFormData.application_date || '',
+  application_date: props.initialFormData.application_date || new Date().toISOString().slice(0, 10),
   academic_year_start: props.initialFormData.academic_year_start || '',
   academic_year_end: props.initialFormData.academic_year_end || '',
   president_name: props.initialFormData.president_name || '',
