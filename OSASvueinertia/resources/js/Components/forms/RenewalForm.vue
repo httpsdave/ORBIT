@@ -25,10 +25,22 @@ const nextYear = computed(() => {
   return (new Date().getFullYear() + 1).toString().slice(-2);
 });
 
+// Computed property to format the date
+const formattedDate = computed(() => {
+  if (!form.application_date) return '';
+  const date = new Date(form.application_date);
+  return date.toLocaleDateString('en-US', { 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  });
+});
+
 const form = useForm({
   form_type: 'LSPU-OSAS-SF-002',
   organization_name: props.initialFormData.organization_name || '',
   college: props.initialFormData.college || '',
+  application_date: props.initialFormData.application_date || '',
   academic_year_start: props.initialFormData.academic_year_start || '',
   academic_year_end: props.initialFormData.academic_year_end || '',
   president_name: props.initialFormData.president_name || '',
@@ -66,6 +78,11 @@ const validateForm = () => {
 
   if (!form.college.trim()) {
     errors.value.college = 'College is required';
+    isValid = false;
+  }
+  
+  if (!form.application_date.trim()) {
+    errors.value.application_date = 'Application Date is required';
     isValid = false;
   }
 
@@ -147,6 +164,13 @@ const submit = () => {
         <p class="text-sm font-bold form-title mt-4 mb-4">RENEWAL FORM</p>
     </div>
 
+    <div class="mt-6 text-right">
+        <p class="mb-0"><span class="signature-line text-center border-b border-black min-w-[150px] inline-block">{{ formattedDate }}</span></p>
+        <p class="mb-0" style="text-align: center; width: 150px; display: inline-block;">Date</p>
+    </div>
+    
+    <div style="height: 7px;"></div>
+
     <div class="section text-left">
         <p class="mb-0"><strong>THE DIRECTOR/CHAIRPERSON</strong></p>
         <p class="mb-0">OFFICE OF STUDENT AFFAIRS AND SERVICES</p>
@@ -227,6 +251,12 @@ const submit = () => {
                   <label class="block font-bold">College</label>
                   <input v-model="form.college" class="border p-2 w-full" required>
                   <p v-if="errors.college" class="text-red-500 text-sm mt-1">{{ errors.college }}</p>
+              </div>
+
+              <div>
+                  <label class="block font-bold">Application Date</label>
+                  <input type="date" v-model="form.application_date" class="border p-2 w-full" required>
+                  <p v-if="errors.application_date" class="text-red-500 text-sm mt-1">{{ errors.application_date }}</p>
               </div>
 
               <div>
