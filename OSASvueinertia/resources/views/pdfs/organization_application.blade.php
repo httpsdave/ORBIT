@@ -156,7 +156,7 @@
 
         .footer-left {
             position: absolute;
-            left: -1.0cm;
+            left: .1cm;
             bottom: -5px;
         }
 
@@ -169,7 +169,7 @@
 
         .footer-right {
             position: absolute;
-            right: -1.0cm;
+            right: .1cm;
             bottom: -5px;
         }
         
