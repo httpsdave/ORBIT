@@ -325,25 +325,25 @@
             </div>
         </div>
         
-        <div class="noted">
-            <p><strong>Noted:</strong></p>
+        <div class="noted" style="text-align:left;">
+            <p style="margin-left:5px;"><strong>Noted:</strong></p>
         </div>
         
         <!-- Second signature row with Faculty Adviser -->
         <div class="signature-container clearfix">
             <div class="signature-left">
                 <div class="signature-line" style="margin-bottom:0px;">{{ $application->adviser_name ?? 'N/A' }}</div>
-                <p style="margin-top:2px;">Faculty Adviser(s)</p>
+                <p style="margin-top:2px;">Organization Adviser(s)</p>
             </div>
         </div>
         
         <!-- Third signature row with Dean -->
-        <div class="signature-container clearfix">
-            <div class="signature-left">
-                <div class="signature-line" style="margin-bottom:0px;">{{ $application->dean_name ?? 'N/A' }}</div>
-                <p style="margin-top:2px;">Dean/Assoc. Dean of College</p>
+            <div class="signature-container clearfix" style="margin-top:-5px;">
+                <div class="signature-left">
+                    <div class="signature-line" style="margin-bottom:0px;">{{ $application->dean_name ?? 'N/A' }}</div>
+                    <p style="margin-top:2px;">Dean/Assoc. Dean </p>
+                </div>
             </div>
-        </div>
         
         <div class="recommendation">
             <p><strong>Recommending Approval:</strong></p>
