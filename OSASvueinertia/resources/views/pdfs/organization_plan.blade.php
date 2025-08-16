@@ -28,7 +28,7 @@
 
         .header {
             text-align: center;
-            font-size: 15px;
+            font-size: 11pt;
             font-weight: bold;
             margin: 0 0 0.5cm 0;
             padding-top: 0.5cm;
@@ -277,7 +277,7 @@
         <div style="text-align:center; margin-top:10px;">
             <span class="signature-line" style="min-width:30px; margin-bottom:0px; line-height:10px; padding:0 0 0 0;">
                 <span style="position:relative; top:0px;">{{ $application->semester ?? '1st' }}</span></span></span></span>
-            </span> Sem. / A.Y. 20<span class="signature-line" style="min-width:20px; margin-bottom:-2px; margin-top:-1px; line-height:10px; padding:0 0 0 0;">
+            </span> Semester AY 20<span class="signature-line" style="min-width:20px; margin-bottom:-2px; margin-top:-1px; line-height:10px; padding:0 0 0 0;">
                 <span style="position:relative; top:0px;">{{ $application->academic_year_start ?? '24' }}</span></span></span></span>
             </span>-20<span class="signature-line" style="min-width:20px; margin-bottom:-2px; margin-top:-1px; line-height:10px; padding:0 0 0 0;">
                 <span style="position:relative; top:0px;">{{ $application->academic_year_end ?? '25' }}</span></span></span></span>
