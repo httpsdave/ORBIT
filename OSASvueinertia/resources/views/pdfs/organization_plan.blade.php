@@ -316,12 +316,12 @@
         <!-- First signature row with President and Secretary -->
         <div class="signature-container clearfix">
             <div class="signature-left">
-                <div class="signature-line">{{ $application->president_name }}</div>
-                <p>Organization President</p>
+                <div class="signature-line" style="margin-bottom:0px;">{{ $application->president_name }}</div>
+                <p style="margin-top:2px;">Organization President</p>
             </div>
             <div class="signature-right">
-                <div class="signature-line">{{ $application->secretary_name ?? 'N/A' }}</div>
-                <p>Organization Secretary</p>
+                <div class="signature-line" style="margin-bottom:0px;">{{ $application->secretary_name ?? 'N/A' }}</div>
+                <p style="margin-top:2px;">Organization Secretary</p>
             </div>
         </div>
         
@@ -332,25 +332,25 @@
         <!-- Second signature row with Faculty Adviser and Dean -->
         <div class="signature-container clearfix">
             <div class="signature-left">
-                <div class="signature-line">{{ $application->adviser_name ?? 'N/A' }}</div>
-                <p>Faculty Adviser(s)</p>
+                <div class="signature-line" style="margin-bottom:0px;">{{ $application->adviser_name ?? 'N/A' }}</div>
+                <p style="margin-top:2px;">Faculty Adviser(s)</p>
             </div>
             <div class="signature-right">
-                <div class="signature-line">{{ $application->dean_name ?? 'N/A' }}</div>
-                <p>Dean/Assoc. Dean of College</p>
+                <div class="signature-line" style="margin-bottom:0px;">{{ $application->dean_name ?? 'N/A' }}</div>
+                <p style="margin-top:2px;">Dean/Assoc. Dean of College</p>
             </div>
         </div>
         
         <div class="recommendation">
             <p>Recommending Approval:</p>
-            <div class="signature-line">{{ $application->coordinator_name ?? 'N/A' }}</div>
-            <p>Coordinator, Student Organization Unit</p>
+            <div class="signature-line" style="margin-bottom:0px;">{{ $application->coordinator_name ?? 'N/A' }}</div>
+            <p style="margin-top:2px;">Coordinator, Student Organization Unit</p>
         </div>
         
         <div class="signature-block">
             <p>Approved/Disapproved:</p>
-            <div class="signature-line">{{ $application->director_name ?? 'N/A' }}</div>
-            <p>Director, Office of Student Affairs and Services</p>
+            <div class="signature-line" style="margin-bottom:0px;">{{ $application->director_name ?? 'N/A' }}</div>
+            <p style="margin-top:2px;">Director, Office of Student Affairs and Services</p>
         </div>
     </div>
 
