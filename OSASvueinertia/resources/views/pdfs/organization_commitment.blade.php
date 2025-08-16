@@ -181,7 +181,7 @@
         .noted-section {
             position: absolute;
             bottom: 220px; /* Adjusted from 240px to 220px to match reduced spacing */
-            left: 40px; /* A little more to the right */
+            left: 0;
             text-align: left;
             width: 50%;
         }
@@ -333,12 +333,12 @@
             </div>
         </div>
 
-        <!-- Noted section repositioned higher and more to the right -->
-        <div class="noted-section" style="bottom: 300px;">
+        <!-- Noted section aligned to the left margin -->
+        <div class="noted-section" style="bottom: 300px; left: 0;">
             <p style="margin-bottom: 25px;"><strong>Noted:</strong></p>
-            <div style="margin-left: 70px;"> <!-- Shift these elements 50px to the left -->
-                <p><span class="underline">{{ $application->dean_name ?? '_______________________________' }}</span></p>
-                <p style="margin-left:10px;"><strong>Dean/Assoc. Dean of College</strong></p>
+            <div>
+                <p style="margin-left:65px;"><span class="underline" style="min-width:180px;">{{ $application->dean_name ?? '_______________________________' }}</span></p>
+                <p style="margin-left:65px;"><strong>Dean/Assoc. Dean of College</strong></p>
             </div>
         </div>
 
