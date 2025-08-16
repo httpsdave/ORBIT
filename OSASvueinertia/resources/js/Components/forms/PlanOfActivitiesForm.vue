@@ -97,8 +97,27 @@ watch(() => props.initialFormData, (newData) => {
       ...act,
       target_date: formatDateForInput(act.target_date)
     }));
+    // Update contenteditable divs after data changes
+    nextTick(() => {
+      updateContentEditableDivs();
+    });
   }
 }, { immediate: true });
+
+// Function to update contenteditable divs with form data
+const updateContentEditableDivs = () => {
+  form.activities.forEach((activity, index) => {
+    const objectiveDiv = document.querySelector(`[data-field="objective-${index}"]`);
+    const nameDiv = document.querySelector(`[data-field="name-${index}"]`);
+    const descriptionDiv = document.querySelector(`[data-field="description-${index}"]`);
+    const personsDiv = document.querySelector(`[data-field="persons_involved-${index}"]`);
+    
+    if (objectiveDiv) objectiveDiv.innerHTML = activity.objective || '';
+    if (nameDiv) nameDiv.innerHTML = activity.name || '';
+    if (descriptionDiv) descriptionDiv.innerHTML = activity.description || '';
+    if (personsDiv) personsDiv.innerHTML = activity.persons_involved || '';
+  });
+};
 
 // Rich text editor functions
 
@@ -234,6 +253,10 @@ const addActivity = () => {
         persons_involved: '',
         target_date: '',
         budget: 0
+    });
+    // Update contenteditable divs after adding new activity
+    nextTick(() => {
+      updateContentEditableDivs();
     });
 };
 
@@ -386,6 +409,22 @@ const submit = () => {
   }
 };
 
+// Function to handle contenteditable input without disrupting cursor position
+const handleContentEditableInput = (event, activityIndex, fieldType) => {
+  const content = event.target.innerHTML;
+  
+  // Update the form data directly without triggering reactive updates that would rewrite the DOM
+  if (fieldType === 'objective') {
+    form.activities[activityIndex].objective = content;
+  } else if (fieldType === 'name') {
+    form.activities[activityIndex].name = content;
+  } else if (fieldType === 'description') {
+    form.activities[activityIndex].description = content;
+  } else if (fieldType === 'persons_involved') {
+    form.activities[activityIndex].persons_involved = content;
+  }
+};
+
 // Hide toolbar when clicking outside
 const handleClickOutside = (event) => {
   if (!event.target.closest('.rich-text-toolbar') && !event.target.closest('[contenteditable]')) {
@@ -397,6 +436,8 @@ const handleClickOutside = (event) => {
 nextTick(() => {
   document.addEventListener('click', handleClickOutside);
   document.addEventListener('selectionchange', debouncedShowToolbarForSelection);
+  // Initialize contenteditable divs with existing data
+  updateContentEditableDivs();
 });
 </script>
 
@@ -603,8 +644,7 @@ nextTick(() => {
                                         <div 
                                             :data-field="`objective-${index}`"
                                             contenteditable="true"
-                                            v-html="activity.objective"
-                                            @input="activity.objective = $event.target.innerHTML"
+                                            @input="handleContentEditableInput($event, index, 'objective')"
                                             @mouseup="handleMouseUp"
                                             class="w-full p-1 text-sm min-h-[20px] focus:outline-none focus:ring-1 focus:ring-blue-500"
                                             placeholder="Enter objective..."
@@ -615,8 +655,7 @@ nextTick(() => {
                                         <div 
                                             :data-field="`name-${index}`"
                                             contenteditable="true"
-                                            v-html="activity.name"
-                                            @input="activity.name = $event.target.innerHTML"
+                                            @input="handleContentEditableInput($event, index, 'name')"
                                             @mouseup="handleMouseUp"
                                             class="w-full p-1 text-sm min-h-[20px] focus:outline-none focus:ring-1 focus:ring-blue-500"
                                             placeholder="Enter activity name..."
@@ -627,8 +666,7 @@ nextTick(() => {
                                         <div 
                                             :data-field="`description-${index}`"
                                             contenteditable="true"
-                                            v-html="activity.description"
-                                            @input="activity.description = $event.target.innerHTML"
+                                            @input="handleContentEditableInput($event, index, 'description')"
                                             @mouseup="handleMouseUp"
                                             class="w-full p-1 text-sm min-h-[40px] focus:outline-none focus:ring-1 focus:ring-blue-500"
                                             placeholder="Enter description..."
@@ -639,8 +677,7 @@ nextTick(() => {
                                         <div 
                                             :data-field="`persons_involved-${index}`"
                                             contenteditable="true"
-                                            v-html="activity.persons_involved"
-                                            @input="activity.persons_involved = $event.target.innerHTML"
+                                            @input="handleContentEditableInput($event, index, 'persons_involved')"
                                             @mouseup="handleMouseUp"
                                             class="w-full p-1 text-sm min-h-[20px] focus:outline-none focus:ring-1 focus:ring-blue-500"
                                             placeholder="Enter persons involved..."
