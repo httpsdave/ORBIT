@@ -326,7 +326,7 @@
         </div>
         
         <div class="noted">
-            <p>Noted:</p>
+            <p><strong>Noted:</strong></p>
         </div>
         
         <!-- Second signature row with Faculty Adviser and Dean -->
@@ -342,15 +342,15 @@
         </div>
         
         <div class="recommendation">
-            <p>Recommending Approval:</p>
+            <p><strong>Recommending Approval:</strong></p>
             <div class="signature-line" style="margin-bottom:0px;">{{ $application->coordinator_name ?? 'N/A' }}</div>
             <p style="margin-top:2px;">Coordinator, Student Organization Unit</p>
         </div>
         
         <div class="signature-block">
-            <p>Approved/Disapproved:</p>
+            <p><strong>Approved/Disapproved:</strong></p>
             <div class="signature-line" style="margin-bottom:0px;">{{ $application->director_name ?? 'N/A' }}</div>
-            <p style="margin-top:2px;">Director, Office of Student Affairs and Services</p>
+            <p style="margin-top:2px;">Director/Chairperson, Office of Student Affairs and Services</p>
         </div>
     </div>
 
