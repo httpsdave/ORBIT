@@ -90,6 +90,14 @@
             padding: 0;
         }
 
+        .title-left-adjust {
+            transform: translateX(-5px);
+        }
+
+        .title-left-adjust-more {
+            transform: translateX(-10px);
+        }
+
         .right-align { 
             text-align: right; 
         }
@@ -257,14 +265,14 @@
 
             <div class="signature">
                 <p><span class="signature-line" style="min-width:160px;">{{ $application->president_name }}</span></p>
-                <p><span class="title-under-signature"><strong>Organization President</strong></span></p>
+                <p><span class="title-under-signature title-left-adjust"><strong>Organization President</strong></span></p>
             </div>
         </div>
 
         <div class="section right-align">
             <div class="signature">
                 <p><span class="signature-line" style="min-width:160px;">{{ $application->organization_name }}</span></p>
-                <p><span class="title-under-signature"><strong>Name of Organization</strong></span></p>
+                <p><span class="title-under-signature title-left-adjust-more"><strong>Name of Organization</strong></span></p>
             </div>
         </div>
 
