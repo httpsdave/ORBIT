@@ -98,6 +98,12 @@
             transform: translateX(-10px);
         }
 
+        .signature-line-inline {
+            vertical-align: text-bottom !important;
+            position: relative;
+            top: 0px;
+        }
+
         .right-align { 
             text-align: right; 
         }
@@ -285,7 +291,7 @@
             
             <div class="signature">
                 <p><span class="signature-line" style="min-width:200px;">{{ $application->dean_name }}</span></p>
-                <p><span class="title-under-signature"><strong>Dean/Assoc. Dean of College</strong></span></p>
+                <p><span class="title-under-signature"><strong>Dean/Assoc. Dean, College of <span class="signature-line signature-line-inline" style="min-width:120px;">{{ $application->college ?? '' }}</span></strong></span></p>
             </div>
         </div>
 
