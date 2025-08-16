@@ -286,7 +286,7 @@
         <div class="section center-align">
             <p><strong>Recommending Approval:</strong></p>
             <div class="signature">
-                <p><span class="signature-line" style="min-width:230px;"><strong>{{ $application->coordinator_name }}</strong></span></p>
+                <p><span class="signature-line" style="min-width:270px;"><strong>{{ $application->coordinator_name }}</strong></span></p>
                 <p><strong>Coordinator, Student Organization Unit</strong></p>
             </div>
         </div>
@@ -294,7 +294,7 @@
         <div class="section center-align">
             <p><strong>Approved / Disapproved:</strong></p>
             <div class="signature">
-                <p><span class="signature-line" style="min-width:380px;"><strong>{{ $application->director_name }}</strong></span></p>
+                <p><span class="signature-line" style="min-width:390px;"><strong>{{ $application->director_name }}</strong></span></p>
                 <p><strong>Director/Chairperson, Office of Student Affairs and Services</strong></p>
             </div>
         </div>
