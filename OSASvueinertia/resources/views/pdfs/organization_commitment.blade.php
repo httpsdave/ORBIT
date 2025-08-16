@@ -16,7 +16,7 @@
 
         body {
             font-family: 'Times New Roman', serif;
-            font-size: 12pt;
+            font-size: 11pt;
             line-height: 1.1;
             margin: 0;
             padding: 0;
@@ -345,15 +345,15 @@
         <!-- Bottom sections positioned at bottom center -->
         <div class="bottom-sections">
             <div class="approval-section" style="margin-bottom: 25px;"> <!-- Spacing between sections -->
-                <p style="margin-bottom: 20px;">Recommending Approval:</p> <!-- Added 20px spacing under this text -->
-                <p><strong><span class="underline">{{ $application->coordinator_name ?? '_______________________________' }}</span></strong></p>
-                <p>Coordinator, Student Organization Unit</p>
+                <p style="margin-bottom: 20px;"><strong>Recommending Approval:</strong></p> <!-- Added 20px spacing under this text -->
+                <p><strong><span class="underline" style="min-width:270px;">{{ $application->coordinator_name ?? '_______________________________' }}</span></strong></p>
+                <p><strong>Coordinator, Student Organization Unit</strong></p>
             </div>
 
             <div class="approval-section">
-                <p style="margin-bottom: 20px;">Approved / Disapproved:</p> <!-- Added 20px spacing under this text -->
-                <p><strong><span class="underline">{{ $application->director_name ?? '_______________________________' }}</span></strong></p>
-                <p>Director, Office of Student Affairs and Services</p>
+                <p style="margin-bottom: 20px;"><strong>Approved / Disapproved:</strong></p> <!-- Added 20px spacing under this text -->
+                <p><strong><span class="underline" style="min-width:380px;">{{ $application->director_name ?? '_______________________________' }}</span></strong></p>
+                <p><strong>Director/Chairperson, Office of Student Affairs and Services</strong></p>
             </div>
         </div>
 
