@@ -138,12 +138,16 @@
         }
         .approval-section p:first-child {
             margin-bottom: 20px; /* Add 20px spacing under the heading text */
+        }
+
+        .footer {
+            position: absolute;
             bottom: -5px;
             width: 100%;
             height: 20px;
             line-height: 20px;
             font-size: 10pt;
-            font-family: Calibri, sans-serif;
+            font-family: Calibri, Arial, sans-serif;
         }
 
         .footer-left {
@@ -353,11 +357,11 @@
             </div>
         </div>
 
-        <div class="doc-footer">
-            <div class="footer-left">LSPU-OSAS-SF-003</div>
-            <div class="footer-center">Rev. 1</div>
-            <div class="footer-right">09 November 2020</div>
-        </div>
+    <div class="footer">
+        <div class="footer-left">LSPU-OSAS-SF-003</div>
+        <div class="footer-center">Rev. 1</div>
+        <div class="footer-right">09 November 2020</div>
+    </div>
     </div>
 
 </body>
