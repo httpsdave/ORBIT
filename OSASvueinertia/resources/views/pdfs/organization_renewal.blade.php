@@ -263,11 +263,11 @@
             
             <p class="indented">In this connection, we are respectfully requesting from your good office to grant us permission to operate in our institution, subject to the existing rules & regulations of our University.</p>
             <br>
-            <p class="indented" style="margin-top:-20px;">Thank you very much.</p>
+            <p class="indented" style="margin-top:-10px;">Thank you very much.</p>
         </div>
 
         <div class="section right-align">
-            <p class="respectfully-text">Very respectfully yours,</p>
+            <p class="respectfully-text" style="margin-left:calc(59% - 45px);">Very respectfully yours,</p>
 
             <div class="signature">
                 <p><span class="signature-line" style="min-width:160px;">{{ $application->president_name }}</span></p>
