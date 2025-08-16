@@ -33,7 +33,7 @@
 
         .header {
             text-align: center;
-            font-size: 16px;
+            font-size: 11pt;
             
             margin: 0 0 2px 0;
             padding-top: 0.5cm;
@@ -138,7 +138,7 @@
         }
 
         .indented {
-            text-indent: 1.27cm;
+            text-indent: 1.45cm;
             margin-bottom: 20px; /* Adjust this value as needed */
         }
 
@@ -263,8 +263,8 @@
         </div>
 
         <div class="section">
-            <p>Sir/Madam:</p>
-            
+            <p style="margin-top:5px;">Sir/Madam:</p>
+            <div style="height:15px;"></div>
             <p class="indented">The <span class="dynamic-text"><u>{{ $application->organization_name }}</u></span> wishes to seek renewal of its recognition to function as a duly recognized LSPU Organization for Academic Year 20<span class="dynamic-text"><u>{{ $application->academic_year_start }}</u></span> - 20<span class="dynamic-text"><u>{{ $application->academic_year_end }}</u></span>.</p>
             
             <p class="indented">In this connection, we are respectfully requesting from your good office to grant us permission to operate in our institution, subject to the existing rules & regulations of our University.</p>
