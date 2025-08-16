@@ -16,6 +16,11 @@ const props = defineProps({
 
 const emit = defineEmits(['submitted', 'error']);
 
+// Add pagination state
+const currentPage = ref(1);
+const activitiesPerPage = 1; // 1 activity per page since each activity is a full page
+const isChangingPage = ref(false);
+
 // Compute current year and next year for placeholders
 const currentYear = computed(() => {
   return new Date().getFullYear().toString().slice(-2);
@@ -104,13 +109,22 @@ watch(() => props.initialFormData, (newData) => {
   }
 }, { immediate: true });
 
+// Watch for page changes to update contenteditable divs
+watch(() => currentPage.value, () => {
+  nextTick(() => {
+    updateContentEditableDivs();
+  });
+});
+
 // Function to update contenteditable divs with form data
 const updateContentEditableDivs = () => {
-  form.activities.forEach((activity, index) => {
-    const objectiveDiv = document.querySelector(`[data-field="objective-${index}"]`);
-    const nameDiv = document.querySelector(`[data-field="name-${index}"]`);
-    const descriptionDiv = document.querySelector(`[data-field="description-${index}"]`);
-    const personsDiv = document.querySelector(`[data-field="persons_involved-${index}"]`);
+  // Update only the current page activities to avoid performance issues
+  currentPageActivities.value.forEach((activity, idx) => {
+    const actualIndex = startIndex.value + idx;
+    const objectiveDiv = document.querySelector(`[data-field="objective-${actualIndex}"]`);
+    const nameDiv = document.querySelector(`[data-field="name-${actualIndex}"]`);
+    const descriptionDiv = document.querySelector(`[data-field="description-${actualIndex}"]`);
+    const personsDiv = document.querySelector(`[data-field="persons_involved-${actualIndex}"]`);
     
     if (objectiveDiv) objectiveDiv.innerHTML = activity.objective || '';
     if (nameDiv) nameDiv.innerHTML = activity.name || '';
@@ -244,6 +258,72 @@ const insertList = (type) => {
   hideToolbar();
 };
 
+// Pagination computed properties
+const totalPages = computed(() => Math.ceil(form.activities.length / activitiesPerPage));
+const startIndex = computed(() => (currentPage.value - 1) * activitiesPerPage);
+const endIndex = computed(() => Math.min(startIndex.value + activitiesPerPage, form.activities.length));
+const currentPageActivities = computed(() => {
+    return form.activities.slice(startIndex.value, endIndex.value);
+});
+
+// Add computed for pagination display
+const visiblePages = computed(() => {
+    const total = totalPages.value;
+    const current = currentPage.value;
+    const delta = 2; // Number of pages to show on each side of current page
+    
+    if (total <= 7) {
+        // If 7 or fewer pages, show all
+        return Array.from({ length: total }, (_, i) => i + 1);
+    }
+    
+    const range = [];
+    const rangeWithDots = [];
+    
+    for (let i = Math.max(2, current - delta); i <= Math.min(total - 1, current + delta); i++) {
+        range.push(i);
+    }
+    
+    if (current - delta > 2) {
+        rangeWithDots.push(1, '...');
+    } else {
+        rangeWithDots.push(1);
+    }
+    
+    rangeWithDots.push(...range);
+    
+    if (current + delta < total - 1) {
+        rangeWithDots.push('...', total);
+    } else {
+        rangeWithDots.push(total);
+    }
+    
+    return rangeWithDots;
+});
+
+// Navigation functions
+const goToPage = (page) => {
+    if (page >= 1 && page <= totalPages.value && !isChangingPage.value) {
+        isChangingPage.value = true;
+        currentPage.value = page;
+        nextTick(() => {
+            isChangingPage.value = false;
+        });
+    }
+};
+
+const nextPage = () => {
+    if (currentPage.value < totalPages.value && !isChangingPage.value) {
+        goToPage(currentPage.value + 1);
+    }
+};
+
+const prevPage = () => {
+    if (currentPage.value > 1 && !isChangingPage.value) {
+        goToPage(currentPage.value - 1);
+    }
+};
+
 // Add a function to add a new empty activity
 const addActivity = () => {
     form.activities.push({
@@ -254,6 +334,8 @@ const addActivity = () => {
         target_date: '',
         budget: 0
     });
+    // Go to the new activity page
+    currentPage.value = totalPages.value;
     // Update contenteditable divs after adding new activity
     nextTick(() => {
       updateContentEditableDivs();
@@ -264,6 +346,14 @@ const addActivity = () => {
 const removeActivity = (index) => {
     if (form.activities.length > 1) { // Prevent removing all activities
         form.activities.splice(index, 1);
+        // Adjust current page if necessary
+        if (currentPage.value > totalPages.value && totalPages.value > 0) {
+            currentPage.value = totalPages.value;
+        }
+        // Update contenteditable divs after removing activity
+        nextTick(() => {
+            updateContentEditableDivs();
+        });
     }
 };
 
@@ -625,6 +715,55 @@ nextTick(() => {
                     
                     <p v-if="errors.activities_general" class="text-red-500 text-sm mb-2">{{ errors.activities_general }}</p>
                     
+                    <!-- Activity Count Display -->
+                    <div class="mb-4 p-2 bg-gray-50 border border-gray-200 rounded text-sm">
+                        <span class="font-semibold">📋 Total Activities: {{ form.activities.length }}</span>
+                        <span v-if="form.activities.length > 0" class="ml-4 text-gray-600">
+                            • Page {{ currentPage }} of {{ totalPages }}
+                        </span>
+                    </div>
+
+                    <!-- Pagination Controls (Top) -->
+                    <div v-if="totalPages > 1" class="pagination-controls flex justify-center items-center mb-6 gap-4">
+                        <button 
+                            @click="prevPage" 
+                            :disabled="currentPage === 1 || isChangingPage"
+                            class="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors">
+                            Previous
+                        </button>
+                        
+                        <div class="flex gap-2">
+                            <button 
+                                v-for="page in visiblePages" 
+                                :key="page"
+                                @click="page === '...' ? null : goToPage(page)"
+                                :disabled="page === '...' || isChangingPage"
+                                :class="[
+                                    'px-3 py-1 rounded transition-colors',
+                                    page === '...' 
+                                        ? 'text-gray-400 cursor-default' 
+                                        : currentPage === page 
+                                            ? 'bg-blue-600 text-white' 
+                                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300',
+                                    isChangingPage ? 'opacity-50' : ''
+                                ]">
+                                {{ page }}
+                            </button>
+                        </div>
+                      
+                        <button 
+                            @click="nextPage" 
+                            :disabled="currentPage === totalPages || isChangingPage"
+                            class="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors">
+                            Next
+                        </button>
+                    </div>
+
+                    <!-- Page Info -->
+                    <div v-if="totalPages > 1" class="text-center mb-4 text-sm text-gray-600">
+                        Page {{ currentPage }} of {{ totalPages }} • Activity {{ startIndex + 1 }} of {{ form.activities.length }}
+                    </div>
+                    
                     <div class="overflow-x-auto">
                         <table class="w-full border-collapse border border-gray-300 mb-4 min-w-[1000px]">
                             <thead>
@@ -639,63 +778,63 @@ nextTick(() => {
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="(activity, index) in form.activities" :key="index">
+                                <tr v-for="(activity, idx) in currentPageActivities" :key="startIndex + idx">
                                     <td class="border border-gray-300 p-2">
                                         <div 
-                                            :data-field="`objective-${index}`"
+                                            :data-field="`objective-${startIndex + idx}`"
                                             contenteditable="true"
-                                            @input="handleContentEditableInput($event, index, 'objective')"
+                                            @input="handleContentEditableInput($event, startIndex + idx, 'objective')"
                                             @mouseup="handleMouseUp"
                                             class="w-full p-1 text-sm min-h-[20px] focus:outline-none focus:ring-1 focus:ring-blue-500"
                                             placeholder="Enter objective..."
                                         ></div>
-                                        <p v-if="errors.activities?.[index]?.objective" class="text-red-500 text-xs mt-1">{{ errors.activities[index].objective }}</p>
+                                        <p v-if="errors.activities?.[startIndex + idx]?.objective" class="text-red-500 text-xs mt-1">{{ errors.activities[startIndex + idx].objective }}</p>
                                     </td>
                                     <td class="border border-gray-300 p-2">
                                         <div 
-                                            :data-field="`name-${index}`"
+                                            :data-field="`name-${startIndex + idx}`"
                                             contenteditable="true"
-                                            @input="handleContentEditableInput($event, index, 'name')"
+                                            @input="handleContentEditableInput($event, startIndex + idx, 'name')"
                                             @mouseup="handleMouseUp"
                                             class="w-full p-1 text-sm min-h-[20px] focus:outline-none focus:ring-1 focus:ring-blue-500"
                                             placeholder="Enter activity name..."
                                         ></div>
-                                        <p v-if="errors.activities?.[index]?.name" class="text-red-500 text-xs mt-1">{{ errors.activities[index].name }}</p>
+                                        <p v-if="errors.activities?.[startIndex + idx]?.name" class="text-red-500 text-xs mt-1">{{ errors.activities[startIndex + idx].name }}</p>
                                     </td>
                                     <td class="border border-gray-300 p-2">
                                         <div 
-                                            :data-field="`description-${index}`"
+                                            :data-field="`description-${startIndex + idx}`"
                                             contenteditable="true"
-                                            @input="handleContentEditableInput($event, index, 'description')"
+                                            @input="handleContentEditableInput($event, startIndex + idx, 'description')"
                                             @mouseup="handleMouseUp"
                                             class="w-full p-1 text-sm min-h-[40px] focus:outline-none focus:ring-1 focus:ring-blue-500"
                                             placeholder="Enter description..."
                                         ></div>
-                                        <p v-if="errors.activities?.[index]?.description" class="text-red-500 text-xs mt-1">{{ errors.activities[index].description }}</p>
+                                        <p v-if="errors.activities?.[startIndex + idx]?.description" class="text-red-500 text-xs mt-1">{{ errors.activities[startIndex + idx].description }}</p>
                                     </td>
                                     <td class="border border-gray-300 p-2">
                                         <div 
-                                            :data-field="`persons_involved-${index}`"
+                                            :data-field="`persons_involved-${startIndex + idx}`"
                                             contenteditable="true"
-                                            @input="handleContentEditableInput($event, index, 'persons_involved')"
+                                            @input="handleContentEditableInput($event, startIndex + idx, 'persons_involved')"
                                             @mouseup="handleMouseUp"
                                             class="w-full p-1 text-sm min-h-[20px] focus:outline-none focus:ring-1 focus:ring-blue-500"
                                             placeholder="Enter persons involved..."
                                         ></div>
-                                        <p v-if="errors.activities?.[index]?.persons_involved" class="text-red-500 text-xs mt-1">{{ errors.activities[index].persons_involved }}</p>
+                                        <p v-if="errors.activities?.[startIndex + idx]?.persons_involved" class="text-red-500 text-xs mt-1">{{ errors.activities[startIndex + idx].persons_involved }}</p>
                                     </td>
                                     <td class="border border-gray-300 p-2">
                                         <input type="date" v-model="activity.target_date" class="w-full p-1 text-sm" required>
-                                        <p v-if="errors.activities?.[index]?.target_date" class="text-red-500 text-xs mt-1">{{ errors.activities[index].target_date }}</p>
+                                        <p v-if="errors.activities?.[startIndex + idx]?.target_date" class="text-red-500 text-xs mt-1">{{ errors.activities[startIndex + idx].target_date }}</p>
                                     </td>
                                     <td class="border border-gray-300 p-2">
                                         <input type="number" v-model.number="activity.budget" step="0.01" min="0" max="9999999999999.99" class="w-full p-1 text-sm" required>
-                                        <p v-if="errors.activities?.[index]?.budget" class="text-red-500 text-xs mt-1">{{ errors.activities[index].budget }}</p>
+                                        <p v-if="errors.activities?.[startIndex + idx]?.budget" class="text-red-500 text-xs mt-1">{{ errors.activities[startIndex + idx].budget }}</p>
                                     </td>
                                     <td class="border border-gray-300 p-2 text-center">
                                         <button 
                                             type="button" 
-                                            @click="removeActivity(index)" 
+                                            @click="removeActivity(startIndex + idx)" 
                                             class="bg-red-500 text-white px-2 py-1 rounded text-xs"
                                             :disabled="form.activities.length <= 1"
                                             :class="{ 'opacity-50 cursor-not-allowed': form.activities.length <= 1 }"
@@ -707,12 +846,48 @@ nextTick(() => {
                             </tbody>
                         </table>
                     </div>
+
+                    <!-- Pagination Controls (Bottom) -->
+                    <div v-if="totalPages > 1" class="pagination-controls flex justify-center items-center mt-6 gap-4">
+                        <button 
+                            @click="prevPage" 
+                            :disabled="currentPage === 1 || isChangingPage"
+                            class="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors">
+                            Previous
+                        </button>
+                        
+                        <div class="flex gap-2">
+                            <button 
+                                v-for="page in visiblePages" 
+                                :key="page"
+                                @click="page === '...' ? null : goToPage(page)"
+                                :disabled="page === '...' || isChangingPage"
+                                :class="[
+                                    'px-3 py-1 rounded transition-colors',
+                                    page === '...' 
+                                        ? 'text-gray-400 cursor-default' 
+                                        : currentPage === page 
+                                            ? 'bg-blue-600 text-white' 
+                                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300',
+                                    isChangingPage ? 'opacity-50' : ''
+                                ]">
+                                {{ page }}
+                            </button>
+                        </div>
+                      
+                        <button 
+                            @click="nextPage" 
+                            :disabled="currentPage === totalPages || isChangingPage"
+                            class="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors">
+                            Next
+                        </button>
+                    </div>
                 </div>
 
                 <div class="mt-6 flex items-center">
                   <div class="flex-1">
                     <button type="button" @click="addActivity" class="bg-blue-500 text-white px-3 py-1 rounded text-sm">
-                      Add Activity Row
+                      ➕ Add Activity
                     </button>
                   </div>
                   <div class="flex-1 text-center">

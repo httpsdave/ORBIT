@@ -945,19 +945,44 @@ class OrganizationApplicationController extends Controller
 
     public function exportPlanPdf(OrganizationApplication $application, Request $request)
     {
-        $application->load('activities'); // Eager load activities for the PDF
+        try {
+            $application->load('activities'); // Eager load activities for the PDF
 
-        // Pass both application and activities to the PDF view
-        $pdf = Pdf::loadView('pdfs.organization_plan', ['application' => $application, 'activities' => $application->activities])
-                ->setPaper('A4', 'portrait');
-                
-        $action = $request->query('action', 'download');
-        
-        if ($action === 'view') {
-            return $pdf->stream('Plan_' . $application->organization_name . '.pdf');
+            // Check if activities exist
+            if ($application->activities->isEmpty()) {
+                return redirect()->back()->with('error', 'No activities found for this organization.');
+            }
+
+            // Use the combined template for all cases
+            $pdf = Pdf::loadView('pdfs.organization_plan_combined', [
+                'application' => $application,
+                'activities' => $application->activities
+            ])
+            ->setPaper('A4', 'portrait')
+            ->setOptions([
+                'isHtml5ParserEnabled' => true,
+                'isRemoteEnabled' => true,
+                'defaultFont' => 'sans-serif',
+                'chroot' => base_path(),
+                'isPhpEnabled' => true
+            ]);
+                    
+            $action = $request->query('action', 'download');
+            
+            if ($action === 'view') {
+                return $pdf->stream('Plan_' . $application->organization_name . '.pdf');
+            }
+            
+            return $pdf->download('Plan_' . $application->organization_name . '.pdf');
+            
+        } catch (\Exception $e) {
+            \Log::error('PDF Generation Error: ' . $e->getMessage(), [
+                'application_id' => $application->id,
+                'stack_trace' => $e->getTraceAsString()
+            ]);
+            
+            return redirect()->back()->with('error', 'Failed to generate PDF. Please try again or contact support.');
         }
-        
-        return $pdf->download('Plan_' . $application->organization_name . '.pdf');
     }
 
     public function exportMembersPdf(OrganizationApplication $application, Request $request)

@@ -149,9 +149,42 @@
         table th:nth-child(5), table td:nth-child(5) { width: 15%; } /* TARGET DATE */
         table th:nth-child(6), table td:nth-child(6) { width: 15%; } /* BUDGET */
 
-        /* Ensuring empty cells have enough height */
+        /* Ensuring single activity row has enough height */
         tr td {
-            height: 50px; /* Larger default height for empty rows */
+            height: 80px; /* Larger height for single activity row */
+            vertical-align: top;
+            padding: 8px;
+        }
+
+        /* Ensure content doesn't overflow page */
+        .content {
+            flex: 1;
+            margin-bottom: 120px; /* Space for signatures and footer */
+        }
+
+        /* Signature positioning adjustments for single activity pages */
+        .signature-container {
+            width: 100%;
+            margin-top: 30px;
+            clear: both;
+        }
+
+        .noted {
+            text-align: center;
+            margin-top: 30px;
+            clear: both;
+        }
+
+        .recommendation {
+            text-align: center;
+            margin-top: 40px;
+            clear: both;
+        }
+
+        .signature-block {
+            text-align: center;
+            margin-top: 30px;
+            clear: both;
         }
 
         .footer {
@@ -196,9 +229,33 @@
 
         /* Print-specific styles */
         @media print {
-            table { page-break-inside: auto; }
-            tr { page-break-inside: avoid; page-break-after: auto; }
-            td { vertical-align: top; }
+            table { 
+                page-break-inside: avoid; 
+                margin-bottom: 20px;
+            }
+            tr { 
+                page-break-inside: avoid; 
+                page-break-after: auto; 
+            }
+            td { 
+                vertical-align: top; 
+                word-wrap: break-word;
+            }
+            .signature-container,
+            .noted,
+            .recommendation,
+            .signature-block {
+                page-break-inside: avoid;
+            }
+        }
+
+        /* Page break utilities */
+        .page-break {
+            page-break-before: always;
+        }
+        
+        .no-page-break {
+            page-break-inside: avoid;
         }
     </style>
 </head>
@@ -214,6 +271,11 @@
         <div style="margin-top: 15px; text-decoration: underline;">{{ $application->organization_name }}</div>
         <div class="subtitle">PLAN OF ACTIVITIES</div>
         <div class="semester">Semester AY {{ $application->academic_year_start }}-{{ $application->academic_year_end }}</div>
+        @if(isset($activityIndex) && isset($totalActivities))
+        <div class="semester" style="font-size: 10pt; margin-top: 10px;">
+            Activity {{ $activityIndex }} of {{ $totalActivities }}
+        </div>
+        @endif
     </div>
 
     <div class="content">
@@ -226,8 +288,8 @@
                 <th>TARGET DATE</th>
                 <th>BUDGET</th>
             </tr>
-            <!-- Loop through activities -->
-            @forelse($activities as $activity)
+            <!-- Show only one activity per page -->
+            @if(isset($activity))
             <tr>
                 <td>{!! $activity->objective !!}</td>
                 <td>{!! $activity->name !!}</td>
@@ -236,9 +298,8 @@
                 <td>{{ \Carbon\Carbon::parse($activity->target_date)->format('F d, Y') }}</td>
                 <td>{{ number_format($activity->budget, 2) }}</td>
             </tr>
-            @empty
-            <!-- Display empty rows if no activities -->
-            @for($i = 0; $i < 5; $i++)
+            @else
+            <!-- Display empty row if no activity -->
             <tr>
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
@@ -247,8 +308,7 @@
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
             </tr>
-            @endfor
-            @endforelse
+            @endif
         </table>
         
         <!-- First signature row with President and Secretary -->
