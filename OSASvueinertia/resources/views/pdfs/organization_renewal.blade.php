@@ -259,14 +259,14 @@
 
             <div class="signature">
                 <p><span class="signature-line">{{ $application->president_name }}</span></p>
-                <p><span class="title-under-signature">Organization President</span></p>
+                <p><span class="title-under-signature"><strong>Organization President</strong></span></p>
             </div>
         </div>
 
         <div class="section right-align">
             <div class="signature">
                 <p><span class="signature-line">{{ $application->organization_name }}</span></p>
-                <p><span class="title-under-signature">Name of Organization</span></p>
+                <p><span class="title-under-signature"><strong>Name of Organization</strong></span></p>
             </div>
         </div>
 
@@ -274,30 +274,30 @@
             <p>Noted:</p>
             <div class="signature">
                 <p><span class="signature-line">{{ $application->adviser_name }}</span></p>
-                <p><span class="title-under-signature">Adviser's Student Organization</span></p>
+                <p><span class="title-under-signature"><strong>Adviser/s, Student Organization</strong></span></p>
             </div>
         </div>
 
         <div class="section right-align">
             <div class="signature">
                 <p><span class="signature-line">{{ $application->dean_name }}</span></p>
-                <p><span class="title-under-signature">Dean/Assoc. Dean of College</span></p>
+                <p><span class="title-under-signature"><strong>Dean/Assoc. Dean of College</strong></span></p>
             </div>
         </div>
 
         <div class="section center-align">
-            <p>Recommending Approval:</p>
+            <p><strong>Recommending Approval:</strong></p>
             <div class="signature">
                 <p><span class="signature-line"><strong>{{ $application->coordinator_name }}</strong></span></p>
-                <p>Coordinator, Student Organization Unit</p>
+                <p><strong>Coordinator, Student Organization Unit</strong></p>
             </div>
         </div>
 
         <div class="section center-align">
-            <p>Approved / Disapproved:</p>
+            <p><strong>Approved / Disapproved:</strong></p>
             <div class="signature">
                 <p><span class="signature-line"><strong>{{ $application->director_name }}</strong></span></p>
-                <p>Chairperson, Office of Student Affairs and Services</p>
+                <p><strong>Director/Chairperson, Office of Student Affairs and Services</strong></p>
             </div>
         </div>
     </div>
