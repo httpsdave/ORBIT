@@ -335,7 +335,7 @@
 
         <!-- Noted section aligned to the left margin -->
         <div class="noted-section" style="bottom: 300px; left: 0;">
-            <p style="margin-bottom: 25px;"><strong>Noted:</strong></p>
+            <p style="margin-bottom: 20px;"><strong>Noted:</strong></p>
             <div>
                 <p style="margin-left:65px;"><span class="underline" style="min-width:180px;">{{ $application->dean_name ?? '_______________________________' }}</span></p>
                 <p style="margin-left:65px;"><strong>Dean/Assoc. Dean of College</strong></p>
