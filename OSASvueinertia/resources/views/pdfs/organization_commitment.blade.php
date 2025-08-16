@@ -276,7 +276,7 @@
         <img src="{{ public_path('images/lspu-name.png') }}" alt="Laguna State Polytechnic University" class="university-name"><br>
         <span class="header-province-text">Province of Laguna</span><br>
         <br>
-        <strong class="header-osas">Office of Student Affairs and Services</strong><br>
+    <p class="office-title">OFFICE OF STUDENT AFFAIRS AND SERVICES</p>
         <span class="commitment-title"><strong>COMMITMENT FORM</strong></span>
     </div>
 
@@ -290,7 +290,7 @@
         </div>
 
         <div class="section justified">
-            <p class="sir-greeting">Sir/Madam:</p>
+            <p class="sir-greeting" style="margin-bottom:20px;">Sir/Madam:</p>
             <p class="indented">This letter is in connection with the application for recognition/renewal of 
             <u>{{ $application->organization_name ?? '________________' }}</u> as a duly recognized LSPU Organization.</p>
             <p class="indented">I, the undersigned, have committed to serve as the organization's 
