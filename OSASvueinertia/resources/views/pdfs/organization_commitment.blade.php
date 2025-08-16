@@ -211,7 +211,7 @@
         .signature-label {
             display: table-cell;
             vertical-align: bottom;
-            padding-right: 5px;
+            padding-right: 1px;
             white-space: nowrap;
             width: 1%;
         }
