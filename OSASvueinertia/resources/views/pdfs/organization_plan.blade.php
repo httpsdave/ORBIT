@@ -274,7 +274,11 @@
             <div class="signature-line" style="margin-bottom:0px; min-width:330px;">{{ $application->organization_name }}</div>
             <div class="title-under-signature" style="margin-top:2px;">Name of Organization</div>
         </div>
-        <div class="semester">Semester AY {{ $application->academic_year_start }}-{{ $application->academic_year_end }}</div>
+        <div style="text-align:center; margin-top:10px;">
+            <span style="min-width:300px; margin-bottom:0px;">
+                {{ $application->semester ?? '__' }} Sem. / A.Y. 20__-20__
+            </span>
+        </div>
         @if(isset($activityIndex) && isset($totalActivities))
         <div class="semester" style="font-size: 10pt; margin-top: 10px;">
             Activity {{ $activityIndex }} of {{ $totalActivities }}
