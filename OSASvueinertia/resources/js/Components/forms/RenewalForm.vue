@@ -157,11 +157,13 @@ const submit = () => {
   <div class="mt-6 form-content">
     <div class="header text-center relative">
         <img src="/images/lspu-logo.png" alt="LSPU Logo" class="absolute top-[-0.5cm] left-[-2cm] w-[250px] h-auto">
-        <p class="text-sm font-bold mb-0">Republic of the Philippines</p>
-        <p class="text-base font-bold university-name mb-0">Laguna State Polytechnic University</p>
-        <p class="text-sm mb-0">Province of Laguna</p>
-        <p class="text-sm mb-0">Office of Student Affairs and Services</p>
-        <p class="text-sm font-bold form-title mt-4 mb-4">RENEWAL FORM</p>
+        <p class="calibri-font">Republic of the Philippines</p>
+        <img src="/images/lspu-name.png" alt="Laguna State Polytechnic University" class="university-name"><br>
+        <p class="calibri-font">Province of Laguna</p>
+        <br>
+        <p class="office-title">OFFICE OF STUDENT AFFAIRS AND SERVICES</p>
+        <p class="form-title">ORGANIZATION RENEWAL FORM</p>
+        <br>
     </div>
 
     <div class="mt-6 text-right">
@@ -184,38 +186,39 @@ const submit = () => {
     <div class="section">
         <p class="mb-1">Sir:</p>
         
-        <p class="indented">The <span class="blank-line">{{ form.organization_name }}</span> wishes to seek renewal of its recognition to function as a Student Organization in the College of <span class="blank-line">{{ form.college }}</span> for Academic Year 20<span class="blank-line year">{{ form.academic_year_start }}</span>-20<span class="blank-line year">{{ form.academic_year_end }}</span>.</p>
+        <p class="indented">The <span class="dynamic-text"><u>{{ form.organization_name }}</u></span> wishes to seek renewal of its recognition to function as a duly recognized LSPU Organization for Academic Year 20<span class="dynamic-text"><u>{{ form.academic_year_start }}</u></span> - 20<span class="dynamic-text"><u>{{ form.academic_year_end }}</u></span>.</p>
         
-        <p class="indented">In this connection, we respectfully request your good office to grant us permission to operate in our institution, subject to the existing rules & regulation of our University.</p>
+        <p class="indented">In this connection, we are respectfully requesting from your good office to grant us permission to operate in our institution, subject to the existing rules & regulations of our University.</p>
         
         <p class="indented">Thank you very much.</p>
     </div>
 
     <div class="section text-right">
-        <p class="mb-1">Very respectfully yours,</p>
-        <div class="signature">
-            <p class="mb-0"><span class="signature-line">{{ form.president_name }}</span></p>
-            <p class="mb-0">Organization President</p>
-        </div>
-    </div>
+        <p class="respectfully-text">Very respectfully yours,</p>
 
-    <div class="section text-center">
-        <p class="mb-0"><span class="signature-line">{{ form.organization_name }}</span></p>
-        <p class="mb-0">Name of Organization</p>
-    </div>
-
-    <div class="section text-left">
-        <p class="mb-1">Noted:</p>
         <div class="signature">
-            <p class="mb-0"><span class="signature-line">{{ form.adviser_name }}</span></p>
-            <p class="mb-0">Adviser's Student Organization</p>
+            <p><span class="signature-line" style="min-width:160px;">{{ form.president_name }}</span></p>
+            <p><span class="title-under-signature title-left-adjust"><strong>Organization President</strong></span></p>
         </div>
     </div>
 
     <div class="section text-right">
         <div class="signature">
-            <p class="mb-0"><span class="signature-line">{{ form.dean_name }}</span></p>
-            <p class="mb-0">Dean/Assoc. Dean of College</p>
+            <p><span class="signature-line" style="min-width:160px;">{{ form.organization_name }}</span></p>
+            <p><span class="title-under-signature title-left-adjust-more"><strong>Name of Organization</strong></span></p>
+        </div>
+    </div>
+
+    <div class="section text-left">
+        <p><strong>NOTED:</strong></p>
+        <div class="signature">
+            <p><span class="signature-line" style="min-width:220px;">{{ form.adviser_name }}</span></p>
+            <p><span class="title-under-signature"><strong>Adviser/s, Student Organization</strong></span></p>
+        </div>
+        
+        <div class="signature">
+            <p><span class="signature-line" style="min-width:200px;">{{ form.dean_name }}</span></p>
+            <p><span class="title-under-signature"><strong>Dean/Assoc. Dean, College of</strong> <span class="signature-line signature-line-inline" style="min-width:120px;">{{ form.college }}</span></span></p>
         </div>
     </div>
 
@@ -328,39 +331,91 @@ const submit = () => {
 </template>
 
 <style scoped>
-/* Set Font to Times New Roman, Font Size to 10pt, and Line Spacing to 1.0 */
+/* Set Font to Times New Roman, Font Size to 11pt, and Line Spacing to 1.1 */
 .form-content {
     font-family: 'Times New Roman', Times, serif;
-    font-size: 10pt;
-    line-height: 1.0;
+    font-size: 11pt;
+    line-height: 1.1;
+}
+
+/* Calibri font for specific elements */
+.calibri-font {
+    font-family: 'Calibri', 'Arial', sans-serif;
+}
+
+.office-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 0px;
+    margin-bottom: 10px;
+}
+
+.form-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.university-name {
+    max-width: 55%;
+    height: auto;
+    margin: 4px 0;
+    display: inline-block;
 }
 
 .indented {
     text-indent: 1.27cm;
-}
-
-.blank-line {
-    display: inline-block;
-    min-width: 200px;
-    border-bottom: 1px solid black;
-    padding-bottom: 2px;
-    text-align: center;
-    background: transparent;
-    position: relative;
-    z-index: 1;
-}
-
-.blank-line.year {
-    min-width: 50px;
+    margin-bottom: 20px;
 }
 
 .signature-line {
     display: inline-block;
-    min-width: 250px;
+    width: fit-content;
     border-bottom: 1px solid black;
-    padding-bottom: 2px;
+    margin-bottom: 2px;
     text-align: center;
-    background: transparent;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}
+
+.title-under-signature {
+    display: inline-block;
+    width: fit-content;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+.title-left-adjust {
+    transform: translateX(-5px);
+}
+
+.title-left-adjust-more {
+    transform: translateX(-10px);
+}
+
+.signature-line-inline {
+    vertical-align: text-bottom !important;
+    position: relative;
+    top: 0px;
+}
+
+.respectfully-text {
+    text-align: left;
+    margin-left: 59%;
+    display: block;
+}
+
+.dynamic-text {
+    display: inline;
+    word-break: break-word;
+}
+
+.thru-line {
+    text-align: left;
+    font-style: bold;
+    margin: 10px 0;
+    margin-left: 70px;
 }
 
 /* Basic input focus styling */
@@ -375,7 +430,7 @@ input:focus {
         page-break-before: always;
     }
     
-    .blank-line, .signature-line {
+    .signature-line {
         background: transparent !important;
     }
 }
