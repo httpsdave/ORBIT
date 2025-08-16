@@ -259,7 +259,7 @@
         <div class="section">
             <p>Sir/Madam:</p>
             
-            <p class="indented">The <span class="dynamic-text"><u>{{ $application->organization_name }}</u></span> wishes to seek renewal of its recognition to function as a duly recognized LSPU Organization in the College of <span class="dynamic-text"><u>{{ $application->college }}</u></span> for Academic Year 20<span class="dynamic-text"><u>{{ $application->academic_year_start }}</u></span>-20<span class="dynamic-text"><u>{{ $application->academic_year_end }}</u></span>.</p>
+            <p class="indented">The <span class="dynamic-text"><u>{{ $application->organization_name }}</u></span> wishes to seek renewal of its recognition to function as a duly recognized LSPU Organization for Academic Year 20<span class="dynamic-text"><u>{{ $application->academic_year_start }}</u></span> - 20<span class="dynamic-text"><u>{{ $application->academic_year_end }}</u></span>.</p>
             
             <p class="indented">In this connection, we are respectfully requesting from your good office to grant us permission to operate in our institution, subject to the existing rules & regulations of our University.</p>
             <br>
