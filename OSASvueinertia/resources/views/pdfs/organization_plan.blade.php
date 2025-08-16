@@ -275,8 +275,12 @@
             <div class="title-under-signature" style="margin-top:2px;">Name of Organization</div>
         </div>
         <div style="text-align:center; margin-top:10px;">
-            <span style="min-width:300px; margin-bottom:0px;">
-                {{ $application->semester ?? '__' }} Sem. / A.Y. 20{{ $application->academic_year_start ?? '__' }}-20{{ $application->academic_year_end ?? '__' }}
+            <span class="signature-line" style="min-width:80px; margin-bottom:0px;">
+                {{ $application->semester ?? '__' }}
+            </span> Sem. / A.Y. 20<span class="signature-line" style="min-width:20px; margin-bottom:-2px; margin-top:-1px;">
+                {{ $application->academic_year_start ?? '__' }}
+            </span>-20<span class="signature-line" style="min-width:20px; margin-bottom:-2px; margin-top:-1px;">
+                {{ $application->academic_year_end ?? '__' }}
             </span>
         </div>
         @if(isset($activityIndex) && isset($totalActivities))
