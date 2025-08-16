@@ -290,11 +290,11 @@
         </div>
 
         <div class="section justified">
-            <p class="sir-greeting">Sir,</p>
-            <p class="indented">This letter is in connection with the application for recognition of 
-            <u>{{ $application->organization_name ?? '________________' }}</u> as an LSPU Student Organization.</p>
-            <p class="indented">I, the undersigned, have committed to serve as the organizations Faculty 
-            Adviser for the academic year 20<u>{{ $application->academic_year_start ?? '__' }}</u>-20<u>{{ $application->academic_year_end ?? '__' }}</u>, and will therefore assume full responsibility as 
+            <p class="sir-greeting">Sir/Madam:</p>
+            <p class="indented">This letter is in connection with the application for recognition/renewal of 
+            <u>{{ $application->organization_name ?? '________________' }}</u> as a duly recognized LSPU Organization.</p>
+            <p class="indented">I, the undersigned, have committed to serve as the organization's 
+            Adviser for the academic year 20<u>{{ $application->academic_year_start ?? '__' }}</u>-20<u>{{ $application->academic_year_end ?? '__' }}</u>, and shall therefore assume full responsibility as 
             provided in the guidelines for the recognition of student organizations.</p>
             <p class="indented">Furthermore, I certify to the correctness and completeness of the documents 
             attached to the organization application for recognition.</p>
