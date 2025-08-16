@@ -127,7 +127,7 @@
 
         .bottom-sections {
             position: absolute;
-            bottom: 40px; /* Increased from 40px to 60px to move it higher */
+            bottom: 80px; /* Increased from 40px to 70px to move it higher by 30px */
             left: 0;
             right: 0;
             text-align: center;
@@ -302,7 +302,7 @@
 
         <!-- Updated signature section with individual underline length controls -->
         <div class="signature-section">
-            <p><strong>Very respectfully yours,</strong></p>
+            <p style="margin-bottom: 18px;"><strong>Very respectfully yours,</strong></p>
             <div class="signature-field">
                 <span class="signature-label">Name:</span>
                 <span class="signature-value sig-name">{{ $application->adviser_name ?? '' }}</span>
@@ -334,7 +334,7 @@
         </div>
 
         <!-- Noted section aligned to the left margin -->
-        <div class="noted-section" style="bottom: 300px; left: 0;">
+        <div class="noted-section" style="bottom: 340px; left: 0;">
             <p style="margin-bottom: 20px;"><strong>Noted:</strong></p>
             <div>
                 <p style="margin-left:65px;"><span class="underline" style="min-width:180px;">{{ $application->dean_name ?? '_______________________________' }}</span></p>
