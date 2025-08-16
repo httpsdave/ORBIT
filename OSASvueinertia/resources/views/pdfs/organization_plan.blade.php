@@ -269,7 +269,7 @@
         <span class="calibri-text">Province of Laguna</span><br>
         <br>
         <div style="margin-top: 15px; text-align: center;">
-            <div class="signature-line" style="margin-bottom:0px; min-width:200px;">{{ $application->organization_name }}</div>
+            <div class="signature-line" style="margin-bottom:0px; min-width:330px;">{{ $application->organization_name }}</div>
             <div class="title-under-signature" style="margin-top:2px;">Name of Organization</div>
         </div>
         <div class="subtitle">PLAN OF ACTIVITIES</div>
