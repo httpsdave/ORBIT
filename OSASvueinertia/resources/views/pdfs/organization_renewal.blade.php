@@ -185,31 +185,31 @@
 
         .footer {
             position: absolute;
-            bottom: 0;
+            bottom: -5px;
             width: 100%;
             height: 20px;
             line-height: 20px;
             font-size: 10pt;
-            font-family: 'Calibri', 'Arial', sans-serif; /* Changed footer font to Calibri */
+            font-family: Calibri, sans-serif;
         }
 
         .footer-left {
             position: absolute;
-            left: -1.0cm;
-            bottom: 0;
+            left: .1cm;
+            bottom: -5px;
         }
 
         .footer-center {
             position: absolute;
             left: 50%;
             transform: translateX(-50%);
-            bottom: 0;
+            bottom: -5px;
         }
 
         .footer-right {
             position: absolute;
-            right: -1.0cm;
-            bottom: 0;
+            right: .1cm;
+            bottom: -5px;
         }
         
         .dynamic-text {
