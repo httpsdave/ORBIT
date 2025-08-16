@@ -329,13 +329,17 @@
             <p><strong>Noted:</strong></p>
         </div>
         
-        <!-- Second signature row with Faculty Adviser and Dean -->
+        <!-- Second signature row with Faculty Adviser -->
         <div class="signature-container clearfix">
             <div class="signature-left">
                 <div class="signature-line" style="margin-bottom:0px;">{{ $application->adviser_name ?? 'N/A' }}</div>
                 <p style="margin-top:2px;">Faculty Adviser(s)</p>
             </div>
-            <div class="signature-right">
+        </div>
+        
+        <!-- Third signature row with Dean -->
+        <div class="signature-container clearfix">
+            <div class="signature-left">
                 <div class="signature-line" style="margin-bottom:0px;">{{ $application->dean_name ?? 'N/A' }}</div>
                 <p style="margin-top:2px;">Dean/Assoc. Dean of College</p>
             </div>
