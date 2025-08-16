@@ -104,6 +104,10 @@
             top: 0px;
         }
 
+        .title-right-adjust {
+            transform: translateX(10px);
+        }
+
         .right-align { 
             text-align: right; 
         }
@@ -286,7 +290,7 @@
             <p><strong>NOTED:</strong></p>
             <div class="signature">
                 <p><span class="signature-line" style="min-width:220px;">{{ $application->adviser_name }}</span></p>
-                <p><span class="title-under-signature"><strong>Adviser/s, Student Organization</strong></span></p>
+                <p><span class="title-under-signature title-right-adjust"><strong>Adviser/s, Student Organization</strong></span></p>
             </div>
             
             <div class="signature">
