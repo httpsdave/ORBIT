@@ -216,9 +216,6 @@
             <div style="margin-top: 15px; text-decoration: underline;">{{ $application->organization_name }}</div>
             <div class="subtitle">PLAN OF ACTIVITIES</div>
             <div class="semester">Semester AY {{ $application->academic_year_start }}-{{ $application->academic_year_end }}</div>
-            <div class="semester" style="font-size: 10pt; margin-top: 10px;">
-                Activity {{ $index + 1 }} of {{ $activities->count() }}
-            </div>
         </div>
 
         <div class="content">
