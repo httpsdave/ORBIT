@@ -142,31 +142,31 @@
         /* Document footer with form numbers - Changed font to Calibri */
         .doc-footer {
             position: absolute;
-            bottom: 0;
+            bottom: -5px;
             width: 100%;
-            height: 20px; /* Fixed height to ensure alignment */
-            line-height: 20px; /* Vertically center text */
+            height: 20px;
+            line-height: 20px;
             font-size: 10pt;
-            font-family: 'Calibri', sans-serif;
+            font-family: Calibri, sans-serif;
         }
 
         .footer-left {
             position: absolute;
-            left: -1.0cm;
-            bottom: 0;
+            left: .1cm;
+            bottom: -5px;
         }
 
         .footer-center {
             position: absolute;
             left: 50%;
             transform: translateX(-50%);
-            bottom: 0;
+            bottom: -5px;
         }
 
         .footer-right {
             position: absolute;
-            right: -1.0cm;
-            bottom: 0;
+            right: .1cm;
+            bottom: -5px;
         }
 
         .form-field {
@@ -335,10 +335,10 @@
 
         <!-- Noted section repositioned higher and more to the right -->
         <div class="noted-section" style="bottom: 300px;">
-            <p style="margin-bottom: 25px;">Noted:</p>
+            <p style="margin-bottom: 25px;"><strong>Noted:</strong></p>
             <div style="margin-left: 70px;"> <!-- Shift these elements 50px to the left -->
                 <p><span class="underline">{{ $application->dean_name ?? '_______________________________' }}</span></p>
-                <p>Dean/Assoc. Dean of College</p>
+                <p style="margin-left:10px;"><strong>Dean/Assoc. Dean of College</strong></p>
             </div>
         </div>
 
