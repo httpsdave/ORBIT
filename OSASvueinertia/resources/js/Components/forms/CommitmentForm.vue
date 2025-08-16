@@ -24,6 +24,17 @@ const nextYear = computed(() => {
   return (new Date().getFullYear() + 1).toString().slice(-2);
 });
 
+// Computed property to format the date
+const formattedDate = computed(() => {
+  if (!form.form_date) return '';
+  const date = new Date(form.form_date);
+  return date.toLocaleDateString('en-US', { 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  });
+});
+
 const form = useForm({
   form_type: 'LSPU-OSAS-SF-003',
   organization_name: props.initialFormData.organization_name || '',
@@ -34,7 +45,7 @@ const form = useForm({
   adviser_rank:props.initialFormData.adviser_rank || '',
   adviser_address:props.initialFormData.adviser_address || '',
   adviser_contact:props.initialFormData.adviser_contact || '',
-  form_date:props.initialFormData.form_date || '',
+  form_date:props.initialFormData.form_date || new Date().toISOString().slice(0, 10),
   dean_name: props.initialFormData.dean_name || '',
   coordinator_name: props.initialFormData.coordinator_name || '',
   director_name: props.initialFormData.director_name || '',
@@ -137,8 +148,15 @@ const submit = () => {
       <p class="text-base font-bold university-name mb-0">Laguna State Polytechnic University</p>
       <p class="text-sm mb-0">Province of Laguna</p>
       <p class="osas-header mb-0 mt-4">Office of Student Affairs and Services</p>
-      <p class="commitment-form-title mb-4">COMMITMENT FORM</p>
+      <p class="commitment-form-title mb-4">ORGANIZATION ADVISER COMMITMENT FORM</p>
     </div>
+
+    <div class="mt-6 text-right">
+        <p class="mb-0"><span class="signature-line text-center border-b border-black min-w-[150px] inline-block">{{ formattedDate }}</span></p>
+        <p class="mb-0" style="text-align: center; width: 150px; display: inline-block;">Date</p>
+    </div>
+    
+    <div style="height: 7px;"></div>
 
     <div class="section text-left">
       <p class="mb-0 font-bold">THE DIRECTOR/CHAIRPERSON</p>
