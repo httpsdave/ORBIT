@@ -151,7 +151,7 @@
 
         /* Ensuring single activity row has enough height */
         tr td {
-            height: 80px; /* Larger height for single activity row */
+            height: 150px; /* Larger height for single activity row */
             vertical-align: top;
             padding: 8px;
         }
