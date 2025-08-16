@@ -295,7 +295,7 @@
             <tr>
                 <th>OBJECTIVE</th>
                 <th>ACTIVITIES</th>
-                <th>BRIEF DESCRIPTION</th>
+                <th>BRIEF <br> DESCRIPTION</th>
                 <th>PERSONS INVOLVED</th>
                 <th>TARGET DATE</th>
                 <th>BUDGET</th>
