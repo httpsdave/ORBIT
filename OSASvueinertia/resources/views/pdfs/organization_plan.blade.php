@@ -268,11 +268,12 @@
         <img src="{{ public_path('images/lspu-name.png') }}" alt="Laguna State Polytechnic University" class="university-name"><br>
         <span class="calibri-text">Province of Laguna</span><br>
         <br>
+    <p class="office-title" style="font-size:11pt; font-weight:bold; margin-bottom:10px; margin-top:5px;">OFFICE OF STUDENT AFFAIRS AND SERVICES</p>
+    <div class="subtitle" style="margin-top:15px; font-size:13pt;">PLAN OF ACTIVITIES</div>
         <div style="margin-top: 15px; text-align: center;">
             <div class="signature-line" style="margin-bottom:0px; min-width:330px;">{{ $application->organization_name }}</div>
             <div class="title-under-signature" style="margin-top:2px;">Name of Organization</div>
         </div>
-        <div class="subtitle">PLAN OF ACTIVITIES</div>
         <div class="semester">Semester AY {{ $application->academic_year_start }}-{{ $application->academic_year_end }}</div>
         @if(isset($activityIndex) && isset($totalActivities))
         <div class="semester" style="font-size: 10pt; margin-top: 10px;">
