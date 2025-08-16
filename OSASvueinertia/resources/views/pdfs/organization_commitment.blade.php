@@ -113,7 +113,7 @@
             display: inline-block;
             min-width: 200px; /* Ensures a baseline width */
             border-bottom: 1px solid black;
-            padding-bottom: 2px;
+            padding-bottom: -1px;
             text-align: center;
         }
 
@@ -219,7 +219,7 @@
         .signature-value {
             display: table-cell;
             border-bottom: 1px solid black;
-            padding-bottom: 2px;
+            padding-bottom: -1px;
             text-align: left;
             min-height: 14px;
             vertical-align: bottom;
