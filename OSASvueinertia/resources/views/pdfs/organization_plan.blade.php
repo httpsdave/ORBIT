@@ -276,7 +276,7 @@
         </div>
         <div style="text-align:center; margin-top:10px;">
             <span style="min-width:300px; margin-bottom:0px;">
-                {{ $application->semester ?? '__' }} Sem. / A.Y. 20__-20__
+                {{ $application->semester ?? '__' }} Sem. / A.Y. 20{{ $application->academic_year_start ?? '__' }}-20{{ $application->academic_year_end ?? '__' }}
             </span>
         </div>
         @if(isset($activityIndex) && isset($totalActivities))
