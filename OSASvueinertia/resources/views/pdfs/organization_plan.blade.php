@@ -311,6 +311,8 @@
             @endif
         </table>
         
+        <!-- Prepared by label -->
+    <div style="margin-top: 30px; margin-bottom: -10px; text-align: left; font-family: inherit; padding-left: 5px;">Prepared by:</div>
         <!-- First signature row with President and Secretary -->
         <div class="signature-container clearfix">
             <div class="signature-left">
