@@ -29,7 +29,7 @@
 
         .header {
             text-align: center;
-            font-size: 17px;
+            font-size: 16px;
             font-weight: bold;
             margin: 0 0 0.5cm 0; /* Reduced bottom margin */
             padding-top: 0.5cm; /* Added padding to keep it from the edge */
@@ -39,6 +39,7 @@
         .header-republic-text, .header-province-text {
             font-family: 'Calibri', sans-serif;
             font-weight: normal;
+            font-size: 11pt;
         }
 
         .header-osas {
@@ -271,8 +272,8 @@
         <img src="{{ public_path('images/lspu-name.png') }}" alt="Laguna State Polytechnic University" class="university-name"><br>
         <span class="header-province-text">Province of Laguna</span><br>
         <br>
-    <p class="office-title" style="margin-bottom:10px;">OFFICE OF STUDENT AFFAIRS AND SERVICES</p>
-        <span class="commitment-title"><strong>ORGANIZATION ADVISER COMMITMENT FORM</strong></span>
+    <p class="office-title" style="margin-bottom:10px; font-size:11pt;">OFFICE OF STUDENT AFFAIRS AND SERVICES</p>
+        <span class="commitment-title" style="font-size:11pt;"><strong>ORGANIZATION ADVISER COMMITMENT FORM</strong></span>
     </div>
 
     <div class="content">
