@@ -343,13 +343,13 @@
         
         <div class="recommendation">
             <p><strong>Recommending Approval:</strong></p>
-            <div class="signature-line" style="margin-bottom:0px;">{{ $application->coordinator_name ?? 'N/A' }}</div>
+            <div class="signature-line" style="min-width:290px; margin-bottom:0px;">{{ $application->coordinator_name ?? 'N/A' }}</div>
             <p style="margin-top:2px;">Coordinator, Student Organization Unit</p>
         </div>
         
         <div class="signature-block">
             <p><strong>Approved/Disapproved:</strong></p>
-            <div class="signature-line" style="margin-bottom:0px;">{{ $application->director_name ?? 'N/A' }}</div>
+            <div class="signature-line" style="min-width:415px; margin-bottom:0px;">{{ $application->director_name ?? 'N/A' }}</div>
             <p style="margin-top:2px;">Director/Chairperson, Office of Student Affairs and Services</p>
         </div>
     </div>
