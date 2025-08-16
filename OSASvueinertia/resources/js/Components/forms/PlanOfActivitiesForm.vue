@@ -60,6 +60,7 @@ const form = useForm({
   organization_name: props.initialFormData.organization_name || '',
   academic_year_start: props.initialFormData.academic_year_start || '',
   academic_year_end: props.initialFormData.academic_year_end || '',
+  semester: props.initialFormData.semester || '',
   president_name: props.initialFormData.president_name || '',
   secretary_name: props.initialFormData.secretary_name || '',
   application_date: props.initialFormData.application_date || '',
@@ -90,6 +91,7 @@ watch(() => props.initialFormData, (newData) => {
   form.organization_name = newData.organization_name || '';
   form.academic_year_start = newData.academic_year_start || '';
   form.academic_year_end = newData.academic_year_end || '';
+  form.semester = newData.semester || '';
   form.president_name = newData.president_name || '';
   form.secretary_name = newData.secretary_name || '';
   form.application_date = formatDateForInput(newData.application_date) || '';
@@ -522,6 +524,10 @@ const handleClickOutside = (event) => {
   }
 };
 
+function limitTo2Digits(event) {
+  event.target.value = event.target.value.replace(/[^0-9]/g, '').slice(0, 2);
+}
+
 // Add event listeners
 nextTick(() => {
   document.addEventListener('click', handleClickOutside);
@@ -636,9 +642,17 @@ nextTick(() => {
                 <p class="text-sm font-bold mb-0">Republic of the Philippines</p>
                 <p class="text-base font-bold university-name mb-0">Laguna State Polytechnic University</p>
                 <p class="text-sm mb-0">Province of Laguna</p>
-                <div style="margin-top: 15px; text-decoration: underline;">{{ form.organization_name }}</div>
+                <p class="text-sm font-bold mb-0 mt-3">OFFICE OF STUDENT AFFAIRS AND SERVICES</p>
                 <p class="text-sm font-bold form-title mt-4 mb-4">PLAN OF ACTIVITIES</p>
-                <p class="text-sm mb-0">Semester AY {{ form.academic_year_start }}-{{ form.academic_year_end }}</p>
+                <div style="margin-top: 15px; text-align: center;">
+                    <div class="signature-line border-b border-black min-w-[330px] inline-block text-center mb-0">{{ form.organization_name }}</div>
+                    <div class="title-under-signature mt-1">Name of Organization</div>
+                </div>
+                <div class="text-center mt-2">
+                    <span class="min-w-[300px]">
+                        {{ form.semester || '__' }} Sem. / A.Y. 20{{ form.academic_year_start || '__' }}-20{{ form.academic_year_end || '__' }}
+                    </span>
+                </div>
             </div>
 
             <!-- Form inputs -->
@@ -653,14 +667,25 @@ nextTick(() => {
                     </div>
 
                     <div>
+                        <label class="block font-bold">Semester</label>
+                        <select v-model="form.semester" class="border p-2 w-full" required>
+                            <option value="">Select Semester</option>
+                            <option value="1st">1st</option>
+                            <option value="2nd">2nd</option>
+                            <option value="Summer">Summer</option>
+                        </select>
+                        <p v-if="errors.semester" class="text-red-500 text-sm mt-1">{{ errors.semester }}</p>
+                    </div>
+
+                    <div>
                         <label class="block font-bold">Academic Year Start</label>
-                        <input v-model="form.academic_year_start" class="border p-2 w-full" required :placeholder="currentYear">
+                        <input v-model="form.academic_year_start" class="border p-2 w-full" required :placeholder="currentYear" inputmode="numeric" pattern="[0-9]{2}" maxlength="2" @input="limitTo2Digits">
                         <p v-if="errors.academic_year_start" class="text-red-500 text-sm mt-1">{{ errors.academic_year_start }}</p>
                     </div>
 
                     <div>
                         <label class="block font-bold">Academic Year End</label>
-                        <input v-model="form.academic_year_end" class="border p-2 w-full" required :placeholder="nextYear">
+                        <input v-model="form.academic_year_end" class="border p-2 w-full" required :placeholder="nextYear" inputmode="numeric" pattern="[0-9]{2}" maxlength="2" @input="limitTo2Digits">
                         <p v-if="errors.academic_year_end" class="text-red-500 text-sm mt-1">{{ errors.academic_year_end }}</p>
                     </div>
 
