@@ -351,7 +351,7 @@
             <p style="margin-top:2px;">Coordinator, Student Organization Unit</p>
         </div>
         
-        <div class="signature-block">
+    <div class="signature-block" style="margin-top:-10px;">
             <p><strong>Approved/Disapproved:</strong></p>
             <div class="signature-line" style="min-width:415px; margin-bottom:0px;">{{ $application->director_name ?? 'N/A' }}</div>
             <p style="margin-top:2px;">Director/Chairperson, Office of Student Affairs and Services</p>
