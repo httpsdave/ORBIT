@@ -229,7 +229,7 @@
         <p style="margin-top: 0; text-align: left; width: max-content; padding-left: 540px;">Date</p>
     </div>
     
-    <div style="height: 7px;"></div>
+    <div style="height: -3px;"></div>
 
     <div class="main-content">
         <div class="section left-align">
@@ -269,7 +269,7 @@
         </div>
 
         <div class="section left-align">
-            <p>Noted:</p>
+            <p><strong>NOTED:</strong></p>
             <div class="signature">
                 <p><span class="signature-line" style="min-width:220px;">{{ $application->adviser_name }}</span></p>
                 <p><span class="title-under-signature"><strong>Adviser/s, Student Organization</strong></span></p>
