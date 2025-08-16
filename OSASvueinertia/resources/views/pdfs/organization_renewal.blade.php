@@ -74,8 +74,7 @@
 
         .signature-line {
             display: inline-block;
-            min-width: 250px;
-            max-width: 90%;
+            width: fit-content;
             border-bottom: 1px solid black;
             margin-bottom: 2px;
             text-align: center;
@@ -85,8 +84,7 @@
         
         .title-under-signature {
             display: inline-block;
-            min-width: 250px;
-            max-width: 90%;
+            width: fit-content;
             text-align: center;
             margin: 0;
             padding: 0;
@@ -258,14 +256,14 @@
             <p class="respectfully-text">Very respectfully yours,</p>
 
             <div class="signature">
-                <p><span class="signature-line">{{ $application->president_name }}</span></p>
+                <p><span class="signature-line" style="min-width:160px;">{{ $application->president_name }}</span></p>
                 <p><span class="title-under-signature"><strong>Organization President</strong></span></p>
             </div>
         </div>
 
         <div class="section right-align">
             <div class="signature">
-                <p><span class="signature-line">{{ $application->organization_name }}</span></p>
+                <p><span class="signature-line" style="min-width:160px;">{{ $application->organization_name }}</span></p>
                 <p><span class="title-under-signature"><strong>Name of Organization</strong></span></p>
             </div>
         </div>
@@ -273,14 +271,14 @@
         <div class="section left-align">
             <p>Noted:</p>
             <div class="signature">
-                <p><span class="signature-line">{{ $application->adviser_name }}</span></p>
+                <p><span class="signature-line" style="min-width:220px;">{{ $application->adviser_name }}</span></p>
                 <p><span class="title-under-signature"><strong>Adviser/s, Student Organization</strong></span></p>
             </div>
         </div>
 
         <div class="section right-align">
             <div class="signature">
-                <p><span class="signature-line">{{ $application->dean_name }}</span></p>
+                <p><span class="signature-line" style="min-width:200px;">{{ $application->dean_name }}</span></p>
                 <p><span class="title-under-signature"><strong>Dean/Assoc. Dean of College</strong></span></p>
             </div>
         </div>
@@ -288,7 +286,7 @@
         <div class="section center-align">
             <p><strong>Recommending Approval:</strong></p>
             <div class="signature">
-                <p><span class="signature-line"><strong>{{ $application->coordinator_name }}</strong></span></p>
+                <p><span class="signature-line" style="min-width:230px;"><strong>{{ $application->coordinator_name }}</strong></span></p>
                 <p><strong>Coordinator, Student Organization Unit</strong></p>
             </div>
         </div>
@@ -296,7 +294,7 @@
         <div class="section center-align">
             <p><strong>Approved / Disapproved:</strong></p>
             <div class="signature">
-                <p><span class="signature-line"><strong>{{ $application->director_name }}</strong></span></p>
+                <p><span class="signature-line" style="min-width:380px;"><strong>{{ $application->director_name }}</strong></span></p>
                 <p><strong>Director/Chairperson, Office of Student Affairs and Services</strong></p>
             </div>
         </div>
