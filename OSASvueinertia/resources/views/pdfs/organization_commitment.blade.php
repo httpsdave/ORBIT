@@ -280,6 +280,13 @@
         <span class="commitment-title" style="font-size:11pt;"><strong>ORGANIZATION ADVISER COMMITMENT FORM</strong></span>
     </div>
 
+    <div class="section right-align">
+        <p><u>{{ \Carbon\Carbon::parse($application->form_date)->format('F d, Y') }}</u></p>
+        <p style="margin-top: 0; text-align: left; width: max-content; padding-left: 540px;">Date</p>
+    </div>
+    
+    <div style="height: -3px;"></div>
+
     <div class="content">
         <div class="section">
             <p class="address-block"><strong>THE DIRECTOR/CHAIRPERSON<br>
