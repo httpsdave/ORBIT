@@ -97,7 +97,7 @@
         }
         
         .indented {
-            text-indent: 1.27cm; /* Adjust the indent size as needed */
+            text-indent: 1.45cm; /* Adjust the indent size as needed */
         }
         
         .list-indented p {
