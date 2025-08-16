@@ -28,7 +28,7 @@
 
         /* New class for Calibri font */
         .calibri-font {
-            font-family: 'Calibri', 'Arial', sans-serif;
+            font-family: Calibri, sans-serif;
         }
 
         .header {
@@ -40,7 +40,10 @@
         }
 
         .university-name {
-            font-size: 16px;
+            max-width: 55%;
+            height: auto;
+            margin: 4px 0;
+            display: inline-block;
             font-family: 'Old English Text MT', 'Times New Roman', serif;
             font-weight: bold;
         }
@@ -232,14 +235,13 @@
 <body>
     <div class="header">
     <img src="{{ public_path('images/lspu-logo.png') }}" alt="LSPU Logo" class="logo">
-        
-        <p class="calibri-font">Republic of the Philippines</p>
-        <img src="{{ public_path('images/lspu-name.png') }}" alt="Laguna State Polytechnic University" class="university-name"><br>
-        <p class="calibri-font">Province of Laguna</p>
-        <br>
+    <span class="calibri-font">Republic of the Philippines</span><br>
+    <img src="{{ public_path('images/lspu-name.png') }}" alt="Laguna State Polytechnic University" class="university-name"><br>
+    <span class="calibri-font">Province of Laguna</span><br>
+    <br>
     <p class="office-title">OFFICE OF STUDENT AFFAIRS AND SERVICES</p>
-        <p class="form-title">ORGANIZATION RENEWAL FORM</p>
-        <br>
+    <p class="form-title">ORGANIZATION RENEWAL FORM</p>
+    <br>
     </div>
 
     <div class="section right-align">
