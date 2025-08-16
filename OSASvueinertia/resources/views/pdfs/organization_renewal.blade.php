@@ -282,9 +282,7 @@
                 <p><span class="signature-line" style="min-width:220px;">{{ $application->adviser_name }}</span></p>
                 <p><span class="title-under-signature"><strong>Adviser/s, Student Organization</strong></span></p>
             </div>
-        </div>
-
-        <div class="section right-align">
+            
             <div class="signature">
                 <p><span class="signature-line" style="min-width:200px;">{{ $application->dean_name }}</span></p>
                 <p><span class="title-under-signature"><strong>Dean/Assoc. Dean of College</strong></span></p>
