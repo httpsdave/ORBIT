@@ -47,7 +47,7 @@
             margin-bottom: 5px; /* Reduced margin for closer spacing */
         }
 
-        .commitment-title {
+  1 0    .commitment-title {
             margin-top: 5px; /* Single line spacing */
         }
 
@@ -137,11 +137,6 @@
         }
         .approval-section p:first-child {
             margin-bottom: 20px; /* Add 20px spacing under the heading text */
-        }
-
-        /* Document footer with form numbers - Changed font to Calibri */
-        .doc-footer {
-            position: absolute;
             bottom: -5px;
             width: 100%;
             height: 20px;
@@ -276,15 +271,15 @@
         <img src="{{ public_path('images/lspu-name.png') }}" alt="Laguna State Polytechnic University" class="university-name"><br>
         <span class="header-province-text">Province of Laguna</span><br>
         <br>
-    <p class="office-title">OFFICE OF STUDENT AFFAIRS AND SERVICES</p>
-        <span class="commitment-title"><strong>COMMITMENT FORM</strong></span>
+    <p class="office-title" style="margin-bottom:10px;">OFFICE OF STUDENT AFFAIRS AND SERVICES</p>
+        <span class="commitment-title"><strong>ORGANIZATION ADVISER COMMITMENT FORM</strong></span>
     </div>
 
     <div class="content">
         <div class="section">
-            <p class="address-block"><strong>THE DIRECTOR/CHAIRPERSON</strong><br>
+            <p class="address-block"><strong>THE DIRECTOR/CHAIRPERSON<br>
             OFFICE OF STUDENT AFFAIRS AND SERVICES<br>
-            LSPU</p>
+            LSPU</strong></p>
             
             <p class="thru-line"><strong>Thru: The Coordinator, Student Organization Unit</strong></p>
         </div>
