@@ -40,6 +40,18 @@ const formData = computed(() => {
         budget: 0
       }));
     }
+    // Ensure all required fields are preserved
+    data.semester = data.semester || '';
+    data.academic_year_start = data.academic_year_start || '';
+    data.academic_year_end = data.academic_year_end || '';
+    data.organization_name = data.organization_name || '';
+    data.president_name = data.president_name || '';
+    data.secretary_name = data.secretary_name || '';
+    data.adviser_name = data.adviser_name || '';
+    data.dean_name = data.dean_name || '';
+    data.coordinator_name = data.coordinator_name || '';
+    data.director_name = data.director_name || '';
+    data.application_date = data.application_date || '';
   }
   
   // Initialize members for List of Members form if they don't exist
