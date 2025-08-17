@@ -383,6 +383,11 @@ const validateForm = () => {
     isValid = false;
   }
 
+  if (!form.semester.trim()) {
+    errors.value.semester = 'Semester is required';
+    isValid = false;
+  }
+
   if (!form.president_name.trim()) {
     errors.value.president_name = 'President Name is required';
     isValid = false;
@@ -482,6 +487,7 @@ const submit = () => {
   }
   
   console.log('Submitting form data:', form.data());
+  console.log('Semester value:', form.semester);
   
   // Check if we're in edit mode
   if (props.isEdit) {

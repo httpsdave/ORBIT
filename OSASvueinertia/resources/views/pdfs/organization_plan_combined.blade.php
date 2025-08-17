@@ -285,11 +285,11 @@
             </div>
             <div style="text-align:center; margin-top:10px;">
                 <span class="signature-line" style="min-width:20px; margin-bottom:-2px; line-height:10px; padding:0 0 0 0;">
-                    <span style="position:relative; top:0px;">{{ $application->semester ?? '1st' }}</span></span></span></span>
+                    <span style="position:relative; top:0px;">{{ $application->semester ?? '1st' }}</span>
                 </span> Semester AY 20<span class="signature-line" style="min-width:20px; margin-bottom:-2px; margin-top:-1px; line-height:10px; padding:0 0 0 0;">
-                    <span style="position:relative; top:1px;">{{ $application->academic_year_start ?? '24' }}</span></span></span></span>
+                    <span style="position:relative; top:1px;">{{ $application->academic_year_start ?? '24' }}</span>
                 </span>-20<span class="signature-line" style="min-width:20px; margin-bottom:-2px; margin-top:-1px; line-height:10px; padding:0 0 0 0;">
-                    <span style="position:relative; top:1px;">{{ $application->academic_year_end ?? '25' }}</span></span></span></span>
+                    <span style="position:relative; top:1px;">{{ $application->academic_year_end ?? '25' }}</span>
                 </span>
             </div>
             <div class="semester" style="font-size: 10pt; margin-top: 10px; margin-bottom:0px;">
