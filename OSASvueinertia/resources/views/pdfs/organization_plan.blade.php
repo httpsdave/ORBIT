@@ -159,7 +159,7 @@
         /* Ensure content doesn't overflow page */
         .content {
             flex: 1;
-            margin-bottom: 120px; /* Space for signatures and footer */
+            margin-bottom: 20px; /* Reduced space for signatures and footer */
         }
 
         /* Signature positioning adjustments for single activity pages */
@@ -284,13 +284,13 @@
             </span>
         </div>
         @if(isset($activityIndex) && isset($totalActivities))
-        <div class="semester" style="font-size: 10pt; margin-top: 10px;">
+        <div class="semester" style="font-size: 10pt; margin-top: 10px; margin-bottom:0px;">
             Activity {{ $activityIndex }} of {{ $totalActivities }}
         </div>
         @endif
     </div>
 
-    <div class="content">
+    <div class="content" style="margin-top:-10px;">
         <table>
             <tr>
                 <th>OBJECTIVE</th>
@@ -357,13 +357,13 @@
                 </div>
             </div>
         
-        <div class="recommendation">
+        <div class="recommendation" style="margin-top:20px;">
             <p><strong>Recommending Approval:</strong></p>
             <div class="signature-line" style="min-width:290px; margin-bottom:0px;">{{ $application->coordinator_name ?? 'N/A' }}</div>
-            <p style="margin-top:2px;">Coordinator, Student Organization Unit</p>
+            <p style="margin-top:2px; margin-bottom:20px;">Coordinator, Student Organization Unit</p>
         </div>
         
-    <div class="signature-block" style="margin-top:-10px;">
+    <div class="signature-block" style="margin-top:20px;">
             <p><strong>Approved/Disapproved:</strong></p>
             <div class="signature-line" style="min-width:415px; margin-bottom:0px;">{{ $application->director_name ?? 'N/A' }}</div>
             <p style="margin-top:2px;">Director/Chairperson, Office of Student Affairs and Services</p>
