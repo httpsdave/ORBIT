@@ -755,40 +755,6 @@ nextTick(() => {
                     </div>
 
                     <!-- Pagination Controls (Top) -->
-                    <div v-if="totalPages > 1" class="pagination-controls flex justify-center items-center mb-6 gap-4">
-                        <button 
-                            @click="prevPage" 
-                            :disabled="currentPage === 1 || isChangingPage"
-                            class="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors">
-                            Previous
-                        </button>
-                        
-                        <div class="flex gap-2">
-                            <button 
-                                v-for="page in visiblePages" 
-                                :key="page"
-                                @click="page === '...' ? null : goToPage(page)"
-                                :disabled="page === '...' || isChangingPage"
-                                :class="[
-                                    'px-3 py-1 rounded transition-colors',
-                                    page === '...' 
-                                        ? 'text-gray-400 cursor-default' 
-                                        : currentPage === page 
-                                            ? 'bg-blue-600 text-white' 
-                                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300',
-                                    isChangingPage ? 'opacity-50' : ''
-                                ]">
-                                {{ page }}
-                            </button>
-                        </div>
-                      
-                        <button 
-                            @click="nextPage" 
-                            :disabled="currentPage === totalPages || isChangingPage"
-                            class="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors">
-                            Next
-                        </button>
-                    </div>
 
                     <!-- Page Info -->
                     <div v-if="totalPages > 1" class="text-center mb-4 text-sm text-gray-600">
