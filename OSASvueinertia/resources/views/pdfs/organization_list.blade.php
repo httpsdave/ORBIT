@@ -55,7 +55,7 @@
         table {
             width: 100%;
             border-collapse: separate;
-            border-spacing: 0 12px;
+            border-spacing: 0 6px;
         }
 
         td {
@@ -307,7 +307,7 @@
     }
     
     function showSemesterInfo($application) {
-        $info = '<div style="width:100%; text-align:center; margin-top:10px; font-family: Times New Roman, serif; font-size: 11pt; font-weight: normal;">
+    $info = '<div style="width:100%; text-align:center; margin-top:-22px; font-family: Times New Roman, serif; font-size: 11pt; font-weight: normal;">
             <span style="display:inline-block; text-align:center;">
                 <span class="signature-line" style="min-width:40px; margin-bottom:-2px; line-height:10px; font-family: Times New Roman, serif; font-size: 11pt; font-weight: normal; text-align:center;">
                     <span style="position:relative; top:0px;">' . ($application->semester ?? '1st') . '</span>
