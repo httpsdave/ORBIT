@@ -323,9 +323,10 @@
             </span>
         </div>';
         $info .= '<div style="width:100%; margin-top: 15px; text-align: center;">
-            <div style="display: flex; justify-content: center; align-items: center; gap: 10px; width: 100%;">
+            <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
                 <span style="font-family: Times New Roman, serif; font-size: 11pt; font-weight: normal; text-align: left;">Name of Organization</span>
-                <span class="signature-line" style="margin-bottom:0px; min-width:200px; font-family: Times New Roman, serif; font-size: 11pt; font-weight: bold; text-align: center;"><b>' . ($application->organization_name ?? '') . '</b></span>
+                <span style="font-family: Times New Roman, serif; font-size: 11pt; font-weight: bold; text-align: center; margin-bottom: 2px;">' . ($application->organization_name ?? '') . '</span>
+                <span class="signature-line" style="margin-bottom:0px; min-width:200px; font-family: Times New Roman, serif; font-size: 11pt; text-align: center;"></span>
             </div>
         </div>';
         return $info;
@@ -339,8 +340,8 @@
     <!-- Centered single member field under Name of Organization with hardcoded sample data (never uses real data) -->
 
     <div style="width: 340px; margin: 0 auto -5px auto;">
-        <div style="text-align: center; font-weight: normal; margin-bottom: 4px;">SAMPLE FORMAT:</div>
-        <table class="member-table" style="margin: 0 auto;">
+    <div style="text-align: center; font-weight: normal; margin-bottom: 4px; margin-top: 10px;">SAMPLE FORMAT:</div>
+    <table class="member-table" style="margin: 0 auto; margin-top: 10px;">
             <tr>
                 <td class="photo-cell">
                     <div class="photo-box">
