@@ -111,7 +111,7 @@
         .member-info {
             margin-bottom: 3px;
             min-height: 15px;
-            padding: 1px 0;
+            padding: -3px 0;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
