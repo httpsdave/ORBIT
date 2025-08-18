@@ -560,6 +560,31 @@
         <!-- Repeat header on each page -->
         {!! showHeader() !!}
         {!! showSemesterInfo($application) !!}
+
+        <!-- Centered single member field under Name of Organization with hardcoded sample data (never uses real data) -->
+        <div style="width: 340px; margin: 0 auto 18px auto;">
+            <div style="text-align: center; font-weight: normal; margin-bottom: 4px;">SAMPLE FORMAT:</div>
+            <table class="member-table" style="margin: 0 auto;">
+                <tr>
+                    <td class="photo-cell">
+                        <div class="photo-box">
+                            <span class="photo-box-text">1 x 1</span>
+                        </div>
+                    </td>
+                    <td class="info-cell">
+                        <div class="member-info underline">
+                            <span class="filled-text">(Signature Over Printed Name)</span>
+                        </div>
+                        <div class="member-info underline">
+                            <span class="filled-text">(Student Number)</span>
+                        </div>
+                        <div class="member-info underline">
+                            <span class="filled-text">(Course / Year Section)</span>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
         
         <!-- Calculate starting and ending indices for this page -->
         @php
