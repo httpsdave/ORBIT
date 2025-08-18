@@ -315,7 +315,7 @@
                 20 . ($application->academic_year_end ?? '20__') . '</span>
             </div>
             <div class="section center-align">
-                <p style="margin: 3px 0;">Name of Organization: <span class="signature-line">' . 
+                <p style="margin: 3px 0;"><strong>Name of Organization</strong> <span class="signature-line">' . 
                 ($application->organization_name ?? '') . '</span></p>
             </div>';
         return $info;
@@ -328,6 +328,7 @@
 
     <!-- Centered single member field under Name of Organization with hardcoded sample data (never uses real data) -->
     <div style="width: 340px; margin: 0 auto 18px auto;">
+    <div style="text-align: center; font-weight: normal; margin-bottom: 4px;">SAMPLE FORMAT:</div>
         <table class="member-table" style="margin: 0 auto;">
             <tr>
                 <td class="photo-cell">
