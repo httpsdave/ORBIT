@@ -309,15 +309,27 @@
     }
     
     function showSemesterInfo($application) {
-        $info = '<div class="semester-section">
-                <span>' . ($application->semester ?? '__') . ' Sem. / A.Y. ' . 
-                20 . ($application->academic_year_start ?? '20__') . '-' . 
-                20 . ($application->academic_year_end ?? '20__') . '</span>
+        $info = '<div style="width:100%; text-align:center; margin-top:10px; font-family: Times New Roman, serif; font-size: 11pt; font-weight: normal;">
+            <span style="display:inline-block; text-align:center;">
+                <span class="signature-line" style="min-width:40px; margin-bottom:-2px; line-height:10px; font-family: Times New Roman, serif; font-size: 11pt; font-weight: normal; text-align:center;">
+                    <span style="position:relative; top:0px;">' . ($application->semester ?? '1st') . '</span>
+                </span>
+                Semester AY 20
+                <span class="signature-line" style="min-width:40px; margin-bottom:-2px; margin-top:-1px; line-height:10px; font-family: Times New Roman, serif; font-size: 11pt; font-weight: normal; text-align:center;">
+                    <span style="position:relative; top:1px;">' . ($application->academic_year_start ?? '24') . '</span>
+                </span>
+                -20
+                <span class="signature-line" style="min-width:40px; margin-bottom:-2px; margin-top:-1px; line-height:10px; font-family: Times New Roman, serif; font-size: 11pt; font-weight: normal; text-align:center;">
+                    <span style="position:relative; top:1px;">' . ($application->academic_year_end ?? '25') . '</span>
+                </span>
+            </span>
+        </div>';
+        $info .= '<div style="width:100%; margin-top: 15px; text-align: center;">
+            <div style="display: flex; justify-content: center; align-items: center; gap: 10px; width: 100%;">
+                <span style="font-family: Times New Roman, serif; font-size: 11pt; font-weight: normal; text-align: left;">Name of Organization</span>
+                <span class="signature-line" style="margin-bottom:0px; min-width:200px; font-family: Times New Roman, serif; font-size: 11pt; font-weight: normal; text-align: center;">' . ($application->organization_name ?? '') . '</span>
             </div>
-            <div class="section center-align">
-                <p style="margin: 3px 0;"><strong>Name of Organization</strong> <span class="signature-line">' . 
-                ($application->organization_name ?? '') . '</span></p>
-            </div>';
+        </div>';
         return $info;
     }
     @endphp
