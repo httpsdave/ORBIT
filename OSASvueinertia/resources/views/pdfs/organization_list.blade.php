@@ -329,7 +329,7 @@
     <!-- Calculate total pages needed -->
     @php
         // Define how many members per page
-        $membersPerPage = 10; // 5 rows with 2 columns = 10 members per page
+    $membersPerPage = 8; // 4 rows with 2 columns = 8 members per page
         $totalMembers = $members->count();
         $totalPages = ceil($totalMembers / $membersPerPage);
         
@@ -343,7 +343,7 @@
             @php
                 $startIndex = 0;
                 $endIndex = min($membersPerPage, $totalMembers);
-                $membersPerColumn = 5;
+            $membersPerColumn = 4;
             @endphp
             
             @for ($row = 0; $row < $membersPerColumn; $row++)
