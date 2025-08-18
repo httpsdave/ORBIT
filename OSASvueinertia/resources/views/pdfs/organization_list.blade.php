@@ -307,25 +307,25 @@
     }
     
     function showSemesterInfo($application) {
-    $info = '<div style="width:100%; text-align:center; margin-top:-22px; font-family: Times New Roman, serif; font-size: 11pt; font-weight: normal;">
+        $info = '<div style="width:100%; text-align:center; margin-top:-22px; font-family: Times New Roman, serif; font-size: 11pt; font-weight: bold;">
             <span style="display:inline-block; text-align:center;">
-                <span class="signature-line" style="min-width:40px; margin-bottom:-2px; line-height:10px; font-family: Times New Roman, serif; font-size: 11pt; font-weight: normal; text-align:center;">
-                    <span style="position:relative; top:0px;">' . ($application->semester ?? '1st') . '</span>
+                <span class="signature-line" style="min-width:40px; margin-bottom:-2px; line-height:10px; font-family: Times New Roman, serif; font-size: 11pt; font-weight: bold; text-align:center;">
+                    <span style="position:relative; top:0px; font-weight:bold;">' . ($application->semester ?? '<b>1st</b>') . '</span>
                 </span>
                 Semester AY 20
-                <span class="signature-line" style="min-width:40px; margin-bottom:-2px; margin-top:-1px; line-height:10px; font-family: Times New Roman, serif; font-size: 11pt; font-weight: normal; text-align:center;">
-                    <span style="position:relative; top:1px;">' . ($application->academic_year_start ?? '24') . '</span>
+                <span class="signature-line" style="min-width:40px; margin-bottom:-2px; margin-top:-1px; line-height:10px; font-family: Times New Roman, serif; font-size: 11pt; font-weight: bold; text-align:center;">
+                    <span style="position:relative; top:1px; font-weight:bold;">' . ($application->academic_year_start ?? '<b>24</b>') . '</span>
                 </span>
                 -20
-                <span class="signature-line" style="min-width:40px; margin-bottom:-2px; margin-top:-1px; line-height:10px; font-family: Times New Roman, serif; font-size: 11pt; font-weight: normal; text-align:center;">
-                    <span style="position:relative; top:1px;">' . ($application->academic_year_end ?? '25') . '</span>
+                <span class="signature-line" style="min-width:40px; margin-bottom:-2px; margin-top:-1px; line-height:10px; font-family: Times New Roman, serif; font-size: 11pt; font-weight: bold; text-align:center;">
+                    <span style="position:relative; top:1px; font-weight:bold;">' . ($application->academic_year_end ?? '<b>25</b>') . '</span>
                 </span>
             </span>
         </div>';
         $info .= '<div style="width:100%; margin-top: 15px; text-align: center;">
             <div style="display: flex; justify-content: center; align-items: center; gap: 10px; width: 100%;">
                 <span style="font-family: Times New Roman, serif; font-size: 11pt; font-weight: normal; text-align: left;">Name of Organization</span>
-                <span class="signature-line" style="margin-bottom:0px; min-width:200px; font-family: Times New Roman, serif; font-size: 11pt; font-weight: normal; text-align: center;">' . ($application->organization_name ?? '') . '</span>
+                <span class="signature-line" style="margin-bottom:0px; min-width:200px; font-family: Times New Roman, serif; font-size: 11pt; font-weight: bold; text-align: center;"><b>' . ($application->organization_name ?? '') . '</b></span>
             </div>
         </div>';
         return $info;
