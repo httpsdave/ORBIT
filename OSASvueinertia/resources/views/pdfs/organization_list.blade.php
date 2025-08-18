@@ -392,17 +392,17 @@
                                     </td>
                                     <td class="info-cell">
                                         <div class="member-info underline">
-                                            @if($leftMember && $leftMember->student_name)
+                                            @if($leftMember && $leftMember->student_name && $leftMember->student_name !== 'Sample Data')
                                                 <span class="filled-text">{{ $leftMember->student_name }}</span>
                                             @endif
                                         </div>
                                         <div class="member-info underline">
-                                            @if($leftMember && $leftMember->student_number)
+                                            @if($leftMember && $leftMember->student_number && $leftMember->student_number !== '0322-1234' && $leftMember->student_number !== '0322-5678')
                                                 <span class="filled-text">{{ $leftMember->student_number }}</span>
                                             @endif
                                         </div>
                                         <div class="member-info underline">
-                                            @if($leftMember && $leftMember->course_year_section)
+                                            @if($leftMember && $leftMember->course_year_section && $leftMember->course_year_section !== 'Sample Data')
                                                 <span class="filled-text">{{ $leftMember->course_year_section }}</span>
                                             @endif
                                         </div>
@@ -458,17 +458,17 @@
                                     </td>
                                     <td class="info-cell">
                                         <div class="member-info underline">
-                                            @if($rightMember && $rightMember->student_name)
+                                            @if($rightMember && $rightMember->student_name && $rightMember->student_name !== 'Sample Data')
                                                 <span class="filled-text">{{ $rightMember->student_name }}</span>
                                             @endif
                                         </div>
                                         <div class="member-info underline">
-                                            @if($rightMember && $rightMember->student_number)
+                                            @if($rightMember && $rightMember->student_number && $rightMember->student_number !== '0322-1234' && $rightMember->student_number !== '0322-5678')
                                                 <span class="filled-text">{{ $rightMember->student_number }}</span>
                                             @endif
                                         </div>
                                         <div class="member-info underline">
-                                            @if($rightMember && $rightMember->course_year_section)
+                                            @if($rightMember && $rightMember->course_year_section && $rightMember->course_year_section !== 'Sample Data')
                                                 <span class="filled-text">{{ $rightMember->course_year_section }}</span>
                                             @endif
                                         </div>
