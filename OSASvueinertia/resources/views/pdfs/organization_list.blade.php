@@ -520,7 +520,7 @@
                         <p style="margin-bottom: 0;">
                             <span class="date-signature-line" style="display: block; min-width: 200px; text-align: center;">{{ $application->adviser_name ?? '' }}</span>
                         </p>
-                        <p style="margin-top: 2px; text-align: center; font-weight: bold;">Faculty Adviser</p>
+                        <p style="margin-top: 2px; text-align: center;">Organization Adviser</p>
                     </div>
                     <p style="text-align: left; padding-left: 10px; margin-top: 0;">Date: <span class="date-signature-line">{{ now()->format('F d, Y') }}</span></p>
                 </td>
@@ -529,7 +529,7 @@
                         <p style="margin-bottom: 0;">
                             <span class="date-signature-line" style="display: block; min-width: 200px; text-align: center;">{{ $application->second_adviser ?? '' }}</span>
                         </p>
-                        <p style="margin-top: 2px; text-align: center; font-weight: bold;">Faculty Adviser</p>
+                        <p style="margin-top: 2px; text-align: center;">Organization Adviser</p>
                     </div>
                     <p style="text-align: left; padding-left: 10px; margin-top: 0;">Date: <span class="date-signature-line">{{ now()->format('F d, Y') }}</span></p>
                 </td>
