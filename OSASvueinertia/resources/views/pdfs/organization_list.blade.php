@@ -297,13 +297,11 @@
     }
     
     function showFooter() {
-        // This function will generate the footer HTML with complete CSS reset
-        $footer = '<div style="font-weight:normal !important; font-style:normal !important; font-family:Calibri, sans-serif !important; all:unset; display:block;">
-            <div class="footer" style="font-weight:normal !important; font-style:normal !important; font-family:Calibri, sans-serif !important; all:unset; display:block; position:fixed; bottom:0; width:100%; height:20px; line-height:20px; font-size:11pt;">
-                <div class="footer-left" style="font-weight:normal !important; font-style:normal !important; font-family:Calibri, sans-serif !important; all:unset; display:block; position:absolute; left:-1.0cm; bottom:0;">LSPU-OSAS-SF-005</div>
-                <div class="footer-center" style="font-weight:normal !important; font-style:normal !important; font-family:Calibri, sans-serif !important; all:unset; display:block; position:absolute; left:50%; transform:translateX(-50%); bottom:0;">Rev. 1</div>
-                <div class="footer-right" style="font-weight:normal !important; font-style:normal !important; font-family:Calibri, sans-serif !important; all:unset; display:block; position:absolute; right:-1.0cm; bottom:0;">09 November 2020</div>
-            </div>
+        // Footer styling copied from organization_plan.blade.php (no functional changes)
+        $footer = '<div class="footer" style="position: absolute; bottom: -5px; width: 100%; height: 20px; line-height: 20px; font-size: 10pt; font-family: Calibri, sans-serif; font-weight: normal;">
+            <div class="footer-left" style="position: absolute; left: .1cm; bottom: -5px; font-weight: normal;">LSPU-OSAS-SF-005</div>
+            <div class="footer-center" style="position: absolute; left: 50%; transform: translateX(-50%); bottom: -5px; font-weight: normal;">Rev. 1</div>
+            <div class="footer-right" style="position: absolute; right: .1cm; bottom: -5px; font-weight: normal;">09 November 2020</div>
         </div>';
         return $footer;
     }
