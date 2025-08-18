@@ -545,10 +545,10 @@
                 </td>
             </tr>
         </table>
-        <div class="dean-signature center-align" style="width: 100%; margin-top: 3px;">
-            <p style="margin-bottom: 0; font-weight: normal; margin-left: -165px;">Noted:</p>
-            <p style="margin-bottom: 0;"><span class="date-signature-line">{{ $application->dean_name ?? '' }}</span></p>
-            <p style="margin-top: 2px; font-weight: bold;">Dean/Assoc. Dean of College</p>
+        <div class="dean-signature center-align" style="width: 50% !important; margin-top: 3px; text-align: center !important;">
+            <p style="margin-bottom: 0; font-weight: normal; margin-left: 0 !important; text-align: center !important;">Noted:</p>
+            <p style="margin-bottom: 0; text-align: center !important;"><span class="date-signature-line" style="display: inline-block;">{{ $application->dean_name ?? '' }}</span></p>
+            <p style="margin-top: 2px; font-weight: bold; margin-left: 0 !important; text-align: center !important;">Dean/Assoc. Dean of College</p>
         </div>
     @endif
 
@@ -760,10 +760,10 @@
                     </td>
                 </tr>
             </table>
-            <div class="dean-signature center-align" style="width: 100%; margin-top: 3px;">
-                <p style="margin-bottom: 0; font-weight: normal; margin-left: -165px;">Noted:</p>
-                <p style="margin-bottom: 0;"><span class="date-signature-line">{{ $application->dean_name ?? '' }}</span></p>
-                <p style="margin-top: 2px; font-weight: bold;">Dean/Assoc. Dean of College</p>
+            <div class="dean-signature center-align" style="width: 50% !important; margin-top: 3px; text-align: center !important;">
+                <p style="margin-bottom: 0; font-weight: normal; margin-left: 0 !important; text-align: center !important;">Noted:</p>
+                <p style="margin-bottom: 0; text-align: center !important;"><span class="date-signature-line" style="display: inline-block;">{{ $application->dean_name ?? '' }}</span></p>
+                <p style="margin-top: 2px; font-weight: bold; margin-left: 0 !important; text-align: center !important;">Dean/Assoc. Dean of College</p>
             </div>
         @endif
     @endfor
