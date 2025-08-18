@@ -221,7 +221,7 @@
         }
         
         .content {
-            margin-top: 0.6cm;
+            margin-top: 0.1cm;
         }
 
         .university-name {
@@ -338,7 +338,7 @@
 
     <!-- Centered single member field under Name of Organization with hardcoded sample data (never uses real data) -->
 
-    <div style="width: 340px; margin: 0 auto 18px auto;">
+    <div style="width: 340px; margin: 0 auto -5px auto;">
         <div style="text-align: center; font-weight: normal; margin-bottom: 4px;">SAMPLE FORMAT:</div>
         <table class="member-table" style="margin: 0 auto;">
             <tr>
@@ -562,7 +562,7 @@
         {!! showSemesterInfo($application) !!}
 
         <!-- Centered single member field under Name of Organization with hardcoded sample data (never uses real data) -->
-        <div style="width: 340px; margin: 0 auto 18px auto;">
+        <div style="width: 340px; margin: 0 auto -5px auto;">
             <div style="text-align: center; font-weight: normal; margin-bottom: 4px;">SAMPLE FORMAT:</div>
             <table class="member-table" style="margin: 0 auto;">
                 <tr>
