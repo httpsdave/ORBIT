@@ -290,8 +290,8 @@
                 <span class="header-text">Republic of the Philippines<br>
                 <img src="' . public_path('images/lspu-name.png') .  '" alt="Laguna State Polytechnic University" class="university-name"><br>
                 <span class="province-text">Province of Laguna</span></span>
-                <span class="office-title">OFFICE OF STUDENT AFFAIRS AND SERVICES</span>
-                <span class="sub-header">List of Members</span>
+                <p class="office-title" style="font-size:11pt; font-weight:bold; margin-bottom:10px; margin-top:5px;">OFFICE OF STUDENT AFFAIRS AND SERVICES</p>
+                <p class="sub-header" style="font-size:11pt; font-weight:bold; margin-bottom:10px; margin-top:5px;">LIST OF MEMBERS OF THE ORGANIZATION</p>
             </div>';
         return $header;
     }
