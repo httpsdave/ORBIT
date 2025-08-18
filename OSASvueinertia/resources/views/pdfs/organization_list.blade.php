@@ -594,11 +594,11 @@
         @endphp
         
         <div class="content">
-            <table>
+            <table style="margin-left: -35px;">
                 @for ($row = 0; $row < $membersPerColumn; $row++)
                     <tr>
                         <!-- Left Column -->
-                        <td style="padding-right: 20px;"> <!-- Reduced right padding for left column -->
+                        <td style="padding-right: 15px;"> <!-- Increased right padding for left column -->
                             @php
                                 $leftIndex = $startIdx + $row;
                                 $leftMember = isset($members[$leftIndex]) ? $members[$leftIndex] : null;
@@ -664,7 +664,7 @@
                         </td>
                         
                         <!-- Right Column -->
-                        <td style="padding-left: 20px;"> <!-- Reduced left padding for right column -->
+                        <td style="padding-left: 15px;"> <!-- Increased left padding for right column -->
                             @php
                                 $rightIndex = $startIdx + $row + $membersPerColumn;
                                 $rightMember = isset($members[$rightIndex]) ? $members[$rightIndex] : null;
