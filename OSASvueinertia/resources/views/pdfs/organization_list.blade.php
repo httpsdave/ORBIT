@@ -325,8 +325,30 @@
     <!-- First page header -->
     {!! showHeader() !!}
     {!! showSemesterInfo($application) !!}
-    
-    <!-- Calculate total pages needed -->
+
+    <!-- Centered single member field under Name of Organization with hardcoded sample data (never uses real data) -->
+    <div style="width: 340px; margin: 0 auto 18px auto;">
+        <table class="member-table" style="margin: 0 auto;">
+            <tr>
+                <td class="photo-cell">
+                    <div class="photo-box">
+                        <span class="photo-box-text">1 x 1</span>
+                    </div>
+                </td>
+                <td class="info-cell">
+                    <div class="member-info underline">
+                        <span class="filled-text">Sample Data</span>
+                    </div>
+                    <div class="member-info underline">
+                        <span class="filled-text">0322-1234</span>
+                    </div>
+                    <div class="member-info underline">
+                        <span class="filled-text">Sample Data</span>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
     @php
         // Define how many members per page
     $membersPerPage = 8; // 4 rows with 2 columns = 8 members per page
