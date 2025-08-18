@@ -16,7 +16,7 @@
 
         body {
             font-family: 'Times New Roman', serif;
-            font-size: 12pt;
+            font-size: 11pt;
             line-height: 1.1;
             margin: 0;
             padding: 0;
@@ -24,7 +24,7 @@
 
         .header {
             text-align: center;
-            font-size: 18px;
+            font-size: 11pt;
             font-weight: bold;
             margin: 0 0 0.3cm 0;
             padding-top: 0.3cm;
