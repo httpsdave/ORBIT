@@ -262,7 +262,7 @@
         .underline {
             position: relative;
             border-bottom: 1px solid #000;
-            width: 190px; /* Increased width for even longer underline */
+            width: 220px; /* Increased width for even longer underline */
             margin: 6px auto;
             height: 16px;
             text-align: center;
@@ -363,7 +363,7 @@
 
     <!-- First page members -->
     <div class="content">
-        <table>
+    <table style="margin-left: -35px;">
             @php
                 $startIndex = 0;
                 $endIndex = min($membersPerPage, $totalMembers);
@@ -373,7 +373,7 @@
             @for ($row = 0; $row < $membersPerColumn; $row++)
                 <tr>
                     <!-- Left Column -->
-                    <td style="padding-right: 20px;"> <!-- Reduced right padding for left column -->
+                    <td style="padding-right: 15px;"> <!-- Increased right padding for left column -->
                         @php
                             $leftIndex = $row;
                             $leftMember = $members[$leftIndex] ?? null;
@@ -439,7 +439,7 @@
                     </td>
                     
                     <!-- Right Column -->
-                    <td style="padding-left: 20px;"> <!-- Reduced left padding for right column -->
+                    <td style="padding-left: 15px;"> <!-- Increased left padding for right column -->
                         @php
                             $rightIndex = $row + $membersPerColumn;
                             $rightMember = $members[$rightIndex] ?? null;
