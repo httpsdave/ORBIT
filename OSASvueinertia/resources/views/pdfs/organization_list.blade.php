@@ -541,7 +541,7 @@
                         </p>
                         <p style="margin-top: 2px; text-align: center;">Organization Adviser</p>
                     </div>
-                    <p style="text-align: left; padding-left: 10px; margin-top: 0;">Date: <span class="date-signature-line">{{ now()->format('F d, Y') }}</span></p>
+                    <p style="text-align: left; padding-left: 10px; margin-top: -10px;">Date: <span class="date-signature-line">{{ now()->format('F d, Y') }}</span></p>
                 </td>
                 <td style="width: 50%; vertical-align: top; text-align: center; padding-top: 0;">
                     <div style="width: 200px; margin: 0 auto;">
@@ -550,7 +550,7 @@
                         </p>
                         <p style="margin-top: 2px; text-align: center;">Organization Adviser</p>
                     </div>
-                    <p style="text-align: left; padding-left: 10px; margin-top: 0;">Date: <span class="date-signature-line">{{ now()->format('F d, Y') }}</span></p>
+                    <p style="text-align: left; padding-left: 10px; margin-top: -10px;">Date: <span class="date-signature-line">{{ now()->format('F d, Y') }}</span></p>
                 </td>
             </tr>
         </table>
