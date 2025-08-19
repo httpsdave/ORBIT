@@ -200,7 +200,7 @@
         
         .date-signature-line {
             display: inline-block;
-            min-width: 200px;
+            min-width: 140px;
             border-bottom: 1px solid black;
             padding-bottom: 1px;
             text-align: center;
