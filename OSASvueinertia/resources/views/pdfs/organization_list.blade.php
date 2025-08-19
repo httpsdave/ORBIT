@@ -316,15 +316,11 @@
     function showSemesterInfo($application) {
         $info = '<div style="width:100%; text-align:center; margin-top:-22px; font-family: Times New Roman, serif; font-size: 11pt; font-weight: bold;">
             <span style="display:inline-block; text-align:center;">
-                <span class="signature-line" style="min-width:40px; margin-bottom:-2px; line-height:10px; font-family: Times New Roman, serif; font-size: 11pt; font-weight: bold; text-align:center;">
+                <span style="display:inline-block !important; min-width:0.5cm !important; margin:0 !important; margin-right:0.05cm !important; padding:0 !important; border-bottom:1px solid black !important; line-height:10px; font-family: Times New Roman, serif; font-size: 11pt; font-weight: bold; text-align:center; position:relative; top:0.05cm;">
                     <span style="position:relative; top:0px; font-weight:bold;">' . ($application->semester ?? '<b>1st</b>') . '</span>
-                </span>
-                Sem. / AY 20
-                <span class="signature-line" style="min-width:40px; margin-bottom:-2px; margin-top:-1px; line-height:10px; font-family: Times New Roman, serif; font-size: 11pt; font-weight: bold; text-align:center;">
+                </span>Semester AY 20<span style="display:inline-block !important; min-width:0.4cm !important; margin:0 !important; margin-left:0.05cm !important; margin-right:0.03cm !important; padding:0 !important; border-bottom:1px solid black !important; line-height:10px; font-family: Times New Roman, serif; font-size: 11pt; font-weight: bold; text-align:center; position:relative; top:0.05cm;">
                     <span style="position:relative; top:1px; font-weight:bold;">' . ($application->academic_year_start ?? '<b>24</b>') . '</span>
-                </span>
-                -20
-                <span class="signature-line" style="min-width:40px; margin-bottom:-2px; margin-top:-1px; line-height:10px; font-family: Times New Roman, serif; font-size: 11pt; font-weight: bold; text-align:center;">
+                </span>-20<span style="display:inline-block !important; min-width:0.4cm !important; margin:0 !important; margin-left:0.03cm !important; padding:0 !important; border-bottom:1px solid black !important; line-height:10px; font-family: Times New Roman, serif; font-size: 11pt; font-weight: bold; text-align:center; position:relative; top:0.05cm;">
                     <span style="position:relative; top:1px; font-weight:bold;">' . ($application->academic_year_end ?? '<b>25</b>') . '</span>
                 </span>
             </span>
