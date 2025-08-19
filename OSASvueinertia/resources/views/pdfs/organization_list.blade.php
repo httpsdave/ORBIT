@@ -551,7 +551,7 @@
             </tr>
         </table>
         <div class="dean-signature center-align" style="width: 50% !important; margin-top: 3px; text-align: center !important;">
-            <p style="margin-bottom: 0; font-weight: bold !important; margin-left: 10px !important; text-align: left !important;">Noted:</p>
+            <p style="margin-bottom: 0; font-weight: bold !important; margin-left: 10px !important; text-align: left !important; margin-top: -5px;">Noted:</p>
             <p style="margin-bottom: 0; text-align: center !important;"><span class="date-signature-line" style="display: inline-block; min-width: 180px;">{{ $application->dean_name ?? '' }}</span></p>
             <p style="margin-top: 2px; font-weight: normal; margin-left: 0 !important; text-align: center !important;">Dean/Assoc. Dean of College</p>
         </div>
@@ -766,7 +766,7 @@
                 </tr>
             </table>
             <div class="dean-signature center-align" style="width: 50% !important; margin-top: 3px; text-align: center !important;">
-                <p style="margin-bottom: 0; font-weight: bold !important; margin-left: 10px !important; text-align: left !important;">Noted:</p>
+                <p style="margin-bottom: 0; font-weight: bold !important; margin-left: 10px !important; text-align: left !important; margin-top: -5px;">Noted:</p>
                 <p style="margin-bottom: 0; text-align: center !important;"><span class="date-signature-line" style="display: inline-block; min-width: 180px;">{{ $application->dean_name ?? '' }}</span></p>
                 <p style="margin-top: 2px; font-weight: normal; margin-left: 0 !important; text-align: center !important;">Dean/Assoc. Dean of College</p>
             </div>
