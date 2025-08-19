@@ -557,7 +557,7 @@
         </div>
 
         <div class="recommendation" style="margin-top:-10px; text-align: center;">
-            <p><strong>Recommending Approval:</strong></p>
+            <p style="margin-bottom:5px;"><strong>Recommending Approval:</strong></p>
             <div class="signature-line" style="min-width:290px; margin-bottom:0px; display: inline-block; border-bottom: 1px solid black; text-align: center;">{{ $application->coordinator_name ?? 'N/A' }}</div>
             <p style="margin-top:2px; margin-bottom:5px;">Coordinator, Student Organization Unit</p>
         </div>
@@ -784,7 +784,7 @@
             </div>
 
             <div class="recommendation" style="margin-top:-10px; text-align: center;">
-                <p><strong>Recommending Approval:</strong></p>
+                <p style="margin-bottom:5px;"><strong>Recommending Approval:</strong></p>
                 <div class="signature-line" style="min-width:290px; margin-bottom:0px; display: inline-block; border-bottom: 1px solid black; text-align: center;">{{ $application->coordinator_name ?? 'N/A' }}</div>
                 <p style="margin-top:2px; margin-bottom:5px;">Coordinator, Student Organization Unit</p>
             </div>
