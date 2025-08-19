@@ -563,7 +563,7 @@
         </div>
         
         <div class="signature-block" style="margin-top:-10px; text-align: center;">
-            <p><strong>Approved/Disapproved:</strong></p>
+            <p style="margin-bottom:5px;"><strong>Approved/Disapproved:</strong></p>
             <div class="signature-line" style="min-width:415px; margin-bottom:0px; display: inline-block; border-bottom: 1px solid black; text-align: center;">{{ $application->director_name ?? 'N/A' }}</div>
             <p style="margin-top:2px;">Director/Chairperson, Office of Student Affairs and Services</p>
         </div>
@@ -790,7 +790,7 @@
             </div>
             
             <div class="signature-block" style="margin-top:-10px; text-align: center;">
-                <p><strong>Approved/Disapproved:</strong></p>
+                <p style="margin-bottom:5px;"><strong>Approved/Disapproved:</strong></p>
                 <div class="signature-line" style="min-width:415px; margin-bottom:0px; display: inline-block; border-bottom: 1px solid black; text-align: center;">{{ $application->director_name ?? 'N/A' }}</div>
                 <p style="margin-top:2px;">Director/Chairperson, Office of Student Affairs and Services</p>
             </div>
