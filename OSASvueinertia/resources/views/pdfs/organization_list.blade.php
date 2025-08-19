@@ -531,13 +531,13 @@
     <table class="signature-table" style="width: 100%; margin-top: -10px; border-collapse: collapse;">
             <tr>
                 <td style="width: 50%; vertical-align: top; text-align: center; padding-top: 0;">
-                    <div style="width: 200px; margin: 0 auto; margin-left: -10px;">
+                    <div style="width: 200px; margin: 0 auto; margin-left: 35px;">
                         <p style="margin-bottom: 0;">
-                    <span class="date-signature-line" style="display: block; min-width: 200px; text-align: center;">{{ $application->adviser_name ?? '' }}</span>
+                            <span class="date-signature-line" style="display: block; min-width: 200px; text-align: center;">{{ $application->adviser_name ?? '' }}</span>
                         </p>
                         <p style="margin-top: 2px; text-align: center;">Organization Adviser</p>
                     </div>
-                <p style="text-align: left; padding-left: 35px; margin-top: -10px;">Date: <span class="date-signature-line">{{ now()->format('F d, Y') }}</span></p>
+                    <p style="text-align: left; padding-left: 35px; margin-top: -10px;">Date: <span class="date-signature-line">{{ now()->format('F d, Y') }}</span></p>
                 </td>
                 <td style="width: 50%; vertical-align: top; text-align: center; padding-top: 0;">
                     <div style="width: 200px; margin: 0 auto; margin-left: 110px;">
