@@ -100,12 +100,19 @@
         
         .photo-box-text {
             position: absolute;
-            top: 50%;
+            top: 90%; /* Move down a little */
             left: 50%;
             transform: translate(-50%, -50%);
             width: 100%;
             text-align: center;
             font-size: 10pt;
+            margin: 0;
+            padding: 0;
+            line-height: normal;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 96px;
         }
 
         .member-info {
@@ -346,7 +353,7 @@
             <tr>
                 <td class="photo-cell">
                     <div class="photo-box">
-                        <span class="photo-box-text">1 x 1</span>
+                        <span class="photo-box-text">1 x 1<br>PICTURE</span>
                     </div>
                 </td>
                 <td class="info-cell">
@@ -399,7 +406,7 @@
                                             @if($leftMember->photo_path)
                                                 <img src="{{ storage_path('app/public/' . $leftMember->photo_path) }}" alt="Member Photo" width="94" height="94">
                                             @else
-                                                <span class="photo-box-text">1 x 1</span>
+                                                <span class="photo-box-text">1 x 1<br>PICTURE</span>
                                             @endif
                                         </div>
                                     </td>
@@ -426,7 +433,7 @@
                             <table class="member-table">
                                 <tr>
                                     <td class="photo-cell">
-                                        <div class="photo-box"><span class="photo-box-text">1 x 1</span></div>
+                                        <div class="photo-box"><span class="photo-box-text">1 x 1 PICTURE</span></div>
                                     </td>
                                     <td class="info-cell">
                                         <div class="member-info underline">
@@ -465,7 +472,7 @@
                                             @if($rightMember->photo_path)
                                                 <img src="{{ storage_path('app/public/' . $rightMember->photo_path) }}" alt="Member Photo" width="94" height="94">
                                             @else
-                                                <span class="photo-box-text">1 x 1</span>
+                                                <span class="photo-box-text">1 x 1<br>PICTURE</span>
                                             @endif
                                         </div>
                                     </td>
@@ -492,7 +499,7 @@
                             <table class="member-table">
                                 <tr>
                                     <td class="photo-cell">
-                                        <div class="photo-box"><span class="photo-box-text">1 x 1</span></div>
+                                        <div class="photo-box"><span class="photo-box-text">1 x 1 PICTURE</span></div>
                                     </td>
                                     <td class="info-cell">
                                         <div class="member-info underline">
@@ -570,7 +577,7 @@
                 <tr>
                     <td class="photo-cell">
                         <div class="photo-box">
-                            <span class="photo-box-text">1 x 1</span>
+                            <span class="photo-box-text">1 x 1<br>PICTURE</span>
                         </div>
                     </td>
                     <td class="info-cell">
@@ -614,7 +621,7 @@
                                                 @if($leftMember->photo_path)
                                                     <img src="{{ storage_path('app/public/' . $leftMember->photo_path) }}" alt="Member Photo" width="94" height="94">
                                                 @else
-                                                    <span class="photo-box-text">1 x 1</span>
+                                                    <span class="photo-box-text">1 x 1<br>PICTURE</span>
                                                 @endif
                                             </div>
                                         </td>
@@ -641,7 +648,7 @@
                                 <table class="member-table">
                                     <tr>
                                         <td class="photo-cell">
-                                            <div class="photo-box"><span class="photo-box-text">1 x 1</span></div>
+                                            <div class="photo-box"><span class="photo-box-text">1 x 1 PICTURE</span></div>
                                         </td>
                                         <td class="info-cell">
                                             <div class="member-info underline">
@@ -680,7 +687,7 @@
                                                 @if($rightMember->photo_path)
                                                     <img src="{{ storage_path('app/public/' . $rightMember->photo_path) }}" alt="Member Photo" width="94" height="94">
                                                 @else
-                                                    <span class="photo-box-text">1 x 1</span>
+                                                    <span class="photo-box-text">1 x 1 PICTURE</span>
                                                 @endif
                                             </div>
                                         </td>
@@ -707,7 +714,7 @@
                                 <table class="member-table">
                                     <tr>
                                         <td class="photo-cell">
-                                            <div class="photo-box"><span class="photo-box-text">1 x 1</span></div>
+                                            <div class="photo-box"><span class="photo-box-text">1 x 1 PICTURE</span></div>
                                         </td>
                                         <td class="info-cell">
                                             <div class="member-info underline">
