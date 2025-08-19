@@ -532,7 +532,7 @@
 
     <!-- Signatures - on first page -->
     @if($totalMembers > 0)
-        <table class="signature-table" style="width: 100%; margin-top: 10px; border-collapse: collapse;">
+    <table class="signature-table" style="width: 100%; margin-top: -10px; border-collapse: collapse;">
             <tr>
                 <td style="width: 50%; vertical-align: top; text-align: center; padding-top: 0;">
                     <div style="width: 200px; margin: 0 auto;">
@@ -747,7 +747,7 @@
         
         <!-- Signatures - on every page -->
         @if($totalMembers > 0)
-            <table class="signature-table" style="width: 100%; margin-top: 10px; border-collapse: collapse;">
+            <table class="signature-table" style="width: 100%; margin-top: -10px; border-collapse: collapse;">
                 <tr>
                     <td style="width: 50%; vertical-align: top; text-align: center; padding-top: 0;">
                         <div style="width: 200px; margin: 0 auto;">
