@@ -555,6 +555,18 @@
             <p style="margin-bottom: 0; text-align: center !important;"><span class="date-signature-line" style="display: inline-block; min-width: 180px;">{{ $application->dean_name ?? '' }}</span></p>
             <p style="margin-top: 2px; font-weight: normal; margin-left: 0 !important; text-align: center !important;">Dean/Assoc. Dean of College</p>
         </div>
+
+        <div class="recommendation" style="margin-top:-10px; text-align: center;">
+            <p><strong>Recommending Approval:</strong></p>
+            <div class="signature-line" style="min-width:290px; margin-bottom:0px; display: inline-block; border-bottom: 1px solid black; text-align: center;">{{ $application->coordinator_name ?? 'N/A' }}</div>
+            <p style="margin-top:2px; margin-bottom:5px;">Coordinator, Student Organization Unit</p>
+        </div>
+        
+        <div class="signature-block" style="margin-top:-10px; text-align: center;">
+            <p><strong>Approved/Disapproved:</strong></p>
+            <div class="signature-line" style="min-width:415px; margin-bottom:0px; display: inline-block; border-bottom: 1px solid black; text-align: center;">{{ $application->director_name ?? 'N/A' }}</div>
+            <p style="margin-top:2px;">Director/Chairperson, Office of Student Affairs and Services</p>
+        </div>
     @endif
 
     <!-- Generate additional pages if needed -->
@@ -769,6 +781,18 @@
                 <p style="margin-bottom: 0; font-weight: bold !important; margin-left: 10px !important; text-align: left !important; margin-top: -5px;">Noted:</p>
                 <p style="margin-bottom: 0; text-align: center !important;"><span class="date-signature-line" style="display: inline-block; min-width: 180px;">{{ $application->dean_name ?? '' }}</span></p>
                 <p style="margin-top: 2px; font-weight: normal; margin-left: 0 !important; text-align: center !important;">Dean/Assoc. Dean of College</p>
+            </div>
+
+            <div class="recommendation" style="margin-top:-10px; text-align: center;">
+                <p><strong>Recommending Approval:</strong></p>
+                <div class="signature-line" style="min-width:290px; margin-bottom:0px; display: inline-block; border-bottom: 1px solid black; text-align: center;">{{ $application->coordinator_name ?? 'N/A' }}</div>
+                <p style="margin-top:2px; margin-bottom:5px;">Coordinator, Student Organization Unit</p>
+            </div>
+            
+            <div class="signature-block" style="margin-top:-10px; text-align: center;">
+                <p><strong>Approved/Disapproved:</strong></p>
+                <div class="signature-line" style="min-width:415px; margin-bottom:0px; display: inline-block; border-bottom: 1px solid black; text-align: center;">{{ $application->director_name ?? 'N/A' }}</div>
+                <p style="margin-top:2px;">Director/Chairperson, Office of Student Affairs and Services</p>
             </div>
         @endif
     @endfor
