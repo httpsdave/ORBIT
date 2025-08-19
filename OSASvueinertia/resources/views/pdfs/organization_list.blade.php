@@ -319,7 +319,7 @@
                 <span class="signature-line" style="min-width:40px; margin-bottom:-2px; line-height:10px; font-family: Times New Roman, serif; font-size: 11pt; font-weight: bold; text-align:center;">
                     <span style="position:relative; top:0px; font-weight:bold;">' . ($application->semester ?? '<b>1st</b>') . '</span>
                 </span>
-                Semester AY 20
+                Sem. / AY 20
                 <span class="signature-line" style="min-width:40px; margin-bottom:-2px; margin-top:-1px; line-height:10px; font-family: Times New Roman, serif; font-size: 11pt; font-weight: bold; text-align:center;">
                     <span style="position:relative; top:1px; font-weight:bold;">' . ($application->academic_year_start ?? '<b>24</b>') . '</span>
                 </span>
