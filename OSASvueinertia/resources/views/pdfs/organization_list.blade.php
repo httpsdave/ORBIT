@@ -314,7 +314,7 @@
     }
     
     function showSemesterInfo($application) {
-        $info = '<div style="width:100%; text-align:center; margin-top:-22px; font-family: Times New Roman, serif; font-size: 11pt; font-weight: bold;">
+        $info = '<div style="width:100%; text-align:center; margin-top:-18px; font-family: Times New Roman, serif; font-size: 11pt; font-weight: bold;">
             <span style="display:inline-block; text-align:center;">
                 <span style="display:inline-block !important; min-width:0.5cm !important; margin:0 !important; margin-right:0.05cm !important; padding:0 !important; border-bottom:1px solid black !important; line-height:10px; font-family: Times New Roman, serif; font-size: 11pt; font-weight: bold; text-align:center; position:relative; top:0.05cm;">
                     <span style="position:relative; top:0px; font-weight:bold;">' . ($application->semester ?? '<b>1st</b>') . '</span>
