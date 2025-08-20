@@ -398,8 +398,8 @@
         </div>
             
             <!-- Moved "student of this College is:" to its own line -->
-            <div class="college-is-text">
-                student of this College is:
+            <div class="college-is-text" style="padding-left: 10px;">
+                Certified true and correct:
             </div>
 
            <!-- Wrapped checkboxes in a container with margin-top -->
