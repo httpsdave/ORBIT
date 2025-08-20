@@ -489,34 +489,47 @@ function limitTo2Digits(event) {
           </div>
         </div>
 
-        <!-- Signatures and approvals: shown on ALL pages -->
-        <div v-if="form.members.length > 0" class="mt-8">
-          <div class="flex flex-wrap justify-between">
-            <div class="w-1/2 text-center">
-              <p class="mb-0"><span class="border-b border-black min-w-[200px] inline-block text-center">{{ form.adviser_name }}</span></p>
-              <p class="mb-0">Organization Adviser</p>
-              <p class="text-left pl-8 mt-[-10px]">Date: <span class="border-b border-black min-w-[140px] inline-block text-center">{{ currentDate }}</span></p>
-            </div>
-            <div class="w-1/2 text-center">
-              <p class="mb-0"><span class="border-b border-black min-w-[200px] inline-block text-center">{{ form.second_adviser }}</span></p>
-              <p class="mb-0">Organization Adviser</p>
-              <p class="text-left pl-24 mt-[-10px]">Date: <span class="border-b border-black min-w-[140px] inline-block text-center">{{ currentDate }}</span></p>
-            </div>
+        <!-- Signatures and approvals: shown on ALL pages, vertical stacking, no overlap -->
+        <div v-if="form.members.length > 0" class="mt-4">
+          <!-- Advisers and Dates -->
+          <table class="w-full" style="border-collapse:collapse;">
+            <tr>
+              <td class="align-top text-center w-1/2 p-0" style="vertical-align:top; text-align:center;">
+                <div style="width:200px; margin:0 auto; margin-left:35px;">
+                  <span class="border-b border-black min-w-[200px] inline-block text-center">{{ form.adviser_name }}</span>
+                  <div class="text-center">Organization Adviser</div>
+                </div>
+                <div class="text-left mt-1" style="padding-left:35px;">Date: <span class="border-b border-black min-w-[140px] inline-block text-center">{{ currentDate }}</span></div>
+              </td>
+              <td class="align-top text-center w-1/2 p-0" style="vertical-align:top; text-align:center;">
+                <div style="width:200px; margin:0 auto; margin-left:110px;">
+                  <span class="border-b border-black min-w-[200px] inline-block text-center">{{ form.second_adviser }}</span>
+                  <div class="text-center">Organization Adviser</div>
+                </div>
+                <div class="text-left mt-1" style="padding-left:110px;">Date: <span class="border-b border-black min-w-[140px] inline-block text-center">{{ currentDate }}</span></div>
+              </td>
+            </tr>
+          </table>
+
+          <!-- Noted / Dean -->
+          <div class="w-1/2 mx-auto text-center mt-4">
+            <div class="font-bold text-left ml-2">Noted:</div>
+            <span class="border-b border-black min-w-[180px] inline-block text-center">{{ form.dean_name }}</span>
+            <div class="text-center">Dean/Assoc. Dean of College</div>
           </div>
-          <div class="w-1/2 mx-auto text-center mt-2">
-            <p class="mb-0 font-bold text-left ml-2">Noted:</p>
-            <p class="mb-0"><span class="border-b border-black min-w-[180px] inline-block text-center">{{ form.dean_name }}</span></p>
-            <p class="mb-0">Dean/Assoc. Dean of College</p>
-          </div>
-          <div class="text-center mt-2">
-            <p class="mb-1 font-bold">Recommending Approval:</p>
+
+          <!-- Recommending Approval -->
+          <div class="text-center mt-4">
+            <div class="font-bold mb-1"><strong>Recommending Approval:</strong></div>
             <div class="border-b border-black min-w-[290px] inline-block text-center">{{ form.coordinator_name }}</div>
-            <p class="mt-1 mb-1">Coordinator, Student Organization Unit</p>
+            <div class="mt-1 mb-1">Coordinator, Student Organization Unit</div>
           </div>
-          <div class="text-center mt-2">
-            <p class="mb-1 font-bold">Approved/Disapproved:</p>
+
+          <!-- Approved/Disapproved -->
+          <div class="text-center mt-4">
+            <div class="font-bold mb-1"><strong>Approved/Disapproved:</strong></div>
             <div class="border-b border-black min-w-[415px] inline-block text-center">{{ form.director_name }}</div>
-            <p class="mt-1">Director/Chairperson, Office of Student Affairs and Services</p>
+            <div class="mt-1">Director/Chairperson, Office of Student Affairs and Services</div>
           </div>
         </div>
 
