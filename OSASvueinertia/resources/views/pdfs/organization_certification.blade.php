@@ -365,6 +365,8 @@
                     (LAST NAME, FIRST NAME, MIDDLE INITIAL)
                 </div>
             </div>, a 
+            <br><br>
+            student taking up 
             <div style="display: inline-block; vertical-align: bottom; position: relative; top: 6px;">
                 <div>
                     <span class="course-blank">{{ $certification->course_year_section ?? '' }}</span>
@@ -372,7 +374,20 @@
                 <div style="text-align: center; font-size: 11pt; margin-top: -5px;">
                     (course, year and section)
                 </div>
-            </div>.
+            </div> from
+            <br><br>
+            the College of <span class="signature-line" style="min-width:200px; border-bottom: 1px solid black; display: inline-block;">{{ $certification->college ?? ' ' }}</span> is a bonafide LSPU Student, not
+            <br><br>
+            under academic probation, not under disciplinary probation, and the elected/appointed
+            <br><br>
+            <span class="signature-line" style="min-width:120px; border-bottom: 1px solid black; display: inline-block;">{{ $certification->position_rank ?? ' ' }}</span> of the <span class="signature-line" style="min-width:150px; border-bottom: 1px solid black; display: inline-block;">{{ $certification->organization_name ?? ' ' }}</span>.
+            <br>
+            <div style="text-align: center; font-size: 11pt; margin-top: -5px; display: inline-block; width: 120px;">
+                (position/rank)
+            </div>
+            <div style="text-align: center; font-size: 11pt; margin-top: -5px; display: inline-block; width: 150px; margin-left: 30px;">
+                (organization)
+            </div>
         </div>
             
             <!-- Moved "student of this College is:" to its own line -->
