@@ -377,13 +377,11 @@
                 <div style="text-align: center; font-size: 11pt; margin-top: -5px;">
                     (course, year and section)
                 </div>
-            </div> from
+            </div> from the College of <span class="signature-line" style="min-width:200px; border-bottom: 1px solid black; display: inline-block;">{{ $certification->college ?? ' ' }}</span>
             <br><br>
-            </div>
-            
             <div class="cert-content" style="margin-top: -20px;">
             <br>
-            the College of <span class="signature-line" style="min-width:200px; border-bottom: 1px solid black; display: inline-block;">{{ $certification->college ?? ' ' }}</span> is a bonafide LSPU Student, not
+            is a bonafide LSPU Student, not
             <br><br>
             under academic probation, not under disciplinary probation, and the elected/appointed
             <br><br>
