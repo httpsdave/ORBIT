@@ -417,7 +417,7 @@
         </div>
 
             <!-- MODIFIED: Separate dean signature section to keep at bottom -->
-            <div class="dean-signature-section">
+            <div class="dean-signature-section" style="margin-left: -405px;">
                 <div class="signature-name">{{ $application->dean_name ?? '' }}</div>
                 <div class="signature-title">Dean/Assoc. Dean of College</div>
             </div>
