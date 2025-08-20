@@ -422,7 +422,6 @@
             
             <!-- Director/Chairperson signature section -->
             <div style="margin-top: -60px; text-align: center;">
-                <p style="margin-top: -px;"><strong>Noted:</strong></p>
                 <div class="signature-name" style="min-width: 415px; margin-bottom: 0px;">{{ $application->director_name ?? '' }}</div>
                 <div class="signature-title" style="margin-top: 2px;">Director/Chairperson, Office of Student Affairs and Services</div>
             </div>
