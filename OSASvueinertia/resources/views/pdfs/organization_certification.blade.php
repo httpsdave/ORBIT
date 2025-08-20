@@ -402,31 +402,16 @@
                 Certified true and correct:
             </div>
 
-           <!-- Wrapped checkboxes in a container with margin-top -->
-        <div class="checkbox-container" style="padding-left: 25px;">
-            <!-- Text-based checkboxes with increased spacing -->
-            <div class="checkbox-item">
-                <span class="text-checkbox">({{ $certification->is_bonafide ? '/' : ' ' }})</span> a bonafide student;
-            </div>
-            <div class="checkbox-item">
-                <span class="text-checkbox">({{ $certification->is_not_academic_probation ? '/' : ' ' }})</span> not under academic probation;
-            </div>
-            <div class="checkbox-item">
-                <span class="text-checkbox">({{ $certification->is_not_disciplinary_probation ? '/' : ' ' }})</span> not under disciplinary probation;
-            </div>
-            <div class="position-line">
-                <span class="text-checkbox">({{ $certification->has_position ? '/' : ' ' }})</span> position/rank in the organization <span class="position-blank">{{ $certification->position_rank ?? '' }}</span>;
-            </div>
-        </div>
 
          <!-- Modified Noted section to move just the "Noted:" text higher -->
         <div class="signature-section" style="margin-top: 100px;">
-            <div class="noted-section" style="padding-left: 80px;">
-                <p style="margin-left: -40px; margin-bottom: 70px;"><strong>Noted:</strong></p>
+            <div class="noted-section" style="padding-left: 40px;">
                 <!-- Faculty adviser signature -->
-                <div class="faculty-adviser-signature" style="margin-top: -15px;">
-                    <div class="signature-name-adviser">{{ $application->adviser_name ?? '' }}</div>
-                    <div class="signature-title-adviser">Faculty Adviser(s)</div>
+                <div class="faculty-adviser-signature" style="margin-top: -15px; margin-left: 0px;">
+                    <div style="text-align: center;">
+                        <div class="signature-name-adviser" style="margin-left: 0;">{{ $application->adviser_name ?? '' }}</div>
+                        <div class="signature-title-adviser" style="text-align: center; margin-left: -350px;">Organization Adviser(s)</div>
+                    </div>
                 </div>
             </div>
         </div>
