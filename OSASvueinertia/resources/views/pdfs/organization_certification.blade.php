@@ -366,6 +366,9 @@
                 </div>
             </div>, a 
             <br><br>
+            </div>
+            
+            <div style="padding-left: 0px; text-align: left;">
             student taking up 
             <div style="display: inline-block; vertical-align: bottom; position: relative; top: 6px;">
                 <div>
@@ -376,6 +379,10 @@
                 </div>
             </div> from
             <br><br>
+            </div>
+            
+            <div class="cert-content" style="margin-top: -20px;">
+            <br>
             the College of <span class="signature-line" style="min-width:200px; border-bottom: 1px solid black; display: inline-block;">{{ $certification->college ?? ' ' }}</span> is a bonafide LSPU Student, not
             <br><br>
             under academic probation, not under disciplinary probation, and the elected/appointed
