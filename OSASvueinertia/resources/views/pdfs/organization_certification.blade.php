@@ -361,16 +361,16 @@
                 <div>
                     <span class="student-blank">{{ $certification->student_name ?? '' }}</span>
                 </div>
-                <div style="text-align: center; font-size: 11;font-weight:bold; margin-top: -5px;">
-                    student name
+                <div style="text-align: center; font-size: 11; margin-top: -5px;">
+                    (LAST NAME, FIRST NAME, MIDDLE INITIAL)
                 </div>
             </div>, a 
             <div style="display: inline-block; vertical-align: bottom; position: relative; top: 6px;">
                 <div>
                     <span class="course-blank">{{ $certification->course_year_section ?? '' }}</span>
                 </div>
-                <div style="text-align: center; font-size: 11pt;font-weight:bold; margin-top: -5px;">
-                    course/year and section
+                <div style="text-align: center; font-size: 11pt; margin-top: -5px;">
+                    (course, year and section)
                 </div>
             </div>.
         </div>
