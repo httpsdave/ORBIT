@@ -397,14 +397,13 @@
             </div>
         </div>
             
-            <!-- Moved "student of this College is:" to its own line -->
-            <div class="college-is-text" style="padding-left: 10px;">
-                Certified true and correct:
-            </div>
-
-
          <!-- Modified signature section with both adviser and dean -->
         <div class="signature-section" style="margin-top: 100px;">
+            <!-- Moved "Certified true and correct:" to be just before adviser -->
+            <div class="college-is-text" style="padding-left: 10px; margin-bottom: 40px;">
+                Certified true and correct:
+            </div>
+            
             <div class="noted-section" style="padding-left: 40px;">
                 <!-- Faculty adviser signature -->
                 <div class="faculty-adviser-signature" style="margin-top: -15px; margin-left: 0px;">
