@@ -500,6 +500,12 @@ function limitTo2Digits(event) {
                   <div class="text-center">Organization Adviser</div>
                 </div>
                 <div class="text-left mt-1" style="padding-left:35px;">Date: <span class="border-b border-black min-w-[140px] inline-block text-center">{{ currentDate }}</span></div>
+                <!-- Noted / Dean section under left date -->
+                <div class="mt-4">
+                  <div class="font-bold text-left ml-8">Noted:</div>
+                  <span class="border-b border-black min-w-[180px] inline-block text-center">{{ form.dean_name }}</span>
+                  <div class="text-center">Dean/Assoc. Dean of College</div>
+                </div>
               </td>
               <td class="align-top text-center w-1/2 p-0" style="vertical-align:top; text-align:center;">
                 <div style="width:200px; margin:0 auto; margin-left:110px;">
@@ -510,13 +516,6 @@ function limitTo2Digits(event) {
               </td>
             </tr>
           </table>
-
-          <!-- Noted / Dean -->
-          <div class="w-1/2 mx-auto text-center mt-4">
-            <div class="font-bold text-left ml-2">Noted:</div>
-            <span class="border-b border-black min-w-[180px] inline-block text-center">{{ form.dean_name }}</span>
-            <div class="text-center">Dean/Assoc. Dean of College</div>
-          </div>
 
           <!-- Recommending Approval -->
           <div class="text-center mt-4">
