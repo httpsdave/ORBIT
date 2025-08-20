@@ -409,8 +409,8 @@
                 <!-- Faculty adviser signature -->
                 <div class="faculty-adviser-signature" style="margin-top: -15px; margin-left: 0px;">
                     <div style="text-align: center;">
-                        <div class="signature-name-adviser" style="margin-left: 0;">{{ $application->adviser_name ?? '' }}</div>
-                        <div class="signature-title-adviser" style="text-align: center; margin-left: -350px;">Organization Adviser(s)</div>
+                        <div class="signature-name-adviser" style="margin-left: -30px;">{{ $application->adviser_name ?? '' }}</div>
+                        <div class="signature-title-adviser" style="text-align: center; margin-left: -415px;">Organization Adviser(s)</div>
                     </div>
                 </div>
             </div>
