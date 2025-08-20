@@ -308,6 +308,10 @@ const validateForm = () => {
     errors.value.dean_name = 'Dean/Assoc. Dean name is required';
   }
   
+  if (!form.director_name.trim()) {
+    errors.value.director_name = 'Director/Chairperson name is required';
+  }
+  
   // Validate members
   form.members.forEach((member, index) => {
     if (!member.student_name.trim()) {
@@ -626,6 +630,12 @@ function limitTo2Digits(event) {
                 <label class="block font-bold">Dean/Assoc. Dean Name</label>
                 <input v-model="form.dean_name" class="border p-2 w-full" required>
                 <div v-if="errors.dean_name" class="text-red-500 text-sm mt-1">{{ errors.dean_name }}</div>
+            </div>
+
+            <div>
+                <label class="block font-bold">Director/Chairperson Name</label>
+                <input v-model="form.director_name" class="border p-2 w-full" required>
+                <div v-if="errors.director_name" class="text-red-500 text-sm mt-1">{{ errors.director_name }}</div>
             </div>
         </div>
 
