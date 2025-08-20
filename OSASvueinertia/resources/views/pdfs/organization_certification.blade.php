@@ -429,9 +429,10 @@
         </div>
 
             <div class="footer">
-                <div class="footer-left">LSPU-OSAS-SF-006</div>
-                <div class="footer-center">Rev. 1</div>
-                <div class="footer-right">09 November 2020</div>
+            <div class="footer" style="position: absolute; bottom: -5px; width: 100%; height: 20px; line-height: 20px; font-size: 10pt; font-family: Calibri, sans-serif;">
+                <div class="footer-left" style="position: absolute; left: .1cm; bottom: -5px;">LSPU-OSAS-SF-006</div>
+                <div class="footer-center" style="position: absolute; left: 50%; transform: translateX(-50%); bottom: -5px;">Rev. 1</div>
+                <div class="footer-right" style="position: absolute; right: .1cm; bottom: -5px;">09 November 2020</div>
             </div>
         </div>
     @endforeach
