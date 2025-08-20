@@ -385,13 +385,15 @@
             <br><br>
             under academic probation, not under disciplinary probation, and the elected/appointed
             <br><br>
-            <span class="signature-line" style="min-width:120px; border-bottom: 1px solid black; display: inline-block;">{{ $certification->position_rank ?? ' ' }}</span> of the <span class="signature-line" style="min-width:150px; border-bottom: 1px solid black; display: inline-block;">{{ $certification->organization_name ?? ' ' }}</span>.
-            <br>
-            <div style="text-align: center; font-size: 11pt; margin-top: -5px; display: inline-block; width: 120px;">
-                (position/rank)
-            </div>
-            <div style="text-align: center; font-size: 11pt; margin-top: -5px; display: inline-block; width: 150px; margin-left: 30px;">
-                (organization)
+            <div style="margin-top: -35px;">
+                <span class="signature-line" style="min-width:120px; border-bottom: 1px solid black; display: inline-block;">{{ $certification->position_rank ?? ' ' }}</span> of the <span class="signature-line" style="min-width:150px; border-bottom: 1px solid black; display: inline-block;">{{ $certification->organization_name ?? ' ' }}</span>.
+                <br>
+                <div style="text-align: center; font-size: 11pt; margin-top: -5px; display: inline-block; width: 120px;">
+                    (position/rank)
+                </div>
+                <div style="text-align: center; font-size: 11pt; margin-top: -5px; display: inline-block; width: 150px; margin-left: 30px;">
+                    (organization)
+                </div>
             </div>
         </div>
             
