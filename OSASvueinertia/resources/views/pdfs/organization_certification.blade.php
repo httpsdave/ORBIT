@@ -381,7 +381,7 @@
             <br><br>
             </div>
             
-            <div style="padding-left: 0px; text-align: left;">
+            <div style="padding-left: 0px; text-align: left; margin-top: -35px;">
             <br><br>
             under academic probation, not under disciplinary probation, and the elected/appointed
             <br><br>
