@@ -403,7 +403,7 @@
             </div>
 
 
-         <!-- Modified Noted section to move just the "Noted:" text higher -->
+         <!-- Modified signature section with both adviser and dean -->
         <div class="signature-section" style="margin-top: 100px;">
             <div class="noted-section" style="padding-left: 40px;">
                 <!-- Faculty adviser signature -->
@@ -413,14 +413,14 @@
                         <div class="signature-title-adviser" style="text-align: center; margin-left: -415px;">Organization Adviser(s)</div>
                     </div>
                 </div>
+                
+                <!-- Dean signature right under adviser -->
+                <div style="margin-top: 30px; text-align: center; margin-left: -420px;">
+                    <div class="signature-name">{{ $application->dean_name ?? '' }}</div>
+                    <div class="signature-title">Dean/Assoc. Dean of College</div>
+                </div>
             </div>
         </div>
-
-            <!-- MODIFIED: Separate dean signature section to keep at bottom -->
-            <div class="dean-signature-section" style="margin-left: -405px;">
-                <div class="signature-name">{{ $application->dean_name ?? '' }}</div>
-                <div class="signature-title">Dean/Assoc. Dean of College</div>
-            </div>
 
             <div class="footer">
                 <div class="footer-left">LSPU-OSAS-SF-006</div>
