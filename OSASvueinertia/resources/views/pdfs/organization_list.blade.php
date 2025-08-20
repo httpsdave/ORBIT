@@ -1,3 +1,4 @@
+            <div class="signature-block" style="margin-top:-10px; text-align: center;">
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -328,7 +329,7 @@
         $info .= '<div style="width:100%; margin-top: 15px; text-align: center;">
             <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
                 <span style="font-family: Times New Roman, serif; font-size: 11pt; font-weight: bold; text-align: left;">Name of Organization</span>
-                <span class="signature-line" style="margin-bottom:0px; min-width:200px; font-family: Times New Roman, serif; font-size: 11pt; text-align: center; border-bottom: 1px solid #000; display: inline-block; position: relative; top: 5px;">
+                <span class="signature-line" style="margin-bottom:0px; min-width:200px; font-family: Times New Roman, serif; font-size: 11pt; text-align: center; border-bottom: 1px solid #000; display: inline-block;">
                     <span style="font-weight: bold;">' . ($application->organization_name ?? '') . '</span>
                 </span>
             </div>
@@ -563,8 +564,9 @@
         </div>
         
         <div class="signature-block" style="margin-top:-10px; text-align: center;">
+                    <div class="signature-block" style="margin-top:-10px; text-align: center;">
             <p style="margin-bottom:5px;"><strong>Approved/Disapproved:</strong></p>
-            <div class="signature-line" style="min-width:415px; margin-bottom:0px; display: inline-block; border-bottom: 1px solid black; text-align: center;">{{ $application->director_name ?? 'N/A' }}</div>
+                    <div class="signature-line" style="min-width:415px; margin-bottom:0px; display: inline-block; border-bottom: 1px solid black; text-align: center;">{{ $application->director_name ?? 'Sample Data' }}</div>
             <p style="margin-top:2px;">Director/Chairperson, Office of Student Affairs and Services</p>
         </div>
     @endif
@@ -790,8 +792,9 @@
             </div>
             
             <div class="signature-block" style="margin-top:-10px; text-align: center;">
+                        <div class="signature-block" style="margin-top:-10px; text-align: center;">
                 <p style="margin-bottom:5px;"><strong>Approved/Disapproved:</strong></p>
-                <div class="signature-line" style="min-width:415px; margin-bottom:0px; display: inline-block; border-bottom: 1px solid black; text-align: center;">{{ $application->director_name ?? 'N/A' }}</div>
+                            <div class="signature-line" style="min-width:415px; margin-bottom:0px; display: inline-block; border-bottom: 1px solid black; text-align: center;">{{ $application->director_name ?? 'Sample Data' }}</div>
                 <p style="margin-top:2px;">Director/Chairperson, Office of Student Affairs and Services</p>
             </div>
         @endif
