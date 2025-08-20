@@ -429,7 +429,7 @@
                             <table class="member-table">
                                 <tr>
                                     <td class="photo-cell">
-                                        <div class="photo-box"><span class="photo-box-text">1 x 1 PICTURE</span></div>
+                                        <div class="photo-box"><span class="photo-box-text">1 x 1<br>PICTURE</span></div>
                                     </td>
                                     <td class="info-cell">
                                         <div class="member-info underline">
@@ -495,7 +495,7 @@
                             <table class="member-table">
                                 <tr>
                                     <td class="photo-cell">
-                                        <div class="photo-box"><span class="photo-box-text">1 x 1 PICTURE</span></div>
+                                        <div class="photo-box"><span class="photo-box-text">1 x 1<br>PICTURE</span></div>
                                     </td>
                                     <td class="info-cell">
                                         <div class="member-info underline">
@@ -656,7 +656,7 @@
                                 <table class="member-table">
                                     <tr>
                                         <td class="photo-cell">
-                                            <div class="photo-box"><span class="photo-box-text">1 x 1 PICTURE</span></div>
+                                            <div class="photo-box"><span class="photo-box-text">1 x 1<br>PICTURE</span></div>
                                         </td>
                                         <td class="info-cell">
                                             <div class="member-info underline">
@@ -722,7 +722,7 @@
                                 <table class="member-table">
                                     <tr>
                                         <td class="photo-cell">
-                                            <div class="photo-box"><span class="photo-box-text">1 x 1 PICTURE</span></div>
+                                            <div class="photo-box"><span class="photo-box-text">1 x 1<br>PICTURE</span></div>
                                         </td>
                                         <td class="info-cell">
                                             <div class="member-info underline">
