@@ -374,7 +374,7 @@
                 <div style="text-align: center; font-size: 11pt; margin-top: -5px;">
                     <span style="font-size: 10pt; position: relative; top: 5px;">(course, year and section)</span>
                 </div>
-            </div> from the College of <span class="signature-line" style="min-width:385px; border-bottom: 1px solid black; display: inline-block;">{{ $certification->college ?? ' ' }}</span> is a bonafide LSPU Student, not
+            </div> from the College of <span class="signature-line" style="min-width:385px; border-bottom: 1px solid black; display: inline-block;">{{ $certification->college ?? 'Sample Data' }}</span> is a bonafide LSPU Student, not
             <br><br>
             </div>
             
@@ -383,7 +383,7 @@
             <span style="display: inline-block; margin-top: -15px;">under academic probation, not under disciplinary probation, and the elected/appointed</span>
             <br><br>
             <div style="margin-top: -50px;">
-                <span class="signature-line" style="min-width:230px; border-bottom: 1px solid black; display: inline-block;">{{ $certification->position_rank ?? ' ' }}</span> of the <span class="signature-line" style="min-width:315px; border-bottom: 1px solid black; display: inline-block;">{{ $certification->organization_name ?? ' ' }}</span>.
+                <span class="signature-line" style="min-width:230px; border-bottom: 1px solid black; display: inline-block;">{{ $certification->position_rank ?? ' ' }}</span> of the <span class="signature-line" style="min-width:315px; border-bottom: 1px solid black; display: inline-block;">{{ $certification->organization_name ?? 'Sample Data' }}</span>.
                 <br>
                 <div style="text-align: center; font-size: 11pt; margin-top: -5px; display: inline-block; width: 120px; margin-left: 45px;">
                     <span style="font-size: 10pt; margin-top: -3px; display: inline-block;">(position/rank)</span>
@@ -405,14 +405,14 @@
                 <!-- Faculty adviser signature -->
                 <div class="faculty-adviser-signature" style="margin-top: -15px; margin-left: 0px;">
                     <div style="text-align: center;">
-                        <div class="signature-name-adviser" style="margin-left: -30px;">{{ $application->adviser_name ?? '' }}</div>
+                        <div class="signature-name-adviser" style="margin-left: -30px;">{{ $application->adviser_name ?? 'Sample Data' }}</div>
                         <div class="signature-title-adviser" style="text-align: center; margin-left: -415px;">Organization Adviser(s)</div>
                     </div>
                 </div>
                 
                 <!-- Dean signature right under adviser -->
                 <div style="margin-top: 30px; text-align: center; margin-left: -420px;">
-                    <div class="signature-name" style="width: 220px;">{{ $application->dean_name ?? '' }}</div>
+                    <div class="signature-name" style="width: 220px;">{{ $application->dean_name ?? 'Sample Data' }}</div>
                     <div class="signature-title">Dean/Assoc. Dean of College</div>
                 </div>
                 <div style="text-align: center; margin-top: 20px; margin-left: -45px;">Noted:</div>
@@ -420,7 +420,7 @@
             
             <!-- Director/Chairperson signature section -->
             <div style="margin-top: -65px; text-align: center;">
-                <div class="signature-name" style="min-width: 415px; margin-bottom: 0px;">{{ $application->director_name ?? '' }}</div>
+                <div class="signature-name" style="min-width: 415px; margin-bottom: 0px;">{{ $application->director_name ?? 'Sample Data' }}</div>
                 <div class="signature-title" style="margin-top: 2px;">Director/Chairperson, Office of Student Affairs and Services</div>
             </div>
         </div>
