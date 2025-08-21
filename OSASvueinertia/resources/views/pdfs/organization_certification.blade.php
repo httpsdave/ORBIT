@@ -397,11 +397,11 @@
          <!-- Modified signature section with both adviser and dean -->
         <div class="signature-section" style="margin-top: 100px;">
             <!-- Moved "Certified true and correct:" to be just before adviser -->
-            <div class="college-is-text" style="padding-left: 10px; margin-bottom: 40px;">
+            <div class="college-is-text" style="padding-left: 25px; margin-bottom: 40px;">
                 Certified true and correct:
             </div>
             
-            <div class="noted-section" style="padding-left: 40px;">
+            <div class="noted-section" style="padding-left: 65px;">
                 <!-- Faculty adviser signature -->
                 <div class="faculty-adviser-signature" style="margin-top: -15px; margin-left: -42px;">
                     <div style="text-align: left;">
@@ -411,11 +411,11 @@
                 </div>
                 
                 <!-- Dean signature right under adviser -->
-                <div style="margin-top: 30px; text-align: left; margin-left: -42px;">
+                <div style="margin-top: 30px; text-align: left; margin-left: -50px;">
                     <div class="signature-name" style="display: inline-block; min-width: 220px; width: auto; border-bottom: 1px solid black; padding-bottom: 2px; text-align: center;">{{ $application->dean_name ?? 'Sample Data' }}</div>
                     <div class="signature-title" style="text-align: left;margin-left: 25px;">Dean/Assoc. Dean of College</div>
                 </div>
-                <div style="text-align: center; margin-top: 20px; margin-left: -45px;">Noted:</div>
+                <div style="text-align: center; margin-top: 20px; margin-left: -70px;">Noted:</div>
             </div>
             
             <!-- Director/Chairperson signature section -->
