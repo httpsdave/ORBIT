@@ -182,6 +182,7 @@
 </head>
 <body> 
     <!-- Footer that will appear on all pages with DOMPDF compatibility -->
+    <!--
     <div class="footer">
         <div class="footer-left">LSPU-OSAS-SF-007</div>
         <div class="footer-center">Rev. 1</div>
@@ -210,6 +211,7 @@
             $pdf->page_text($x, $y, $text, $font, $size);
         }
     </script>
+    -->
     
     <!-- First Page -->
     <div class="header">
