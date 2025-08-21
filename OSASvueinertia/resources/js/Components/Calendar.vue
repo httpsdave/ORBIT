@@ -890,14 +890,15 @@ export default {
       'July', 'August', 'September', 'October', 'November', 'December'
     ];
     
-    // Generate year options (current year ± 10 years)
+    // Generate year options (past years up to current year only)
     const yearOptions = computed(() => {
       const currentYear = new Date().getFullYear();
       const years = [];
-      for (let year = currentYear - 10; year <= currentYear + 10; year++) {
+      // Show years from 10 years ago up to current year only
+      for (let year = currentYear - 10; year <= currentYear; year++) {
         years.push(year);
       }
-      return years;
+      return years.reverse(); // Show newest years first
     });
   
     const extractedData = ref(null);
