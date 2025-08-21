@@ -343,16 +343,13 @@
                 <img src="{{ public_path('images/lspu-name.png') }}" alt="Laguna State Polytechnic University" class="university-name"><br>
                 <div class="header-province">Province of Laguna</div>
                 <p class="office-title" style="font-size:11pt; font-weight:bold; margin-bottom:10px; margin-top:12px;">OFFICE OF STUDENT AFFAIRS AND SERVICES</p>
+                <div class="cert-title" style="text-align: center; font-size: 15pt; font-weight: bold; margin-top: 13px; margin-bottom: 0;">CERTIFICATION</div>
             </div>
 
             <!-- Modified date-line section to center DATE under its underline -->
             <div class="date-line">
                 <p><u>{{ \Carbon\Carbon::parse($certification->certification_date)->format('F d, Y') }}</u></p>
                 <p style="text-align: right; margin-right: 15px;">DATE</p>
-            </div>
-
-            <div class="cert-title">
-                CERTIFICATION
             </div>
 
             <div class="cert-content">
