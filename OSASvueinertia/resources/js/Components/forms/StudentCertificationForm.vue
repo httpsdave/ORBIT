@@ -289,31 +289,40 @@ const submit = () => {
       <div class="cert-title text-center text-2xl font-bold my-8">CERTIFICATION</div>
 
       <!-- Certification Content -->
-      <div class="cert-content" style="text-align:justify; margin:20px 0; line-height:1.5; padding-left:40px; padding-right:40px;">
-        This certifies that
-        <span style="display:inline-block; vertical-align:bottom; position:relative; top:6px;">
-          <span style="min-width:390px; border-bottom:1px solid black; text-align:center; display:inline-block;">{{ student.student_name }}</span>
-          <span style="display:block; text-align:center; font-size:10pt; margin-top:-5px;">(LAST NAME, FIRST NAME, MIDDLE INITIAL)</span>
-        </span>, a
-        <br><br>
-        student taking up
-        <span style="display:inline-block; vertical-align:bottom; position:relative; top:6px;">
-          <span style="min-width:350px; border-bottom:1px solid black; text-align:center; display:inline-block;">{{ student.course_year_section }}</span>
-          <span style="display:block; text-align:center; font-size:10pt; margin-top:-5px;">(course, year and section)</span>
-        </span>
-        from the College of
-        <span style="min-width:385px; border-bottom:1px solid black; display:inline-block;">{{ form.college }}</span>
-        is a bonafide LSPU Student, not
-        <br><br>
-        under academic probation, not under disciplinary probation, and the elected/appointed
-        <br><br>
-        <span style="min-width:230px; border-bottom:1px solid black; display:inline-block;">{{ student.position_rank }}</span>
-        of the
-        <span style="min-width:315px; border-bottom:1px solid black; display:inline-block;">{{ form.organization_name }}</span>.
-        <br>
-        <span style="display:inline-block; text-align:center; font-size:10pt; margin-top:-3px; width:120px; margin-left:45px;">(position/rank)</span>
-        <span style="display:inline-block; text-align:center; font-size:10pt; margin-top:-3px; width:150px; margin-left:200px;">(organization)</span>
-      </div>
+        <div class="cert-content" style="text-align:justify; margin:20px 0; line-height:1.5; padding-left:40px; padding-right:40px;">
+          This certifies that
+          <span style="display:inline-block; vertical-align:bottom; position:relative; top:6px;">
+            <span style="min-width:390px; border-bottom:1px solid black; text-align:center; display:inline-block;">{{ student.student_name }}</span>
+            <span style="display:block; text-align:center; font-size:10pt; margin-top:-5px;">(LAST NAME, FIRST NAME, MIDDLE INITIAL)</span>
+          </span>, a
+          <br>
+          <span style="display:inline-block; width:100%; height:0.5em;"></span>
+          student taking up
+          <span style="display:inline-block; vertical-align:bottom; position:relative; top:6px;">
+            <span style="min-width:350px; border-bottom:1px solid black; text-align:center; display:inline-block;">{{ student.course_year_section }}</span>
+            <span style="display:block; text-align:center; font-size:10pt; margin-top:-5px;">(course, year and section)</span>
+          </span>
+          from the College of
+          <span style="min-width:385px; border-bottom:1px solid black; display:inline-block;">{{ form.college }}</span>
+          is a bonafide LSPU Student, not
+          <br>
+          <span style="display:inline-block; width:100%; height:0.5em;"></span>
+          under academic probation, not under disciplinary probation, and the elected/appointed
+          <br>
+          <span style="display:inline-block; width:100%; height:0.5em;"></span>
+          <div style="display: flex; align-items: flex-start; margin-top: 10px;">
+            <div style="flex: 1; min-width: 230px;">
+              <span style="display: block; min-width: 230px; border-bottom: 1px solid black; text-align: left;">{{ student.position_rank }}</span>
+              <span style="display: block; text-align: left; font-size: 10pt; margin-top: 2px; width: 120px;">(position/rank)</span>
+            </div>
+            <span style="margin: 0 10px;">of</span>
+            <div style="flex: 1; min-width: 315px; text-align: right;">
+              <span style="display: block; min-width: 315px; border-bottom: 1px solid black; text-align: right;">{{ form.organization_name }}</span>
+              <span style="display: block; text-align: right; font-size: 10pt; margin-top: 2px; width: 150px;">(organization)</span>
+            </div>
+            <span style="margin-left: 10px;">.</span>
+          </div>
+        </div>
 
       <!-- Signature Section -->
       <div class="signature-section" style="margin-top:100px;">
