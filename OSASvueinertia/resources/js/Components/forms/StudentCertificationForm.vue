@@ -210,6 +210,10 @@ const validateForm = () => {
   if (!form.dean_name.trim()) {
     errors.value.dean_name = 'Dean/Assoc. Dean Name is required';
   }
+
+  if (!form.director_name.trim()) {
+    errors.value.director_name = 'Director/Chairperson is required';
+  }
   
   // Validate students
   form.students.forEach((student, index) => {
@@ -422,6 +426,12 @@ const submit = () => {
                 <label class="block font-bold">Dean/Assoc. Dean Name</label>
                 <input v-model="form.dean_name" class="border p-2 w-full" required>
                 <p v-if="errors.dean_name" class="text-red-500 text-sm mt-1">{{ errors.dean_name }}</p>
+            </div>
+
+            <div>
+                <label class="block font-bold">Director/Chairperson, OSAS</label>
+                <input v-model="form.director_name" class="border p-2 w-full" required>
+                <p v-if="errors.director_name" class="text-red-500 text-sm mt-1">{{ errors.director_name }}</p>
             </div>
         </div>
 
