@@ -412,7 +412,7 @@
                 
                 <!-- Dean signature right under adviser -->
                 <div style="margin-top: 30px; text-align: center; margin-left: -420px;">
-                    <div class="signature-name">{{ $application->dean_name ?? '' }}</div>
+                    <div class="signature-name" style="width: 220px;">{{ $application->dean_name ?? '' }}</div>
                     <div class="signature-title">Dean/Assoc. Dean of College</div>
                 </div>
                 <div style="text-align: center; margin-top: 20px; margin-left: -45px;">Noted:</div>
