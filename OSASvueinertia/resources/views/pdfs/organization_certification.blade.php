@@ -342,7 +342,7 @@
                 <div class="header-title">Republic of the Philippines</div>
                 <img src="{{ public_path('images/lspu-name.png') }}" alt="Laguna State Polytechnic University" class="university-name"><br>
                 <div class="header-province">Province of Laguna</div>
-                <div class="header-office"><strong>OFFICE OF STUDENT AFFAIRS AND SERVICES</strong></div>
+                <p class="office-title" style="font-size:11pt; font-weight:bold; margin-bottom:10px; margin-top:12px;">OFFICE OF STUDENT AFFAIRS AND SERVICES</p>
             </div>
 
             <!-- Modified date-line section to center DATE under its underline -->
