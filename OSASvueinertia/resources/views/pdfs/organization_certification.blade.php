@@ -359,7 +359,7 @@
                     <span class="student-blank">{{ $certification->student_name ?? '' }}</span>
                 </div>
                 <div style="text-align: center; font-size: 11; margin-top: -5px;">
-                    (LAST NAME, FIRST NAME, MIDDLE INITIAL)
+                    <span style="font-size: 10pt;">(LAST NAME, FIRST NAME, MIDDLE INITIAL)</span>
                 </div>
             </div>, a 
             <br><br>
@@ -372,7 +372,7 @@
                     <span class="course-blank">{{ $certification->course_year_section ?? '' }}</span>
                 </div>
                 <div style="text-align: center; font-size: 11pt; margin-top: -5px;">
-                    <span style="position: relative; top: 5px;">(course, year and section)</span>
+                    <span style="font-size: 10pt; position: relative; top: 5px;">(course, year and section)</span>
                 </div>
             </div> from the College of <span class="signature-line" style="min-width:385px; border-bottom: 1px solid black; display: inline-block;">{{ $certification->college ?? ' ' }}</span> is a bonafide LSPU Student, not
             <br><br>
@@ -386,10 +386,10 @@
                 <span class="signature-line" style="min-width:230px; border-bottom: 1px solid black; display: inline-block;">{{ $certification->position_rank ?? ' ' }}</span> of the <span class="signature-line" style="min-width:315px; border-bottom: 1px solid black; display: inline-block;">{{ $certification->organization_name ?? ' ' }}</span>.
                 <br>
                 <div style="text-align: center; font-size: 11pt; margin-top: -5px; display: inline-block; width: 120px;">
-                    (position/rank)
+                    <span style="font-size: 10pt;">(position/rank)</span>
                 </div>
                 <div style="text-align: center; font-size: 11pt; margin-top: -5px; display: inline-block; width: 150px; margin-left: 30px;">
-                    (organization)
+                    <span style="font-size: 10pt;">(organization)</span>
                 </div>
             </div>
         </div>
