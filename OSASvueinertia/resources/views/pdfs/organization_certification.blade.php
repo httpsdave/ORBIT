@@ -380,7 +380,7 @@
             
             <div style="padding-left: 0px; text-align: left; margin-top: -35px;">
             <br><br>
-            under academic probation, not under disciplinary probation, and the elected/appointed
+            <span style="display: inline-block; margin-top: -15px;">under academic probation, not under disciplinary probation, and the elected/appointed</span>
             <br><br>
             <div style="margin-top: -35px;">
                 <span class="signature-line" style="min-width:230px; border-bottom: 1px solid black; display: inline-block;">{{ $certification->position_rank ?? ' ' }}</span> of the <span class="signature-line" style="min-width:315px; border-bottom: 1px solid black; display: inline-block;">{{ $certification->organization_name ?? ' ' }}</span>.
