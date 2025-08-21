@@ -294,15 +294,15 @@ const submit = () => {
             This certifies that
           </span>
           <span style="display:inline-block; vertical-align:bottom; position:relative; top:6px;">
-      <span style="min-width:435px; border-bottom:1px solid black; text-align:center; display:inline-block; position:relative; top:5px;">{{ student.student_name }}</span>
-      <span style="display:block; text-align:center; font-size:10pt; margin-top:2px;">(LAST NAME, FIRST NAME, MIDDLE INITIAL)</span>
+    <span style="min-width:435px; border-bottom:1px solid black; text-align:center; display:inline-block; position:relative; top:10px;">{{ student.student_name }}</span>
+      <span style="display:block; text-align:center; font-size:10pt; margin-top:6px;">(LAST NAME, FIRST NAME, MIDDLE INITIAL)</span>
           </span>, a
           <br>
           <span style="display:inline-block; width:100%; height:0.5em;"></span>
   <span style="text-indent:6em;">student taking up</span>
           <span style="display:inline-block; vertical-align:bottom; position:relative; top:6px;">
-      <span style="min-width:350px; border-bottom:1px solid black; text-align:center; display:inline-block; position:relative; top:5px;">{{ student.course_year_section }}</span>
-      <span style="display:block; text-align:center; font-size:10pt; margin-top:2px;">(course, year and section)</span>
+    <span style="min-width:350px; border-bottom:1px solid black; text-align:center; display:inline-block; position:relative; top:10px;">{{ student.course_year_section }}</span>
+      <span style="display:block; text-align:center; font-size:10pt; margin-top:6px;">(course, year and section)</span>
           </span>
           from the College of
         <span style="min-width:445px; border-bottom:1px solid black; display:inline-block;text-align:center">{{ form.college }}</span>
