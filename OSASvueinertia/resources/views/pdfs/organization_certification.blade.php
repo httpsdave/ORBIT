@@ -365,7 +365,7 @@
             <br><br>
             </div>
             
-            <div style="padding-left: 0px; text-align: left;">
+            <div style="padding-left: 0px; text-align: left; margin-top: -35px;">
             student taking up 
             <div style="display: inline-block; vertical-align: bottom; position: relative; top: 6px;">
                 <div>
