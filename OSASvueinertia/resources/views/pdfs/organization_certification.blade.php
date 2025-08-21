@@ -386,10 +386,10 @@
                 <span class="signature-line" style="min-width:230px; border-bottom: 1px solid black; display: inline-block;">{{ $certification->position_rank ?? ' ' }}</span> of the <span class="signature-line" style="min-width:315px; border-bottom: 1px solid black; display: inline-block;">{{ $certification->organization_name ?? ' ' }}</span>.
                 <br>
                 <div style="text-align: center; font-size: 11pt; margin-top: -5px; display: inline-block; width: 120px; margin-left: 45px;">
-                    <span style="font-size: 10pt;">(position/rank)</span>
+                    <span style="font-size: 10pt; margin-top: -3px; display: inline-block;">(position/rank)</span>
                 </div>
                     <div style="text-align: center; font-size: 11pt; margin-top: -5px; display: inline-block; width: 150px; margin-left: 200px;">
-                        <span style="font-size: 10pt;">(organization)</span>
+                        <span style="font-size: 10pt; margin-top: -3px; display: inline-block;">(organization)</span>
                 </div>
             </div>
         </div>
