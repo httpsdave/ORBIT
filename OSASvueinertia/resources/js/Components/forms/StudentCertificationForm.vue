@@ -25,16 +25,12 @@ const studentsPerPage = 1; // 1 student per page since each certification is a f
 
 // Add a function to add a new empty student
 const addStudent = () => {
-    form.students.push({
-        student_name: '',
-        course_year_section: '',
-        position_rank: '',
-        is_bonafide: false,
-        is_not_academic_probation: false,
-        is_not_disciplinary_probation: false,
-        has_position: false,
-        certification_date: '',
-    });
+  form.students.push({
+    student_name: '',
+    course_year_section: '',
+    position_rank: '',
+    certification_date: '',
+  });
 };
 
 // Add a function to remove a student
@@ -83,19 +79,15 @@ const handleCSVUpload = (event) => {
                 const courseYearSection = columns[1] || '';
                 const positionRank = columns[2] || '';
                 
-                // Add student if at least one field has data
-                if (studentName || courseYearSection) {
-                    form.students.push({
-                        student_name: studentName,
-                        course_year_section: courseYearSection,
-                        position_rank: positionRank,
-                        is_bonafide: false,
-                        is_not_academic_probation: false,
-                        is_not_disciplinary_probation: false,
-                        has_position: false,
-                        certification_date: '',
-                    });
-                }
+          // Add student if at least one field has data
+          if (studentName || courseYearSection) {
+            form.students.push({
+              student_name: studentName,
+              course_year_section: courseYearSection,
+              position_rank: positionRank,
+              certification_date: '',
+            });
+          }
             });
             
             // Reset to first page after upload
@@ -196,15 +188,6 @@ const form = useForm({
 // Initialize with data from props if available
 if (!form.students || form.students.length === 0) {
   addStudent();
-} else {
-  // Convert boolean values properly for checkboxes
-  form.students = form.students.map(student => ({
-    ...student,
-    is_bonafide: student.is_bonafide === true || student.is_bonafide === 1 || student.is_bonafide === '1',
-    is_not_academic_probation: student.is_not_academic_probation === true || student.is_not_academic_probation === 1 || student.is_not_academic_probation === '1',
-    is_not_disciplinary_probation: student.is_not_disciplinary_probation === true || student.is_not_disciplinary_probation === 1 || student.is_not_disciplinary_probation === '1',
-    has_position: student.has_position === true || student.has_position === 1 || student.has_position === '1',
-  }));
 }
 
 const validateForm = () => {
@@ -251,15 +234,11 @@ const submit = () => {
     emit('error', 'Please fill in all required fields.');
     return;
   }
-  // Cast boolean fields to 1/0 for backend compatibility
+  // Only send student fields that exist
   const data = {
     ...form.data(),
     students: form.students.map(student => ({
-      ...student,
-      is_bonafide: student.is_bonafide ? 1 : 0,
-      is_not_academic_probation: student.is_not_academic_probation ? 1 : 0,
-      is_not_disciplinary_probation: student.is_not_disciplinary_probation ? 1 : 0,
-      has_position: student.has_position ? 1 : 0,
+      ...student
     }))
   };
   if (props.isEdit) {
@@ -335,19 +314,10 @@ const submit = () => {
       <!-- 'student of this College is:' line -->
       <div class="college-is-text px-10 my-8 leading-[1.5]">student of this College is:</div>
 
-      <!-- Checkboxes as text-based -->
+      <!-- Position/Rank only -->
       <div class="checkbox-container mt-10 px-10">
         <div class="checkbox-item my-4">
-          <span class="inline-block w-6 text-center">({{ student.is_bonafide ? '/' : ' ' }})</span> a bonafide student;
-        </div>
-        <div class="checkbox-item my-4">
-          <span class="inline-block w-6 text-center">({{ student.is_not_academic_probation ? '/' : ' ' }})</span> not under academic probation;
-        </div>
-        <div class="checkbox-item my-4">
-          <span class="inline-block w-6 text-center">({{ student.is_not_disciplinary_probation ? '/' : ' ' }})</span> not under disciplinary probation;
-        </div>
-        <div class="checkbox-item my-4">
-          <span class="inline-block w-6 text-center">({{ student.has_position ? '/' : ' ' }})</span> position/rank in the organization
+          position/rank in the organization
           <span class="border-b border-black min-w-[150px] inline-block text-center mx-2">{{ student.position_rank }}</span>;
         </div>
       </div>
@@ -527,30 +497,7 @@ const submit = () => {
                         <input v-model="student.position_rank" class="border p-2 w-full">
                     </div>
                     
-                    <div class="md:col-span-2">
-                        <label class="block font-bold">Student Status</label>
-                        <div class="flex flex-col gap-2 mt-2">
-                            <label class="inline-flex items-center">
-                                <input type="checkbox" v-model="student.is_bonafide" class="mr-2">
-                                <span>Bonafide Student</span>
-                            </label>
-                            
-                            <label class="inline-flex items-center">
-                                <input type="checkbox" v-model="student.is_not_academic_probation" class="mr-2">
-                                <span>Not Under Academic Probation</span>
-                            </label>
-                            
-                            <label class="inline-flex items-center">
-                                <input type="checkbox" v-model="student.is_not_disciplinary_probation" class="mr-2">
-                                <span>Not Under Disciplinary Probation</span>
-                            </label>
-                            
-                            <label class="inline-flex items-center">
-                                <input type="checkbox" v-model="student.has_position" class="mr-2">
-                                <span>Has Position/Rank in Organization</span>
-                            </label>
-                        </div>
-                    </div>
+                    <!-- Student Status fields removed -->
                 </div>
             </div>
 
