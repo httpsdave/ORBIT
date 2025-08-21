@@ -356,7 +356,7 @@
             This certifies that 
             <div style="display: inline-block; vertical-align: bottom; position: relative; top: 6px;">
                 <div>
-                    <span class="student-blank">{{ $certification->student_name ?? '' }}</span>
+                    <span class="student-blank" style="min-width: 390px; border-bottom: 1px solid black; text-align: center;">{{ $certification->student_name ?? '' }}</span>
                 </div>
                 <div style="text-align: center; font-size: 11; margin-top: -5px;">
                     <span style="font-size: 10pt;">(LAST NAME, FIRST NAME, MIDDLE INITIAL)</span>
