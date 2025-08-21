@@ -88,11 +88,6 @@ const formData = computed(() => {
         student_name: '',
         course_year_section: '',
         position_rank: '',
-        is_bonafide: false,
-        is_not_academic_probation: false,
-        is_not_disciplinary_probation: false,
-        has_position: false,
-        certification_date: '',
       }));
       console.log('Edit.vue - Created default students:', data.students);
     } else {
@@ -185,6 +180,10 @@ const handleFormSubmitted = (data) => {
     onError: (errors) => {
       alert('Update failed. Please check your input.');
       console.log('Update errors:', errors);
+      // Log the detailed errors for debugging
+      Object.keys(errors).forEach(key => {
+        console.log(`${key}: ${errors[key]}`);
+      });
     }
   });
 };

@@ -181,6 +181,7 @@ const form = useForm({
   adviser_name: props.initialFormData.adviser_name || '',
   dean_name: props.initialFormData.dean_name || '',
   director_name: props.initialFormData.director_name || '',
+  coordinator_name: props.initialFormData.coordinator_name || '',
   college: props.initialFormData.college || '',
   students: props.initialFormData.students || [],
 });
@@ -288,7 +289,7 @@ const submit = () => {
       <!-- Date line -->
       <div class="date-line text-right mt-6 mb-2 pr-2">
         <div>
-          <span class="inline-block border-b border-black min-w-[200px] text-center">{{ student.certification_date }}</span>
+          <span class="inline-block border-b border-black min-w-[200px] text-center">{{ new Date().toLocaleDateString('en-CA') }}</span>
         </div>
         <div class="text-right pr-2">DATE</div>
       </div>
