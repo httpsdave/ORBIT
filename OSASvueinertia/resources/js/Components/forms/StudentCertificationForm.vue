@@ -30,6 +30,7 @@ const addStudent = () => {
     course_year_section: '',
     position_rank: '',
     certification_date: '',
+    college: form.college || '',
   });
 };
 
@@ -182,6 +183,7 @@ const form = useForm({
   adviser_name: props.initialFormData.adviser_name || '',
   dean_name: props.initialFormData.dean_name || '',
   director_name: props.initialFormData.director_name || '',
+  college: props.initialFormData.college || '',
   students: props.initialFormData.students || [],
 });
 
@@ -214,13 +216,14 @@ const validateForm = () => {
     if (!student.certification_date) {
       errors.value[`student_${index}_certification_date`] = 'Certification Date is required';
     }
-    
     if (!student.student_name.trim()) {
       errors.value[`student_${index}_name`] = 'Student Name is required';
     }
-    
     if (!student.course_year_section.trim()) {
       errors.value[`student_${index}_course`] = 'Course/Year and Section is required';
+    }
+    if (!form.college.trim()) {
+      errors.value.college = 'College is required';
     }
   });
   
@@ -234,12 +237,13 @@ const submit = () => {
     emit('error', 'Please fill in all required fields.');
     return;
   }
-  // Only send student fields that exist, and ensure organization_name is included in each student
+  // Only send student fields that exist, and ensure organization_name and college are included in each student
   const data = {
     ...form.data(),
     students: form.students.map(student => ({
       ...student,
-      organization_name: form.organization_name
+      organization_name: form.organization_name,
+      college: form.college
     }))
   };
   if (props.isEdit) {
@@ -390,7 +394,12 @@ const submit = () => {
     <div class="mt-8 border-t pt-6">
         <h3 class="text-lg font-bold mb-4">Form Details</h3>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label class="block font-bold">College</label>
+        <input v-model="form.college" class="border p-2 w-full" required>
+        <p v-if="errors.college" class="text-red-500 text-sm mt-1">{{ errors.college }}</p>
+      </div>
             <div>
                 <label class="block font-bold">Organization Name</label>
                 <input v-model="form.organization_name" class="border p-2 w-full" required>
