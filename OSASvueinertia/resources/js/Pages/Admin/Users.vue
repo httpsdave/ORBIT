@@ -520,47 +520,51 @@ const deleteUser = () => {
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                         </svg>
                     </div>
-                    <h2 class="text-base sm:text-lg font-medium text-gray-900 dark:text-gray-100">
+                    <h2 class="text-base sm:text-lg font-medium text-gray-900 dark:text-gray-200">
                         Delete User
                     </h2>
                 </div>
 
-                <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                <p class="mt-1 text-sm text-gray-700 dark:text-gray-300">
                     Are you sure you want to delete this user? This action cannot be undone.
                 </p>
 
-                <div v-if="userToDelete" class="mt-4 p-3 sm:p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
-                    <p class="mb-1 text-sm"><span class="font-medium text-gray-700 dark:text-gray-300">Name:</span> {{ userToDelete.name }}</p>
-                    <p class="mb-1 text-sm"><span class="font-medium text-gray-700 dark:text-gray-300">Email:</span> <span class="break-all">{{ userToDelete.email }}</span></p>
-                    <p v-if="userToDelete.role" class="text-sm"><span class="font-medium text-gray-700 dark:text-gray-300">Role:</span> {{ userToDelete.role.name }}</p>
+                <div v-if="userToDelete" class="mt-4 p-3 sm:p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                    <p class="mb-1 text-sm"><span class="font-medium text-gray-800 dark:text-gray-100">Name:</span> <span class="text-gray-700 dark:text-gray-200">{{ userToDelete.name }}</span></p>
+                    <p class="mb-1 text-sm"><span class="font-medium text-gray-800 dark:text-gray-100">Email:</span> <span class="break-all text-gray-700 dark:text-gray-200">{{ userToDelete.email }}</span></p>
+                    <p v-if="userToDelete.role" class="text-sm"><span class="font-medium text-gray-800 dark:text-gray-100">Role:</span> <span class="text-gray-700 dark:text-gray-200">{{ userToDelete.role.name }}</span></p>
                 </div>
 
                 <!-- Confirmation input -->
                 <div class="mt-4">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Confirmation</label>
+                    <label class="block text-sm font-medium text-gray-800 dark:text-gray-100 mb-2">Confirmation</label>
                     <input
                         v-model="deleteConfirmation"
                         type="text"
-                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 text-sm"
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 text-sm"
                         :placeholder="userToDelete ? `Type '${userToDelete.email}' to confirm` : ''"
                     />
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    <p class="text-xs text-gray-600 dark:text-gray-300 mt-1">
                         Type <strong class="break-all">{{ userToDelete ? userToDelete.email : '' }}</strong> to confirm this action
                     </p>
                 </div>
 
                 <div class="mt-4 sm:mt-6 flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-2">
-                    <SecondaryButton @click="() => { showingDeleteModal = false; deleteConfirmation = ''; }" class="w-full sm:w-auto order-2 sm:order-1">
+                    <button
+                        type="button"
+                        @click="() => { showingDeleteModal = false; deleteConfirmation = ''; }"
+                        class="w-full sm:w-auto order-2 sm:order-1 inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-200 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600 shadow-sm"
+                    >
                         Cancel
-                    </SecondaryButton>
-                    <DangerButton
-                        class="bg-red-500 hover:bg-red-600 w-full sm:w-auto order-1 sm:order-2"
-                        :class="{ 'opacity-25': deleteForm.processing }"
-                        :disabled="deleteForm.processing || deleteConfirmation !== (userToDelete ? userToDelete.email : '')"
+                    </button>
+                    <button
+                        type="button"
                         @click="deleteUser"
+                        :disabled="deleteForm.processing || deleteConfirmation !== (userToDelete ? userToDelete.email : '')"
+                        :class="['w-full sm:w-auto order-1 sm:order-2 inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-200 bg-red-600 text-white hover:bg-red-700 border border-red-600 shadow-sm', { 'opacity-25 cursor-not-allowed': deleteForm.processing || deleteConfirmation !== (userToDelete ? userToDelete.email : '') }]"
                     >
                         Delete User
-                    </DangerButton>
+                    </button>
                 </div>
             </div>
         </Modal>
