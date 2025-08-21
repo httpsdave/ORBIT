@@ -273,7 +273,7 @@ const submit = () => {
         <div class="font-[Calibri] text-base mb-0">Republic of the Philippines</div>
         <div class="text-xl font-bold university-name mb-0">Laguna State Polytechnic University</div>
         <div class="font-[Calibri] text-base mb-0">Province of Laguna</div>
-        <div class="text-xl font-bold mt-4 mb-0">OFFICE OF STUDENT AFFAIRS AND SERVICES</div>
+  <div class="text-xl font-bold mb-0" style="font-size:11pt; margin-top:11px; margin-bottom:0; position:relative; top:-5px;">OFFICE OF STUDENT AFFAIRS AND SERVICES</div>
       </div>
 
       <!-- Date line -->
@@ -305,7 +305,7 @@ const submit = () => {
             <span style="display:block; text-align:center; font-size:10pt; margin-top:-3px;">(course, year and section)</span>
           </span>
           from the College of
-          <span style="min-width:385px; border-bottom:1px solid black; display:inline-block;text-align:center">{{ form.college }}</span>
+        <span style="min-width:445px; border-bottom:1px solid black; display:inline-block;text-align:center">{{ form.college }}</span>
           is a bonafide LSPU Student, not
           <br>
           <span style="display:inline-block; width:100%; height:0.5em;"></span>
