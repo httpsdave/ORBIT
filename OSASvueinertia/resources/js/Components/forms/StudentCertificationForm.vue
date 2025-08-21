@@ -277,16 +277,19 @@ const submit = () => {
       </div>
 
       <!-- Date line -->
-      <div class="date-line text-right mt-6 mb-2 pr-2">
-        <span class="inline-block border-b border-black min-w-[200px] text-center">{{ new Date().toLocaleDateString('en-CA') }}</span>
-        <span class="text-right pr-2">Date</span>
+      <div class="date-line" style="text-align:right; margin-bottom:20px;">
+        <div style="display:inline-block; text-align:right;">
+          <span style="display:inline-block; min-width:120px; border-bottom:1px solid black; padding-bottom:2px; text-align:center;">{{ new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) }}</span>
+          <br>
+          <span style="display:inline-block; text-align:center; width:100%; margin-top:2px;">Date</span>
+        </div>
       </div>
 
       <!-- Certification Title -->
       <div class="cert-title text-center text-2xl font-bold my-8">CERTIFICATION</div>
 
       <!-- Certification Content -->
-      <div class="cert-content text-justify px-10 mb-2" style="line-height:1.5;">
+      <div class="cert-content" style="text-align:justify; margin:20px 0; line-height:1.5; padding-left:40px; padding-right:40px;">
         This certifies that
         <span style="display:inline-block; vertical-align:bottom; position:relative; top:6px;">
           <span style="min-width:390px; border-bottom:1px solid black; text-align:center; display:inline-block;">{{ student.student_name }}</span>
