@@ -266,17 +266,7 @@ const submit = () => {
 
 <template>
   <div class="mt-6 form-content relative font-[Times_New_Roman]">
-    <!-- REMOVE: <StatusBanner ... /> -->
-    <!-- Student certification preview with pagination -->
     <div v-for="(student, index) in currentPageStudents" :key="startIndex + index" class="student-certification-page">
-      <!-- Page header for additional pages -->
-      <div v-if="currentPage > 1" class="page-break-header text-center mt-8 pt-8 border-t-2">
-        <p class="text-sm font-normal mb-0">Republic of the Philippines</p>
-        <p class="text-base font-bold university-name mb-0">Laguna State Polytechnic University</p>
-        <p class="text-sm mb-0">Province of Laguna</p>
-        <p class="text-sm font-bold mb-0 mt-3">OFFICE OF STUDENT AFFAIRS AND SERVICES</p>
-      </div>
-
       <!-- Header -->
       <div class="header text-center relative mb-2">
         <img src="/images/lspu-logo.png" alt="LSPU Logo" class="absolute top-[-0.5cm] left-[-2cm] w-[250px] h-auto">
@@ -288,57 +278,59 @@ const submit = () => {
 
       <!-- Date line -->
       <div class="date-line text-right mt-6 mb-2 pr-2">
-        <div>
-          <span class="inline-block border-b border-black min-w-[200px] text-center">{{ new Date().toLocaleDateString('en-CA') }}</span>
-        </div>
-        <div class="text-right pr-2">DATE</div>
+        <span class="inline-block border-b border-black min-w-[200px] text-center">{{ new Date().toLocaleDateString('en-CA') }}</span>
+        <span class="text-right pr-2">Date</span>
       </div>
 
       <!-- Certification Title -->
       <div class="cert-title text-center text-2xl font-bold my-8">CERTIFICATION</div>
 
-      <!-- Certification Content: Two lines, long underlines, labels below, left-aligned -->
-      <div class="px-10 mb-2">
-        <div class="flex items-center flex-wrap">
-          <span>This&nbsp;certifies&nbsp;that</span>
-          <span class="relative inline-block align-middle mx-2">
-            <span class="border-b border-black min-w-[300px] px-2 text-center inline-block">{{ student.student_name }}</span>
-            <span class="absolute left-1/2 -translate-x-1/2 top-full text-xs font-bold mt-[-2px] whitespace-nowrap">student name</span>
-          </span>
-          <span>, a</span>
-        </div>
-        <div class="flex items-center flex-wrap mt-6">
-          <span class="relative inline-block align-middle mx-2">
-            <span class="border-b border-black min-w-[300px] px-2 text-center inline-block">{{ student.course_year_section }}</span>
-            <span class="absolute left-1/2 -translate-x-1/2 top-full text-xs font-bold mt-[-2px] whitespace-nowrap">course/year and section</span>
-          </span>
-          <span>.</span>
-        </div>
+      <!-- Certification Content -->
+      <div class="cert-content text-justify px-10 mb-2" style="line-height:1.5;">
+        This certifies that
+        <span style="display:inline-block; vertical-align:bottom; position:relative; top:6px;">
+          <span style="min-width:390px; border-bottom:1px solid black; text-align:center; display:inline-block;">{{ student.student_name }}</span>
+          <span style="display:block; text-align:center; font-size:10pt; margin-top:-5px;">(LAST NAME, FIRST NAME, MIDDLE INITIAL)</span>
+        </span>, a
+        <br><br>
+        student taking up
+        <span style="display:inline-block; vertical-align:bottom; position:relative; top:6px;">
+          <span style="min-width:350px; border-bottom:1px solid black; text-align:center; display:inline-block;">{{ student.course_year_section }}</span>
+          <span style="display:block; text-align:center; font-size:10pt; margin-top:-5px;">(course, year and section)</span>
+        </span>
+        from the College of
+        <span style="min-width:385px; border-bottom:1px solid black; display:inline-block;">{{ form.college }}</span>
+        is a bonafide LSPU Student, not
+        <br><br>
+        under academic probation, not under disciplinary probation, and the elected/appointed
+        <br><br>
+        <span style="min-width:230px; border-bottom:1px solid black; display:inline-block;">{{ student.position_rank }}</span>
+        of the
+        <span style="min-width:315px; border-bottom:1px solid black; display:inline-block;">{{ form.organization_name }}</span>.
+        <br>
+        <span style="display:inline-block; text-align:center; font-size:10pt; margin-top:-3px; width:120px; margin-left:45px;">(position/rank)</span>
+        <span style="display:inline-block; text-align:center; font-size:10pt; margin-top:-3px; width:150px; margin-left:200px;">(organization)</span>
       </div>
 
-      <!-- 'student of this College is:' line -->
-      <div class="college-is-text px-10 my-8 leading-[1.5]">student of this College is:</div>
-
-      <!-- Position/Rank only -->
-      <div class="checkbox-container mt-10 px-10">
-        <div class="checkbox-item my-4">
-          position/rank in the organization
-          <span class="border-b border-black min-w-[150px] inline-block text-center mx-2">{{ student.position_rank }}</span>;
-        </div>
-      </div>
-
-      <!-- Noted and Signatures -->
-      <div class="signature-section relative mt-24">
-        <div class="noted-section pl-20 mb-10">
-          <p class="font-bold mb-8">Noted:</p>
-          <div class="faculty-adviser-signature mt-[-15px]">
-            <div class="border-b border-black w-[200px] text-center ml-[-40px]">{{ form.adviser_name }}</div>
-            <div class="text-left text-base mt-1 ml-2">Faculty Adviser(s)</div>
+      <!-- Signature Section -->
+      <div class="signature-section" style="margin-top:100px;">
+        <div class="college-is-text" style="padding-left:10px; margin-bottom:40px;">Certified true and correct:</div>
+        <div class="noted-section" style="padding-left:40px;">
+          <div class="faculty-adviser-signature" style="margin-top:0; margin-left:-42px;">
+            <div style="text-align:left;">
+              <span style="display:inline-block; min-width:200px; width:auto; border-bottom:1px solid black; padding-bottom:2px; text-align:center; margin-left:0px;">{{ form.adviser_name }}</span>
+              <span style="display:block; text-align:left; margin-left:25px;">Organization Adviser(s)</span>
+            </div>
           </div>
+          <div style="margin-top:40px; text-align:left; margin-left:-42px;">
+            <span style="display:inline-block; min-width:220px; width:auto; border-bottom:1px solid black; padding-bottom:2px; text-align:center;">{{ form.dean_name }}</span>
+            <span style="display:block; text-align:left; margin-left:25px;">Dean/Assoc. Dean of College</span>
+          </div>
+          <div style="text-align:center; margin-top:40px; margin-left:0;">Noted:</div>
         </div>
-        <div class="dean-signature-section text-center mt-24 mb-8">
-          <div class="border-b border-black w-[200px] mx-auto">{{ form.dean_name }}</div>
-          <div class="text-center text-base mt-1">Dean/Assoc. Dean of College</div>
+        <div style="margin-top:40px; text-align:center;">
+          <span style="min-width:415px; border-bottom:1px solid black; display:inline-block; margin-bottom:0px;">{{ form.director_name }}</span>
+          <span style="display:block; text-align:center; margin-top:2px;">Director/Chairperson, Office of Student Affairs and Services</span>
         </div>
       </div>
 
