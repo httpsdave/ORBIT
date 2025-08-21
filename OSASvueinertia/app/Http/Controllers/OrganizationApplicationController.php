@@ -155,7 +155,7 @@ class OrganizationApplicationController extends Controller
                 'students.*.is_not_academic_probation' => 'nullable|boolean',
                 'students.*.is_not_disciplinary_probation' => 'nullable|boolean',
                 'students.*.has_position' => 'nullable|boolean',
-                'students.*.certification_date' => 'required|date',
+                // certification_date removed from validation
                 'coordinator_name' => 'nullable|string|max:255',
             ]);
             
@@ -317,6 +317,7 @@ class OrganizationApplicationController extends Controller
         // Save student certifications if this is the Student Certification form
         if ($request->form_type === 'LSPU-OSAS-SF-006' && $request->has('students')) {
             foreach ($data['students'] as $studentData) {
+                $studentData['certification_date'] = now();
                 $application->studentCertifications()->create($studentData);
             }
         }
@@ -465,7 +466,7 @@ class OrganizationApplicationController extends Controller
                 'students.*.is_not_academic_probation' => 'nullable|boolean',
                 'students.*.is_not_disciplinary_probation' => 'nullable|boolean',
                 'students.*.has_position' => 'nullable|boolean',
-                'students.*.certification_date' => 'required|date',
+                // certification_date removed from validation
             ]);
         } elseif ($application->form_type === 'LSPU-OSAS-SF-007') {
             $validationRules = array_merge($validationRules, [
@@ -611,6 +612,7 @@ class OrganizationApplicationController extends Controller
             
             // Create new student certifications
             foreach ($request->students as $studentData) {
+                $studentData['certification_date'] = now();
                 $application->studentCertifications()->create($studentData);
             }
         }

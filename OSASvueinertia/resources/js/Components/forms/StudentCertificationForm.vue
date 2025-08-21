@@ -29,7 +29,6 @@ const addStudent = () => {
     student_name: '',
     course_year_section: '',
     position_rank: '',
-    certification_date: '',
     college: form.college || '',
   });
 };
@@ -86,7 +85,6 @@ const handleCSVUpload = (event) => {
               student_name: studentName,
               course_year_section: courseYearSection,
               position_rank: positionRank,
-              certification_date: '',
             });
           }
             });
@@ -217,9 +215,6 @@ const validateForm = () => {
   
   // Validate students
   form.students.forEach((student, index) => {
-    if (!student.certification_date) {
-      errors.value[`student_${index}_certification_date`] = 'Certification Date is required';
-    }
     if (!student.student_name.trim()) {
       errors.value[`student_${index}_name`] = 'Student Name is required';
     }
@@ -494,11 +489,7 @@ const submit = () => {
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block font-bold">Certification Date</label>
-                        <input type="date" v-model="student.certification_date" class="border p-2 w-full" required>
-                        <p v-if="errors[`student_${startIndex + idx}_certification_date`]" class="text-red-500 text-sm mt-1">{{ errors[`student_${startIndex + idx}_certification_date`] }}</p>
-                    </div>
+                    <!-- Certification Date input removed -->
 
           <div>
             <label class="block font-bold">Student Name (Last name, First Name, M.I.)</label>
