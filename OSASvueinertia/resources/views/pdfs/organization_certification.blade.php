@@ -403,10 +403,10 @@
             
             <div class="noted-section" style="padding-left: 40px;">
                 <!-- Faculty adviser signature -->
-                <div class="faculty-adviser-signature" style="margin-top: -15px; margin-left: 0px;">
-                    <div style="text-align: center;">
-                        <div class="signature-name-adviser" style="margin-left: -30px;">{{ $application->adviser_name ?? 'Sample Data' }}</div>
-                        <div class="signature-title-adviser" style="text-align: center; margin-left: -415px;">Organization Adviser(s)</div>
+                <div class="faculty-adviser-signature" style="margin-top: -15px; margin-left: -42px;">
+                    <div style="text-align: left;">
+                        <div class="signature-name-adviser" style="display: inline-block; min-width: 200px; width: auto; border-bottom: 1px solid black; padding-bottom: 2px; text-align: center; margin-left: 0px;">{{ $application->adviser_name ?? 'Sample Data' }}</div>
+                        <div class="signature-title-adviser" style="text-align: left; margin-left: 25px;">Organization Adviser(s)</div>
                     </div>
                 </div>
                 
