@@ -273,8 +273,11 @@ const submit = () => {
         <div class="font-[Calibri] text-base mb-0">Republic of the Philippines</div>
         <div class="text-xl font-bold university-name mb-0">Laguna State Polytechnic University</div>
         <div class="font-[Calibri] text-base mb-0">Province of Laguna</div>
-  <div class="text-xl font-bold mb-0" style="font-size:11pt; margin-top:11px; margin-bottom:0; position:relative; top:-5px;">OFFICE OF STUDENT AFFAIRS AND SERVICES</div>
+        <div class="text-xl font-bold mb-0" style="font-size:11pt; margin-top:11px; margin-bottom:0; position:relative; top:-5px;">OFFICE OF STUDENT AFFAIRS AND SERVICES</div>
       </div>
+
+      <!-- Certification Title -->
+  <div class="cert-title text-center font-bold my-8" style="margin-top:0px; font-size:14pt;">CERTIFICATION</div>
 
       <!-- Date line -->
       <div class="date-line" style="text-align:right; margin-bottom:20px;">
@@ -285,22 +288,19 @@ const submit = () => {
         </div>
       </div>
 
-      <!-- Certification Title -->
-      <div class="cert-title text-center text-2xl font-bold my-8">CERTIFICATION</div>
-
       <!-- Certification Content -->
         <div class="cert-content" style="text-align:justify; margin:20px 0; line-height:1.5; padding-left:0.5cm; padding-right:0;">
           <span style="display:inline-block; text-indent:6em;">
             This certifies that
           </span>
-          <span style="display:inline-block; vertical-align:bottom; position:relative; top:6px;">
+          <span style="display:inline-block; vertical-align:bottom; position:relative; top:10px;">
     <span style="min-width:435px; border-bottom:1px solid black; text-align:center; display:inline-block; position:relative; top:10px;">{{ student.student_name }}</span>
       <span style="display:block; text-align:center; font-size:10pt; margin-top:6px;">(LAST NAME, FIRST NAME, MIDDLE INITIAL)</span>
           </span>, a
           <br>
           <span style="display:inline-block; width:100%; height:0.5em;"></span>
   <span style="text-indent:6em;">student taking up</span>
-          <span style="display:inline-block; vertical-align:bottom; position:relative; top:6px;">
+          <span style="display:inline-block; vertical-align:bottom; position:relative; top:10px;">
     <span style="min-width:350px; border-bottom:1px solid black; text-align:center; display:inline-block; position:relative; top:10px;">{{ student.course_year_section }}</span>
       <span style="display:block; text-align:center; font-size:10pt; margin-top:6px;">(course, year and section)</span>
           </span>
