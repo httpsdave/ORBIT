@@ -415,10 +415,11 @@
                     <div class="signature-name">{{ $application->dean_name ?? '' }}</div>
                     <div class="signature-title">Dean/Assoc. Dean of College</div>
                 </div>
+                <div style="text-align: center; margin-top: 20px; margin-left: -45px;">Noted:</div>
             </div>
             
             <!-- Director/Chairperson signature section -->
-            <div style="margin-top: -30px; text-align: center;">
+            <div style="margin-top: -65px; text-align: center;">
                 <div class="signature-name" style="min-width: 415px; margin-bottom: 0px;">{{ $application->director_name ?? '' }}</div>
                 <div class="signature-title" style="margin-top: 2px;">Director/Chairperson, Office of Student Affairs and Services</div>
             </div>
