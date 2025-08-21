@@ -510,20 +510,20 @@ const submit = () => {
                         <p v-if="errors[`student_${startIndex + idx}_certification_date`]" class="text-red-500 text-sm mt-1">{{ errors[`student_${startIndex + idx}_certification_date`] }}</p>
                     </div>
 
-                    <div>
-                        <label class="block font-bold">Student Name</label>
-                        <input v-model="student.student_name" class="border p-2 w-full" required>
-                        <p v-if="errors[`student_${startIndex + idx}_name`]" class="text-red-500 text-sm mt-1">{{ errors[`student_${startIndex + idx}_name`] }}</p>
-                    </div>
+          <div>
+            <label class="block font-bold">Student Name (Last name, First Name, M.I.)</label>
+            <input v-model="student.student_name" class="border p-2 w-full" required>
+            <p v-if="errors[`student_${startIndex + idx}_name`]" class="text-red-500 text-sm mt-1">{{ errors[`student_${startIndex + idx}_name`] }}</p>
+          </div>
 
                     <div>
-                        <label class="block font-bold">Course/Year and Section</label>
+                        <label class="block font-bold">course, year and section</label>
                         <input v-model="student.course_year_section" class="border p-2 w-full" required>
                         <p v-if="errors[`student_${startIndex + idx}_course`]" class="text-red-500 text-sm mt-1">{{ errors[`student_${startIndex + idx}_course`] }}</p>
                     </div>
 
                     <div>
-                        <label class="block font-bold">Position/Rank in Organization</label>
+                        <label class="block font-bold">Position/rank</label>
                         <input v-model="student.position_rank" class="border p-2 w-full">
                     </div>
                     
