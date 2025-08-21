@@ -289,15 +289,17 @@ const submit = () => {
       <div class="cert-title text-center text-2xl font-bold my-8">CERTIFICATION</div>
 
       <!-- Certification Content -->
-        <div class="cert-content" style="text-align:justify; margin:20px 0; line-height:1.5; padding-left:40px; padding-right:40px;">
-          This certifies that
+        <div class="cert-content" style="text-align:justify; margin:20px 0; line-height:1.5; padding-left:0.5cm; padding-right:0;">
+          <span style="display:inline-block; text-indent:6em;">
+            This certifies that
+          </span>
           <span style="display:inline-block; vertical-align:bottom; position:relative; top:6px;">
-            <span style="min-width:390px; border-bottom:1px solid black; text-align:center; display:inline-block;">{{ student.student_name }}</span>
+            <span style="min-width:435px; border-bottom:1px solid black; text-align:center; display:inline-block;">{{ student.student_name }}</span>
             <span style="display:block; text-align:center; font-size:10pt; margin-top:-5px;">(LAST NAME, FIRST NAME, MIDDLE INITIAL)</span>
           </span>, a
           <br>
           <span style="display:inline-block; width:100%; height:0.5em;"></span>
-          student taking up
+  <span style="text-indent:6em;">student taking up</span>
           <span style="display:inline-block; vertical-align:bottom; position:relative; top:6px;">
             <span style="min-width:350px; border-bottom:1px solid black; text-align:center; display:inline-block;">{{ student.course_year_section }}</span>
             <span style="display:block; text-align:center; font-size:10pt; margin-top:-5px;">(course, year and section)</span>
@@ -307,7 +309,7 @@ const submit = () => {
           is a bonafide LSPU Student, not
           <br>
           <span style="display:inline-block; width:100%; height:0.5em;"></span>
-          under academic probation, not under disciplinary probation, and the elected/appointed
+  <span style="text-indent:6em;">under academic probation, not under disciplinary probation, and the elected/appointed</span>
           <br>
           <span style="display:inline-block; width:100%; height:0.5em;"></span>
           <div style="display: flex; align-items: flex-start; margin-top: 10px;">
