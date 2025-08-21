@@ -383,7 +383,7 @@
             <span style="display: inline-block; margin-top: -15px;">under academic probation, not under disciplinary probation, and the elected/appointed</span>
             <br><br>
             <div style="margin-top: -50px;">
-                <span class="signature-line" style="min-width:230px; border-bottom: 1px solid black; display: inline-block;">{{ $certification->position_rank ?? ' ' }}</span> of the <span class="signature-line" style="min-width:315px; border-bottom: 1px solid black; display: inline-block;">{{ $certification->organization_name ?? 'Sample Data' }}</span>.
+                <span class="signature-line" style="min-width:230px; border-bottom: 1px solid black; display: inline-block;">{{ $certification->position_rank ?? ' ' }}</span> of the <span class="signature-line" style="min-width:315px; border-bottom: 1px solid black; display: inline-block;">{{ $application->organization_name ?? 'Sample Data' }}</span>.
                 <br>
                 <div style="text-align: center; font-size: 11pt; margin-top: -5px; display: inline-block; width: 120px; margin-left: 45px;">
                     <span style="font-size: 10pt; margin-top: -3px; display: inline-block;">(position/rank)</span>

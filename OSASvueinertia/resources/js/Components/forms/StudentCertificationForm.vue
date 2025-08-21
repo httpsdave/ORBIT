@@ -234,11 +234,12 @@ const submit = () => {
     emit('error', 'Please fill in all required fields.');
     return;
   }
-  // Only send student fields that exist
+  // Only send student fields that exist, and ensure organization_name is included in each student
   const data = {
     ...form.data(),
     students: form.students.map(student => ({
-      ...student
+      ...student,
+      organization_name: form.organization_name
     }))
   };
   if (props.isEdit) {
