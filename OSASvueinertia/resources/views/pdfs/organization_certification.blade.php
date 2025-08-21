@@ -349,7 +349,7 @@
             <!-- Modified date-line section to center DATE under its underline -->
             <div class="date-line">
                 <p><u>{{ \Carbon\Carbon::parse($certification->certification_date)->format('F d, Y') }}</u></p>
-                <p style="text-align: right; margin-right: 15px;">DATE</p>
+                    <p style="text-align: right; margin-right: 37px;">Date</p>
             </div>
 
             <div class="cert-content">
