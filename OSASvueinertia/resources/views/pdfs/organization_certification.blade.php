@@ -412,8 +412,8 @@
                 
                 <!-- Dean signature right under adviser -->
                 <div style="margin-top: 30px; text-align: center; margin-left: -420px;">
-                    <div class="signature-name" style="width: 220px;">{{ $application->dean_name ?? 'Sample Data' }}</div>
-                    <div class="signature-title">Dean/Assoc. Dean of College</div>
+                    <div class="signature-name" style="display: inline-block; min-width: 220px; width: auto; border-bottom: 1px solid black; padding-bottom: 2px; text-align: center;">{{ $application->dean_name ?? 'Sample Data' }}</div>
+                    <div class="signature-title" style="text-align: center;">Dean/Assoc. Dean of College</div>
                 </div>
                 <div style="text-align: center; margin-top: 20px; margin-left: -45px;">Noted:</div>
             </div>
