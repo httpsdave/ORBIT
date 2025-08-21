@@ -127,7 +127,7 @@
                   <select
                     v-model="selectedMonth"
                     @change="navigateToDate"
-                    class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                    class="w-full px-3 py-2 pr-8 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 appearance-none"
                   >
                     <option v-for="(month, index) in months" :key="index" :value="index">
                       {{ month }}
@@ -136,7 +136,7 @@
                   <select
                     v-model="selectedYear"
                     @change="navigateToDate"
-                    class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                    class="w-full px-3 py-2 pr-8 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 appearance-none"
                   >
                     <option v-for="year in yearOptions" :key="year" :value="year">
                       {{ year }}
@@ -164,7 +164,8 @@
                     <select
                       v-model="selectedMonth"
                       @change="navigateToDate"
-                      class="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 min-w-0"
+                      class="px-3 py-1.5 pr-8 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 min-w-0 appearance-none"
+                      style="min-width: 110px;"
                     >
                       <option v-for="(month, index) in months" :key="index" :value="index">
                         {{ month }}
@@ -173,7 +174,8 @@
                     <select
                       v-model="selectedYear"
                       @change="navigateToDate"
-                      class="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 min-w-0"
+                      class="px-3 py-1.5 pr-8 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 min-w-0 appearance-none"
+                      style="min-width: 80px;"
                     >
                       <option v-for="year in yearOptions" :key="year" :value="year">
                         {{ year }}
@@ -470,6 +472,27 @@
   </div>
 </template>
 <style scoped>
+    /* Custom dropdown arrow styles to prevent overlap */
+    select {
+      background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+      background-position: right 8px center;
+      background-repeat: no-repeat;
+      background-size: 16px 16px;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+    }
+
+    /* Dark mode dropdown arrow */
+    .dark select {
+      background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+    }
+
+    /* Ensure proper spacing for dropdown content */
+    select option {
+      padding: 8px 12px;
+    }
+
     /* Ensure active (selected) calendar view button has white text on blue background in both light and dark mode */
     :deep(.fc .fc-button.fc-button-active),
     :deep(.fc .fc-button:active),
