@@ -442,36 +442,38 @@ const validateForm = () => {
     };
 
     // Character limit validation
-    const MAX_ACTIVITY_CHAR = 144;
+    const MAX_CHAR_GENERAL = 144;
+    const MAX_CHAR_ACTIVITIES = 99;
+    const MAX_CHAR_PERSONS = 99;
     if (!activity.objective || !stripHtml(activity.objective).trim()) {
       errors.value.activities[index].objective = 'Objective is required';
       isValid = false;
-    } else if (stripHtml(activity.objective).length > MAX_ACTIVITY_CHAR) {
-      errors.value.activities[index].objective = `Objective must be ${MAX_ACTIVITY_CHAR} characters or less.`;
+    } else if (stripHtml(activity.objective).length > MAX_CHAR_GENERAL) {
+      errors.value.activities[index].objective = `Objective must be ${MAX_CHAR_GENERAL} characters or less.`;
       isValid = false;
     }
 
     if (!activity.name || !stripHtml(activity.name).trim()) {
       errors.value.activities[index].name = 'Activity name is required';
       isValid = false;
-    } else if (stripHtml(activity.name).length > MAX_ACTIVITY_CHAR) {
-      errors.value.activities[index].name = `Activity name must be ${MAX_ACTIVITY_CHAR} characters or less.`;
+    } else if (stripHtml(activity.name).length > MAX_CHAR_ACTIVITIES) {
+      errors.value.activities[index].name = `Activity name must be ${MAX_CHAR_ACTIVITIES} characters or less.`;
       isValid = false;
     }
 
     if (!activity.description || !stripHtml(activity.description).trim()) {
       errors.value.activities[index].description = 'Description is required';
       isValid = false;
-    } else if (stripHtml(activity.description).length > MAX_ACTIVITY_CHAR) {
-      errors.value.activities[index].description = `Description must be ${MAX_ACTIVITY_CHAR} characters or less.`;
+    } else if (stripHtml(activity.description).length > MAX_CHAR_GENERAL) {
+      errors.value.activities[index].description = `Description must be ${MAX_CHAR_GENERAL} characters or less.`;
       isValid = false;
     }
 
     if (!activity.persons_involved || !stripHtml(activity.persons_involved).trim()) {
       errors.value.activities[index].persons_involved = 'Persons involved is required';
       isValid = false;
-    } else if (stripHtml(activity.persons_involved).length > MAX_ACTIVITY_CHAR) {
-      errors.value.activities[index].persons_involved = `Persons involved must be ${MAX_ACTIVITY_CHAR} characters or less.`;
+    } else if (stripHtml(activity.persons_involved).length > MAX_CHAR_PERSONS) {
+      errors.value.activities[index].persons_involved = `Persons involved must be ${MAX_CHAR_PERSONS} characters or less.`;
       isValid = false;
     }
 
