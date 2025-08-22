@@ -292,9 +292,7 @@
                     <span style="position:relative; top:1px;">{{ $application->academic_year_end ?? '25' }}</span>
                 </span>
             </div>
-            <div class="semester" style="font-size: 10pt; margin-top: 10px; margin-bottom:0px;">
-                Activity {{ $index + 1 }} of {{ count($activities) }}
-            </div>
+                <!-- Removed Activity (number current ac) of (number of activity) -->
         </div>
 
         <div class="content" style="margin-top:-10px;">

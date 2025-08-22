@@ -537,7 +537,7 @@ const cancelDeleteDocument = () => {
     <transition name="fade">
       <div v-if="showPreviewModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60" @click="closePreviewModal">
         <div
-          class="relative bg-transparent shadow-2xl flex flex-col w-[95vw] max-w-4xl md:w-[70vw] md:max-w-3xl lg:w-[60vw] lg:max-w-4xl xl:w-[50vw] xl:max-w-5xl h-[70vh] md:h-[80vh] lg:h-[85vh] xl:h-[90vh] max-h-[95vh] overflow-hidden border border-transparent"
+          class="relative bg-transparent shadow-2xl flex flex-col w-[95vw] max-w-4xl md:w-[70vw] md:max-w-3xl lg:w-[60vw] lg:max-w-4xl xl:w-[50vw] xl:max-w-5xl h-[75vh] md:h-[85vh] lg:h-[90vh] xl:h-[95vh] max-h-[95vh] overflow-hidden border border-transparent"
           @click.stop
         >
           <!-- Close Button: floating at top-right, outside header -->
