@@ -137,31 +137,33 @@
         }
 
         th, td {
-            padding: 5px;
+            padding: 3px 6px; /* Reduced padding for better space utilization */
             text-align: center;
             vertical-align: middle;
-            min-height: 40px; /* Minimum height */
-            height: auto; /* Allow height to grow */
+            height: auto; /* Allow height to grow naturally */
+            word-wrap: break-word;
+            hyphens: auto;
         }
 
         th {
             font-weight: bold;
             font-size: 10pt;
+            padding: 4px 6px;
         }
 
-        /* Column width distribution */
-        table th:nth-child(1), table td:nth-child(1) { width: 15%; } /* OBJECTIVE */
-        table th:nth-child(2), table td:nth-child(2) { width: 15%; } /* ACTIVITIES */
-        table th:nth-child(3), table td:nth-child(3) { width: 25%; } /* BRIEF DESCRIPTION */
-        table th:nth-child(4), table td:nth-child(4) { width: 15%; } /* PERSONS INVOLVED */
-        table th:nth-child(5), table td:nth-child(5) { width: 15%; } /* TARGET DATE */
-        table th:nth-child(6), table td:nth-child(6) { width: 15%; } /* BUDGET */
+        /* Optimized column width distribution for better space usage */
+        table th:nth-child(1), table td:nth-child(1) { width: 18%; } /* OBJECTIVE */
+        table th:nth-child(2), table td:nth-child(2) { width: 16%; } /* ACTIVITIES */
+        table th:nth-child(3), table td:nth-child(3) { width: 24%; } /* BRIEF DESCRIPTION */
+        table th:nth-child(4), table td:nth-child(4) { width: 16%; } /* PERSONS INVOLVED */
+        table th:nth-child(5), table td:nth-child(5) { width: 12%; } /* TARGET DATE */
+        table th:nth-child(6), table td:nth-child(6) { width: 14%; } /* BUDGET */
 
-        /* Ensuring single activity row has enough height */
+        /* Remove forced height and optimize for content */
         tr td {
-            height: 150px; /* Larger height for single activity row */
-            vertical-align: top;
-            padding: 8px;
+            vertical-align: middle;
+            padding: 3px 6px;
+            line-height: 1.2;
         }
 
         /* Ensure content doesn't overflow page */
