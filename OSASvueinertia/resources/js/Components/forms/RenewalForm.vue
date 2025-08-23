@@ -222,21 +222,21 @@ const submit = () => {
         </div>
     </div>
 
-    <div class="section text-center">
-        <p class="mb-1">Recommending Approval:</p>
-        <div class="signature">
-            <p class="mb-0"><span class="signature-line">{{ form.coordinator_name }}</span></p>
-            <p class="mb-0">Coordinator, Student Organization Unit</p>
-        </div>
+  <div class="section text-center">
+    <p style="margin-left:-380px;"><strong>Recommending Approval:</strong></p>
+    <div class="signature">
+      <p class="mb-0"><span class="signature-line" style="min-width:270px; border-bottom: 1px solid black; text-align: center; padding-bottom: 2px;"><strong>{{ form.coordinator_name }}</strong></span></p>
+      <p class="mb-0"><strong>Coordinator, Student Organization Unit</strong></p>
     </div>
+  </div>
 
-    <div class="section text-center">
-        <p class="mb-1">Approved / Disapproved:</p>
-        <div class="signature">
-            <p class="mb-0"><span class="signature-line">{{ form.director_name }}</span></p>
-            <p class="mb-0">Chairperson, Office of Student Affairs and Services</p>
-        </div>
+  <div class="section text-center">
+    <p style="margin-left:-380px;"><strong>Approved / Disapproved:</strong></p>
+    <div class="signature">
+      <p class="mb-0"><span class="signature-line" style="min-width:390px; border-bottom: 1px solid black; text-align: center; padding-bottom: 2px;"><strong>{{ form.director_name }}</strong></span></p>
+      <p class="mb-0"><strong>Director/Chairperson, Office of Student Affairs and Services</strong></p>
     </div>
+  </div>
 
     <!-- Form inputs -->
     <form @submit.prevent="submit">
