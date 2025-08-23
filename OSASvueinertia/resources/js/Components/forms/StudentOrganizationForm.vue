@@ -114,8 +114,8 @@ const submit = () => {
   </div>
 
   <div class="section right-align" style="text-align: right; margin-top: 0.5cm;">
-    <p style="margin-bottom: 0; margin-top: 0.1cm;"><u>{{ formattedDate }}</u></p>
-    <p style="margin-top: 0; text-align: left; width: max-content; padding-left: 590px;">Date</p>
+    <p style="margin-bottom: 0; margin-top: 0.1cm;"><span class="signature-line" style="display: inline-block; min-width: 150px; border-bottom: 1px solid black; padding-bottom: 2px; text-align: center;">{{ formattedDate }}</span></p>
+    <p style="margin-top: 0; text-align: left; width: 150px; display: inline-block; padding-left: 70px;">Date</p>
   </div>
 
   <div class="section" style="margin-bottom: 0.3cm;">
