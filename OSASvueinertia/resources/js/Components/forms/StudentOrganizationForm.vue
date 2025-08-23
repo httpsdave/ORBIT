@@ -186,7 +186,7 @@ const submit = () => {
   </div>
   <div class="signature center-align" style="margin-top: 0.3cm; text-align: center;">
     <p style="margin-bottom: 0; margin-top: -10px;"><strong><span class="signature-line" style="display: inline-block; min-width: 260px; border-bottom: 1px solid black; padding-bottom: 2px; text-align: center;">{{ form.coordinator_name }}</span></strong></p>
-    <p style="margin-top: 0; margin-bottom: 0;"><span class="title-text long-title" style="display: block; width: 260px; text-align: center; white-space: nowrap; font-size: 11pt;">Coordinator, Student Organization Unit</span></p>
+  <p style="margin-top: 0; margin-bottom: 0; text-align: center;"><span class="title-text long-title" style="display: block; width: 260px; margin-left: auto; margin-right: auto; text-align: center; white-space: nowrap; font-size: 11pt;">Coordinator, Student Organization Unit</span></p>
     <div style="height: 5px;"></div>
   </div>
 
@@ -195,7 +195,7 @@ const submit = () => {
   </div>
   <div class="signature center-align last-signature" style="margin-top: 0.3cm; text-align: center; margin-bottom: 10px;">
     <p style="margin-bottom: 0; margin-top: -6px;"><strong><span class="signature-line" style="display: inline-block; min-width: 390px; border-bottom: 1px solid black; padding-bottom: 2px; text-align: center;">{{ form.director_name }}</span></strong></p>
-    <p style="margin-top: 0; margin-bottom: 0;"><span class="title-text long-title" style="display: block; width: 390px; text-align: center; white-space: nowrap; font-size: 11pt;">Director/Chairperson, Office of Student Affairs and Services</span></p>
+  <p style="margin-top: 0; margin-bottom: 0; text-align: center;"><span class="title-text long-title" style="display: block; width: 390px; margin-left: auto; margin-right: auto; text-align: center; white-space: nowrap; font-size: 11pt;">Director/Chairperson, Office of Student Affairs and Services</span></p>
   </div>
 
   <!-- Form inputs -->
