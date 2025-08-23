@@ -59,6 +59,14 @@ const formattedDate = computed(() => {
   });
 });
 
+const today = (() => {
+  const d = new Date();
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+})();
+
 const form = useForm({
   form_type: 'LSPU-OSAS-SF-003',
   organization_name: props.initialFormData.organization_name || '',
@@ -69,7 +77,7 @@ const form = useForm({
   adviser_rank:props.initialFormData.adviser_rank || '',
   adviser_address:props.initialFormData.adviser_address || '',
   adviser_contact:props.initialFormData.adviser_contact || '',
-  form_date:props.initialFormData.form_date || new Date().toISOString().slice(0, 10),
+  form_date: today,
   dean_name: props.initialFormData.dean_name || '',
   coordinator_name: props.initialFormData.coordinator_name || '',
   director_name: props.initialFormData.director_name || '',
@@ -336,7 +344,15 @@ const submit = () => {
         </div>
         <div>
           <label class="block font-bold">Form Date</label>
-          <input type="date" v-model="form.form_date" class="border p-2 w-full" required>
+          <input 
+            type="date" 
+            :value="form.form_date" 
+            class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none text-center" 
+            required 
+            readonly 
+            tabindex="-1" 
+            style="user-select: none; -webkit-user-select: none;"
+          >
           <p v-if="errors.form_date" class="text-red-500 text-sm mt-1">{{ errors.form_date }}</p>
         </div>
         <div>
