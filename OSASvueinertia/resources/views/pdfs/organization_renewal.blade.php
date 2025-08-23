@@ -296,7 +296,7 @@
             </div>
             
             <div class="signature">
-                <p><span class="signature-line" style="min-width:200px;">{{ $application->dean_name }}</span></p>
+                <p><span class="signature-line" style="min-width:305px;">{{ $application->dean_name }}</span></p>
                 <p><span class="title-under-signature"><strong>Dean/Assoc. Dean, College of</strong> <span class="signature-line signature-line-inline" style="min-width:120px;">{{ $application->college ?? '' }}</span></span></p>
             </div>
         </div>

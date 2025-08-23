@@ -209,18 +209,17 @@ const submit = () => {
         </div>
     </div>
 
-    <div class="section text-left">
-        <p><strong>NOTED:</strong></p>
-        <div class="signature">
-            <p><span class="signature-line" style="min-width:220px;">{{ form.adviser_name }}</span></p>
-            <p><span class="title-under-signature"><strong>Adviser/s, Student Organization</strong></span></p>
-        </div>
-        
-        <div class="signature">
-            <p><span class="signature-line" style="min-width:200px;">{{ form.dean_name }}</span></p>
-            <p><span class="title-under-signature"><strong>Dean/Assoc. Dean, College of</strong> <span class="signature-line signature-line-inline" style="min-width:120px;">{{ form.college }}</span></span></p>
-        </div>
+  <div class="section text-left" style="margin-top: 18px; margin-bottom: 10px;">
+    <p style="margin-bottom: 8px;"><strong>NOTED:</strong></p>
+    <div class="signature" style="margin-bottom: 12px;">
+      <p style="margin-bottom: 6px;"><span class="signature-line" style="min-width:220px; border-bottom: 1px solid black; text-align: left; padding-bottom: 2px; margin-right: 10px;">{{ form.adviser_name }}</span></p>
+      <p style="margin-top: 2px;"><span class="title-under-signature" style="margin-left: 0px;"><strong>Adviser/s, Student Organization</strong></span></p>
     </div>
+    <div class="signature" style="margin-bottom: 12px;">
+      <p style="margin-bottom: 6px;"><span class="signature-line" style="min-width:200px; border-bottom: 1px solid black; text-align: left; padding-bottom: 2px; margin-right: 10px;">{{ form.dean_name }}</span></p>
+      <p style="margin-top: 2px;"><span class="title-under-signature"><strong>Dean/Assoc. Dean, College of</strong> <span class="signature-line signature-line-inline" style="min-width:120px; border-bottom: 1px solid black; text-align: left; padding-bottom: 2px; margin-left: 8px;">{{ form.college }}</span></span></p>
+    </div>
+  </div>
 
   <div class="section text-center" style="margin-top: 18px; margin-bottom: 10px;">
     <p style="margin-left:-380px; margin-bottom: 8px;"><strong>Recommending Approval:</strong></p>
