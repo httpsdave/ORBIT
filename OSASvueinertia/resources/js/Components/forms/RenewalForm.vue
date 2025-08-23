@@ -222,19 +222,19 @@ const submit = () => {
         </div>
     </div>
 
-  <div class="section text-center">
-    <p style="margin-left:-380px;"><strong>Recommending Approval:</strong></p>
-    <div class="signature">
-      <p class="mb-0"><span class="signature-line" style="min-width:270px; border-bottom: 1px solid black; text-align: center; padding-bottom: 2px;"><strong>{{ form.coordinator_name }}</strong></span></p>
-      <p class="mb-0"><strong>Coordinator, Student Organization Unit</strong></p>
+  <div class="section text-center" style="margin-top: 18px; margin-bottom: 10px;">
+    <p style="margin-left:-380px; margin-bottom: 8px;"><strong>Recommending Approval:</strong></p>
+    <div class="signature" style="margin-bottom: 12px;">
+      <p class="mb-0" style="margin-bottom: 6px;"><span class="signature-line" style="min-width:270px; border-bottom: 1px solid black; text-align: center; padding-bottom: 2px; margin-right: 10px;"><strong>{{ form.coordinator_name }}</strong></span></p>
+      <p class="mb-0" style="margin-top: 2px;"><strong>Coordinator, Student Organization Unit</strong></p>
     </div>
   </div>
 
-  <div class="section text-center">
-    <p style="margin-left:-380px;"><strong>Approved / Disapproved:</strong></p>
-    <div class="signature">
-      <p class="mb-0"><span class="signature-line" style="min-width:390px; border-bottom: 1px solid black; text-align: center; padding-bottom: 2px;"><strong>{{ form.director_name }}</strong></span></p>
-      <p class="mb-0"><strong>Director/Chairperson, Office of Student Affairs and Services</strong></p>
+  <div class="section text-center" style="margin-top: 18px; margin-bottom: 10px;">
+    <p style="margin-left:-380px; margin-bottom: 8px;"><strong>Approved / Disapproved:</strong></p>
+    <div class="signature" style="margin-bottom: 12px;">
+      <p class="mb-0" style="margin-bottom: 6px;"><span class="signature-line" style="min-width:390px; border-bottom: 1px solid black; text-align: center; padding-bottom: 2px; margin-right: 10px;"><strong>{{ form.director_name }}</strong></span></p>
+      <p class="mb-0" style="margin-top: 2px;"><strong>Director/Chairperson, Office of Student Affairs and Services</strong></p>
     </div>
   </div>
 
