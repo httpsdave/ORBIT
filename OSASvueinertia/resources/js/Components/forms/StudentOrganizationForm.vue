@@ -100,150 +100,152 @@ const submit = () => {
 </script>
 
 <template>
-  <div class="mt-6 form-content">
-    <div class="header text-center relative">
-        <img src="/images/lspu-logo.png" alt="LSPU Logo" class="absolute top-[-0.5cm] left-[-2cm] w-[250px] h-auto">
-        <p class="text-sm font-bold mb-0">Republic of the Philippines</p>
-        <p class="text-base font-bold university-name mb-0">Laguna State Polytechnic University</p>
-        <p class="text-sm mb-0">Province of Laguna</p>
-        <p class="text-sm mb-0">Office of Student Affairs and Services</p>
+
+<div class="form-content" style="font-family: 'Times New Roman', serif; font-size: 11pt; line-height: 1.1; margin: 0; padding: 0; box-sizing: border-box; min-height: 100vh;">
+  <div class="header text-center relative" style="font-size: 15px; margin: 0 0 0.5cm 0; padding-top: 0.5cm;">
+    <img src="/images/lspu-logo.png" alt="LSPU Logo" style="position: absolute; top: -0.5cm; left: -2cm; width: 250px; height: auto;">
+    <span style="font-family: Calibri, sans-serif;">Republic of the Philippines</span><br>
+    <span class="university-name" style="max-width: 55%; height: auto; margin: 4px 0; display: inline-block; font-weight: bold; font-size: 15px;">Laguna State Polytechnic University</span><br>
+    <span style="font-family: Calibri, sans-serif;">Province of Laguna</span><br>
+    <br>
+    <strong>OFFICE OF STUDENT AFFAIRS AND SERVICES</strong><br>
+    <br>
+    <span class="sub-header" style="font-weight: bold; font-size: 13pt;">APPLICATION FOR ORGANIZATION RECOGNITION/RENEWAL OF ACCREDITED STUDENT ORGANIZATION</span>
+  </div>
+
+  <div class="section right-align" style="text-align: right; margin-top: 0.5cm;">
+    <p style="margin-bottom: 0; margin-top: 0.1cm;"><u>{{ formattedDate }}</u></p>
+    <p style="margin-top: 0; text-align: left; width: max-content; padding-left: 540px;">Date</p>
+  </div>
+
+  <div class="section" style="margin-bottom: 0.3cm;">
+    <p><strong>THE DIRECTOR/CHAIRPERSON</strong><br>Office of Student Affairs and Services<br>LSPU</p>
+  </div>
+
+  <div style="height: 0.2cm;"></div>
+  <div class="section justified" style="margin-bottom: 0.3cm; text-align: justify;">
+    <p>Sir/Madam:</p>
+  <div style="height: 0.3cm;"></div>
+    <p class="indented" style="text-indent: 1.27cm;"><span style="word-spacing: 15px;">I have the honor to apply for recognition/renewal of the organization</span> <u>{{ form.organization_name }}</u>, to be duly recognized by Laguna State Polytechnic University.</p>
+  <div style="height: 0.15cm;"></div>
+    <p class="indented" style="text-indent: 1.27cm;">In compliance with CHED Memo Order No. 9s. 2013, Subj.: Enhanced Policies & Guidelines on Student Affairs and Services (Article VIII-Student Development, Section 19. Student Organizations and Activities), I am submitting for proper action the following requirements for recognition and accreditation, to wit:</p>
+  </div>
+
+  <div class="section list-indented" style="margin-bottom: 0.3cm;">
+    <p style="position: relative; left: -5px;">1. Letter of application for Organization Recognition (for new organizations) / Organization </p>
+    <p style="position: relative; left: 10px;"> Renewal Form (for organizations seeking renewal) <span style="position: absolute; right: 64px;">- 4 copies</span></p>
+    <p style="position: relative; left: -5px;">2. Constitution and By-Laws of the Organization <span style="position: absolute; right: 50px;">- 4 copies</span></p>
+    <p style="position: relative; left: -5px;">3. Plan of activities for one (1) year <span style="position: absolute; right: 50px;">- 4 copies</span></p>
+    <p style="position: relative; left: -5px;">4. Accomplishment reports (for renewal of accreditation) <span style="position: absolute; right: 50px;">- 4 copies</span></p>
+    <p style="position: relative; left: -5px;">5. Adviser(s) Commitment Form <span style="position: absolute; right: 50px;">- 4 copies</span></p>
+    <p style="position: relative; left: -5px;">6. Certification from respective Dean/Associate Dean <span style="position: absolute; right: 50px;">- 4 copies</span></p>
+    <p style="position: relative; left: -5px;">7. Financial Report (if any) <span style="position: absolute; right: 50px;">- 4 copies</span></p>
+  </div>
+
+  <div class="section justified" style="margin-bottom: 0.3cm; text-align: justify;">
+    <p class="indented" style="text-indent: 1.27cm;">It is understood that the provision to the LSPU Supplementary Rules and Regulations Governing Student Organization in this official Recognition is good only for one (1) school year, subject to renewal unless revoked prior its expiration.</p>
+  </div>
+
+  <div class="section respectfully-yours" style="text-align: right; padding-right: 90px; margin-top: 0.5cm;">
+    <p>Respectfully yours,</p>
+  </div>
+
+  <div class="signature right-align" style="margin-top: 0.5cm; text-align: right;">
+    <p><span class="signature-line" style="display: inline-block; min-width: 200px; border-bottom: 1px solid black; padding-bottom: 2px; text-align: center;">{{ form.president_name }}</span></p>
+    <p><span class="title-text" style="display: block; width: 200px; text-align: center; white-space: nowrap; font-size: 11pt;">Organization President</span></p>
+  </div>
+
+  <div class="signature right-align" style="margin-top: 0.3cm; text-align: right;">
+    <p><span class="signature-line" style="display: inline-block; min-width: 200px; border-bottom: 1px solid black; padding-bottom: 2px; text-align: center;">{{ form.organization_name }}</span></p>
+    <p><span class="title-text" style="display: block; width: 200px; text-align: center; white-space: nowrap; font-size: 11pt;">Name of Organization</span></p>
+  </div>
+
+  <div class="section left-align" style="text-align: left; margin-top: 0.5cm; margin-bottom: 0;">
+    <p style="margin-top: 0.5cm; margin-bottom: 0;">NOTED:</p>
+  </div>
+
+  <div style="width: 100%; margin-top: 0.1cm; display: flex;">
+    <div style="width: 50%; text-align: left;">
+      <div class="signature left-align" style="margin-top: 0.3cm; text-align: left;">
+        <p><span class="signature-line" style="display: inline-block; min-width: 200px; border-bottom: 1px solid black; padding-bottom: 2px; text-align: center;">{{ form.adviser_name }}</span></p>
+        <p><span class="title-text" style="display: block; width: 200px; text-align: center; white-space: nowrap; font-size: 11pt;">Adviser, Student Organization</span></p>
+      </div>
     </div>
-
-    <div class="mt-6 text-right">
-        <p class="mb-0"><span class="signature-line text-center border-b border-black min-w-[150px] inline-block">{{ formattedDate }}</span></p>
-        <p class="mb-0" style="text-align: center; width: 150px; display: inline-block;">Date</p>
+    <div style="width: 50%; text-align: right;">
+      <div class="signature right-align" style="margin-top: 0.3cm; text-align: right;">
+        <p><span class="signature-line" style="display: inline-block; min-width: 200px; border-bottom: 1px solid black; padding-bottom: 2px; text-align: center;">{{ form.dean_name }}</span></p>
+        <p><span class="title-text" style="display: block; width: 200px; text-align: center; white-space: nowrap; font-size: 11pt;">Dean/Assoc. Dean of College</span></p>
+      </div>
     </div>
+  </div>
 
-    <div class="section text-left mt-4">
-        <p class="mb-0"><strong>THE DIRECTOR/CHAIRPERSON</strong></p>
-        <p class="mb-0">OFFICE OF STUDENT AFFAIRS AND SERVICES</p>
-        <p class="mb-0">LSPU</p>
+  <div class="section center-align" style="margin-bottom: 0; text-align: center; margin-top: 0.5cm;">
+    <p style="margin-bottom: 0;"><strong>Recommending Approval:</strong></p>
+  </div>
+  <div class="signature center-align" style="margin-top: 0.1cm; text-align: center;">
+    <p style="margin-bottom: 0; margin-top: -10px;"><strong><span class="signature-line" style="display: inline-block; min-width: 260px; border-bottom: 1px solid black; padding-bottom: 2px; text-align: center;">{{ form.coordinator_name }}</span></strong></p>
+    <p style="margin-top: 0; margin-bottom: 0;"><span class="title-text long-title" style="display: block; width: 260px; text-align: center; white-space: nowrap; font-size: 11pt;">Coordinator, Student Organization Unit</span></p>
+    <div style="height: 5px;"></div>
+  </div>
+
+  <div class="section center-align last-section" style="margin-bottom: 0; text-align: center; padding-bottom: 0.3cm; margin-top: 0.5cm;">
+    <p style="margin-bottom: 0;"><strong>Approved/Disapproved:</strong></p>
+  </div>
+  <div class="signature center-align last-signature" style="margin-top: 0.1cm; text-align: center; margin-bottom: 10px;">
+    <p style="margin-bottom: 0; margin-top: -6px;"><strong><span class="signature-line" style="display: inline-block; min-width: 390px; border-bottom: 1px solid black; padding-bottom: 2px; text-align: center;">{{ form.director_name }}</span></strong></p>
+    <p style="margin-top: 0; margin-bottom: 0;"><span class="title-text long-title" style="display: block; width: 390px; text-align: center; white-space: nowrap; font-size: 11pt;">Director/Chairperson, Office of Student Affairs and Services</span></p>
+  </div>
+
+  <!-- Form inputs -->
+  <div style="margin-top: 2cm; border-top: 1px solid #ccc; padding-top: 1cm;">
+  <h3 style="font-size: 13pt; font-weight: bold; margin-bottom: 1cm;">Form Details</h3>
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1cm;">
+      <div>
+        <label style="font-weight: bold;">Organization Name</label>
+        <input v-model="form.organization_name" style="border: 1px solid #ccc; padding: 8px; width: 100%; font-size: 11pt; font-family: 'Times New Roman', serif;">
+        <p v-if="errors.organization_name" style="color: #b91c1c; font-size: 10pt; margin-top: 4px;">{{ errors.organization_name }}</p>
+      </div>
+      <div>
+        <label style="font-weight: bold;">Application Date</label>
+        <input type="date" v-model="form.application_date" style="border: 1px solid #ccc; padding: 8px; width: 100%; font-size: 11pt; font-family: 'Times New Roman', serif;">
+        <p v-if="errors.application_date" style="color: #b91c1c; font-size: 10pt; margin-top: 4px;">{{ errors.application_date }}</p>
+      </div>
+      <div>
+        <label style="font-weight: bold;">President Name</label>
+        <input v-model="form.president_name" style="border: 1px solid #ccc; padding: 8px; width: 100%; font-size: 11pt; font-family: 'Times New Roman', serif;">
+        <p v-if="errors.president_name" style="color: #b91c1c; font-size: 10pt; margin-top: 4px;">{{ errors.president_name }}</p>
+      </div>
+      <div>
+        <label style="font-weight: bold;">Adviser Name</label>
+        <input v-model="form.adviser_name" style="border: 1px solid #ccc; padding: 8px; width: 100%; font-size: 11pt; font-family: 'Times New Roman', serif;">
+        <p v-if="errors.adviser_name" style="color: #b91c1c; font-size: 10pt; margin-top: 4px;">{{ errors.adviser_name }}</p>
+      </div>
+      <div>
+        <label style="font-weight: bold;">Dean Name</label>
+        <input v-model="form.dean_name" style="border: 1px solid #ccc; padding: 8px; width: 100%; font-size: 11pt; font-family: 'Times New Roman', serif;">
+        <p v-if="errors.dean_name" style="color: #b91c1c; font-size: 10pt; margin-top: 4px;">{{ errors.dean_name }}</p>
+      </div>
+      <div>
+        <label style="font-weight: bold;">Coordinator Name</label>
+        <input v-model="form.coordinator_name" style="border: 1px solid #ccc; padding: 8px; width: 100%; font-size: 11pt; font-family: 'Times New Roman', serif;">
+        <p v-if="errors.coordinator_name" style="color: #b91c1c; font-size: 10pt; margin-top: 4px;">{{ errors.coordinator_name }}</p>
+      </div>
+      <div>
+        <label style="font-weight: bold;">Director Name</label>
+        <input v-model="form.director_name" style="border: 1px solid #ccc; padding: 8px; width: 100%; font-size: 11pt; font-family: 'Times New Roman', serif;">
+        <p v-if="errors.director_name" style="color: #b91c1c; font-size: 10pt; margin-top: 4px;">{{ errors.director_name }}</p>
+      </div>
     </div>
-
-    <div class="section mt-4">
-        <p class="mb-1">Sir/Madam:</p>
-        
-        <p class="indented">I have the honor to apply for recognition/renewal of <span class="blank-line text-center border-b border-black min-w-[200px] inline-block">{{ form.organization_name }}</span>, a duly recognized student organization in this University.</p>
+  <div style="margin-top: 1cm; text-align: center;">
+      <button type="submit" @click="submit" style="background-color: #22c55e; color: white; padding: 8px 16px; border-radius: 6px; font-size: 11pt; font-family: 'Times New Roman', serif;">{{ props.isEdit ? 'Update' : 'Submit' }}</button>
     </div>
+  </div>
 
-    <div class="section mt-4">
-        <p class="indented">In compliance with CHED Memo Order #9 s. 2013, Subj.: Enhanced Policies & Guidelines on Student Affairs and Services (Article VIII - Student Development, Section 19. Student Organizations and Activities), I am submitting for proper action the following requirements for recognition and accreditation:</p>
-        
-        <ul class="list-disc pl-10 mt-2">
-            <li>Letter for application for recognition (4 copies)</li>
-            <li>Constitution and By-Laws of the Organization (4 copies)</li>
-            <li>Program of activities for one (1) year (4 copies)</li>
-            <li>List of officers with signature, student I.D. Nos. and attached 2x2 I.D. picture (4 copies)</li>
-            <li>List of members with signature, student I.D. number and attached 1x1 ID picture (4 copies)</li>
-            <li>Accomplishment report (for renewal of accreditation) (4 copies)</li>
-        </ul>
-    </div>
-
-    <div class="section mt-4">
-        <p class="indented">It is understood that the provision to the LSPU Supplementary Rules and Regulations Governing Student Organization in this official recognition is good only for one (1) school year, subject to renewal unless revoked prior to this expiration.</p>
-    </div>
-
-    <div class="section text-right mt-6">
-        <p class="mb-1" style="text-align: left; margin-left: calc(100% - 250px);">Respectfully yours,</p>
-        <div class="signature">
-            <p class="mb-0"><span class="signature-line text-center border-b border-black min-w-[250px] inline-block">{{ form.president_name }}</span></p>
-            <p class="mb-0" style="text-align: center; width: 250px; display: inline-block;">Organization President</p>
-        </div>
-        <div class="signature mt-2">
-            <p class="mb-0"><span class="signature-line text-center border-b border-black min-w-[250px] inline-block">{{ form.organization_name }}</span></p>
-            <p class="mb-0" style="text-align: center; width: 250px; display: inline-block;">Name of Organization</p>
-        </div>
-    </div>
-
-    <div class="section text-left mt-6">
-        <p class="mb-1"><strong>Noted:</strong></p>
-        <div class="signature">
-            <p class="mb-0"><span class="signature-line text-center border-b border-black min-w-[250px] inline-block">{{ form.adviser_name }}</span></p>
-            <p class="mb-0" style="text-align: center; width: 250px; display: inline-block;">Adviser, Student Organization</p>
-        </div>
-    </div>
-
-    <div class="section text-right mt-6">
-        <div class="signature">
-            <p class="mb-0"><span class="signature-line text-center border-b border-black min-w-[250px] inline-block">{{ form.dean_name }}</span></p>
-            <p class="mb-0" style="text-align: center; width: 250px; display: inline-block;">Dean/Associate Dean</p>
-        </div>
-    </div>
-
-    <div class="section text-center mt-6">
-        <p class="mb-1"><strong>Recommending Approval:</strong></p>
-        <div class="signature">
-            <p class="mb-0"><span class="signature-line text-center border-b border-black min-w-[250px] inline-block">{{ form.coordinator_name }}</span></p>
-            <p class="mb-0">Coordinator, Student Organization Unit</p>
-        </div>
-    </div>
-
-    <div class="section text-center mt-6">
-        <p class="mb-1"><strong>Approved/Disapproved:</strong></p>
-        <div class="signature">
-            <p class="mb-0"><span class="signature-line text-center border-b border-black min-w-[250px] inline-block">{{ form.director_name }}</span></p>
-            <p class="mb-0">Director, Office of Student Affairs and Services</p>
-        </div>
-    </div>
-
-    <!-- Form inputs -->
-    <div class="mt-8 border-t pt-6">
-        <h3 class="text-lg font-bold mb-4">Form Details</h3>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-                <label class="block font-bold">Organization Name</label>
-                <input v-model="form.organization_name" class="border p-2 w-full" required>
-                <p v-if="errors.organization_name" class="text-red-500 text-sm mt-1">{{ errors.organization_name }}</p>
-            </div>
-
-            <div>
-                <label class="block font-bold">Application Date</label>
-                <input type="date" v-model="form.application_date" class="border p-2 w-full" required>
-                <p v-if="errors.application_date" class="text-red-500 text-sm mt-1">{{ errors.application_date }}</p>
-            </div>
-
-            <div>
-                <label class="block font-bold">President Name</label>
-                <input v-model="form.president_name" class="border p-2 w-full" required>
-                <p v-if="errors.president_name" class="text-red-500 text-sm mt-1">{{ errors.president_name }}</p>
-            </div>
-
-            <div>
-                <label class="block font-bold">Adviser Name</label>
-                <input v-model="form.adviser_name" class="border p-2 w-full" required>
-                <p v-if="errors.adviser_name" class="text-red-500 text-sm mt-1">{{ errors.adviser_name }}</p>
-            </div>
-
-            <div>
-                <label class="block font-bold">Dean Name</label>
-                <input v-model="form.dean_name" class="border p-2 w-full" required>
-                <p v-if="errors.dean_name" class="text-red-500 text-sm mt-1">{{ errors.dean_name }}</p>
-            </div>
-
-            <div>
-                <label class="block font-bold">Coordinator Name</label>
-                <input v-model="form.coordinator_name" class="border p-2 w-full" required>
-                <p v-if="errors.coordinator_name" class="text-red-500 text-sm mt-1">{{ errors.coordinator_name }}</p>
-            </div>
-
-            <div>
-                <label class="block font-bold">Director Name</label>
-                <input v-model="form.director_name" class="border p-2 w-full" required>
-                <p v-if="errors.director_name" class="text-red-500 text-sm mt-1">{{ errors.director_name }}</p>
-            </div>
-        </div>
-
-        <div class="mt-6 text-center">
-            <button type="submit" @click="submit" class="bg-green-500 text-white px-4 py-2 rounded">{{ props.isEdit ? 'Update' : 'Submit' }}</button>
-        </div>
-    </div>
-
-    <div class="footer mt-8 text-xs flex justify-between">
-        <span>LSPU-OSAS-SF-001</span>
-        <span>Rev. 1</span>
-        <span>09 November 2020</span>
-    </div>
+  <div class="footer" style="margin-top: 2cm; font-size: 10pt; font-family: Calibri, sans-serif; display: flex; justify-content: space-between;">
+    <span>LSPU-OSAS-SF-001</span>
+    <span>Rev. 1</span>
+    <span>09 November 2020</span>
+  </div>
 </div>
 
 </template>
