@@ -176,7 +176,7 @@ const submit = () => {
     <div style="width: 50%; text-align: right;">
       <div class="signature right-align" style="margin-top: 0.3cm; text-align: right;">
         <p><span class="signature-line" style="display: inline-block; min-width: 200px; border-bottom: 1px solid black; padding-bottom: 2px; text-align: center;">{{ form.dean_name }}</span></p>
-        <p><span class="title-text" style="display: block; width: 200px; text-align: center; white-space: nowrap; font-size: 11pt;">Dean/Assoc. Dean of College</span></p>
+  <p style="margin: 0; padding: 0;"><span class="title-text" style="display: block; width: 200px; margin-left: 120px; text-align: center; white-space: nowrap; font-size: 11pt;">Dean/Assoc. Dean of College</span></p>
       </div>
     </div>
   </div>
