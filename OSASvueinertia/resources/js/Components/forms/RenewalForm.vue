@@ -41,8 +41,8 @@ const form = useForm({
   organization_name: props.initialFormData.organization_name || '',
   college: props.initialFormData.college || '',
   application_date: props.initialFormData.application_date || new Date().toISOString().slice(0, 10),
-  academic_year_start: props.initialFormData.academic_year_start || '',
-  academic_year_end: props.initialFormData.academic_year_end || '',
+  academic_year_start: props.initialFormData.academic_year_start || currentYear.value,
+  academic_year_end: props.initialFormData.academic_year_end || nextYear.value,
   president_name: props.initialFormData.president_name || '',
   adviser_name: props.initialFormData.adviser_name || '',
   dean_name: props.initialFormData.dean_name || '',
@@ -263,13 +263,29 @@ const submit = () => {
 
               <div>
                   <label class="block font-bold">Academic Year Start</label>
-                  <input v-model="form.academic_year_start" class="border p-2 w-full" required :placeholder="currentYear">
+                  <input 
+                    v-model="form.academic_year_start" 
+                    class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none" 
+                    required 
+                    :placeholder="currentYear" 
+                    readonly 
+                    tabindex="-1" 
+                    style="user-select: none; -webkit-user-select: none;" 
+                  >
                   <p v-if="errors.academic_year_start" class="text-red-500 text-sm mt-1">{{ errors.academic_year_start }}</p>
               </div>
 
               <div>
                   <label class="block font-bold">Academic Year End</label>
-                  <input v-model="form.academic_year_end" class="border p-2 w-full" required :placeholder="nextYear">
+                  <input 
+                    v-model="form.academic_year_end" 
+                    class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none" 
+                    required 
+                    :placeholder="nextYear" 
+                    readonly 
+                    tabindex="-1" 
+                    style="user-select: none; -webkit-user-select: none;" 
+                  >
                   <p v-if="errors.academic_year_end" class="text-red-500 text-sm mt-1">{{ errors.academic_year_end }}</p>
               </div>
 
