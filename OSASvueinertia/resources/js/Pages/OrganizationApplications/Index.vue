@@ -9,6 +9,7 @@ import NoApplicationsMessage from '@/Components/NoApplicationsMessage.vue';
 import Modal from '@/Components/Modal.vue';
 import StatusBanner from '@/Components/StatusBanner.vue';
 import ConfirmationModal from '@/Components/ConfirmationModal.vue';
+import ClearDataModal from '@/Components/ClearDataModal.vue';
 
 // --- Add form preview dropdown state and data ---
 const showPreviewDropdown = ref(false);
@@ -118,6 +119,10 @@ const endYearForm = ref({
 // Delete confirmation modal state
 const showDeleteConfirmation = ref(false);
 const applicationToDelete = ref(null);
+
+// Clear saved data modal state
+const showClearDataModal = ref(false);
+const isClearingData = ref(false);
 
 // Get unique values for filter options
 const statusOptions = computed(() => {
@@ -454,6 +459,39 @@ const cancelDeleteDocument = () => {
   showDeleteDocumentModal.value = false;
   documentToDeleteId.value = null;
 };
+
+// Clear saved data functions
+const openClearDataModal = () => {
+  showClearDataModal.value = true;
+};
+
+const closeClearDataModal = () => {
+  showClearDataModal.value = false;
+  isClearingData.value = false;
+};
+
+const confirmClearData = () => {
+  isClearingData.value = true;
+  
+  router.delete('/clear-saved-form-data', {
+    onSuccess: () => {
+      isClearingData.value = false;
+      showClearDataModal.value = false;
+      localMessage.value = 'Saved form data cleared successfully!';
+      statusType.value = 'success';
+      showMessage.value = true;
+      setTimeout(() => {
+        showMessage.value = false;
+      }, 5000);
+    },
+    onError: () => {
+      isClearingData.value = false;
+      localMessage.value = 'Failed to clear saved data.';
+      statusType.value = 'error';
+      showMessage.value = true;
+    }
+  });
+};
 </script>
 
 <template>
@@ -510,17 +548,29 @@ const cancelDeleteDocument = () => {
             <!-- Click outside to close -->
             <div v-if="showPreviewDropdown" class="fixed inset-0 z-40" @click="showPreviewDropdown = false"></div>
           </div>
-          <button
-            v-if="isAdmin"
-            @click="openEndYearModal"
-            class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-sm font-medium text-white rounded-xl shadow-md hover:from-red-600 hover:to-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-all duration-300 relative overflow-hidden group w-full sm:w-auto"
-          >
-            <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-            </svg>
-            End the Year
-          </button>
+          <div class="flex items-center gap-2">
+            <button
+              v-if="isAdmin"
+              @click="openEndYearModal"
+              class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-sm font-medium text-white rounded-xl shadow-md hover:from-red-600 hover:to-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-all duration-300 relative overflow-hidden group w-full sm:w-auto"
+            >
+              <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+              </svg>
+              End the Year
+            </button>
+            <button
+              @click="openClearDataModal"
+              class="inline-flex items-center justify-center p-2 bg-transparent hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 rounded-lg shadow-sm transition duration-200 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+              aria-label="Clear Saved Form Data"
+              title="Clear all saved form data that auto-fills when creating applications"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#e3e3e3">
+                <path d="M280-720v520-520Zm170 600H280q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v172q-17-5-39.5-8.5T680-560v-160H280v520h132q6 21 16 41.5t22 38.5Zm-90-160h40q0-63 20-103.5l20-40.5v-216h-80v360Zm160-230q17-11 38.5-22t41.5-16v-92h-80v130ZM680-80q-83 0-141.5-58.5T480-280q0-83 58.5-141.5T680-480q83 0 141.5 58.5T880-280q0 83-58.5 141.5T680-80Zm66-106 28-28-74-74v-112h-40v128l86 86Z"/>
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
     </template>
@@ -823,7 +873,7 @@ const cancelDeleteDocument = () => {
     </div>
 
     <!-- Add a subtle, center-aligned archive link at the bottom -->
-    <div class="flex justify-center mt-10 mb-6">
+    <div class="flex flex-col sm:flex-row justify-center items-center gap-4 mt-10 mb-6">
       <a
         :href="isAdmin ? route('admin.archive.index') : route('archive.index')"
         class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg shadow-sm transition duration-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
@@ -834,6 +884,19 @@ const cancelDeleteDocument = () => {
         </svg>
         <span>{{ isAdmin ? 'Archive Management' : 'View Archive' }}</span>
       </a>
+      
+      <!-- Clear Saved Data Button -->
+      <button
+        @click="openClearDataModal"
+        class="inline-flex items-center gap-2 px-3 py-2 bg-gray-50 dark:bg-gray-900 hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 rounded-lg shadow-sm transition duration-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2 dark:focus:ring-offset-gray-900 border border-gray-200 dark:border-gray-700 hover:border-red-200 dark:hover:border-red-800"
+        aria-label="Clear Saved Form Data"
+        title="Clear all saved form data that auto-fills when creating applications"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor">
+          <path d="M280-720v520-520Zm170 600H280q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v172q-17-5-39.5-8.5T680-560v-160H280v520h132q6 21 16 41.5t22 38.5Zm-90-160h40q0-63 20-103.5l20-40.5v-216h-80v360Zm160-230q17-11 38.5-22t41.5-16v-92h-80v130ZM680-80q-83 0-141.5-58.5T480-280q0-83 58.5-141.5T680-480q83 0 141.5 58.5T880-280q0 83-58.5 141.5T680-80Zm66-106 28-28-74-74v-112h-40v128l86 86Z"/>
+        </svg>
+        <span class="hidden sm:inline">Clear Saved Data</span>
+      </button>
     </div>
 
     <!-- Delete Confirmation Modal -->
@@ -846,6 +909,14 @@ const cancelDeleteDocument = () => {
       cancel-text="Cancel"
       @confirm="confirmDeleteApplication"
       @cancel="closeDeleteConfirmation"
+    />
+
+    <!-- Clear Saved Data Modal -->
+    <ClearDataModal
+      :show="showClearDataModal"
+      :is-clearing="isClearingData"
+      @close="closeClearDataModal"
+      @confirm="confirmClearData"
     />
 
   </AuthenticatedLayout>

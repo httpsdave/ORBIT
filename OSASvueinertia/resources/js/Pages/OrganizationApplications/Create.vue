@@ -87,7 +87,11 @@ const handleFormSelection = (formId) => {
     // Filter out array fields from saved data to prevent issues
     const filteredSavedData = {};
     Object.keys(props.savedFormData).forEach(key => {
-        if (!Array.isArray(props.savedFormData[key]) && typeof props.savedFormData[key] !== 'object') {
+        // Exclude academic year fields and array/object fields
+        if (!Array.isArray(props.savedFormData[key]) && 
+            typeof props.savedFormData[key] !== 'object' &&
+            key !== 'academic_year_start' && 
+            key !== 'academic_year_end') {
             filteredSavedData[key] = props.savedFormData[key];
         }
     });

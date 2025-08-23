@@ -1394,6 +1394,26 @@ class OrganizationApplicationController extends Controller
         return response()->noContent();
     }
 
+    /**
+     * Clear saved form data for the authenticated user
+     */
+    public function clearSavedFormData(Request $request)
+    {
+        $cleared = FormDataService::clearSavedFormData();
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => $cleared,
+                'message' => $cleared ? 'Saved form data cleared successfully!' : 'No saved data found to clear.'
+            ]);
+        }
+
+        return redirect()->back()->with(
+            $cleared ? 'success' : 'info',
+            $cleared ? 'Saved form data cleared successfully!' : 'No saved data found to clear.'
+        );
+    }
+
     public function uploadReport(Request $request)
     {
         $request->validate([

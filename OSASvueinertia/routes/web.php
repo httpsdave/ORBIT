@@ -134,6 +134,9 @@ Route::middleware(['auth'])->group(function () {
 
     // Auto-save form data route
     Route::post('/auto-save-form-data', [OrganizationApplicationController::class, 'autoSaveFormData'])->name('auto-save-form-data');
+    
+    // Clear saved form data route
+    Route::delete('/clear-saved-form-data', [OrganizationApplicationController::class, 'clearSavedFormData'])->name('clear-saved-form-data');
 
     // PDF export routes
     Route::get('/applications/{application}/pdf', [OrganizationApplicationController::class, 'exportPdf'])->name('applications.pdf');

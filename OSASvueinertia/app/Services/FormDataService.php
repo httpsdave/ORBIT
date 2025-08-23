@@ -71,4 +71,18 @@ class FormDataService
             ->pluck('field_value', 'field_name')
             ->toArray();
     }
+
+    /**
+     * Clear all saved form data for the authenticated user
+     */
+    public static function clearSavedFormData(): bool
+    {
+        $userId = Auth::id();
+        
+        if (!$userId) {
+            return false;
+        }
+
+        return UserFormData::where('user_id', $userId)->delete() > 0;
+    }
 } 
