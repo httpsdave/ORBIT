@@ -337,7 +337,8 @@ const submit = () => {
             v-model="form.adviser_contact" 
             class="border p-2 w-full" 
             required 
-            @input="e => { e.target.value = e.target.value.replace(/[^0-9+()\-]/g, ''); form.adviser_contact = e.target.value; }"
+            maxlength="15"
+            @input="e => { e.target.value = e.target.value.replace(/[^0-9+()\-]/g, ''); form.adviser_contact = e.target.value.slice(0, 15); }"
             pattern="[0-9+()\-]*"
           >
           <p v-if="errors.adviser_contact" class="text-red-500 text-sm mt-1">{{ errors.adviser_contact }}</p>
