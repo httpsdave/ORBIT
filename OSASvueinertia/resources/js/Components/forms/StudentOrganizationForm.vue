@@ -197,47 +197,47 @@ const submit = () => {
   </div>
 
   <!-- Form inputs -->
-  <div style="margin-top: 2cm; border-top: 1px solid #ccc; padding-top: 1cm;">
-  <h3 style="font-size: 13pt; font-weight: bold; margin-bottom: 1cm;">Form Details</h3>
-  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1cm;">
+  <div class="mt-8 border-t pt-6">
+    <h3 class="text-lg font-bold mb-4">Form Details</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
-        <label style="font-weight: bold;">Organization Name</label>
-        <input v-model="form.organization_name" style="border: 1px solid #ccc; padding: 8px; width: 100%; font-size: 11pt; font-family: 'Times New Roman', serif;">
-        <p v-if="errors.organization_name" style="color: #b91c1c; font-size: 10pt; margin-top: 4px;">{{ errors.organization_name }}</p>
+        <label class="block font-bold">Organization Name</label>
+        <input v-model="form.organization_name" class="border p-2 w-full" required>
+        <p v-if="errors.organization_name" class="text-red-500 text-sm mt-1">{{ errors.organization_name }}</p>
       </div>
       <div>
-        <label style="font-weight: bold;">Application Date</label>
-        <input type="date" v-model="form.application_date" style="border: 1px solid #ccc; padding: 8px; width: 100%; font-size: 11pt; font-family: 'Times New Roman', serif;">
-        <p v-if="errors.application_date" style="color: #b91c1c; font-size: 10pt; margin-top: 4px;">{{ errors.application_date }}</p>
+        <label class="block font-bold">Application Date</label>
+        <input type="date" v-model="form.application_date" class="border p-2 w-full" required>
+        <p v-if="errors.application_date" class="text-red-500 text-sm mt-1">{{ errors.application_date }}</p>
       </div>
       <div>
-        <label style="font-weight: bold;">President Name</label>
-        <input v-model="form.president_name" style="border: 1px solid #ccc; padding: 8px; width: 100%; font-size: 11pt; font-family: 'Times New Roman', serif;">
-        <p v-if="errors.president_name" style="color: #b91c1c; font-size: 10pt; margin-top: 4px;">{{ errors.president_name }}</p>
+        <label class="block font-bold">President Name</label>
+        <input v-model="form.president_name" class="border p-2 w-full" required>
+        <p v-if="errors.president_name" class="text-red-500 text-sm mt-1">{{ errors.president_name }}</p>
       </div>
       <div>
-        <label style="font-weight: bold;">Adviser Name</label>
-        <input v-model="form.adviser_name" style="border: 1px solid #ccc; padding: 8px; width: 100%; font-size: 11pt; font-family: 'Times New Roman', serif;">
-        <p v-if="errors.adviser_name" style="color: #b91c1c; font-size: 10pt; margin-top: 4px;">{{ errors.adviser_name }}</p>
+        <label class="block font-bold">Adviser Name</label>
+        <input v-model="form.adviser_name" class="border p-2 w-full" required>
+        <p v-if="errors.adviser_name" class="text-red-500 text-sm mt-1">{{ errors.adviser_name }}</p>
       </div>
       <div>
-        <label style="font-weight: bold;">Dean Name</label>
-        <input v-model="form.dean_name" style="border: 1px solid #ccc; padding: 8px; width: 100%; font-size: 11pt; font-family: 'Times New Roman', serif;">
-        <p v-if="errors.dean_name" style="color: #b91c1c; font-size: 10pt; margin-top: 4px;">{{ errors.dean_name }}</p>
+        <label class="block font-bold">Dean Name</label>
+        <input v-model="form.dean_name" class="border p-2 w-full" required>
+        <p v-if="errors.dean_name" class="text-red-500 text-sm mt-1">{{ errors.dean_name }}</p>
       </div>
       <div>
-        <label style="font-weight: bold;">Coordinator Name</label>
-        <input v-model="form.coordinator_name" style="border: 1px solid #ccc; padding: 8px; width: 100%; font-size: 11pt; font-family: 'Times New Roman', serif;">
-        <p v-if="errors.coordinator_name" style="color: #b91c1c; font-size: 10pt; margin-top: 4px;">{{ errors.coordinator_name }}</p>
+        <label class="block font-bold">Coordinator Name</label>
+        <input v-model="form.coordinator_name" class="border p-2 w-full" required>
+        <p v-if="errors.coordinator_name" class="text-red-500 text-sm mt-1">{{ errors.coordinator_name }}</p>
       </div>
       <div>
-        <label style="font-weight: bold;">Director Name</label>
-        <input v-model="form.director_name" style="border: 1px solid #ccc; padding: 8px; width: 100%; font-size: 11pt; font-family: 'Times New Roman', serif;">
-        <p v-if="errors.director_name" style="color: #b91c1c; font-size: 10pt; margin-top: 4px;">{{ errors.director_name }}</p>
+        <label class="block font-bold">Director Name</label>
+        <input v-model="form.director_name" class="border p-2 w-full" required>
+        <p v-if="errors.director_name" class="text-red-500 text-sm mt-1">{{ errors.director_name }}</p>
       </div>
     </div>
-  <div style="margin-top: 1cm; text-align: center;">
-      <button type="submit" @click="submit" style="background-color: #22c55e; color: white; padding: 8px 16px; border-radius: 6px; font-size: 11pt; font-family: 'Times New Roman', serif;">{{ props.isEdit ? 'Update' : 'Submit' }}</button>
+    <div class="mt-6 text-center">
+      <button type="submit" @click="submit" class="bg-green-500 text-white px-4 py-2 rounded">{{ props.isEdit ? 'Update' : 'Submit' }}</button>
     </div>
   </div>
 
