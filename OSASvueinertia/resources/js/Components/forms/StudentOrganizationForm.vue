@@ -133,14 +133,14 @@ const submit = () => {
 
   <div class="section list-indented" style="margin-bottom: 0.3cm;">
     <div style="margin-left: 1.27cm;">
-      <p style="position: relative; left: 0;">1. Letter of application for Organization Recognition (for new organizations) / Organization </p>
-      <p style="position: relative; left: 10px;"> Renewal Form (for organizations seeking renewal) <span style="position: absolute; right: 64px;">- 4 copies</span></p>
-      <p style="position: relative; left: 0;">2. Constitution and By-Laws of the Organization <span style="position: absolute; right: 50px;">- 4 copies</span></p>
-      <p style="position: relative; left: 0;">3. Plan of activities for one (1) year <span style="position: absolute; right: 50px;">- 4 copies</span></p>
-      <p style="position: relative; left: 0;">4. Accomplishment reports (for renewal of accreditation) <span style="position: absolute; right: 50px;">- 4 copies</span></p>
-      <p style="position: relative; left: 0;">5. Adviser(s) Commitment Form <span style="position: absolute; right: 50px;">- 4 copies</span></p>
-      <p style="position: relative; left: 0;">6. Certification from respective Dean/Associate Dean <span style="position: absolute; right: 50px;">- 4 copies</span></p>
-      <p style="position: relative; left: 0;">7. Financial Report (if any) <span style="position: absolute; right: 50px;">- 4 copies</span></p>
+      <p style="position: relative; left: 10px;">1. Letter of application for Organization Recognition (for new organizations) / Organization </p>
+      <p style="position: relative; left: 25px;"> Renewal Form (for organizations seeking renewal) <span style="position: absolute; right: 60px;">- 4 copies</span></p>
+      <p style="position: relative; left: 10px;">2. Constitution and By-Laws of the Organization <span style="position: absolute; right: 50px;">- 4 copies</span></p>
+      <p style="position: relative; left: 10px;">3. Plan of activities for one (1) year <span style="position: absolute; right: 50px;">- 4 copies</span></p>
+      <p style="position: relative; left: 10px;">4. Accomplishment reports (for renewal of accreditation) <span style="position: absolute; right: 50px;">- 4 copies</span></p>
+      <p style="position: relative; left: 10px;">5. Adviser(s) Commitment Form <span style="position: absolute; right: 50px;">- 4 copies</span></p>
+      <p style="position: relative; left: 10px;">6. Certification from respective Dean/Associate Dean <span style="position: absolute; right: 50px;">- 4 copies</span></p>
+      <p style="position: relative; left: 10px;">7. Financial Report (if any) <span style="position: absolute; right: 50px;">- 4 copies</span></p>
     </div>
   </div>
 
