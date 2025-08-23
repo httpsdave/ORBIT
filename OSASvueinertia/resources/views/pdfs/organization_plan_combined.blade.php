@@ -337,9 +337,9 @@
             
             <!-- Second signature row with Faculty Adviser -->
             <div class="signature-container clearfix">
-                <div class="signature-left">
-                    <div class="signature-line" style="margin-bottom:0px;">{{ $application->adviser_name ?? 'N/A' }}</div>
-                    <p style="margin-top:2px;">Organization Adviser(s)</p>
+                <div style="width: 100%; text-align: left;">
+                    <div class="signature-line" style="margin-bottom:0px; white-space:nowrap; min-width:200px; display:inline-block; text-align: center;margin-left: 35px;">{{ $application->adviser_name ?? 'N/A' }}</div>
+                    <p style="margin-top:2px; text-align: left; width: 180px;margin-left:75px">Organization Adviser(s)</p>
                 </div>
             </div>
             
