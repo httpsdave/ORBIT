@@ -220,7 +220,7 @@ const submit = () => {
       <div class="sig-row"><span class="sig-label">Academic Rank:</span><span class="sig-line">{{ form.adviser_rank }}</span></div>
       <div class="sig-row"><span class="sig-label">Home Address:</span><span class="sig-line">{{ form.adviser_address }}</span></div>
       <div class="sig-row"><span class="sig-label">Contact Number(s):</span><span class="sig-line">{{ form.adviser_contact }}</span></div>
-      <div class="sig-row"><span class="sig-label">Date:</span><span class="sig-line">{{ form.form_date }}</span></div>
+  <div class="sig-row"><span class="sig-label">Date:</span><span class="sig-line">{{ new Date(form.form_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) }}</span></div>
     </div>
 
     <!-- Noted, Recommending Approval, and Approval Section -->
