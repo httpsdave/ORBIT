@@ -229,7 +229,7 @@
     <div class="section justified">
         <p>Sir/Madam:</p>
     <div style="height: 12px;"></div>
-    <p class="indented">I have the honor to apply for recognition/renewal of the organization <u>{{ $application->organization_name }}</u>, to be duly recognized by Laguna State Polytechnic University.</p>
+    <p class="indented" style="word-spacing: 10px;">I have the honor to apply for recognition/renewal of the organization <u>{{ $application->organization_name }}</u>, to be duly recognized by Laguna State Polytechnic University.</p>
     <div style="height: 5px;"></div>
         <p class="indented">In compliance with CHED Memo Order No. 9s. 2013, Subj.: Enhanced Policies & Guidelines on Student Affairs and Services (Article VIII-Student Development, Section 19. Student Organizations and Activities), I am submitting for proper action the following requirements for recognition and accreditation, to wit:</p>
     </div>
