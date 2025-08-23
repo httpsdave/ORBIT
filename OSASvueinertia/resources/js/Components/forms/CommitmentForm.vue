@@ -1,4 +1,28 @@
 <script setup>
+const rankOptions = [
+  'Instructor I',
+  'Instructor II',
+  'Instructor III',
+  'Assistant Professor I',
+  'Assistant Professor II',
+  'Assistant Professor III',
+  'Assistant Professor IV',
+  'Associate Professor I',
+  'Associate Professor II',
+  'Associate Professor III',
+  'Associate Professor IV',
+  'Associate Professor V',
+  'Part Time Instructor'
+];
+const collegeOptions = [
+  'College of Computer Studies',
+  'College of Arts and Sciences',
+  'College of Engineering',
+  'College of Industrial Technology',
+  'College of Hospitality Management and Tourism',
+  'College of Teacher Education',
+  'College of Criminal Justice Education'
+];
 import { ref, computed } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 
@@ -272,12 +296,26 @@ const submit = () => {
         </div>
         <div>
           <label class="block font-bold">Adviser College</label>
-          <input v-model="form.adviser_college" class="border p-2 w-full" required>
+          <select 
+            v-model="form.adviser_college"
+            class="border p-2 w-full text-black"
+            required
+          >
+            <option value="" disabled>Select College</option>
+            <option v-for="option in collegeOptions" :key="option" :value="option">{{ option }}</option>
+          </select>
           <p v-if="errors.adviser_college" class="text-red-500 text-sm mt-1">{{ errors.adviser_college }}</p>
         </div>
         <div>
           <label class="block font-bold">Academic Rank</label>
-          <input v-model="form.adviser_rank" class="border p-2 w-full" required>
+          <select 
+            v-model="form.adviser_rank"
+            class="border p-2 w-full text-black"
+            required
+          >
+            <option value="" disabled>Select Rank</option>
+            <option v-for="option in rankOptions" :key="option" :value="option">{{ option }}</option>
+          </select>
           <p v-if="errors.adviser_rank" class="text-red-500 text-sm mt-1">{{ errors.adviser_rank }}</p>
         </div>
         <div>
@@ -287,7 +325,13 @@ const submit = () => {
         </div>
         <div>
           <label class="block font-bold">Contact Number(s)</label>
-          <input v-model="form.adviser_contact" class="border p-2 w-full" required>
+          <input 
+            v-model="form.adviser_contact" 
+            class="border p-2 w-full" 
+            required 
+            @input="e => { e.target.value = e.target.value.replace(/[^0-9+()\-]/g, ''); form.adviser_contact = e.target.value; }"
+            pattern="[0-9+()\-]*"
+          >
           <p v-if="errors.adviser_contact" class="text-red-500 text-sm mt-1">{{ errors.adviser_contact }}</p>
         </div>
         <div>
