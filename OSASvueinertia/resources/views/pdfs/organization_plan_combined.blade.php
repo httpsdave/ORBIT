@@ -136,19 +136,24 @@
             border: 1px solid black;
         }
 
-        th, td {
-            padding: 3px 6px; /* Reduced padding for better space utilization */
+        th {
+            padding: 4px 6px;
             text-align: center;
             vertical-align: middle;
-            height: auto; /* Allow height to grow naturally */
+            font-weight: bold;
+            font-size: 10pt;
+            height: auto;
             word-wrap: break-word;
             hyphens: auto;
         }
 
-        th {
-            font-weight: bold;
-            font-size: 10pt;
-            padding: 4px 6px;
+        td {
+            padding: 3px 6px; /* Reduced padding for better space utilization */
+            text-align: center;
+            vertical-align: top; /* Text starts at the top of each cell */
+            height: auto; /* Allow height to grow naturally */
+            word-wrap: break-word;
+            hyphens: auto;
         }
 
         /* Optimized column width distribution for better space usage */
@@ -160,11 +165,6 @@
         table th:nth-child(6), table td:nth-child(6) { width: 14%; } /* BUDGET */
 
         /* Remove forced height and optimize for content */
-        tr td {
-            vertical-align: middle;
-            padding: 3px 6px;
-            line-height: 1.2;
-        }
 
         /* Ensure content doesn't overflow page */
         .content {
