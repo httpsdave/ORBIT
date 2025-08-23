@@ -209,11 +209,11 @@ const submit = () => {
         </div>
     </div>
 
-  <div class="section text-left" style="margin-top: 18px; margin-bottom: 10px;">
-    <p style="margin-bottom: 8px;"><strong>NOTED:</strong></p>
+  <div class="section text-left" style="margin-top: -2px; margin-bottom: 20px;">
+    <p style="margin-bottom: 30px;"><strong>NOTED:</strong></p>
     <div class="signature" style="margin-bottom: 12px;">
       <p style="margin-bottom: 6px;"><span class="signature-line" style="min-width:220px; border-bottom: 1px solid black; text-align: center; padding-bottom: 2px; margin-right: 10px;">{{ form.adviser_name }}</span></p>
-      <p style="margin-top: 2px;"><span class="title-under-signature" style="margin-left: 0px;"><strong>Adviser/s, Student Organization</strong></span></p>
+      <p style="margin-top: 2px;"><span class="title-under-signature" style="margin-left: 20px;"><strong>Adviser/s, Student Organization</strong></span></p>
     </div>
     <div class="signature" style="margin-bottom: 12px;">
       <p style="margin-bottom: 6px;"><span class="signature-line" style="min-width:295px; border-bottom: 1px solid black; text-align: center; padding-bottom: 2px; margin-right: 10px;">{{ form.dean_name }}</span></p>
