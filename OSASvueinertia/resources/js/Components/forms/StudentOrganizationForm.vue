@@ -132,14 +132,16 @@ const submit = () => {
   </div>
 
   <div class="section list-indented" style="margin-bottom: 0.3cm;">
-    <p style="position: relative; left: -5px;">1. Letter of application for Organization Recognition (for new organizations) / Organization </p>
-    <p style="position: relative; left: 10px;"> Renewal Form (for organizations seeking renewal) <span style="position: absolute; right: 64px;">- 4 copies</span></p>
-    <p style="position: relative; left: -5px;">2. Constitution and By-Laws of the Organization <span style="position: absolute; right: 50px;">- 4 copies</span></p>
-    <p style="position: relative; left: -5px;">3. Plan of activities for one (1) year <span style="position: absolute; right: 50px;">- 4 copies</span></p>
-    <p style="position: relative; left: -5px;">4. Accomplishment reports (for renewal of accreditation) <span style="position: absolute; right: 50px;">- 4 copies</span></p>
-    <p style="position: relative; left: -5px;">5. Adviser(s) Commitment Form <span style="position: absolute; right: 50px;">- 4 copies</span></p>
-    <p style="position: relative; left: -5px;">6. Certification from respective Dean/Associate Dean <span style="position: absolute; right: 50px;">- 4 copies</span></p>
-    <p style="position: relative; left: -5px;">7. Financial Report (if any) <span style="position: absolute; right: 50px;">- 4 copies</span></p>
+    <div style="margin-left: 1.27cm;">
+      <p style="position: relative; left: 0;">1. Letter of application for Organization Recognition (for new organizations) / Organization </p>
+      <p style="position: relative; left: 10px;"> Renewal Form (for organizations seeking renewal) <span style="position: absolute; right: 64px;">- 4 copies</span></p>
+      <p style="position: relative; left: 0;">2. Constitution and By-Laws of the Organization <span style="position: absolute; right: 50px;">- 4 copies</span></p>
+      <p style="position: relative; left: 0;">3. Plan of activities for one (1) year <span style="position: absolute; right: 50px;">- 4 copies</span></p>
+      <p style="position: relative; left: 0;">4. Accomplishment reports (for renewal of accreditation) <span style="position: absolute; right: 50px;">- 4 copies</span></p>
+      <p style="position: relative; left: 0;">5. Adviser(s) Commitment Form <span style="position: absolute; right: 50px;">- 4 copies</span></p>
+      <p style="position: relative; left: 0;">6. Certification from respective Dean/Associate Dean <span style="position: absolute; right: 50px;">- 4 copies</span></p>
+      <p style="position: relative; left: 0;">7. Financial Report (if any) <span style="position: absolute; right: 50px;">- 4 copies</span></p>
+    </div>
   </div>
 
   <div class="section justified" style="margin-bottom: 0.3cm; text-align: justify;">
@@ -179,19 +181,19 @@ const submit = () => {
     </div>
   </div>
 
-  <div class="section center-align" style="margin-bottom: 0; text-align: center; margin-top: 0.5cm;">
+  <div class="section center-align" style="margin-bottom: 0.5cm; text-align: center; margin-top: 0.5cm;">
     <p style="margin-bottom: 0;"><strong>Recommending Approval:</strong></p>
   </div>
-  <div class="signature center-align" style="margin-top: 0.1cm; text-align: center;">
+  <div class="signature center-align" style="margin-top: 0.3cm; text-align: center;">
     <p style="margin-bottom: 0; margin-top: -10px;"><strong><span class="signature-line" style="display: inline-block; min-width: 260px; border-bottom: 1px solid black; padding-bottom: 2px; text-align: center;">{{ form.coordinator_name }}</span></strong></p>
     <p style="margin-top: 0; margin-bottom: 0;"><span class="title-text long-title" style="display: block; width: 260px; text-align: center; white-space: nowrap; font-size: 11pt;">Coordinator, Student Organization Unit</span></p>
     <div style="height: 5px;"></div>
   </div>
 
-  <div class="section center-align last-section" style="margin-bottom: 0; text-align: center; padding-bottom: 0.3cm; margin-top: 0.5cm;">
+  <div class="section center-align last-section" style="margin-bottom: 0.5cm; text-align: center; padding-bottom: 0.3cm; margin-top: 0.5cm;">
     <p style="margin-bottom: 0;"><strong>Approved/Disapproved:</strong></p>
   </div>
-  <div class="signature center-align last-signature" style="margin-top: 0.1cm; text-align: center; margin-bottom: 10px;">
+  <div class="signature center-align last-signature" style="margin-top: 0.3cm; text-align: center; margin-bottom: 10px;">
     <p style="margin-bottom: 0; margin-top: -6px;"><strong><span class="signature-line" style="display: inline-block; min-width: 390px; border-bottom: 1px solid black; padding-bottom: 2px; text-align: center;">{{ form.director_name }}</span></strong></p>
     <p style="margin-top: 0; margin-bottom: 0;"><span class="title-text long-title" style="display: block; width: 390px; text-align: center; white-space: nowrap; font-size: 11pt;">Director/Chairperson, Office of Student Affairs and Services</span></p>
   </div>
