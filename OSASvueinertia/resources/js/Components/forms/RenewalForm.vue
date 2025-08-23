@@ -36,6 +36,16 @@ const formattedDate = computed(() => {
   });
 });
 
+const collegeOptions = [
+  'College of Computer Studies',
+  'College of Arts and Sciences',
+  'College of Engineering',
+  'College of Industrial Technology',
+  'College of Hospitality Management and Tourism',
+  'College of Teacher Education',
+  'College of Criminal Justice Education'
+];
+
 const form = useForm({
   form_type: 'LSPU-OSAS-SF-002',
   organization_name: props.initialFormData.organization_name || '',
@@ -49,6 +59,11 @@ const form = useForm({
   coordinator_name: props.initialFormData.coordinator_name || '',
   director_name: props.initialFormData.director_name || '',
 });
+
+function handleCollegeChange(e) {
+  const selected = e.target.value;
+  form.college = selected.replace('College of ', '');
+}
 
 // Initialize auto-save functionality
 const { isAutoSaving, autoSaveFormData, stop } = useFormAutoSave(form, 'LSPU-OSAS-SF-002');
@@ -251,7 +266,15 @@ const submit = () => {
 
               <div>
                   <label class="block font-bold">College</label>
-                  <input v-model="form.college" class="border p-2 w-full" required>
+                  <select 
+                    :value="'College of ' + form.college"
+                    @change="handleCollegeChange"
+                    class="border p-2 w-full text-black" 
+                    required
+                  >
+                    <option value="" disabled>Select College</option>
+                    <option v-for="option in collegeOptions" :key="option" :value="option">{{ option }}</option>
+                  </select>
                   <p v-if="errors.college" class="text-red-500 text-sm mt-1">{{ errors.college }}</p>
               </div>
 
