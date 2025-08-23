@@ -154,12 +154,12 @@ const submit = () => {
 
   <div class="signature right-align" style="margin-top: 0.5cm; text-align: right;">
     <p><span class="signature-line" style="display: inline-block; min-width: 200px; border-bottom: 1px solid black; padding-bottom: 2px; text-align: center;">{{ form.president_name }}</span></p>
-    <p><span class="title-text" style="display: block; width: 200px; text-align: center; white-space: nowrap; font-size: 11pt;">Organization President</span></p>
+  <p style="margin: 0; padding: 0;"><span class="title-text" style="display: block; width: 200px; margin-left: 440px; text-align: center; white-space: nowrap; font-size: 11pt;">Organization President</span></p>
   </div>
 
   <div class="signature right-align" style="margin-top: 0.3cm; text-align: right;">
     <p><span class="signature-line" style="display: inline-block; min-width: 200px; border-bottom: 1px solid black; padding-bottom: 2px; text-align: center;">{{ form.organization_name }}</span></p>
-    <p><span class="title-text" style="display: block; width: 200px; text-align: center; white-space: nowrap; font-size: 11pt;">Name of Organization</span></p>
+  <p style="margin: 0; padding: 0;"><span class="title-text" style="display: block; width: 200px; margin-left: 440px; text-align: center; white-space: nowrap; font-size: 11pt;">Name of Organization</span></p>
   </div>
 
   <div class="section left-align" style="text-align: left; margin-top: 0.5cm; margin-bottom: 0;">
