@@ -278,7 +278,7 @@ const submit = () => {
     <!-- Noted, Recommending Approval, and Approval Section -->
     <div class="mt-2 mb-8">
       <div class="mb-8" style="text-align:left;">
-        <div class="noted-label mb-1" style="font-size: 1rem; font-weight: normal; margin-bottom: 10px;">Noted:</div>
+  <div class="noted-label mb-1" style="font-size: 1rem; font-weight: bold; margin-bottom: 10px;">Noted:</div>
         <div class="noted-signature-block" style="width: 350px; margin-left: 65px;">
           <span class="signature-line" style="min-width: 180px; border-bottom: 1px solid #000; display: inline-block; margin-left: 0; font-size: 12pt; font-family: 'Times New Roman', serif; font-weight: bold; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ form.dean_name }}</span>
           <p class="mb-0 text-xs text-center" style="font-size: 11pt; font-family: 'Times New Roman', serif; font-weight: bold; margin-top: 2px; font-weight: bold;margin-left:-175px">Dean/Assoc. Dean of College</p>
@@ -295,7 +295,7 @@ const submit = () => {
         <div>
           <p class="mb-1" style="font-size: 12pt; font-family: 'Times New Roman', serif; font-weight: bold;">Approved / Disapproved:</p>
           <div class="mt-2">
-            <span class="signature-line" style="min-width: 380px; border-bottom: 1px solid #000; font-size: 12pt; font-family: 'Times New Roman', serif; font-weight: bold; display: block; margin: 0 auto 2px auto;">{{ form.director_name }}</span>
+            <span class="signature-line" style="min-width: 340px; border-bottom: 1px solid #000; font-size: 12pt; font-family: 'Times New Roman', serif; font-weight: bold; display: block; margin: 0 auto 2px auto;">{{ form.director_name }}</span>
             <p class="mb-0 text-xs" style="font-size: 11pt; font-family: 'Times New Roman', serif; font-weight: bold; margin-top: 2px;">Director, Office of Student Affairs and Services</p>
           </div>
         </div>

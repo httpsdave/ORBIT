@@ -391,7 +391,7 @@
         </div>
 
         <!-- Noted section aligned to the left margin -->
-    <div class="noted-section" style="bottom: {{ ($secondLine || $thirdLine) ? '300px' : '340px' }}; left: 0;">
+    <div class="noted-section" style="bottom: {{ ($secondLine || $thirdLine) ? '275px' : '315px' }}; left: 0;">
             <p style="margin-bottom: 20px;"><strong>Noted:</strong></p>
             <div>
                 <p style="margin-left:65px;"><span class="underline" style="min-width:180px;">{{ $application->dean_name ?? '_______________________________' }}</span></p>
