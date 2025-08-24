@@ -41,9 +41,11 @@ const formData = computed(() => {
       }));
     }
     // Ensure all required fields are preserved
+    const currentYear = new Date().getFullYear().toString().slice(-2);
+    const nextYear = (new Date().getFullYear() + 1).toString().slice(-2);
     data.semester = data.semester || '';
-    data.academic_year_start = data.academic_year_start || '';
-    data.academic_year_end = data.academic_year_end || '';
+    data.academic_year_start = data.academic_year_start || currentYear;
+    data.academic_year_end = data.academic_year_end || nextYear;
     data.organization_name = data.organization_name || '';
     data.president_name = data.president_name || '';
     data.secretary_name = data.secretary_name || '';
