@@ -154,62 +154,62 @@ const submit = () => {
 </script>
 
 <template>
-  <div class="mt-6 form-content">
+  <div class="mt-6 form-content" style="font-size:11pt;">
     <div class="header text-center relative">
         <img src="/images/lspu-logo.png" alt="LSPU Logo" class="absolute top-[-0.5cm] left-[-2cm] w-[250px] h-auto">
-        <p class="calibri-font">Republic of the Philippines</p>
-        <img src="/images/lspu-name.png" alt="Laguna State Polytechnic University" class="university-name"><br>
-        <p class="calibri-font">Province of Laguna</p>
+  <p class="calibri-font" style="font-size:11pt;">Republic of the Philippines</p>
+  <img src="/images/lspu-name.png" alt="Laguna State Polytechnic University" class="university-name" style="font-size:11pt;"><br>
+  <p class="calibri-font" style="font-size:11pt;">Province of Laguna</p>
         <br>
-        <p class="office-title">OFFICE OF STUDENT AFFAIRS AND SERVICES</p>
-        <p class="form-title">ORGANIZATION RENEWAL FORM</p>
+  <p class="office-title" style="font-size:11pt;">OFFICE OF STUDENT AFFAIRS AND SERVICES</p>
+  <p class="form-title" style="font-size:11pt;">ORGANIZATION RENEWAL FORM</p>
         <br>
     </div>
 
     <div class="mt-6 text-right">
-        <p class="mb-0"><span class="signature-line text-center border-b border-black min-w-[150px] inline-block">{{ formattedDate }}</span></p>
-        <p class="mb-0" style="text-align: center; width: 150px; display: inline-block;">Date</p>
+  <p class="mb-0" style="font-size:11pt;"><span class="signature-line text-center border-b border-black min-w-[150px] inline-block" style="font-size:11pt;">{{ formattedDate }}</span></p>
+  <p class="mb-0" style="text-align: center; width: 150px; display: inline-block; font-size:11pt;">Date</p>
     </div>
     
     <div style="height: 7px;"></div>
 
     <div class="section text-left">
-        <p class="mb-0"><strong>THE DIRECTOR/CHAIRPERSON</strong></p>
-        <p class="mb-0">OFFICE OF STUDENT AFFAIRS AND SERVICES</p>
-        <p class="mb-0">LSPU</p>
+  <p class="mb-0" style="font-size:11pt; font-weight:bold;"><strong>THE DIRECTOR/CHAIRPERSON</strong></p>
+  <p class="mb-0" style="font-size:11pt; font-weight:bold;"><strong>OFFICE OF STUDENT AFFAIRS AND SERVICES</strong></p>
+  <p class="mb-0" style="font-size:11pt; font-weight:bold;"><strong>LSPU</strong></p>
     </div>
 
     <div class="section">
-        <p class="thru-line text-center italic my-2">Thru: The Coordinator, Student Organization Unit</p>
+  <p class="thru-line text-center my-2" style="font-size:11pt; font-weight:bold;"><strong>Thru: The Coordinator, Student Organization Unit</strong></p>
     </div>
 
   <div class="section" style="margin-bottom:10px;">
-    <p style="margin-top:5px; font-family:'Times New Roman', serif; font-size:11pt; font-weight:normal;">Sir/Madam:</p>
-    <div style="height:15px;"></div>
-  <p style="text-indent:1.45cm; margin-bottom:20px; font-family:'Times New Roman', serif; font-size:11pt; font-weight:normal;">The <span class="dynamic-text signature-line" style="min-width:200px; display:inline-flex; align-items:center; justify-content:center; border-bottom:1px solid #000; padding-bottom:2px; vertical-align:middle;"><span style="border-bottom:none; display:inline-block; width:100%; text-align:center;">{{ form.organization_name }}</span></span> <span style="display:inline-block; width:12px;"></span>wishes<span style="display:inline-block; width:12px;"></span>to<span style="display:inline-block; width:12px;"></span>seek<span style="display:inline-block; width:12px;"></span>renewal<span style="display:inline-block; width:12px;"></span>of<span style="display:inline-block; width:12px;"></span>its<span style="display:inline-block; width:12px;"></span>recognition<span style="display:inline-block; width:12px;"></span>to function as a duly recognized LSPU Organization for Academic Year 20<span class="dynamic-text"><u>{{ form.academic_year_start }}</u></span> - 20<span class="dynamic-text"><u>{{ form.academic_year_end }}</u></span>.</p>
-    <p class="indented" style="text-indent:1.45cm; margin-bottom:20px; font-family:'Times New Roman', serif; font-size:11pt; font-weight:normal;">In this connection, we are respectfully requesting from your good office to grant us permission to operate in our institution, subject to the existing rules & regulations of our University.</p>
+  <p style="margin-top:5px; font-family:'Times New Roman', serif; font-size:11pt; font-weight:normal;">Sir/Madam:</p>
+  <div style="height:15px; font-size:11pt;"></div>
+  <p style="text-indent:1.45cm; margin-bottom:20px; font-family:'Times New Roman', serif; font-size:11pt; font-weight:normal;">The <span class="dynamic-text signature-line" style="min-width:200px; display:inline-flex; align-items:center; justify-content:center; border-bottom:1px solid #000; padding-bottom:2px; vertical-align:middle; font-size:11pt;"><span style="border-bottom:none; display:inline-block; width:100%; text-align:center; font-size:11pt;">{{ form.organization_name }}</span></span> <span style="display:inline-block; width:12px; font-size:11pt;"></span>wishes<span style="display:inline-block; width:12px; font-size:11pt;"></span>to<span style="display:inline-block; width:12px; font-size:11pt;"></span>seek<span style="display:inline-block; width:12px; font-size:11pt;"></span>renewal<span style="display:inline-block; width:12px; font-size:11pt;"></span>of<span style="display:inline-block; width:12px; font-size:11pt;"></span>its<span style="display:inline-block; width:12px; font-size:11pt;"></span>recognition<span style="display:inline-block; width:12px; font-size:11pt;"></span>to function as a duly recognized LSPU Organization for Academic Year 20<span class="dynamic-text" style="font-size:11pt;"><u>{{ form.academic_year_start }}</u></span> - 20<span class="dynamic-text" style="font-size:11pt;"><u>{{ form.academic_year_end }}</u></span>.</p>
+  <p class="indented" style="text-indent:1.45cm; margin-bottom:20px; font-family:'Times New Roman', serif; font-size:11pt; font-weight:normal; word-spacing:0.8em;">In this connection, we are respectfully requesting from your good office to grant us permission to operate in our institution, subject to the existing rules & regulations of our University.</p>
     <br>
-    <p class="indented" style="margin-top:-10px; margin-left:30px; font-family:'Times New Roman', serif; font-size:11pt; font-weight:normal;">Thank you very much.</p>
+  <p class="indented" style="margin-top:-10px; margin-left:30px; font-family:'Times New Roman', serif; font-size:11pt; font-weight:normal;">Thank you very much.</p>
   </div>
 
     <div class="section text-right">
-        <p class="respectfully-text">Very respectfully yours,</p>
+  <p class="respectfully-text" style="font-size:11pt; position:relative; left:-10px; top:-10px;">Very respectfully yours,</p>
 
         <div class="signature">
-            <p><span class="signature-line" style="min-width:160px;">{{ form.president_name }}</span></p>
-            <p><span class="title-under-signature title-left-adjust"><strong>Organization President</strong></span></p>
+            <p><span class="signature-line" style="min-width:160px; font-size:11pt;">{{ form.president_name }}</span></p>
+            <p><span class="title-under-signature title-left-adjust" style="font-size:11pt;"><strong>Organization President</strong></span></p>
         </div>
     </div>
 
     <div class="section text-right">
         <div class="signature">
-            <p><span class="signature-line" style="min-width:160px;">{{ form.organization_name }}</span></p>
-            <p><span class="title-under-signature title-left-adjust-more"><strong>Name of Organization</strong></span></p>
+            <p><span class="signature-line" style="min-width:160px; font-size:11pt;">{{ form.organization_name }}</span></p>
+            <p><span class="title-under-signature title-left-adjust-more" style="font-size:11pt;"><strong>Name of Organization</strong></span></p>
         </div>
     </div>
 
     <div class="section text-left">
-    <p style="font-size:11pt; font-weight:bold; margin-bottom:0;"><strong>NOTED:</strong></p>
+  <p style="font-size:11pt; font-weight:bold; margin-bottom:0; position:relative; top:-20px;"><strong>NOTED:</strong></p>
     <div class="signature" style="margin-top:0; margin-bottom:10px;">
       <p style="margin-bottom:0;"><span class="signature-line" style="min-width:220px; font-size:11pt;"><strong>{{ form.adviser_name }}</strong></span></p>
       <p style="margin-top:0;"><span class="title-under-signature title-right-adjust" style="font-size:11pt;"><strong>Adviser/s, Student Organization</strong></span></p>
