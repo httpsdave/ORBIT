@@ -179,7 +179,7 @@
             margin-bottom: 0;
         }
         .university-name {
-            max-width: 55%; /* Smaller width for the image */
+            max-width: 50%; /* Smaller width for the image */
             height: auto;
             margin: 4px 0; /* Add some spacing above and below */
             display: inline-block;
@@ -229,20 +229,20 @@
     <div class="section justified">
         <p>Sir/Madam:</p>
     <div style="height: 12px;"></div>
-    <p class="indented"><span style="word-spacing: 15px;">I have the honor to apply for recognition/renewal of the organization</span> <u>{{ $application->organization_name }}</u>, to be duly recognized by Laguna State Polytechnic University.</p>
+    <p class="indented">I have the honor to apply for recognition/renewal of the organization <span style="display:inline-block; min-width:200px; max-width:100%; border-bottom:1px solid black; text-align:center; line-height:0.85; vertical-align:middle; padding:0; margin-bottom:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-indent:0;">{{ $application->organization_name }}</span>, to be duly recognized by Laguna State Polytechnic University.</p>
     <div style="height: 5px;"></div>
         <p class="indented">In compliance with CHED Memo Order No. 9s. 2013, Subj.: Enhanced Policies & Guidelines on Student Affairs and Services (Article VIII-Student Development, Section 19. Student Organizations and Activities), I am submitting for proper action the following requirements for recognition and accreditation, to wit:</p>
     </div>
 
     <div class="section list-indented">
-    <p style="position: relative; left: -5px;">1.<span style="margin-left: 10px;">Letter of application for Organization Recognition (for new organizations) / Organization</span>
+    <p style="position: relative; left: -5px;">1. Letter of application for Organization Recognition (for new organizations) / Organization 
      <p style="position: relative; left: 15px;"> Renewal Form (for organizations seeking renewal) <span style="position: absolute; right: 70px;">- 4 copies</span></p>
-    <p style="position: relative; left: -5px;">2.<span style="margin-left: 10px;">Constitution and By-Laws of the Organization</span> <span style="position: absolute; right: 50px;">- 4 copies</span></p>
-    <p style="position: relative; left: -5px;">3.<span style="margin-left: 10px;">Plan of activities for one (1) year</span> <span style="position: absolute; right: 50px;">- 4 copies</span></p>
-    <p style="position: relative; left: -5px;">4.<span style="margin-left: 10px;">Accomplishment reports (for renewal of accreditation)</span> <span style="position: absolute; right: 50px;">- 4 copies</span></p>
-    <p style="position: relative; left: -5px;">5.<span style="margin-left: 10px;">Adviser(s) Commitment Form</span> <span style="position: absolute; right: 50px;">- 4 copies</span></p>
-    <p style="position: relative; left: -5px;">6.<span style="margin-left: 10px;">Certification from respective Dean/Associate Dean</span> <span style="position: absolute; right: 50px;">- 4 copies</span></p>
-    <p style="position: relative; left: -5px;">7.<span style="margin-left: 10px;">Financial Report (if any)</span> <span style="position: absolute; right: 50px;">- 4 copies</span></p>
+    <p style="position: relative; left: -5px;">2. Constitution and By-Laws of the Organization <span style="position: absolute; right: 50px;">- 4 copies</span></p>
+    <p style="position: relative; left: -5px;">3. Plan of activities for one (1) year <span style="position: absolute; right: 50px;">- 4 copies</span></p>
+    <p style="position: relative; left: -5px;">4. Accomplishment reports (for renewal of accreditation) <span style="position: absolute; right: 50px;">- 4 copies</span></p>
+    <p style="position: relative; left: -5px;">5. Adviser(s) Commitment Form <span style="position: absolute; right: 50px;">- 4 copies</span></p>
+    <p style="position: relative; left: -5px;">6. Certification from respective Dean/Associate Dean <span style="position: absolute; right: 50px;">- 4 copies</span></p>
+    <p style="position: relative; left: -5px;">7. Financial Report (if any) <span style="position: absolute; right: 50px;">- 4 copies</span></p>
     </div>
 
     <div class="section justified">
@@ -272,8 +272,7 @@
             <td style="width: 50%; text-align: left;">
                 <div class="signature left-align">
                     <p><span class="signature-line">{{ $application->adviser_name ?? 'N/A' }}</span></p>
-                    <p><span class="title-text">Adviser, Student Organization</span></p>
-                </div>
+                    <p style="text-align:left;"><span class="title-text">Adviser, Student Organization</span></p>
             </td>
             <td style="width: 50%; text-align: right;">
                 <div class="signature right-align">
@@ -290,7 +289,7 @@
     <p style="margin-bottom: 0;"><strong>Recommending Approval:</strong></p>
     </div>
     <div class="signature center-align" style="margin-top: 0;">
-        <p style="margin-bottom: 0; margin-top: -10px;"><strong><span class="signature-line" style="min-width: 260px;">{{ $application->coordinator_name ?? 'N/A' }}</span></strong></p>
+    <p style="margin-bottom: 0; margin-top: -10px;"><strong><span class="signature-line">{{ $application->coordinator_name ?? 'N/A' }}</span></strong></p>
     <p style="margin-top: 0; margin-bottom: 0;"><span class="title-text long-title">Coordinator, Student Organization Unit</span></p>
     <div style="height: 5px;"></div>
     </div>
@@ -299,7 +298,7 @@
     <p style="margin-bottom: 0;"><strong>Approved/Disapproved:</strong></p>
     </div>
     <div class="signature center-align last-signature" style="margin-top: 0;">
-        <p style="margin-bottom: 0; margin-top: -6px;"><strong><span class="signature-line" style="min-width: 390px;">{{ $application->director_name ?? 'N/A' }}</span></strong></p>
+    <p style="margin-bottom: 0; margin-top: -6px;"><strong><span class="signature-line">{{ $application->director_name ?? 'N/A' }}</span></strong></p>
     <p style="margin-top: 0; margin-bottom: 0;"><span class="title-text long-title">Director/Chairperson, Office of Student Affairs and Services</span></p>
     </div>
 
