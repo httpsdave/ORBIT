@@ -56,22 +56,36 @@ const formData = computed(() => {
     data.application_date = data.application_date || '';
   }
   
-  // Initialize members for List of Members form if they don't exist
+  // Initialize data for Commitment form if needed
+  else if (props.application.form_type === 'LSPU-OSAS-SF-003') {
+    // Ensure all required fields are preserved (president_name removed)
+    const currentYear = new Date().getFullYear().toString().slice(-2);
+    const nextYear = (new Date().getFullYear() + 1).toString().slice(-2);
+    data.organization_name = data.organization_name || '';
+    data.application_date = data.application_date || '';
+    data.adviser_name = data.adviser_name || '';
+    data.adviser_college = data.adviser_college || '';
+    data.adviser_rank = data.adviser_rank || '';
+    data.adviser_address = data.adviser_address || '';
+    data.adviser_contact = data.adviser_contact || '';
+    data.form_date = data.form_date || '';
+    data.dean_name = data.dean_name || '';
+    data.coordinator_name = data.coordinator_name || '';
+    data.director_name = data.director_name || '';
+    data.academic_year_start = data.academic_year_start || currentYear;
+    data.academic_year_end = data.academic_year_end || nextYear;
+  }
+  
+    // Initialize members for List of Members form if they don't exist
   else if (props.application.form_type === 'LSPU-OSAS-SF-005') {
     if (!data.members || !data.members.length) {
-      data.members = Array(4).fill().map(() => ({
-        student_name: '',
-        student_number: '',
-        course_year_section: '',
-        photo_path: null
-      }));
+      data.members = [{ student_name: '', student_number: '', course_year_section: '', photo_path: null }];
     }
-    // Ensure all required fields are preserved
+    // Ensure all required fields are preserved (president_name removed)
     data.semester = data.semester || '';
     data.academic_year_start = data.academic_year_start || '';
     data.academic_year_end = data.academic_year_end || '';
     data.organization_name = data.organization_name || '';
-    data.president_name = data.president_name || '';
     data.secretary_name = data.secretary_name || '';
     data.adviser_name = data.adviser_name || '';
     data.second_adviser = data.second_adviser || '';

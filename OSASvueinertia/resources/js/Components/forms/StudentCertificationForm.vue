@@ -176,7 +176,7 @@ const prevPage = () => {
 const form = useForm({
   form_type: 'LSPU-OSAS-SF-006',
   organization_name: props.initialFormData.organization_name || '',
-  president_name: props.initialFormData.president_name || '',
+  // president_name removed for Student Certification Form
   application_date: props.initialFormData.application_date || '',
   adviser_name: props.initialFormData.adviser_name || '',
   dean_name: props.initialFormData.dean_name || '',
@@ -198,9 +198,7 @@ const validateForm = () => {
     errors.value.organization_name = 'Organization Name is required';
   }
   
-  if (!form.president_name.trim()) {
-    errors.value.president_name = 'President Name is required';
-  }
+  // president_name validation removed for Student Certification Form
   
   if (!form.adviser_name.trim()) {
     errors.value.adviser_name = 'Faculty Adviser is required';
@@ -412,11 +410,7 @@ const submit = () => {
                 <p v-if="errors.organization_name" class="text-red-500 text-sm mt-1">{{ errors.organization_name }}</p>
             </div>
 
-            <div>
-                <label class="block font-bold">President Name</label>
-                <input v-model="form.president_name" class="border p-2 w-full" required>
-                <p v-if="errors.president_name" class="text-red-500 text-sm mt-1">{{ errors.president_name }}</p>
-            </div>
+            <!-- President Name field removed for Student Certification Form -->
 
             <div>
                 <label class="block font-bold">Faculty Adviser(s)</label>

@@ -70,7 +70,7 @@ const today = (() => {
 const form = useForm({
   form_type: 'LSPU-OSAS-SF-003',
   organization_name: props.initialFormData.organization_name || '',
-  president_name: props.initialFormData.president_name || '',
+  // president_name removed for Commitment Form
   application_date: props.initialFormData.application_date || '',
   adviser_name: props.initialFormData.adviser_name || '',
   adviser_college:props.initialFormData.adviser_college || '',
@@ -134,9 +134,7 @@ const validateForm = () => {
     errors.value.director_name = 'Director name is required';
   }
   
-  if (!form.president_name.trim()) {
-    errors.value.president_name = 'President name is required';
-  }
+  // president_name validation removed for Commitment Form
   
   return Object.keys(errors.value).length === 0;
 };
@@ -347,11 +345,7 @@ const submit = () => {
             <input v-model="form.coordinator_name" class="border p-2 w-full" required>
             <p v-if="errors.coordinator_name" class="text-red-500 text-sm mt-1">{{ errors.coordinator_name }}</p>
           </div>
-          <div>
-            <label class="block font-bold">President Name</label>
-            <input v-model="form.president_name" class="border p-2 w-full" required>
-            <p v-if="errors.president_name" class="text-red-500 text-sm mt-1">{{ errors.president_name }}</p>
-          </div>
+          <!-- President Name field removed for Commitment Form -->
         </div>
         <div class="flex flex-col gap-4">
           <div>

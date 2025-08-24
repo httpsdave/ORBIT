@@ -216,7 +216,7 @@ const form = useForm({
   semester: props.initialFormData.semester || '',
   members: [],
   
-  president_name: props.initialFormData.president_name || '',
+  // president_name removed for List of Members Form
   secretary_name: props.initialFormData.secretary_name || '',
   application_date: props.initialFormData.application_date || '',
   adviser_name: props.initialFormData.adviser_name || '',
@@ -280,9 +280,7 @@ const validateForm = () => {
     errors.value.organization_name = 'Organization name is required';
   }
   
-  if (!form.president_name.trim()) {
-    errors.value.president_name = 'President name is required';
-  }
+  // president_name validation removed for List of Members Form
   
   if (!form.coordinator_name.trim()) {
     errors.value.coordinator_name = 'Coordinator name is required';
@@ -593,11 +591,7 @@ function limitTo2Digits(event) {
                 <div v-if="errors.organization_name" class="text-red-500 text-sm mt-1">{{ errors.organization_name }}</div>
             </div>
 
-            <div>
-                <label class="block font-bold">President Name</label>
-                <input v-model="form.president_name" class="border p-2 w-full" required>
-                <div v-if="errors.president_name" class="text-red-500 text-sm mt-1">{{ errors.president_name }}</div>
-            </div>
+            <!-- President Name field removed for List of Members Form -->
 
             <div>
                 <label class="block font-bold">Coordinator Name</label>

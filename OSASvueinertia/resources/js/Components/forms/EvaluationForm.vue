@@ -36,7 +36,7 @@ const statements = [
 const form = useForm({
   form_type: 'LSPU-OSAS-SF-EVAL',
   organization_name: props.initialFormData.organization_name || '',
-  president_name: props.initialFormData.president_name || '',
+  // president_name removed for Evaluation Form
   activity_title: '',
   venue: '',
   // Date range fields
@@ -55,9 +55,8 @@ const lastValidRatings = ref([...form.ratings]);
 // If in edit mode, update form when initialFormData changes
 watch(() => props.initialFormData, (newVal) => {
   if (newVal) {
-    // Always update organization name and president name from cached data
+    // Always update organization name from cached data (president_name removed)
     form.organization_name = newVal.organization_name || '';
-    form.president_name = newVal.president_name || '';
     
     // Only populate activity-specific fields if we're in edit mode (editing an existing evaluation)
     if (props.isEdit) {
@@ -142,10 +141,7 @@ const validateForm = () => {
     errors.value.organization_name = 'Organization Name is required';
     isValid = false;
   }
-  if (!form.president_name.trim()) {
-    errors.value.president_name = 'President Name is required';
-    isValid = false;
-  }
+  // president_name validation removed for Evaluation Form
   if (!form.activity_title.trim()) {
     errors.value.activity_title = 'Title of the Activity is required';
     isValid = false;
@@ -295,11 +291,7 @@ const onRatingKeyPress = (e, i) => {
         <input v-model="form.organization_name" class="border p-2 w-full" required>
         <p v-if="errors.organization_name" class="text-red-500 text-sm mt-1">{{ errors.organization_name }}</p>
       </div>
-      <div>
-        <label class="block font-bold mb-1">President Name</label>
-        <input v-model="form.president_name" class="border p-2 w-full" required>
-        <p v-if="errors.president_name" class="text-red-500 text-sm mt-1">{{ errors.president_name }}</p>
-      </div>
+      <!-- President Name field removed for Evaluation Form -->
       <div>
         <label class="block font-bold mb-1">Title of the Activity</label>
         <input v-model="form.activity_title" class="border p-2 w-full" required>

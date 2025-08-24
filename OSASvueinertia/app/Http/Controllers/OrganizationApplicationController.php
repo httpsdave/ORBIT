@@ -101,7 +101,8 @@ class OrganizationApplicationController extends Controller
         $validationRules = [
             'form_type' => 'required|string',
             'organization_name' => 'required|string|max:255',
-            'president_name' => 'required|string|max:255',
+            // president_name is nullable for specific forms: SF-003, SF-005, SF-006, SF-007, SF-009, SF-EVAL
+            'president_name' => in_array($request->form_type, ['LSPU-OSAS-SF-003', 'LSPU-OSAS-SF-005', 'LSPU-OSAS-SF-006', 'LSPU-OSAS-SF-007', 'LSPU-OSAS-SF-009', 'LSPU-OSAS-SF-EVAL']) ? 'nullable|string|max:255' : 'required|string|max:255',
             'adviser_name' => 'required|string|max:255',
             'dean_name' => 'required|string|max:255',
             'coordinator_name' => 'required|string|max:255',
@@ -424,7 +425,8 @@ class OrganizationApplicationController extends Controller
         // Common fields validation
         $validationRules = [
             'organization_name' => 'required|string|max:255',
-            'president_name' => 'required|string|max:255',
+            // president_name is nullable for specific forms: SF-003, SF-005, SF-006, SF-007, SF-009, SF-EVAL
+            'president_name' => in_array($application->form_type, ['LSPU-OSAS-SF-003', 'LSPU-OSAS-SF-005', 'LSPU-OSAS-SF-006', 'LSPU-OSAS-SF-007', 'LSPU-OSAS-SF-009', 'LSPU-OSAS-SF-EVAL']) ? 'nullable|string|max:255' : 'required|string|max:255',
             'adviser_name' => $application->form_type === 'LSPU-OSAS-SF-EVAL' ? 'nullable|string|max:255' : 'required|string|max:255',
             'dean_name' => $application->form_type === 'LSPU-OSAS-SF-EVAL' ? 'nullable|string|max:255' : 'required|string|max:255',
             'coordinator_name' => ($application->form_type === 'LSPU-OSAS-SF-006' || $application->form_type === 'LSPU-OSAS-SF-EVAL') ? 'nullable|string|max:255' : 'required|string|max:255',
@@ -454,6 +456,8 @@ class OrganizationApplicationController extends Controller
                 'form_date' => 'required|date',
                 'academic_year_start' => 'required|string|max:10',
                 'academic_year_end' => 'required|string|max:10',
+                'director_name' => 'required|string|max:255',
+                'application_date' => 'nullable|date',
             ]);
         } elseif ($application->form_type === 'LSPU-OSAS-SF-004') {
             $validationRules = array_merge($validationRules, [
@@ -538,6 +542,16 @@ class OrganizationApplicationController extends Controller
             ]);
         }
         
+        // Debug logging for CommitmentForm updates
+        if ($application->form_type === 'LSPU-OSAS-SF-003') {
+            \Log::info('CommitmentForm Update Debug', [
+                'application_id' => $application->id,
+                'request_data' => $request->all(),
+                'validation_rules' => $validationRules,
+                'form_type' => $application->form_type
+            ]);
+        }
+
         // Validate the request data
         $validatedData = $request->validate($validationRules);
         
@@ -567,6 +581,15 @@ class OrganizationApplicationController extends Controller
         
         // Update the application with validated data
         $application->update($validatedData);
+        
+        // Debug logging for CommitmentForm updates
+        if ($application->form_type === 'LSPU-OSAS-SF-003') {
+            \Log::info('CommitmentForm After Update', [
+                'application_id' => $application->id,
+                'validated_data' => $validatedData,
+                'updated_application' => $application->fresh()->toArray()
+            ]);
+        }
         
         // Save form data for auto-fill functionality
         FormDataService::saveFormData($validatedData);

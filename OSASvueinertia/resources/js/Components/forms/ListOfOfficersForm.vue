@@ -203,7 +203,7 @@ const prevPage = () => {
 const form = useForm({
   form_type: 'LSPU-OSAS-SF-007',
   organization_name: props.initialFormData.organization_name || '',
-  president_name: props.initialFormData.president_name || '',
+  // president_name removed for List of Officers Form
   application_date: props.initialFormData.application_date || '',
   adviser_name: props.initialFormData.adviser_name || '',
   dean_name: props.initialFormData.dean_name || '',
@@ -277,9 +277,7 @@ const validateForm = () => {
     errors.value.academic_year_end = 'Academic year end is required';
   }
   
-  if (!form.president_name.trim()) {
-    errors.value.president_name = 'President name is required';
-  }
+  // president_name validation removed for List of Officers Form
   
   if (!form.adviser_name.trim()) {
     errors.value.adviser_name = 'Faculty adviser name is required';
@@ -461,11 +459,7 @@ const submit = () => {
           <div v-if="errors.academic_year_end" class="text-red-500 text-sm mt-1">{{ errors.academic_year_end }}</div>
         </div>
 
-        <div>
-          <label class="block font-bold">President Name</label>
-          <input v-model="form.president_name" class="border p-2 w-full" required>
-          <div v-if="errors.president_name" class="text-red-500 text-sm mt-1">{{ errors.president_name }}</div>
-        </div>
+        <!-- President Name field removed for List of Officers Form -->
 
         <div>
           <label class="block font-bold">Faculty Adviser Name</label>
