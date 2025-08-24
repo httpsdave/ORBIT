@@ -111,10 +111,13 @@
         
         .underline {
             display: inline-block;
-            min-width: 200px; /* Ensures a baseline width */
+            min-width: 270px; /* Increased baseline width to match approval section */
             border-bottom: 1px solid black;
             padding-bottom: -1px;
             text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .logo {
