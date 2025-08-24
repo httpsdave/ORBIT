@@ -230,7 +230,12 @@
         .sig-signature { width: 205px; }
         .sig-college { width: 220px; }
         .sig-rank { width: 165px; }
-        .sig-address { width: 170px; }
+        .sig-address { 
+            width: 170px; 
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: clip;
+        }
         .sig-contact { width: 143px; }
         .sig-date { width: 234px; }
 
@@ -298,8 +303,8 @@
 
         <div class="section justified">
             <p class="sir-greeting" style="margin-bottom:20px;">Sir/Madam:</p>
-            <p class="indented" style="word-spacing:11px;">This letter is in connection with the application for recognition/renewal of</p>
-            <p style="margin-bottom:0;"><span style="display:flex;align-items:flex-end;"><span style="flex:1;border-bottom:1px solid black;white-space:nowrap;padding:0 8px;">{{ $application->organization_name ?? '____________________________' }}</span><span style="margin-left:8px;">as a duly recognized LSPU Organization.</span></span></p>
+            <p class="indented">This letter is in connection with the application for recognition/renewal of 
+            <u>{{ $application->organization_name ?? '________________' }}</u> as a duly recognized LSPU Organization.</p>
             <p class="indented">I, the undersigned, have committed to serve as the organization's 
             Adviser for the academic year 20<u>{{ $application->academic_year_start ?? '__' }}</u>-20<u>{{ $application->academic_year_end ?? '__' }}</u>, and shall therefore assume full responsibility as 
             provided in the guidelines for the recognition of student organizations.</p>
@@ -326,10 +331,24 @@
                 <span class="signature-label">Academic Rank:</span>
                 <span class="signature-value sig-rank">{{ $application->adviser_rank ?? '' }}</span>
             </div>
-            <div class="signature-field">
-                <span class="signature-label">Home Address:</span>
-                <span class="signature-value sig-address">{{ $application->adviser_address ?? '' }}</span>
-            </div>
+                                    @php
+                                        $address = $application->adviser_address ?? '';
+                                        $firstLine = mb_substr($address, 0, 25);
+                                        $secondLine = mb_substr($address, 25);
+                                    @endphp
+                                    <div class="signature-field">
+                                        <span class="signature-label">Home Address:</span>
+                                        <span class="signature-value sig-address">
+                                            {{ $firstLine }}
+                                        </span>
+                                    </div>
+                                    @if($secondLine)
+                                    <div class="signature-field" style="margin-left: 0;">
+                                        <span class="signature-value sig-address" style="margin-left: 0; padding-left: 0;">
+                                            {{ $secondLine }}
+                                        </span>
+                                    </div>
+                                    @endif
             <div class="signature-field">
                 <span class="signature-label">Contact Number(s):</span>
                 <span class="signature-value sig-contact">{{ $application->adviser_contact ?? '' }}</span>
