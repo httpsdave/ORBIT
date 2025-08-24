@@ -277,26 +277,26 @@ const submit = () => {
 
     <!-- Noted, Recommending Approval, and Approval Section -->
     <div class="mt-2 mb-8">
-      <div class="mb-8">
-        <div class="noted-label mb-1">Noted:</div>
-        <div class="noted-signature-block" style="width: 250px; margin-left: 120px;">
-          <span class="signature-line block text-center" style="width: 100%;">{{ form.dean_name }}</span>
-          <p class="mb-0 text-xs text-center">Dean/Assoc. Dean of College</p>
+      <div class="mb-8" style="text-align:left;">
+        <div class="noted-label mb-1" style="font-size: 1rem; font-weight: normal; margin-bottom: 10px;">Noted:</div>
+        <div class="noted-signature-block" style="width: 350px; margin-left: 65px;">
+          <span class="signature-line block text-center" style="min-width: 270px; border-bottom: 1px solid #000; display: block; margin: 0 auto 2px auto; font-size: 12pt; font-family: 'Times New Roman', serif; font-weight: normal;">{{ form.dean_name }}</span>
+          <p class="mb-0 text-xs text-center" style="font-size: 11pt; font-family: 'Times New Roman', serif; font-weight: bold; margin-top: 2px;">Dean/Assoc. Dean of College</p>
         </div>
       </div>
-      <div class="approval-center-block text-center">
+      <div class="approval-center-block text-center" style="margin-top: 30px;">
         <div class="mb-8">
-          <p class="mb-1">Recommending Approval:</p>
+          <p class="mb-1" style="font-size: 12pt; font-family: 'Times New Roman', serif; font-weight: normal;">Recommending Approval:</p>
           <div class="mt-2">
-            <span class="signature-line">{{ form.coordinator_name }}</span>
-            <p class="mb-0 text-xs">Coordinator, Student Organization Unit</p>
+            <span class="signature-line" style="min-width: 270px; border-bottom: 1px solid #000; font-size: 12pt; font-family: 'Times New Roman', serif; font-weight: bold; display: block; margin: 0 auto 2px auto;">{{ form.coordinator_name }}</span>
+            <p class="mb-0 text-xs" style="font-size: 11pt; font-family: 'Times New Roman', serif; font-weight: bold; margin-top: 2px;">Coordinator, Student Organization Unit</p>
           </div>
         </div>
         <div>
-          <p class="mb-1">Approved / Disapproved:</p>
+          <p class="mb-1" style="font-size: 12pt; font-family: 'Times New Roman', serif; font-weight: normal;">Approved / Disapproved:</p>
           <div class="mt-2">
-            <span class="signature-line">{{ form.director_name }}</span>
-            <p class="mb-0 text-xs">Director, Office of Student Affairs and Services</p>
+            <span class="signature-line" style="min-width: 380px; border-bottom: 1px solid #000; font-size: 12pt; font-family: 'Times New Roman', serif; font-weight: bold; display: block; margin: 0 auto 2px auto;">{{ form.director_name }}</span>
+            <p class="mb-0 text-xs" style="font-size: 11pt; font-family: 'Times New Roman', serif; font-weight: bold; margin-top: 2px;">Director, Office of Student Affairs and Services</p>
           </div>
         </div>
       </div>
