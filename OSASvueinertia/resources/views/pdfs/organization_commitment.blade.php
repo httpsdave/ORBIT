@@ -333,8 +333,17 @@
             </div>
                                     @php
                                         $address = $application->adviser_address ?? '';
-                                        $firstLine = mb_substr($address, 0, 25);
-                                        $secondLine = mb_substr($address, 25);
+                                        if (mb_strlen($address) > 25) {
+                                            $breakPos = mb_strrpos(mb_substr($address, 0, 25), ' ');
+                                            if ($breakPos === false) {
+                                                $breakPos = 25;
+                                            }
+                                            $firstLine = mb_substr($address, 0, $breakPos);
+                                            $secondLine = mb_substr($address, $breakPos);
+                                        } else {
+                                            $firstLine = $address;
+                                            $secondLine = '';
+                                        }
                                     @endphp
                                     <div class="signature-field">
                                         <span class="signature-label">Home Address:</span>
