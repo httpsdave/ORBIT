@@ -388,7 +388,7 @@
         </div>
 
         <!-- Noted section aligned to the left margin -->
-        <div class="noted-section" style="bottom: 340px; left: 0;">
+    <div class="noted-section" style="bottom: {{ isset($thirdLine) && $thirdLine ? '300px' : '340px' }}; left: 0;">
             <p style="margin-bottom: 20px;"><strong>Noted:</strong></p>
             <div>
                 <p style="margin-left:65px;"><span class="underline" style="min-width:180px;">{{ $application->dean_name ?? '_______________________________' }}</span></p>
@@ -397,7 +397,7 @@
         </div>
 
         <!-- Bottom sections positioned at bottom center -->
-        <div class="bottom-sections">
+    <div class="bottom-sections" style="bottom: {{ isset($thirdLine) && $thirdLine ? '40px' : '80px' }};">
             <div class="approval-section" style="margin-bottom: 25px;"> <!-- Spacing between sections -->
                 <p style="margin-bottom: 20px;"><strong>Recommending Approval:</strong></p> <!-- Added 20px spacing under this text -->
                 <p><strong><span class="underline" style="min-width:270px;">{{ $application->coordinator_name ?? '_______________________________' }}</span></strong></p>
