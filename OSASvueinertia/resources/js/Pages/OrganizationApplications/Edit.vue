@@ -109,6 +109,8 @@ const formData = computed(() => {
     } else {
       console.log('Edit.vue - Using existing students:', data.students);
     }
+    // Always set certification_date to current date
+    data.certification_date = new Date().toISOString().slice(0, 10);
   }
   
   // Initialize officers for List of Officers form if they don't exist

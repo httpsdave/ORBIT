@@ -30,6 +30,7 @@ const addStudent = () => {
     course_year_section: '',
     position_rank: '',
     college: form.college || '',
+    certification_date: form.certification_date, // Always include certification_date
   });
 };
 
@@ -85,6 +86,7 @@ const handleCSVUpload = (event) => {
               student_name: studentName,
               course_year_section: courseYearSection,
               position_rank: positionRank,
+              certification_date: form.certification_date, // Always include certification_date
             });
           }
             });
@@ -183,7 +185,11 @@ const form = useForm({
   director_name: props.initialFormData.director_name || '',
   coordinator_name: props.initialFormData.coordinator_name || '',
   college: props.initialFormData.college || '',
-  students: props.initialFormData.students || [],
+  certification_date: new Date().toISOString().slice(0, 10), // Always current date
+  students: (props.initialFormData.students || []).map(student => ({
+    ...student,
+    certification_date: student.certification_date || new Date().toISOString().slice(0, 10), // Ensure each student has certification_date
+  })),
 });
 
 // Initialize with data from props if available
@@ -241,7 +247,12 @@ const submit = () => {
     students: form.students.map(student => ({
       ...student,
       organization_name: form.organization_name,
-      college: form.college
+      college: form.college,
+      certification_date: form.certification_date, // Always set to current date from form
+      is_bonafide: 0,
+      is_not_academic_probation: 0,
+      is_not_disciplinary_probation: 0,
+      has_position: 0,
     }))
   };
   if (props.isEdit) {
