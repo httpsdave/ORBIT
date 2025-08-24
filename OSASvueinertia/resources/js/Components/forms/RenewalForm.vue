@@ -57,8 +57,8 @@ const form = useForm({
   organization_name: props.initialFormData.organization_name || '',
   college: props.initialFormData.college || '',
   application_date: props.initialFormData.application_date || new Date().toISOString().slice(0, 10),
-  academic_year_start: props.initialFormData.academic_year_start || '',
-  academic_year_end: props.initialFormData.academic_year_end || '',
+  academic_year_start: props.initialFormData.academic_year_start || currentYear.value,
+  academic_year_end: props.initialFormData.academic_year_end || nextYear.value,
   president_name: props.initialFormData.president_name || '',
   adviser_name: props.initialFormData.adviser_name || '',
   dean_name: props.initialFormData.dean_name || '',
@@ -260,7 +260,7 @@ const submit = () => {
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                   <label class="block font-bold">Organization Name</label>
-                  <input v-model="form.organization_name" class="border p-2 w-full" required>
+                  <input v-model="form.organization_name" class="border p-2 w-full">
                   <p v-if="errors.organization_name" class="text-red-500 text-sm mt-1">{{ errors.organization_name }}</p>
               </div>
 
@@ -269,8 +269,7 @@ const submit = () => {
                   <select 
                     :value="'College of ' + form.college"
                     @change="handleCollegeChange"
-                    class="border p-2 w-full text-black" 
-                    required
+                    class="border p-2 w-full text-black"
                   >
                     <option value="" disabled>Select College</option>
                     <option v-for="option in collegeOptions" :key="option" :value="option">{{ option }}</option>
@@ -284,7 +283,6 @@ const submit = () => {
                     type="date" 
                     :value="form.application_date" 
                     class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none text-center" 
-                    required 
                     readonly 
                     tabindex="-1" 
                     style="user-select: none; -webkit-user-select: none;" 
@@ -299,7 +297,6 @@ const submit = () => {
                     <input 
                       v-model="form.academic_year_start" 
                       class="border p-2 w-16 bg-gray-200 text-gray-500 select-none pointer-events-none text-center" 
-                      required 
                       :placeholder="currentYear" 
                       readonly 
                       tabindex="-1" 
@@ -309,7 +306,6 @@ const submit = () => {
                     <input 
                       v-model="form.academic_year_end" 
                       class="border p-2 w-16 bg-gray-200 text-gray-500 select-none pointer-events-none text-center" 
-                      required 
                       :placeholder="nextYear" 
                       readonly 
                       tabindex="-1" 
@@ -325,31 +321,31 @@ const submit = () => {
 
               <div>
                   <label class="block font-bold">President Name</label>
-                  <input v-model="form.president_name" class="border p-2 w-full" required>
+                  <input v-model="form.president_name" class="border p-2 w-full">
                   <p v-if="errors.president_name" class="text-red-500 text-sm mt-1">{{ errors.president_name }}</p>
               </div>
 
               <div>
                   <label class="block font-bold">Adviser Name</label>
-                  <input v-model="form.adviser_name" class="border p-2 w-full" required>
+                  <input v-model="form.adviser_name" class="border p-2 w-full">
                   <p v-if="errors.adviser_name" class="text-red-500 text-sm mt-1">{{ errors.adviser_name }}</p>
               </div>
 
               <div>
                   <label class="block font-bold">Dean Name</label>
-                  <input v-model="form.dean_name" class="border p-2 w-full" required>
+                  <input v-model="form.dean_name" class="border p-2 w-full">
                   <p v-if="errors.dean_name" class="text-red-500 text-sm mt-1">{{ errors.dean_name }}</p>
               </div>
 
               <div>
                   <label class="block font-bold">Coordinator Name</label>
-                  <input v-model="form.coordinator_name" class="border p-2 w-full" required>
+                  <input v-model="form.coordinator_name" class="border p-2 w-full">
                   <p v-if="errors.coordinator_name" class="text-red-500 text-sm mt-1">{{ errors.coordinator_name }}</p>
               </div>
 
               <div>
                   <label class="block font-bold">Chairperson Name</label>
-                  <input v-model="form.director_name" class="border p-2 w-full" required>
+                  <input v-model="form.director_name" class="border p-2 w-full">
                   <p v-if="errors.director_name" class="text-red-500 text-sm mt-1">{{ errors.director_name }}</p>
               </div>
           </div>
