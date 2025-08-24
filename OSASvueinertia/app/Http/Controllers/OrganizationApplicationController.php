@@ -66,6 +66,25 @@ class OrganizationApplicationController extends Controller
         'errorMessage' => session('error'),
     ]);
 }
+    /**
+     * Clear saved form data for the authenticated user
+     */
+    public function clearSavedFormData(Request $request)
+    {
+        $cleared = \App\Services\FormDataService::clearSavedFormData();
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => $cleared,
+                'message' => $cleared ? 'Saved form data cleared successfully!' : 'No saved data found to clear.'
+            ]);
+        }
+
+        return redirect()->back()->with(
+            $cleared ? 'success' : 'info',
+            $cleared ? 'Saved form data cleared successfully!' : 'No saved data found to clear.'
+        );
+    }
     public function create()
     {
         // Get saved form data for auto-fill
