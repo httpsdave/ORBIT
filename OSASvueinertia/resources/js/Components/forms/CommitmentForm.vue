@@ -216,23 +216,65 @@ const submit = () => {
     <!-- Signature block: Very respectfully yours -->
     <div class="very-respectfully mt-12 mb-8">
       <p class="mb-2" style="font-weight: bold;">Very respectfully yours,</p>
-      <div class="sig-row"><span class="sig-label">Name:</span><span class="sig-line">{{ form.adviser_name }}</span></div>
-      <div class="sig-row"><span class="sig-label">Signature:</span><span class="sig-line">&nbsp;</span></div>
-      <div class="sig-row"><span class="sig-label">College:</span><span class="sig-line">{{ form.adviser_college }}</span></div>
-      <div class="sig-row"><span class="sig-label">Academic Rank:</span><span class="sig-line">{{ form.adviser_rank }}</span></div>
-        <div class="sig-row">
-          <span class="sig-label">Home Address:</span>
-          <span class="sig-line">
-            {{ form.adviser_address.length > 25 ? form.adviser_address.slice(0, 25) : form.adviser_address }}
-          </span>
-        </div>
-        <div v-if="form.adviser_address.length > 25" class="sig-row" style="margin-left: -5px;">
-          <span class="sig-line">
-            {{ form.adviser_address.slice(25) }}
-          </span>
-        </div>
-      <div class="sig-row"><span class="sig-label">Contact Number(s):</span><span class="sig-line">{{ form.adviser_contact }}</span></div>
-  <div class="sig-row"><span class="sig-label">Date:</span><span class="sig-line">{{ new Date(form.form_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) }}</span></div>
+      <!-- Name signature line: 32 chars, single line, ellipsis -->
+      <div class="sig-row">
+        <span class="sig-label">Name:</span>
+        <span class="sig-line sig-name" style="width:230px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+          {{ form.adviser_name }}
+        </span>
+      </div>
+      <div class="sig-row"><span class="sig-label">Signature:</span><span class="sig-line sig-signature">&nbsp;</span></div>
+      <div class="sig-row"><span class="sig-label">College:</span><span class="sig-line sig-college">{{ form.adviser_college }}</span></div>
+      <div class="sig-row"><span class="sig-label">Academic Rank:</span><span class="sig-line sig-rank">{{ form.adviser_rank }}</span></div>
+      <!-- Home Address signature lines: split into up to 3 lines -->
+      <div class="sig-row">
+        <span class="sig-label">Home Address:</span>
+        <span class="sig-line sig-address">
+          {{ form.adviser_address.length > 25 ? form.adviser_address.slice(0, form.adviser_address.slice(0,25).lastIndexOf(' ') > 0 ? form.adviser_address.slice(0,25).lastIndexOf(' ') : 25) : form.adviser_address }}
+        </span>
+      </div>
+      <div v-if="form.adviser_address.length > 25" class="sig-row" style="margin-left: -5px;">
+        <span class="sig-label"></span>
+        <span class="sig-line sig-address">
+          {{ (() => {
+            const addr = form.adviser_address;
+            const break1 = addr.length > 25 ? (addr.slice(0,25).lastIndexOf(' ') > 0 ? addr.slice(0,25).lastIndexOf(' ') : 25) : addr.length;
+            const remaining = addr.slice(break1).trim();
+            if (remaining.length > 42) {
+              const break2 = remaining.slice(0,42).lastIndexOf(' ') > 0 ? remaining.slice(0,42).lastIndexOf(' ') : 42;
+              return remaining.slice(0,break2);
+            } else {
+              return remaining;
+            }
+          })() }}
+        </span>
+      </div>
+      <div v-if="(() => {
+        const addr = form.adviser_address;
+        const break1 = addr.length > 25 ? (addr.slice(0,25).lastIndexOf(' ') > 0 ? addr.slice(0,25).lastIndexOf(' ') : 25) : addr.length;
+        const remaining = addr.slice(break1).trim();
+        if (remaining.length > 42) {
+          const break2 = remaining.slice(0,42).lastIndexOf(' ') > 0 ? remaining.slice(0,42).lastIndexOf(' ') : 42;
+          return remaining.slice(break2).trim().length > 0;
+        }
+        return false;
+      })()" class="sig-row" style="margin-left: -5px;">
+        <span class="sig-label"></span>
+        <span class="sig-line sig-address">
+          {{ (() => {
+            const addr = form.adviser_address;
+            const break1 = addr.length > 25 ? (addr.slice(0,25).lastIndexOf(' ') > 0 ? addr.slice(0,25).lastIndexOf(' ') : 25) : addr.length;
+            const remaining = addr.slice(break1).trim();
+            if (remaining.length > 42) {
+              const break2 = remaining.slice(0,42).lastIndexOf(' ') > 0 ? remaining.slice(0,42).lastIndexOf(' ') : 42;
+              return remaining.slice(break2).trim();
+            }
+            return '';
+          })() }}
+        </span>
+      </div>
+      <div class="sig-row"><span class="sig-label">Contact Number(s):</span><span class="sig-line sig-contact">{{ form.adviser_contact }}</span></div>
+      <div class="sig-row"><span class="sig-label">Date:</span><span class="sig-line sig-date">{{ new Date(form.form_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) }}</span></div>
     </div>
 
     <!-- Noted, Recommending Approval, and Approval Section -->
