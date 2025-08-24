@@ -193,24 +193,20 @@ const submit = () => {
     </div>
 
     <div class="section">
-      <p class="indented font-bold mb-2">Thru: The Coordinator, Student Organization Unit</p>
+      <p class="thru-line font-bold mb-2" style="padding-left: 1.27cm; text-indent: 0;">Thru: The Coordinator, Student Organization Unit</p>
     </div>
 
-    <div class="section commitment-body">
-      <p class="mb-1">Sir,</p>
-      <p class="indented mb-0">
-        This letter is in connection with the application for recognition of
-        <span class="blank-line org-name">{{ form.organization_name }}</span>
-        as a LSPU Student Organization.
+    <div class="section commitment-body" style="text-align: justify; font-family: 'Times New Roman', Times, serif; font-size: 12pt; line-height: 1.1;">
+      <p class="sir-greeting" style="margin-top: 10px; margin-bottom: 20px;">Sir/Madam:</p>
+      <p class="indented" style="text-indent: 1.45cm;">
+        This letter is in connection with the application for recognition/renewal of
+        <span style="display: inline-block; min-width: 300px; border-bottom: 1px solid #000; vertical-align: middle;">{{ form.organization_name }}</span>
+        as a duly recognized LSPU Organization.
       </p>
-      <p class="indented mb-0">
-        I, the undersigned, have committed to serve as the organizations Faculty Adviser for the academic year 20
-        <span class="blank-line year">{{ form.academic_year_start }}</span>
-        –20
-        <span class="blank-line year">{{ form.academic_year_end }}</span>,
-        and will therefore assume full responsibility as provided in the guidelines for the recognition of student organizations.
+      <p class="indented" style="text-indent: 1.45cm;">
+        I, the undersigned, have committed to serve as the organization's Adviser for the academic year 20<span style="display: inline-block; min-width: 40px; border-bottom: 1px solid #000; vertical-align: middle;">{{ form.academic_year_start }}</span>-20<span style="display: inline-block; min-width: 40px; border-bottom: 1px solid #000; vertical-align: middle;">{{ form.academic_year_end }}</span>, and shall therefore assume full responsibility as provided in the guidelines for the recognition of student organizations.
       </p>
-      <p class="indented mb-0">
+      <p class="indented" style="text-indent: 1.45cm;">
         Furthermore, I certify to the correctness and completeness of the documents attached to the organization application for recognition.
       </p>
     </div>
