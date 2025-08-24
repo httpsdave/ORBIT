@@ -120,7 +120,7 @@ class OrganizationApplicationController extends Controller
         }  elseif ($request->form_type === 'LSPU-OSAS-SF-004') {
             $validationRules = array_merge($validationRules, [
                 'secretary_name' => 'required|string|max:255',
-                'semester' => 'required|string|in:1st,2nd,Summer',
+                'semester' => 'required|string|in:1st,2nd,Summer,Inter',
                 'academic_year_start' => 'required|string|max:10',
                 'academic_year_end' => 'required|string|max:10',
                 
@@ -134,7 +134,7 @@ class OrganizationApplicationController extends Controller
             ]);
         } elseif ($request->form_type === 'LSPU-OSAS-SF-005') {
             $validationRules = array_merge($validationRules, [
-                'semester' => 'required|string|in:1st,2nd,Summer',
+                'semester' => 'required|string|in:1st,2nd,Summer,Inter',
                 'academic_year_start' => 'required|string|max:10',
                 'academic_year_end' => 'required|string|max:10',
                 'second_adviser' => 'nullable|string|max:255',
@@ -155,7 +155,7 @@ class OrganizationApplicationController extends Controller
                 'students.*.is_not_academic_probation' => 'nullable|boolean',
                 'students.*.is_not_disciplinary_probation' => 'nullable|boolean',
                 'students.*.has_position' => 'nullable|boolean',
-                // certification_date removed from validation
+                'students.*.certification_date' => 'required|date',
                 'coordinator_name' => 'nullable|string|max:255',
             ]);
             
@@ -317,14 +317,7 @@ class OrganizationApplicationController extends Controller
         // Save student certifications if this is the Student Certification form
         if ($request->form_type === 'LSPU-OSAS-SF-006' && $request->has('students')) {
             foreach ($data['students'] as $studentData) {
-                // Filter only the fields we want to save
-                $filteredData = [
-                    'student_name' => $studentData['student_name'] ?? '',
-                    'course_year_section' => $studentData['course_year_section'] ?? '',
-                    'position_rank' => $studentData['position_rank'] ?? '',
-                    'certification_date' => now(),
-                ];
-                $application->studentCertifications()->create($filteredData);
+                $application->studentCertifications()->create($studentData);
             }
         }
 
@@ -355,6 +348,11 @@ class OrganizationApplicationController extends Controller
                     'student_name' => $cert->student_name,
                     'course_year_section' => $cert->course_year_section,
                     'position_rank' => $cert->position_rank,
+                    'is_bonafide' => (bool) $cert->is_bonafide,
+                    'is_not_academic_probation' => (bool) $cert->is_not_academic_probation,
+                    'is_not_disciplinary_probation' => (bool) $cert->is_not_disciplinary_probation,
+                    'has_position' => (bool) $cert->has_position,
+                    'certification_date' => $cert->certification_date ? $cert->certification_date->format('Y-m-d') : '',
                 ];
             })->toArray();
         }
@@ -441,7 +439,7 @@ class OrganizationApplicationController extends Controller
         } elseif ($application->form_type === 'LSPU-OSAS-SF-004') {
             $validationRules = array_merge($validationRules, [
                 'secretary_name' => 'required|string|max:255',
-                'semester' => 'required|string|in:1st,2nd,Summer',
+                'semester' => 'required|string|in:1st,2nd,Summer,Inter',
                 'academic_year_start' => 'required|string|max:10',
                 'academic_year_end' => 'required|string|max:10',
             ]);
@@ -449,7 +447,7 @@ class OrganizationApplicationController extends Controller
             // Special handling for activities below
         } elseif ($application->form_type === 'LSPU-OSAS-SF-005') {
             $validationRules = array_merge($validationRules, [
-                'semester' => 'required|string|in:1st,2nd,Summer',
+                'semester' => 'required|string|in:1st,2nd,Summer,Inter',
                 'academic_year_start' => 'required|string|max:10',
                 'academic_year_end' => 'required|string|max:10',
                 'second_adviser' => 'nullable|string|max:255',
@@ -459,13 +457,15 @@ class OrganizationApplicationController extends Controller
             // Special handling for members below
         } elseif ($application->form_type === 'LSPU-OSAS-SF-006') {
             $validationRules = array_merge($validationRules, [
-                'college' => 'required|string|max:255',
-                'director_name' => 'required|string|max:255',
                 'students' => 'required|array|min:1',
                 'students.*.student_name' => 'required|string|max:255',
                 'students.*.course_year_section' => 'required|string|max:255',
                 'students.*.position_rank' => 'nullable|string|max:255',
-                // All other certification fields removed from validation
+                'students.*.is_bonafide' => 'nullable|boolean',
+                'students.*.is_not_academic_probation' => 'nullable|boolean',
+                'students.*.is_not_disciplinary_probation' => 'nullable|boolean',
+                'students.*.has_position' => 'nullable|boolean',
+                'students.*.certification_date' => 'required|date',
             ]);
         } elseif ($application->form_type === 'LSPU-OSAS-SF-007') {
             $validationRules = array_merge($validationRules, [
@@ -611,14 +611,7 @@ class OrganizationApplicationController extends Controller
             
             // Create new student certifications
             foreach ($request->students as $studentData) {
-                // Filter only the fields we want to save
-                $filteredData = [
-                    'student_name' => $studentData['student_name'] ?? '',
-                    'course_year_section' => $studentData['course_year_section'] ?? '',
-                    'position_rank' => $studentData['position_rank'] ?? '',
-                    'certification_date' => now(),
-                ];
-                $application->studentCertifications()->create($filteredData);
+                $application->studentCertifications()->create($studentData);
             }
         }
         
@@ -1392,26 +1385,6 @@ class OrganizationApplicationController extends Controller
 
         // Return a 204 No Content response for silent auto-save
         return response()->noContent();
-    }
-
-    /**
-     * Clear saved form data for the authenticated user
-     */
-    public function clearSavedFormData(Request $request)
-    {
-        $cleared = FormDataService::clearSavedFormData();
-
-        if ($request->expectsJson()) {
-            return response()->json([
-                'success' => $cleared,
-                'message' => $cleared ? 'Saved form data cleared successfully!' : 'No saved data found to clear.'
-            ]);
-        }
-
-        return redirect()->back()->with(
-            $cleared ? 'success' : 'info',
-            $cleared ? 'Saved form data cleared successfully!' : 'No saved data found to clear.'
-        );
     }
 
     public function uploadReport(Request $request)

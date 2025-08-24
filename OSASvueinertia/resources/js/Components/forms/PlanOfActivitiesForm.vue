@@ -694,7 +694,7 @@ nextTick(() => {
                             <option value="">Select Semester</option>
                             <option value="1st">1st</option>
                             <option value="2nd">2nd</option>
-                            <option value="Summer">Summer</option>
+                              <option value="Inter">Inter Semester</option>
                         </select>
                         <p v-if="errors.semester" class="text-red-500 text-sm mt-1">{{ errors.semester }}</p>
                     </div>
