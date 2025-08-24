@@ -173,7 +173,8 @@ const submit = () => {
       <p class="text-sm font-bold mb-0">Republic of the Philippines</p>
       <p class="text-base font-bold university-name mb-0">Laguna State Polytechnic University</p>
       <p class="text-sm mb-0">Province of Laguna</p>
-      <p class="osas-header mb-0 mt-4">Office of Student Affairs and Services</p>
+    <div style="height:10px;"></div>
+    <p class="office-title" style="margin-bottom:10px; font-size:12pt; font-family: 'Times New Roman', serif; text-align:center; font-weight:bold;">OFFICE OF STUDENT AFFAIRS AND SERVICES</p>
       <p class="commitment-form-title mb-4">ORGANIZATION ADVISER COMMITMENT FORM</p>
     </div>
 
