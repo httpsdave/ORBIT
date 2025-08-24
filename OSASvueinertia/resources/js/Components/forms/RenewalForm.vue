@@ -1,4 +1,20 @@
 <script setup>
+// College options for the select dropdown
+const collegeOptions = [
+  'College of Computer Studies',
+  'College of Arts and Sciences',
+  'College of Engineering',
+  'College of Industrial Technology',
+  'College of Hospitality Management and Tourism',
+  'College of Teacher Education',
+  'College of Criminal Justice Education'
+];
+
+// Handler for college select change
+function handleCollegeChange(e) {
+  const selected = e.target.value;
+  form.college = selected.replace('College of ', '');
+}
 import { ref, onUnmounted, computed } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import { useFormAutoSave } from '@/Composables/useFormAutoSave';
@@ -250,26 +266,61 @@ const submit = () => {
 
               <div>
                   <label class="block font-bold">College</label>
-                  <input v-model="form.college" class="border p-2 w-full" required>
+                  <select 
+                    :value="'College of ' + form.college"
+                    @change="handleCollegeChange"
+                    class="border p-2 w-full text-black" 
+                    required
+                  >
+                    <option value="" disabled>Select College</option>
+                    <option v-for="option in collegeOptions" :key="option" :value="option">{{ option }}</option>
+                  </select>
                   <p v-if="errors.college" class="text-red-500 text-sm mt-1">{{ errors.college }}</p>
               </div>
 
               <div>
                   <label class="block font-bold">Application Date</label>
-                  <input type="date" v-model="form.application_date" class="border p-2 w-full" required>
+                  <input 
+                    type="date" 
+                    :value="form.application_date" 
+                    class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none text-center" 
+                    required 
+                    readonly 
+                    tabindex="-1" 
+                    style="user-select: none; -webkit-user-select: none;" 
+                  >
                   <p v-if="errors.application_date" class="text-red-500 text-sm mt-1">{{ errors.application_date }}</p>
               </div>
 
-              <div>
-                  <label class="block font-bold">Academic Year Start</label>
-                  <input v-model="form.academic_year_start" class="border p-2 w-full" required :placeholder="currentYear">
-                  <p v-if="errors.academic_year_start" class="text-red-500 text-sm mt-1">{{ errors.academic_year_start }}</p>
-              </div>
-
-              <div>
-                  <label class="block font-bold">Academic Year End</label>
-                  <input v-model="form.academic_year_end" class="border p-2 w-full" required :placeholder="nextYear">
-                  <p v-if="errors.academic_year_end" class="text-red-500 text-sm mt-1">{{ errors.academic_year_end }}</p>
+              <div class="flex items-end space-x-2">
+                <div>
+                  <label class="block font-bold">Academic Year</label>
+                  <div class="flex items-center space-x-2">
+                    <input 
+                      v-model="form.academic_year_start" 
+                      class="border p-2 w-16 bg-gray-200 text-gray-500 select-none pointer-events-none text-center" 
+                      required 
+                      :placeholder="currentYear" 
+                      readonly 
+                      tabindex="-1" 
+                      style="user-select: none; -webkit-user-select: none;" 
+                    >
+                    <span class="mx-1">-</span>
+                    <input 
+                      v-model="form.academic_year_end" 
+                      class="border p-2 w-16 bg-gray-200 text-gray-500 select-none pointer-events-none text-center" 
+                      required 
+                      :placeholder="nextYear" 
+                      readonly 
+                      tabindex="-1" 
+                      style="user-select: none; -webkit-user-select: none;" 
+                    >
+                  </div>
+                  <div class="flex space-x-2">
+                    <p v-if="errors.academic_year_start" class="text-red-500 text-sm mt-1">{{ errors.academic_year_start }}</p>
+                    <p v-if="errors.academic_year_end" class="text-red-500 text-sm mt-1">{{ errors.academic_year_end }}</p>
+                  </div>
+                </div>
               </div>
 
               <div>
