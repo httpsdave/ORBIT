@@ -63,7 +63,7 @@ const form = useForm({
   semester: props.initialFormData.semester || '',
   president_name: props.initialFormData.president_name || '',
   secretary_name: props.initialFormData.secretary_name || '',
-  application_date: props.initialFormData.application_date || '',
+  // Removed application_date for Plan of Activities
   adviser_name: props.initialFormData.adviser_name || '',
   dean_name: props.initialFormData.dean_name || '',
   coordinator_name: props.initialFormData.coordinator_name || '',
@@ -733,11 +733,7 @@ nextTick(() => {
                         <p v-if="errors.secretary_name" class="text-red-500 text-sm mt-1">{{ errors.secretary_name }}</p>
                     </div>
 
-                    <div>
-                        <label class="block font-bold">Application Date</label>
-                        <input type="date" v-model="form.application_date" class="border p-2 w-full">
-                        <p v-if="errors.application_date" class="text-red-500 text-sm mt-1">{{ errors.application_date }}</p>
-                    </div>
+                    <!-- Application Date field removed for Plan of Activities -->
 
                     <div>
                         <label class="block font-bold">Adviser Name</label>
