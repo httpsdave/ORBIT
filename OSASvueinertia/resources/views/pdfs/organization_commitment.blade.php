@@ -331,33 +331,52 @@
                 <span class="signature-label">Academic Rank:</span>
                 <span class="signature-value sig-rank">{{ $application->adviser_rank ?? '' }}</span>
             </div>
-                                    @php
-                                        $address = $application->adviser_address ?? '';
-                                        if (mb_strlen($address) > 25) {
-                                            $breakPos = mb_strrpos(mb_substr($address, 0, 25), ' ');
-                                            if ($breakPos === false) {
-                                                $breakPos = 25;
-                                            }
-                                            $firstLine = mb_substr($address, 0, $breakPos);
-                                            $secondLine = mb_substr($address, $breakPos);
-                                        } else {
-                                            $firstLine = $address;
+                                        @php
+                                            $address = $application->adviser_address ?? '';
+                                            $firstLine = '';
                                             $secondLine = '';
-                                        }
-                                    @endphp
-                                    <div class="signature-field">
-                                        <span class="signature-label">Home Address:</span>
-                                        <span class="signature-value sig-address">
-                                            {{ $firstLine }}
-                                        </span>
-                                    </div>
-                                    @if($secondLine)
-                                    <div class="signature-field" style="margin-left: 0;">
-                                        <span class="signature-value sig-address" style="margin-left: 0; padding-left: 0;">
-                                            {{ $secondLine }}
-                                        </span>
-                                    </div>
-                                    @endif
+                                            $thirdLine = '';
+                                            if (mb_strlen($address) > 25) {
+                                                $breakPos1 = mb_strrpos(mb_substr($address, 0, 25), ' ');
+                                                if ($breakPos1 === false) {
+                                                    $breakPos1 = 25;
+                                                }
+                                                $firstLine = trim(mb_substr($address, 0, $breakPos1));
+                                                $remaining = trim(mb_substr($address, $breakPos1));
+                                                if (mb_strlen($remaining) > 42) {
+                                                    $breakPos2 = mb_strrpos(mb_substr($remaining, 0, 42), ' ');
+                                                    if ($breakPos2 === false) {
+                                                        $breakPos2 = 42;
+                                                    }
+                                                    $secondLine = trim(mb_substr($remaining, 0, $breakPos2));
+                                                    $thirdLine = trim(mb_substr($remaining, $breakPos2));
+                                                } else {
+                                                    $secondLine = $remaining;
+                                                }
+                                            } else {
+                                                $firstLine = $address;
+                                            }
+                                        @endphp
+                                        <div class="signature-field">
+                                            <span class="signature-label">Home Address:</span>
+                                            <span class="signature-value sig-address">
+                                                {{ $firstLine }}
+                                            </span>
+                                        </div>
+                                        @if($secondLine)
+                                        <div class="signature-field" style="margin-left: 0;">
+                                            <span class="signature-value sig-address" style="margin-left: 0; padding-left: 0;">
+                                                {{ $secondLine }}
+                                            </span>
+                                        </div>
+                                        @endif
+                                        @if($thirdLine)
+                                        <div class="signature-field" style="margin-left: 0;">
+                                            <span class="signature-value sig-address" style="margin-left: 0; padding-left: 0;">
+                                                {{ $thirdLine }}
+                                            </span>
+                                        </div>
+                                        @endif
             <div class="signature-field">
                 <span class="signature-label">Contact Number(s):</span>
                 <span class="signature-value sig-contact">{{ $application->adviser_contact ?? '' }}</span>
