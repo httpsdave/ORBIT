@@ -369,7 +369,8 @@ const submit = () => {
           </div>
           <div>
             <label class="block font-bold">Home Address</label>
-            <input v-model="form.adviser_address" class="border p-2 w-full" required>
+            <input v-model="form.adviser_address" class="border p-2 w-full" required maxlength="108"
+              @input="e => { form.adviser_address = e.target.value.slice(0, 109); }">
             <p v-if="errors.adviser_address" class="text-red-500 text-sm mt-1">{{ errors.adviser_address }}</p>
           </div>
           <div>
