@@ -200,7 +200,7 @@ const submit = () => {
       <p class="sir-greeting" style="margin-top: 10px; margin-bottom: 20px;">Sir/Madam:</p>
       <p class="indented" style="text-indent: 1.45cm;">
         This letter is in connection with the application for recognition/renewal of
-        <span style="display: inline-block; min-width: 300px; border-bottom: 1px solid #000; vertical-align: middle;">{{ form.organization_name }}</span>
+  <span style="display: inline-block; min-width: 300px; border-bottom: 1px solid #000; vertical-align: middle; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ form.organization_name }}</span>
         as a duly recognized LSPU Organization.
       </p>
       <p class="indented" style="text-indent: 1.45cm;">
