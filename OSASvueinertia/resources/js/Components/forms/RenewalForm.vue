@@ -36,40 +36,19 @@ const formattedDate = computed(() => {
   });
 });
 
-const collegeOptions = [
-  'College of Computer Studies',
-  'College of Arts and Sciences',
-  'College of Engineering',
-  'College of Industrial Technology',
-  'College of Hospitality Management and Tourism',
-  'College of Teacher Education',
-  'College of Criminal Justice Education'
-];
-
 const form = useForm({
   form_type: 'LSPU-OSAS-SF-002',
   organization_name: props.initialFormData.organization_name || '',
   college: props.initialFormData.college || '',
-  application_date: (() => {
-    const today = new Date();
-    const yyyy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, '0');
-    const dd = String(today.getDate()).padStart(2, '0');
-    return `${yyyy}-${mm}-${dd}`;
-  })(),
-  academic_year_start: props.initialFormData.academic_year_start || currentYear.value,
-  academic_year_end: props.initialFormData.academic_year_end || nextYear.value,
+  application_date: props.initialFormData.application_date || new Date().toISOString().slice(0, 10),
+  academic_year_start: props.initialFormData.academic_year_start || '',
+  academic_year_end: props.initialFormData.academic_year_end || '',
   president_name: props.initialFormData.president_name || '',
   adviser_name: props.initialFormData.adviser_name || '',
   dean_name: props.initialFormData.dean_name || '',
   coordinator_name: props.initialFormData.coordinator_name || '',
   director_name: props.initialFormData.director_name || '',
 });
-
-function handleCollegeChange(e) {
-  const selected = e.target.value;
-  form.college = selected.replace('College of ', '');
-}
 
 // Initialize auto-save functionality
 const { isAutoSaving, autoSaveFormData, stop } = useFormAutoSave(form, 'LSPU-OSAS-SF-002');
@@ -204,15 +183,14 @@ const submit = () => {
         <p class="thru-line text-center italic my-2">Thru: The Coordinator, Student Organization Unit</p>
     </div>
 
-    <div class="section">
-        <p class="mb-1">Sir:</p>
-        
-        <p class="indented">The <span class="dynamic-text"><u>{{ form.organization_name }}</u></span> wishes to seek renewal of its recognition to function as a duly recognized LSPU Organization for Academic Year 20<span class="dynamic-text"><u>{{ form.academic_year_start }}</u></span> - 20<span class="dynamic-text"><u>{{ form.academic_year_end }}</u></span>.</p>
-        
-        <p class="indented">In this connection, we are respectfully requesting from your good office to grant us permission to operate in our institution, subject to the existing rules & regulations of our University.</p>
-        
-        <p class="indented">Thank you very much.</p>
-    </div>
+  <div class="section" style="margin-bottom:10px;">
+    <p style="margin-top:5px; font-family:'Times New Roman', serif; font-size:11pt; font-weight:normal;">Sir/Madam:</p>
+    <div style="height:15px;"></div>
+  <p class="indented" style="text-indent:1.45cm; margin-bottom:20px; font-family:'Times New Roman', serif; font-size:11pt; font-weight:normal;">The <span class="dynamic-text signature-line" style="min-width:180px; display:inline-flex; align-items:center; justify-content:center; border-bottom:1px solid #000; padding-bottom:2px; vertical-align:middle;"><span style="border-bottom:none; display:inline-block; width:100%; text-align:center;">{{ form.organization_name }}</span></span> wishes to seek renewal of its recognition to function as a duly recognized LSPU Organization for Academic Year 20<span class="dynamic-text"><u>{{ form.academic_year_start }}</u></span> - 20<span class="dynamic-text"><u>{{ form.academic_year_end }}</u></span>.</p>
+    <p class="indented" style="text-indent:1.45cm; margin-bottom:20px; font-family:'Times New Roman', serif; font-size:11pt; font-weight:normal;">In this connection, we are respectfully requesting from your good office to grant us permission to operate in our institution, subject to the existing rules & regulations of our University.</p>
+    <br>
+    <p class="indented" style="margin-top:-10px; margin-left:30px; font-family:'Times New Roman', serif; font-size:11pt; font-weight:normal;">Thank you very much.</p>
+  </div>
 
     <div class="section text-right">
         <p class="respectfully-text">Very respectfully yours,</p>
@@ -230,33 +208,34 @@ const submit = () => {
         </div>
     </div>
 
-  <div class="section text-left" style="margin-top: -2px; margin-bottom: 20px;">
-    <p style="margin-bottom: 30px;"><strong>NOTED:</strong></p>
-    <div class="signature" style="margin-bottom: 12px;">
-      <p style="margin-bottom: 6px;"><span class="signature-line" style="min-width:220px; border-bottom: 1px solid black; text-align: center; padding-bottom: 2px; margin-right: 10px;">{{ form.adviser_name }}</span></p>
-      <p style="margin-top: 2px;"><span class="title-under-signature" style="margin-left: 20px;"><strong>Adviser/s, Student Organization</strong></span></p>
+    <div class="section text-left">
+        <p><strong>NOTED:</strong></p>
+        <div class="signature">
+            <p><span class="signature-line" style="min-width:220px;">{{ form.adviser_name }}</span></p>
+            <p><span class="title-under-signature"><strong>Adviser/s, Student Organization</strong></span></p>
+        </div>
+        
+        <div class="signature">
+            <p><span class="signature-line" style="min-width:295px;">{{ form.dean_name }}</span></p>
+            <p><span class="title-under-signature"><strong>Dean/Assoc. Dean, College of</strong> <span class="signature-line signature-line-inline" style="min-width:120px;">{{ form.college }}</span></span></p>
+        </div>
     </div>
-    <div class="signature" style="margin-bottom: 12px;">
-      <p style="margin-bottom: 6px;"><span class="signature-line" style="min-width:295px; border-bottom: 1px solid black; text-align: center; padding-bottom: 2px; margin-right: 10px;">{{ form.dean_name }}</span></p>
-      <p style="margin-top: 2px;"><span class="title-under-signature"><strong>Dean/Assoc. Dean, College of</strong> <span class="signature-line signature-line-inline" style="min-width:120px; border-bottom: 1px solid black; text-align: left; padding-bottom: 2px; margin-left: 8px;">{{ form.college }}</span></span></p>
-    </div>
-  </div>
 
-  <div class="section text-center" style="margin-top: 18px; margin-bottom: 10px;">
-    <p style="margin-left:-380px; margin-bottom: 8px;"><strong>Recommending Approval:</strong></p>
-    <div class="signature" style="margin-bottom: 12px;">
-      <p class="mb-0" style="margin-bottom: 6px;"><span class="signature-line" style="min-width:270px; border-bottom: 1px solid black; text-align: center; padding-bottom: 2px; margin-right: 10px;"><strong>{{ form.coordinator_name }}</strong></span></p>
-      <p class="mb-0" style="margin-top: 2px;"><strong>Coordinator, Student Organization Unit</strong></p>
+    <div class="section text-center">
+        <p class="mb-1">Recommending Approval:</p>
+        <div class="signature">
+            <p class="mb-0"><span class="signature-line">{{ form.coordinator_name }}</span></p>
+            <p class="mb-0">Coordinator, Student Organization Unit</p>
+        </div>
     </div>
-  </div>
 
-  <div class="section text-center" style="margin-top: 18px; margin-bottom: 10px;">
-    <p style="margin-left:-380px; margin-bottom: 8px;"><strong>Approved / Disapproved:</strong></p>
-    <div class="signature" style="margin-bottom: 12px;">
-      <p class="mb-0" style="margin-bottom: 6px;"><span class="signature-line" style="min-width:390px; border-bottom: 1px solid black; text-align: center; padding-bottom: 2px; margin-right: 10px;"><strong>{{ form.director_name }}</strong></span></p>
-      <p class="mb-0" style="margin-top: 2px;"><strong>Director/Chairperson, Office of Student Affairs and Services</strong></p>
+    <div class="section text-center">
+        <p class="mb-1">Approved / Disapproved:</p>
+        <div class="signature">
+            <p class="mb-0"><span class="signature-line">{{ form.director_name }}</span></p>
+            <p class="mb-0">Chairperson, Office of Student Affairs and Services</p>
+        </div>
     </div>
-  </div>
 
     <!-- Form inputs -->
     <form @submit.prevent="submit">
@@ -272,61 +251,26 @@ const submit = () => {
 
               <div>
                   <label class="block font-bold">College</label>
-                  <select 
-                    :value="'College of ' + form.college"
-                    @change="handleCollegeChange"
-                    class="border p-2 w-full text-black" 
-                    required
-                  >
-                    <option value="" disabled>Select College</option>
-                    <option v-for="option in collegeOptions" :key="option" :value="option">{{ option }}</option>
-                  </select>
+                  <input v-model="form.college" class="border p-2 w-full" required>
                   <p v-if="errors.college" class="text-red-500 text-sm mt-1">{{ errors.college }}</p>
               </div>
 
               <div>
                   <label class="block font-bold">Application Date</label>
-                  <input 
-                    type="date" 
-                    :value="form.application_date" 
-                    class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none text-center" 
-                    required 
-                    readonly 
-                    tabindex="-1" 
-                    style="user-select: none; -webkit-user-select: none;" 
-                  >
+                  <input type="date" v-model="form.application_date" class="border p-2 w-full" required>
                   <p v-if="errors.application_date" class="text-red-500 text-sm mt-1">{{ errors.application_date }}</p>
               </div>
 
-              <div class="flex items-end space-x-2">
-                <div>
-                  <label class="block font-bold">Academic Year</label>
-                  <div class="flex items-center space-x-2">
-                    <input 
-                      v-model="form.academic_year_start" 
-                      class="border p-2 w-16 bg-gray-200 text-gray-500 select-none pointer-events-none text-center" 
-                      required 
-                      :placeholder="currentYear" 
-                      readonly 
-                      tabindex="-1" 
-                      style="user-select: none; -webkit-user-select: none;" 
-                    >
-                    <span class="mx-1">-</span>
-                    <input 
-                      v-model="form.academic_year_end" 
-                      class="border p-2 w-16 bg-gray-200 text-gray-500 select-none pointer-events-none text-center" 
-                      required 
-                      :placeholder="nextYear" 
-                      readonly 
-                      tabindex="-1" 
-                      style="user-select: none; -webkit-user-select: none;" 
-                    >
-                  </div>
-                  <div class="flex space-x-2">
-                    <p v-if="errors.academic_year_start" class="text-red-500 text-sm mt-1">{{ errors.academic_year_start }}</p>
-                    <p v-if="errors.academic_year_end" class="text-red-500 text-sm mt-1">{{ errors.academic_year_end }}</p>
-                  </div>
-                </div>
+              <div>
+                  <label class="block font-bold">Academic Year Start</label>
+                  <input v-model="form.academic_year_start" class="border p-2 w-full" required :placeholder="currentYear">
+                  <p v-if="errors.academic_year_start" class="text-red-500 text-sm mt-1">{{ errors.academic_year_start }}</p>
+              </div>
+
+              <div>
+                  <label class="block font-bold">Academic Year End</label>
+                  <input v-model="form.academic_year_end" class="border p-2 w-full" required :placeholder="nextYear">
+                  <p v-if="errors.academic_year_end" class="text-red-500 text-sm mt-1">{{ errors.academic_year_end }}</p>
               </div>
 
               <div>
