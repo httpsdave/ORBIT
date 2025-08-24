@@ -262,12 +262,53 @@ const submit = () => {
     <div class="mt-8 border-t pt-6">
       <h3 class="text-lg font-bold mb-4">Form Details</h3>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label class="block font-bold">Organization Name</label>
-          <input v-model="form.organization_name" class="border p-2 w-full" required>
-          <p v-if="errors.organization_name" class="text-red-500 text-sm mt-1">{{ errors.organization_name }}</p>
+        <div class="flex flex-col gap-4">
+          <div>
+            <label class="block font-bold">Organization Name</label>
+            <input v-model="form.organization_name" class="border p-2 w-full" required>
+            <p v-if="errors.organization_name" class="text-red-500 text-sm mt-1">{{ errors.organization_name }}</p>
+          </div>
+          <div>
+            <label class="block font-bold">Adviser Name</label>
+            <input v-model="form.adviser_name" class="border p-2 w-full" required>
+            <p v-if="errors.adviser_name" class="text-red-500 text-sm mt-1">{{ errors.adviser_name }}</p>
+          </div>
+          <div>
+            <label class="block font-bold">Academic Rank</label>
+            <select 
+              v-model="form.adviser_rank"
+              class="border p-2 w-full text-black"
+              required
+            >
+              <option value="" disabled>Select Rank</option>
+              <option v-for="option in rankOptions" :key="option" :value="option">{{ option }}</option>
+            </select>
+            <p v-if="errors.adviser_rank" class="text-red-500 text-sm mt-1">{{ errors.adviser_rank }}</p>
+          </div>
+          <div>
+            <label class="block font-bold">Contact Number(s)</label>
+            <input 
+              v-model="form.adviser_contact" 
+              class="border p-2 w-full" 
+              required 
+              maxlength="15"
+              @input="e => { e.target.value = e.target.value.replace(/[^0-9+()\-]/g, ''); form.adviser_contact = e.target.value.slice(0, 15); }"
+              pattern="[0-9+()\-]*"
+            >
+            <p v-if="errors.adviser_contact" class="text-red-500 text-sm mt-1">{{ errors.adviser_contact }}</p>
+          </div>
+          <div>
+            <label class="block font-bold">Coordinator Name</label>
+            <input v-model="form.coordinator_name" class="border p-2 w-full" required>
+            <p v-if="errors.coordinator_name" class="text-red-500 text-sm mt-1">{{ errors.coordinator_name }}</p>
+          </div>
+          <div>
+            <label class="block font-bold">President Name</label>
+            <input v-model="form.president_name" class="border p-2 w-full" required>
+            <p v-if="errors.president_name" class="text-red-500 text-sm mt-1">{{ errors.president_name }}</p>
+          </div>
         </div>
-        <div class="flex items-end space-x-2">
+        <div class="flex flex-col gap-4">
           <div>
             <label class="block font-bold">Academic Year</label>
             <div class="flex items-center space-x-2">
@@ -296,85 +337,46 @@ const submit = () => {
               <p v-if="errors.academic_year_end" class="text-red-500 text-sm mt-1">{{ errors.academic_year_end }}</p>
             </div>
           </div>
-        </div>
-        <div>
-          <label class="block font-bold">Adviser Name</label>
-          <input v-model="form.adviser_name" class="border p-2 w-full" required>
-          <p v-if="errors.adviser_name" class="text-red-500 text-sm mt-1">{{ errors.adviser_name }}</p>
-        </div>
-        <div>
-          <label class="block font-bold">Adviser College</label>
-          <select 
-            v-model="form.adviser_college"
-            class="border p-2 w-full text-black"
-            required
-          >
-            <option value="" disabled>Select College</option>
-            <option v-for="option in collegeOptions" :key="option" :value="option">{{ option }}</option>
-          </select>
-          <p v-if="errors.adviser_college" class="text-red-500 text-sm mt-1">{{ errors.adviser_college }}</p>
-        </div>
-        <div>
-          <label class="block font-bold">Academic Rank</label>
-          <select 
-            v-model="form.adviser_rank"
-            class="border p-2 w-full text-black"
-            required
-          >
-            <option value="" disabled>Select Rank</option>
-            <option v-for="option in rankOptions" :key="option" :value="option">{{ option }}</option>
-          </select>
-          <p v-if="errors.adviser_rank" class="text-red-500 text-sm mt-1">{{ errors.adviser_rank }}</p>
-        </div>
-        <div>
-          <label class="block font-bold">Home Address</label>
-          <input v-model="form.adviser_address" class="border p-2 w-full" required>
-          <p v-if="errors.adviser_address" class="text-red-500 text-sm mt-1">{{ errors.adviser_address }}</p>
-        </div>
-        <div>
-          <label class="block font-bold">Contact Number(s)</label>
-          <input 
-            v-model="form.adviser_contact" 
-            class="border p-2 w-full" 
-            required 
-            maxlength="15"
-            @input="e => { e.target.value = e.target.value.replace(/[^0-9+()\-]/g, ''); form.adviser_contact = e.target.value.slice(0, 15); }"
-            pattern="[0-9+()\-]*"
-          >
-          <p v-if="errors.adviser_contact" class="text-red-500 text-sm mt-1">{{ errors.adviser_contact }}</p>
-        </div>
-        <div>
-          <label class="block font-bold">Form Date</label>
-          <input 
-            type="date" 
-            :value="form.form_date" 
-            class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none text-center" 
-            required 
-            readonly 
-            tabindex="-1" 
-            style="user-select: none; -webkit-user-select: none;"
-          >
-          <p v-if="errors.form_date" class="text-red-500 text-sm mt-1">{{ errors.form_date }}</p>
-        </div>
-        <div>
-          <label class="block font-bold">Dean Name</label>
-          <input v-model="form.dean_name" class="border p-2 w-full" required>
-          <p v-if="errors.dean_name" class="text-red-500 text-sm mt-1">{{ errors.dean_name }}</p>
-        </div>
-        <div>
-          <label class="block font-bold">Coordinator Name</label>
-          <input v-model="form.coordinator_name" class="border p-2 w-full" required>
-          <p v-if="errors.coordinator_name" class="text-red-500 text-sm mt-1">{{ errors.coordinator_name }}</p>
-        </div>
-        <div>
-          <label class="block font-bold">Director Name</label>
-          <input v-model="form.director_name" class="border p-2 w-full" required>
-          <p v-if="errors.director_name" class="text-red-500 text-sm mt-1">{{ errors.director_name }}</p>
-        </div>
-        <div>
-          <label class="block font-bold">President Name</label>
-          <input v-model="form.president_name" class="border p-2 w-full" required>
-          <p v-if="errors.president_name" class="text-red-500 text-sm mt-1">{{ errors.president_name }}</p>
+          <div>
+            <label class="block font-bold">Form Date</label>
+            <input 
+              type="date" 
+              :value="form.form_date" 
+              class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none text-center" 
+              required 
+              readonly 
+              tabindex="-1" 
+              style="user-select: none; -webkit-user-select: none;"
+            >
+            <p v-if="errors.form_date" class="text-red-500 text-sm mt-1">{{ errors.form_date }}</p>
+          </div>
+          <div>
+            <label class="block font-bold">Adviser College</label>
+            <select 
+              v-model="form.adviser_college"
+              class="border p-2 w-full text-black"
+              required
+            >
+              <option value="" disabled>Select College</option>
+              <option v-for="option in collegeOptions" :key="option" :value="option">{{ option }}</option>
+            </select>
+            <p v-if="errors.adviser_college" class="text-red-500 text-sm mt-1">{{ errors.adviser_college }}</p>
+          </div>
+          <div>
+            <label class="block font-bold">Home Address</label>
+            <input v-model="form.adviser_address" class="border p-2 w-full" required>
+            <p v-if="errors.adviser_address" class="text-red-500 text-sm mt-1">{{ errors.adviser_address }}</p>
+          </div>
+          <div>
+            <label class="block font-bold">Dean Name</label>
+            <input v-model="form.dean_name" class="border p-2 w-full" required>
+            <p v-if="errors.dean_name" class="text-red-500 text-sm mt-1">{{ errors.dean_name }}</p>
+          </div>
+          <div>
+            <label class="block font-bold">Director Name</label>
+            <input v-model="form.director_name" class="border p-2 w-full" required>
+            <p v-if="errors.director_name" class="text-red-500 text-sm mt-1">{{ errors.director_name }}</p>
+          </div>
         </div>
       </div>
       <div class="mt-6 text-center">
