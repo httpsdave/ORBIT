@@ -178,12 +178,13 @@ const submit = () => {
       <p class="commitment-form-title mb-4">ORGANIZATION ADVISER COMMITMENT FORM</p>
     </div>
 
-    <div class="mt-6 text-right">
-        <p class="mb-0"><span class="signature-line text-center border-b border-black min-w-[150px] inline-block">{{ formattedDate }}</span></p>
-        <p class="mb-0" style="text-align: center; width: 150px; display: inline-block;">Date</p>
+    <div class="section right-align" style="text-align: right; margin-bottom: 0;">
+      <p style="margin: 0;">
+        <span class="signature-line date-underline" style="min-width: 150px; display: inline-block; border-bottom: 1px solid black; text-align: center; padding-bottom: 2px;">{{ formattedDate }}</span>
+      </p>
+  <p style="margin-top: 0; text-align: left; width: max-content; padding-left: 550px;">Date</p>
     </div>
-    
-    <div style="height: 7px;"></div>
+    <div style="height: -3px;"></div>
 
     <div class="section text-left">
       <p class="mb-0 font-bold">THE DIRECTOR/CHAIRPERSON</p>
