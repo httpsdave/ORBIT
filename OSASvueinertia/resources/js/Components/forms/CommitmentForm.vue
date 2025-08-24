@@ -274,7 +274,8 @@ const submit = () => {
           </div>
           <div>
             <label class="block font-bold">Adviser Name</label>
-            <input v-model="form.adviser_name" class="border p-2 w-full" required>
+            <input v-model="form.adviser_name" class="border p-2 w-full" required maxlength="32"
+              @input="e => { form.adviser_name = e.target.value.slice(0, 32); }">
             <p v-if="errors.adviser_name" class="text-red-500 text-sm mt-1">{{ errors.adviser_name }}</p>
           </div>
           <div>
