@@ -204,7 +204,7 @@ const submit = () => {
         as a duly recognized LSPU Organization.
       </p>
       <p class="indented" style="text-indent: 1.45cm;">
-        I, the undersigned, have committed to serve as the organization's Adviser for the academic year 20<span style="display: inline-block; min-width: 40px; border-bottom: 1px solid #000; vertical-align: middle;">{{ form.academic_year_start }}</span>-20<span style="display: inline-block; min-width: 40px; border-bottom: 1px solid #000; vertical-align: middle;">{{ form.academic_year_end }}</span>, and shall therefore assume full responsibility as provided in the guidelines for the recognition of student organizations.
+  I, the undersigned, have committed to serve as the organization's Adviser for the academic year 20<u>{{ form.academic_year_start }}</u>-20<u>{{ form.academic_year_end }}</u>, and shall therefore assume full responsibility as provided in the guidelines for the recognition of student organizations.
       </p>
       <p class="indented" style="text-indent: 1.45cm;">
         Furthermore, I certify to the correctness and completeness of the documents attached to the organization application for recognition.
