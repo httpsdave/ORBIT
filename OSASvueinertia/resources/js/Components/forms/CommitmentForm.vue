@@ -280,8 +280,8 @@ const submit = () => {
       <div class="mb-8" style="text-align:left;">
         <div class="noted-label mb-1" style="font-size: 1rem; font-weight: normal; margin-bottom: 10px;">Noted:</div>
         <div class="noted-signature-block" style="width: 350px; margin-left: 65px;">
-          <span class="signature-line block text-center" style="min-width: 270px; border-bottom: 1px solid #000; display: block; margin: 0 auto 2px auto; font-size: 12pt; font-family: 'Times New Roman', serif; font-weight: bold;">{{ form.dean_name }}</span>
-          <p class="mb-0 text-xs text-center" style="font-size: 11pt; font-family: 'Times New Roman', serif; font-weight: bold; margin-top: 2px; font-weight: bold;">Dean/Assoc. Dean of College</p>
+          <span class="signature-line" style="min-width: 180px; border-bottom: 1px solid #000; display: inline-block; margin-left: 0; font-size: 12pt; font-family: 'Times New Roman', serif; font-weight: bold; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ form.dean_name }}</span>
+          <p class="mb-0 text-xs text-center" style="font-size: 11pt; font-family: 'Times New Roman', serif; font-weight: bold; margin-top: 2px; font-weight: bold;margin-left:-175px">Dean/Assoc. Dean of College</p>
         </div>
       </div>
       <div class="approval-center-block text-center" style="margin-top: 30px;">
@@ -415,7 +415,8 @@ const submit = () => {
           </div>
           <div>
             <label class="block font-bold">Dean Name</label>
-            <input v-model="form.dean_name" class="border p-2 w-full" required>
+            <input v-model="form.dean_name" class="border p-2 w-full" required maxlength="54"
+              @input="e => { form.dean_name = e.target.value.slice(0, 54); }">
             <p v-if="errors.dean_name" class="text-red-500 text-sm mt-1">{{ errors.dean_name }}</p>
           </div>
           <div>
