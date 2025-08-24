@@ -373,15 +373,7 @@ const validateForm = () => {
     isValid = false;
   }
 
-  if (!form.academic_year_start.trim()) {
-    errors.value.academic_year_start = 'Academic Year Start is required';
-    isValid = false;
-  }
-
-  if (!form.academic_year_end.trim()) {
-    errors.value.academic_year_end = 'Academic Year End is required';
-    isValid = false;
-  }
+  // Academic year start/end are always set to current/next year, so skip required validation
 
   if (!form.semester.trim()) {
     errors.value.semester = 'Semester is required';
@@ -699,17 +691,35 @@ nextTick(() => {
                         <p v-if="errors.semester" class="text-red-500 text-sm mt-1">{{ errors.semester }}</p>
                     </div>
 
-                    <div>
-                        <label class="block font-bold">Academic Year Start</label>
-                        <input v-model="form.academic_year_start" class="border p-2 w-full" required :placeholder="currentYear" inputmode="numeric" pattern="[0-9]{2}" maxlength="2" @input="limitTo2Digits">
-                        <p v-if="errors.academic_year_start" class="text-red-500 text-sm mt-1">{{ errors.academic_year_start }}</p>
-                    </div>
 
-                    <div>
-                        <label class="block font-bold">Academic Year End</label>
-                        <input v-model="form.academic_year_end" class="border p-2 w-full" required :placeholder="nextYear" inputmode="numeric" pattern="[0-9]{2}" maxlength="2" @input="limitTo2Digits">
-                        <p v-if="errors.academic_year_end" class="text-red-500 text-sm mt-1">{{ errors.academic_year_end }}</p>
-                    </div>
+                      <div class="flex items-end space-x-2">
+                        <div>
+                          <label class="block font-bold">Academic Year</label>
+                          <div class="flex items-center space-x-2">
+                            <input 
+                              v-model="form.academic_year_start" 
+                              class="border p-2 w-16 bg-gray-200 text-gray-500 select-none pointer-events-none text-center" 
+                              :placeholder="currentYear" 
+                              readonly 
+                              tabindex="-1" 
+                              style="user-select: none; -webkit-user-select: none;" 
+                            >
+                            <span class="mx-1">-</span>
+                            <input 
+                              v-model="form.academic_year_end" 
+                              class="border p-2 w-16 bg-gray-200 text-gray-500 select-none pointer-events-none text-center" 
+                              :placeholder="nextYear" 
+                              readonly 
+                              tabindex="-1" 
+                              style="user-select: none; -webkit-user-select: none;" 
+                            >
+                          </div>
+                          <div class="flex space-x-2">
+                            <p v-if="errors.academic_year_start" class="text-red-500 text-sm mt-1">{{ errors.academic_year_start }}</p>
+                            <p v-if="errors.academic_year_end" class="text-red-500 text-sm mt-1">{{ errors.academic_year_end }}</p>
+                          </div>
+                        </div>
+                      </div>
 
                     <div>
                         <label class="block font-bold">President Name</label>
