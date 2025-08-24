@@ -81,8 +81,8 @@ const form = useForm({
   dean_name: props.initialFormData.dean_name || '',
   coordinator_name: props.initialFormData.coordinator_name || '',
   director_name: props.initialFormData.director_name || '',
-  academic_year_start: props.initialFormData.academic_year_start || '',
-  academic_year_end: props.initialFormData.academic_year_end || '',
+  academic_year_start: currentYear.value,
+  academic_year_end: nextYear.value,
 });
 
 // Add errors ref object
@@ -96,13 +96,7 @@ const validateForm = () => {
     errors.value.organization_name = 'Organization name is required';
   }
   
-  if (!form.academic_year_start.trim()) {
-    errors.value.academic_year_start = 'Academic year start is required';
-  }
-  
-  if (!form.academic_year_end.trim()) {
-    errors.value.academic_year_end = 'Academic year end is required';
-  }
+  // academic_year_start and academic_year_end are always set, so no need to validate
   
   if (!form.adviser_name.trim()) {
     errors.value.adviser_name = 'Adviser name is required';
