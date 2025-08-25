@@ -891,27 +891,27 @@ nextTick(() => {
           <div>
             <label class="block font-bold">Academic Year</label>
             <div class="flex items-center space-x-2">
-              <span>20</span>
               <input 
                 v-model="form.academic_year_start" 
-                @input="limitTo2Digits" 
-                class="border p-2 w-16 text-center" 
+                class="border p-2 w-16 bg-gray-200 text-gray-500 select-none pointer-events-none text-center" 
                 :placeholder="currentYear" 
-                maxlength="2" 
-                required
-                style="user-select: none; -webkit-user-select: none;"
+                readonly 
+                tabindex="-1" 
+                style="user-select: none; -webkit-user-select: none;" 
               >
               <span class="mx-1">-</span>
-              <span>20</span>
               <input 
                 v-model="form.academic_year_end" 
-                @input="limitTo2Digits" 
-                class="border p-2 w-16 text-center" 
+                class="border p-2 w-16 bg-gray-200 text-gray-500 select-none pointer-events-none text-center" 
                 :placeholder="nextYear" 
-                maxlength="2" 
-                required
-                style="user-select: none; -webkit-user-select: none;"
+                readonly 
+                tabindex="-1" 
+                style="user-select: none; -webkit-user-select: none;" 
               >
+            </div>
+            <div class="flex space-x-2">
+              <p v-if="errors.academic_year_start" class="text-red-500 text-sm mt-1">{{ errors.academic_year_start }}</p>
+              <p v-if="errors.academic_year_end" class="text-red-500 text-sm mt-1">{{ errors.academic_year_end }}</p>
             </div>
           </div>
         </div>
