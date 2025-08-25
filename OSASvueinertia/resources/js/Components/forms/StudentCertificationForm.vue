@@ -307,18 +307,18 @@ const submit = () => {
       <span style="display:block; text-align:center; font-size:10pt; margin-top:6px;">(LAST NAME, FIRST NAME, MIDDLE INITIAL)</span>
           </span>, a
           <br>
-          <span style="display:inline-block; width:100%; height:0.5em;"></span>
-  <span style="text-indent:6em;">student taking up</span>
-          <span style="display:inline-block; vertical-align:bottom; position:relative; top:10px;">
-    <span style="min-width:350px; border-bottom:1px solid black; text-align:center; display:inline-block; position:relative; top:10px;">{{ student.course_year_section }}</span>
-      <span style="display:block; text-align:center; font-size:10pt; margin-top:6px;">(course, year and section)</span>
-          </span>
-          from the College of
-        <span style="min-width:445px; border-bottom:1px solid black; display:inline-block;text-align:center">{{ form.college }}</span>
-          is a bonafide LSPU Student, not
+          <div style="padding-left: 0px; text-align: left; margin-top: -5px;">
+        student taking up 
+        <span style="display: inline-block; vertical-align: bottom; position: relative; top: 11px;">
+          <span class="course-blank" style="min-width: 420px; border-bottom: 1px solid black; text-align: center; display: inline-block;">{{ student.course_year_section }}</span>
+          <div style="text-align: center; font-size: 10pt; margin-top: -5px;">
+            <span>(course, year and section)</span>
+          </div>
+        </span> from the College of <span class="signature-line" style="min-width:445px; border-bottom: 1px solid black; display: inline-block; margin-top: 20px;">{{ form.college }}</span> is a bonafide LSPU Student, not
+      </div>
           <br>
           <span style="display:inline-block; width:100%; height:0.5em;"></span>
-  <span style="text-indent:6em;">under academic probation, not under disciplinary probation, and the elected/appointed</span>
+  <span style="text-indent:6em;word-spacing: 17px">under academic probation, not under disciplinary probation, and the elected/appointed</span>
           <br>
           <span style="display:inline-block; width:100%; height:0.5em;"></span>
           <div style="display: flex; align-items: flex-start; margin-top: 10px;">
