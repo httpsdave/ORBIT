@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\SystemSetting;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -96,7 +97,9 @@ class ProfileController extends Controller
             'director_name' => 'nullable|string|max:255',
         ]);
 
-        $user->update($validated);
+        // Save to system settings instead of user model
+        SystemSetting::setCoordinatorName($validated['coordinator_name'] ?? '');
+        SystemSetting::setDirectorName($validated['director_name'] ?? '');
 
         return Redirect::route('profile.edit')->with('status', 'form-defaults-updated');
     }

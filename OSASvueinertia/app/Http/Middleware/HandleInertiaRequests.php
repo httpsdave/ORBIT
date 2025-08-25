@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\SystemSetting;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Illuminate\Support\Facades\DB;
@@ -51,8 +52,8 @@ class HandleInertiaRequests extends Middleware
                     'role' => $user->role,  // Make sure this includes the role relationship
                     'profile_photo_url' => $user->profile_photo_url,
                     'description' => $user->description, // Added description field
-                    'coordinator_name' => $user->coordinator_name,
-                    'director_name' => $user->director_name,
+                    'coordinator_name' => SystemSetting::getCoordinatorName(), // Get from system settings
+                    'director_name' => SystemSetting::getDirectorName(), // Get from system settings
                     'last_name_change_at' => $user->last_name_change_at,
                     'email_verified_at' => $user->email_verified_at,
                 ] : null,

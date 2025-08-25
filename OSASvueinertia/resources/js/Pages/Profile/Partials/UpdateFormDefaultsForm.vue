@@ -20,6 +20,7 @@ const originalDefaults = ref({
 });
 
 // Watch for changes in user data and update form values
+// Note: These are now global system defaults, not user-specific
 watch(() => user, (newUser) => {
     if (newUser) {
         form.coordinator_name = newUser.coordinator_name || '';
@@ -62,7 +63,7 @@ function submit() {
                 <TextInput
                     id="coordinator_name"
                     type="text"
-                    class="mt-1 block w-full border-gray-300 dark:border-gray-600 focus:border-purple-500 focus:ring focus:ring-purple-200 focus:ring-opacity-50 rounded-md shadow-sm dark:bg-gray-700 dark:text-gray-300"
+                    class="mt-1 block w-full border-gray-300 dark:border-gray-600 focus:border-amber-500 focus:ring focus:ring-amber-200 focus:ring-opacity-50 rounded-md shadow-sm dark:bg-gray-700 dark:text-gray-300"
                     v-model="form.coordinator_name"
                     :disabled="!isEditing"
                     :class="!isEditing ? 'bg-gray-100 dark:bg-gray-600 text-gray-400 dark:text-gray-500 cursor-not-allowed select-none pointer-events-none' : ''"
@@ -76,7 +77,7 @@ function submit() {
                 <TextInput
                     id="director_name"
                     type="text"
-                    class="mt-1 block w-full border-gray-300 dark:border-gray-600 focus:border-purple-500 focus:ring focus:ring-purple-200 focus:ring-opacity-50 rounded-md shadow-sm dark:bg-gray-700 dark:text-gray-300"
+                    class="mt-1 block w-full border-gray-300 dark:border-gray-600 focus:border-amber-500 focus:ring focus:ring-amber-200 focus:ring-opacity-50 rounded-md shadow-sm dark:bg-gray-700 dark:text-gray-300"
                     v-model="form.director_name"
                     :disabled="!isEditing"
                     :class="!isEditing ? 'bg-gray-100 dark:bg-gray-600 text-gray-400 dark:text-gray-500 cursor-not-allowed select-none pointer-events-none' : ''"
@@ -87,7 +88,7 @@ function submit() {
         </div>
 
         <div class="flex items-center gap-4">
-            <PrimaryButton v-if="isEditing" :disabled="form.processing" class="bg-purple-500 hover:bg-purple-600 focus:bg-purple-600">
+            <PrimaryButton v-if="isEditing" :disabled="form.processing" class="bg-amber-500 hover:bg-amber-600 focus:bg-amber-600">
                 <span v-if="form.processing">Saving...</span>
                 <span v-else>Save Form Defaults</span>
             </PrimaryButton>
@@ -99,7 +100,7 @@ function submit() {
             >
                 Cancel
             </button>
-            <PrimaryButton v-if="!isEditing" type="button" @click="startEdit" class="bg-purple-500 hover:bg-purple-600 focus:bg-purple-600">
+            <PrimaryButton v-if="!isEditing" type="button" @click="startEdit" class="bg-amber-500 hover:bg-amber-600 focus:bg-amber-600">
                 Edit Form Defaults
             </PrimaryButton>
 

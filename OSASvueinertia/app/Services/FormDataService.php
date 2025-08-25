@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\SystemSetting;
 use App\Models\UserFormData;
 use Illuminate\Support\Facades\Auth;
 
@@ -50,9 +51,26 @@ class FormDataService
             return [];
         }
 
-        return UserFormData::where('user_id', $userId)
+        $savedData = UserFormData::where('user_id', $userId)
             ->pluck('field_value', 'field_name')
             ->toArray();
+            
+        // Get system default values for coordinator_name and director_name
+        // These are global defaults set by admin for all users
+        if (!isset($savedData['coordinator_name'])) {
+            $coordinatorName = SystemSetting::getCoordinatorName();
+            if ($coordinatorName) {
+                $savedData['coordinator_name'] = $coordinatorName;
+            }
+        }
+        if (!isset($savedData['director_name'])) {
+            $directorName = SystemSetting::getDirectorName();
+            if ($directorName) {
+                $savedData['director_name'] = $directorName;
+            }
+        }
+
+        return $savedData;
     }
 
     /**
@@ -66,10 +84,26 @@ class FormDataService
             return [];
         }
 
-        return UserFormData::where('user_id', $userId)
+        $savedData = UserFormData::where('user_id', $userId)
             ->whereIn('field_name', $fields)
             ->pluck('field_value', 'field_name')
             ->toArray();
+            
+        // Get system default values for coordinator_name and director_name if they're requested
+        if (in_array('coordinator_name', $fields) && !isset($savedData['coordinator_name'])) {
+            $coordinatorName = SystemSetting::getCoordinatorName();
+            if ($coordinatorName) {
+                $savedData['coordinator_name'] = $coordinatorName;
+            }
+        }
+        if (in_array('director_name', $fields) && !isset($savedData['director_name'])) {
+            $directorName = SystemSetting::getDirectorName();
+            if ($directorName) {
+                $savedData['director_name'] = $directorName;
+            }
+        }
+
+        return $savedData;
     }
 
     /**

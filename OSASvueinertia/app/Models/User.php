@@ -23,8 +23,6 @@ class User extends Authenticatable
         'description',
         'last_name_change_at',
         'status',
-        'coordinator_name',
-        'director_name',
     ];
 
     protected $appends = ['profile_photo_url'];

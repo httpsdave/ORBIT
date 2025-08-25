@@ -72,7 +72,7 @@ defineProps({
                             </svg>
                             Form Default Values
                         </h3>
-                        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Set default values for coordinator and director names that will auto-populate in all forms.</p>
+                        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Set global default values for coordinator and director names that will auto-populate in all users' forms.</p>
                     </div>
                     <UpdateFormDefaultsForm class="max-w-xl" />
                 </div>

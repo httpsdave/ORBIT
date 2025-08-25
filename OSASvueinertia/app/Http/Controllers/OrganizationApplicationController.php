@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\OrganizationApplication;
 use App\Models\Notification;
+use App\Models\SystemSetting;
 use App\Services\FormDataService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -89,6 +90,14 @@ class OrganizationApplicationController extends Controller
     {
         // Get saved form data for auto-fill
         $savedFormData = FormDataService::getSavedFormData();
+        
+        // Ensure coordinator_name and director_name are always set from system defaults
+        if (!isset($savedFormData['coordinator_name'])) {
+            $savedFormData['coordinator_name'] = SystemSetting::getCoordinatorName();
+        }
+        if (!isset($savedFormData['director_name'])) {
+            $savedFormData['director_name'] = SystemSetting::getDirectorName();
+        }
         
         return Inertia::render('OrganizationApplications/Create', [
             'savedFormData' => $savedFormData
@@ -226,6 +235,14 @@ class OrganizationApplicationController extends Controller
         
         // Explicitly set user_id - make sure this line executes
         $data['user_id'] = auth()->id();
+        
+        // Set default values for coordinator_name and director_name from system defaults if not provided
+        if (empty($data['coordinator_name'])) {
+            $data['coordinator_name'] = SystemSetting::getCoordinatorName();
+        }
+        if (empty($data['director_name'])) {
+            $data['director_name'] = SystemSetting::getDirectorName();
+        }
         
         // Defensive: ensure *_report_path fields are null if not set
         foreach ([
@@ -376,6 +393,14 @@ class OrganizationApplicationController extends Controller
                     'certification_date' => $cert->certification_date ? $cert->certification_date->format('Y-m-d') : '',
                 ];
             })->toArray();
+        }
+        
+        // Ensure coordinator_name and director_name are populated from system defaults if empty
+        if (empty($application->coordinator_name)) {
+            $application->coordinator_name = SystemSetting::getCoordinatorName();
+        }
+        if (empty($application->director_name)) {
+            $application->director_name = SystemSetting::getDirectorName();
         }
         
         return Inertia::render('OrganizationApplications/Edit', ['application' => $application]);
@@ -579,6 +604,14 @@ class OrganizationApplicationController extends Controller
             
             $path = $request->file('signed_document')->store('signed_documents', 'public');
             $validatedData['signed_document_path'] = $path;
+        }
+        
+        // Set default values for coordinator_name and director_name from system defaults if not provided
+        if (empty($validatedData['coordinator_name'])) {
+            $validatedData['coordinator_name'] = SystemSetting::getCoordinatorName();
+        }
+        if (empty($validatedData['director_name'])) {
+            $validatedData['director_name'] = SystemSetting::getDirectorName();
         }
         
         // Update the application with validated data
@@ -1385,6 +1418,18 @@ class OrganizationApplicationController extends Controller
 
         $template = $templateMap[$form_type];
         $data = $sampleData[$form_type];
+
+        // Replace sample coordinator_name and director_name with actual system defaults if available
+        if (isset($data['application'])) {
+            $coordinatorName = SystemSetting::getCoordinatorName();
+            if ($coordinatorName) {
+                $data['application']->coordinator_name = $coordinatorName;
+            }
+            $directorName = SystemSetting::getDirectorName();
+            if ($directorName) {
+                $data['application']->director_name = $directorName;
+            }
+        }
 
         // Fix: wrap members, officers, studentCertifications in collections, and set attendees as property of application
         if ($form_type === 'LSPU-OSAS-SF-005') {
