@@ -647,7 +647,7 @@ nextTick(() => {
       <!-- Organization Name Section -->
       <div class="mt-4 text-center">
         <div class="border-b border-black min-w-[330px] inline-block text-center font-bold text-[11pt] pb-1" style="font-family:'Times New Roman',serif;">
-          {{ form.organization_name || '________________________' }}
+          {{ form.organization_name }}
         </div>
         <div class="text-[11pt] mt-1 font-bold" style="font-family:'Times New Roman',serif;">Name of Organization</div>
       </div>
@@ -815,13 +815,13 @@ nextTick(() => {
       <div class="flex justify-between mb-6">
         <div class="text-center" style="width: 45%;">
           <div class="border-b border-black min-w-[200px] inline-block text-center pb-1 text-[11pt]" style="font-family:'Times New Roman',serif;">
-            {{ form.president_name || '________________________' }}
+            {{ form.president_name }}
           </div>
           <div class="text-[11pt] mt-1" style="font-family:'Times New Roman',serif;">Organization President</div>
         </div>
         <div class="text-center" style="width: 45%;">
           <div class="border-b border-black min-w-[200px] inline-block text-center pb-1 text-[11pt]" style="font-family:'Times New Roman',serif;">
-            {{ form.secretary_name || '________________________' }}
+            {{ form.secretary_name }}
           </div>
           <div class="text-[11pt] mt-1" style="font-family:'Times New Roman',serif;">Organization Secretary</div>
         </div>
@@ -833,7 +833,7 @@ nextTick(() => {
       <!-- Second signature row with Faculty Adviser -->
       <div class="text-left mb-6" style="width: 45%;">
         <div class="border-b border-black min-w-[200px] inline-block text-center pb-1 text-[11pt]" style="font-family:'Times New Roman',serif;">
-          {{ form.adviser_name || '________________________' }}
+          {{ form.adviser_name }}
         </div>
         <div class="text-[11pt] mt-1" style="font-family:'Times New Roman',serif;">Organization Adviser(s)</div>
       </div>
@@ -841,7 +841,7 @@ nextTick(() => {
       <!-- Third signature row with Dean -->
       <div class="text-left mb-6" style="width: 45%;">
         <div class="border-b border-black min-w-[200px] inline-block text-center pb-1 text-[11pt]" style="font-family:'Times New Roman',serif;">
-          {{ form.dean_name || '________________________' }}
+          {{ form.dean_name }}
         </div>
         <div class="text-[11pt] mt-1" style="font-family:'Times New Roman',serif;">Dean/Assoc. Dean</div>
       </div>
@@ -850,7 +850,7 @@ nextTick(() => {
       <div class="text-center mt-6 mb-6">
         <div class="font-bold mb-2 text-[11pt]" style="font-family:'Times New Roman',serif;"><strong>Recommending Approval:</strong></div>
         <div class="border-b border-black min-w-[290px] inline-block text-center pb-1 text-[11pt]" style="font-family:'Times New Roman',serif;">
-          {{ form.coordinator_name || '________________________' }}
+          {{ form.coordinator_name }}
         </div>
         <div class="text-[11pt] mt-1" style="font-family:'Times New Roman',serif;">Coordinator, Student Organization Unit</div>
       </div>
@@ -859,7 +859,7 @@ nextTick(() => {
       <div class="text-center mt-6 mb-6">
         <div class="font-bold mb-2 text-[11pt]" style="font-family:'Times New Roman',serif;"><strong>Approved/Disapproved:</strong></div>
         <div class="border-b border-black min-w-[415px] inline-block text-center pb-1 text-[11pt]" style="font-family:'Times New Roman',serif;">
-          {{ form.director_name || '________________________' }}
+          {{ form.director_name }}
         </div>
         <div class="text-[11pt] mt-1" style="font-family:'Times New Roman',serif;">Director/Chairperson, Office of Student Affairs and Services</div>
       </div>
