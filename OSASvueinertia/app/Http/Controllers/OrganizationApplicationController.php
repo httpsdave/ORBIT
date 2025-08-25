@@ -143,6 +143,7 @@ class OrganizationApplicationController extends Controller
                 'semester' => 'required|string|in:1st,2nd,Summer,Inter',
                 'academic_year_start' => 'required|string|max:10',
                 'academic_year_end' => 'required|string|max:10',
+                'director_name' => 'required|string|max:255',
                 
                 'activities' => 'required|array|min:1',
                 'activities.*.objective' => 'required|string|max:255',
@@ -465,6 +466,7 @@ class OrganizationApplicationController extends Controller
                 'semester' => 'required|string|in:1st,2nd,Summer,Inter',
                 'academic_year_start' => 'required|string|max:10',
                 'academic_year_end' => 'required|string|max:10',
+                'director_name' => 'required|string|max:255',
             ]);
             
             // Special handling for activities below

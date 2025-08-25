@@ -85,21 +85,23 @@ function formatDateForInput(dateStr) {
   return `${yyyy}-${mm}-${dd}`;
 }
 
-// Watch for changes in initialFormData to update form fields
+// Watch for changes in initialFormData to update form fields ONLY on initial load
 watch(() => props.initialFormData, (newData) => {
-  if (!newData) return;
-  form.organization_name = newData.organization_name || '';
-  form.academic_year_start = newData.academic_year_start || '';
-  form.academic_year_end = newData.academic_year_end || '';
-  form.semester = newData.semester || '';
-  form.president_name = newData.president_name || '';
-  form.secretary_name = newData.secretary_name || '';
-  form.application_date = formatDateForInput(newData.application_date) || '';
-  form.adviser_name = newData.adviser_name || '';
-  form.dean_name = newData.dean_name || '';
-  form.coordinator_name = newData.coordinator_name || '';
-  form.director_name = newData.director_name || '';
-  if (Array.isArray(newData.activities)) {
+  if (!newData || !props.isEdit) return; // Only update for edit mode
+  
+  // Only update if the form field is currently empty to avoid overwriting user input
+  if (!form.organization_name) form.organization_name = newData.organization_name || '';
+  if (!form.academic_year_start) form.academic_year_start = newData.academic_year_start || '';
+  if (!form.academic_year_end) form.academic_year_end = newData.academic_year_end || '';
+  if (!form.semester) form.semester = newData.semester || '';
+  if (!form.president_name) form.president_name = newData.president_name || '';
+  if (!form.secretary_name) form.secretary_name = newData.secretary_name || '';
+  if (!form.adviser_name) form.adviser_name = newData.adviser_name || '';
+  if (!form.dean_name) form.dean_name = newData.dean_name || '';
+  if (!form.coordinator_name) form.coordinator_name = newData.coordinator_name || '';
+  if (!form.director_name) form.director_name = newData.director_name || '';
+  
+  if (Array.isArray(newData.activities) && (!form.activities || form.activities.length === 0)) {
     form.activities = newData.activities.map(act => ({
       ...act,
       target_date: formatDateForInput(act.target_date)
