@@ -635,7 +635,7 @@ nextTick(() => {
 
     <!-- Document Header (similar to blade template) -->
     <div class="header text-center relative py-4">
-      <img src="/images/lspu-logo.png" alt="LSPU Logo" class="absolute top-[-20px] left-[-60px] w-[180px] h-auto">
+  <img src="/images/lspu-logo.png" alt="LSPU Logo" class="absolute top-[-0.5cm] left-[-2cm] w-[250px] h-auto">
       <div class="font-normal text-[11pt] leading-tight" style="font-family:Calibri,sans-serif;">
         Republic of the Philippines<br>
         <img src="/images/lspu-name.png" alt="Laguna State Polytechnic University" class="inline-block align-middle h-[22px] max-w-[55%] my-1 university-name" /><br>
@@ -651,7 +651,8 @@ nextTick(() => {
         </div>
         <div class="text-[11pt] mt-1 font-bold" style="font-family:'Times New Roman',serif;">Name of Organization</div>
       </div>
-      
+      <!-- Add spacing between Name of Organization and Semester section -->
+      <div style="height: .5rem;"></div>
       <!-- Academic Year Section -->
       <div class="text-center mt-3 text-[11pt] font-bold" style="font-family:'Times New Roman',serif;">
         <span class="border-b border-black px-2 min-w-[48px] inline-block">{{ form.semester }}</span>
@@ -659,8 +660,11 @@ nextTick(() => {
       </div>
     </div>
 
+    <!-- Reduce spacing below semester section -->
+    <div style="margin-bottom: 0.5rem;"></div>
+
     <!-- Activities Table (similar to blade template) -->
-    <div class="mt-6">
+    <div class="mt-2">
       <div class="mb-2">
         <h4 class="text-md font-bold">Activities</h4>
       </div>
@@ -712,86 +716,90 @@ nextTick(() => {
       </div>
 
       <!-- Page Info -->
-      <div v-if="totalPages > 1" class="text-center mb-4 text-sm text-gray-600">
-        Page {{ currentPage }} of {{ totalPages }} • Activity {{ startIndex + 1 }} of {{ form.activities.length }}
-      </div>
+  <!-- Removed duplicate Page Info -->
       
       <!-- Activities Table (matching blade template structure) -->
       <div class="overflow-x-auto">
-        <table class="w-full border-collapse border border-gray-300 mb-4 min-w-[1000px]" style="table-layout: fixed;">
+        <table class="w-full border-collapse table-fixed" style="margin: 0.5cm 0;">
           <thead>
-            <tr class="bg-gray-100">
-              <th class="border border-gray-300 p-2 text-xs" style="width: 15%;">OBJECTIVE</th>
-              <th class="border border-gray-300 p-2 text-xs" style="width: 15%;">ACTIVITIES</th>
-              <th class="border border-gray-300 p-2 text-xs" style="width: 25%;">BRIEF<br>DESCRIPTION</th>
-              <th class="border border-gray-300 p-2 text-xs" style="width: 15%;">PERSONS INVOLVED</th>
-              <th class="border border-gray-300 p-2 text-xs" style="width: 15%;">TARGET DATE</th>
-              <th class="border border-gray-300 p-2 text-xs" style="width: 15%;">BUDGET</th>
-              <th class="border border-gray-300 p-2 text-xs" style="width: 10%;">ACTION</th>
+            <tr>
+              <th class="border font-bold text-[10pt]" style="width:15%;padding:5px;">OBJECTIVE</th>
+              <th class="border font-bold text-[10pt]" style="width:15%;padding:5px;">ACTIVITIES</th>
+              <th class="border font-bold text-[10pt]" style="width:25%;padding:5px;">BRIEF <br> DESCRIPTION</th>
+              <th class="border font-bold text-[10pt]" style="width:15%;padding:5px;">PERSONS INVOLVED</th>
+              <th class="border font-bold text-[10pt]" style="width:15%;padding:5px;">TARGET DATE</th>
+              <th class="border font-bold text-[10pt]" style="width:15%;padding:5px;">BUDGET</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="(activity, idx) in currentPageActivities" :key="startIndex + idx" style="height: 150px;">
-              <td class="border border-gray-300 p-2" style="vertical-align: top;">
+              <td class="border align-top" style="min-height:150px;padding:8px;vertical-align:top;">
                 <div 
                   :data-field="`objective-${startIndex + idx}`"
                   contenteditable="true"
-                  @input="handleContentEditableInput($event, startIndex + idx, 'objective')"
+                  :placeholder="'Objective'"
+                  class="w-full min-h-[40px]"
+                  @input="(e) => handleContentEditableInput(e, startIndex + idx, 'objective')"
                   @mouseup="handleMouseUp"
-                  class="w-full p-1 text-sm min-h-[20px] focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  placeholder="Enter objective..."
-                  style="word-wrap: break-word; overflow-wrap: break-word;"
+                  style="outline:none;word-break:break-word;overflow-wrap:break-word;"
                 ></div>
-                <p v-if="errors.activities?.[startIndex + idx]?.objective" class="text-red-500 text-xs mt-1">{{ errors.activities[startIndex + idx].objective }}</p>
+                <p v-if="errors.activities && errors.activities[startIndex + idx] && errors.activities[startIndex + idx].objective" class="text-red-500 text-xs mt-1">{{ errors.activities[startIndex + idx].objective }}</p>
               </td>
-              <td class="border border-gray-300 p-2" style="vertical-align: top;">
+              <td class="border align-top" style="min-height:150px;padding:8px;vertical-align:top;">
                 <div 
                   :data-field="`name-${startIndex + idx}`"
                   contenteditable="true"
-                  @input="handleContentEditableInput($event, startIndex + idx, 'name')"
+                  :placeholder="'Activity'"
+                  class="w-full min-h-[40px]"
+                  @input="(e) => handleContentEditableInput(e, startIndex + idx, 'name')"
                   @mouseup="handleMouseUp"
-                  class="w-full p-1 text-sm min-h-[20px] focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  placeholder="Enter activity name..."
-                  style="word-wrap: break-word; overflow-wrap: break-word;"
+                  style="outline:none;word-break:break-word;overflow-wrap:break-word;"
                 ></div>
-                <p v-if="errors.activities?.[startIndex + idx]?.name" class="text-red-500 text-xs mt-1">{{ errors.activities[startIndex + idx].name }}</p>
+                <p v-if="errors.activities && errors.activities[startIndex + idx] && errors.activities[startIndex + idx].name" class="text-red-500 text-xs mt-1">{{ errors.activities[startIndex + idx].name }}</p>
               </td>
-              <td class="border border-gray-300 p-2" style="vertical-align: top;">
+              <td class="border align-top" style="min-height:150px;padding:8px;vertical-align:top;">
                 <div 
                   :data-field="`description-${startIndex + idx}`"
                   contenteditable="true"
-                  @input="handleContentEditableInput($event, startIndex + idx, 'description')"
+                  :placeholder="'Brief Description'"
+                  class="w-full min-h-[40px]"
+                  @input="(e) => handleContentEditableInput(e, startIndex + idx, 'description')"
                   @mouseup="handleMouseUp"
-                  class="w-full p-1 text-sm min-h-[20px] focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  placeholder="Enter brief description..."
-                  style="word-wrap: break-word; overflow-wrap: break-word;"
+                  style="outline:none;word-break:break-word;overflow-wrap:break-word;"
                 ></div>
-                <p v-if="errors.activities?.[startIndex + idx]?.description" class="text-red-500 text-xs mt-1">{{ errors.activities[startIndex + idx].description }}</p>
+                <p v-if="errors.activities && errors.activities[startIndex + idx] && errors.activities[startIndex + idx].description" class="text-red-500 text-xs mt-1">{{ errors.activities[startIndex + idx].description }}</p>
               </td>
-              <td class="border border-gray-300 p-2" style="vertical-align: top;">
+              <td class="border align-top" style="min-height:150px;padding:8px;vertical-align:top;">
                 <div 
                   :data-field="`persons_involved-${startIndex + idx}`"
                   contenteditable="true"
-                  @input="handleContentEditableInput($event, startIndex + idx, 'persons_involved')"
+                  :placeholder="'Persons Involved'"
+                  class="w-full min-h-[40px]"
+                  @input="(e) => handleContentEditableInput(e, startIndex + idx, 'persons_involved')"
                   @mouseup="handleMouseUp"
-                  class="w-full p-1 text-sm min-h-[20px] focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  placeholder="Enter persons involved..."
-                  style="word-wrap: break-word; overflow-wrap: break-word;"
+                  style="outline:none;word-break:break-word;overflow-wrap:break-word;"
                 ></div>
-                <p v-if="errors.activities?.[startIndex + idx]?.persons_involved" class="text-red-500 text-xs mt-1">{{ errors.activities[startIndex + idx].persons_involved }}</p>
+                <p v-if="errors.activities && errors.activities[startIndex + idx] && errors.activities[startIndex + idx].persons_involved" class="text-red-500 text-xs mt-1">{{ errors.activities[startIndex + idx].persons_involved }}</p>
               </td>
-              <td class="border border-gray-300 p-2" style="vertical-align: top;">
-                <input type="date" v-model="activity.target_date" class="w-full p-1 text-sm" required>
-                <p v-if="errors.activities?.[startIndex + idx]?.target_date" class="text-red-500 text-xs mt-1">{{ errors.activities[startIndex + idx].target_date }}</p>
+              <td class="border align-top" style="min-height:150px;padding:8px;vertical-align:top;">
+                <input 
+                  type="date"
+                  v-model="activity.target_date"
+                  class="w-full border p-1 text-center"
+                  style="min-height:40px;"
+                >
+                <p v-if="errors.activities && errors.activities[startIndex + idx] && errors.activities[startIndex + idx].target_date" class="text-red-500 text-xs mt-1">{{ errors.activities[startIndex + idx].target_date }}</p>
               </td>
-              <td class="border border-gray-300 p-2" style="vertical-align: top;">
-                <input type="number" v-model.number="activity.budget" step="0.01" min="0" max="9999999999999.99" class="w-full p-1 text-sm" required>
-                <p v-if="errors.activities?.[startIndex + idx]?.budget" class="text-red-500 text-xs mt-1">{{ errors.activities[startIndex + idx].budget }}</p>
-              </td>
-              <td class="border border-gray-300 p-2 text-center" style="vertical-align: top;">
-                <button type="button" @click="removeActivity(startIndex + idx)" class="bg-red-500 text-white px-2 py-1 rounded text-xs" :disabled="form.activities.length <= 1">
-                  Remove
-                </button>
+              <td class="border align-top" style="min-height:150px;padding:8px;vertical-align:top;">
+                <input 
+                  type="number"
+                  v-model.number="activity.budget"
+                  min="0"
+                  step="0.01"
+                  class="w-full border p-1 text-right"
+                  style="min-height:40px;"
+                >
+                <p v-if="errors.activities && errors.activities[startIndex + idx] && errors.activities[startIndex + idx].budget" class="text-red-500 text-xs mt-1">{{ errors.activities[startIndex + idx].budget }}</p>
               </td>
             </tr>
           </tbody>
@@ -802,6 +810,14 @@ nextTick(() => {
       <div class="text-center mb-6">
         <button type="button" @click="addActivity" class="bg-blue-500 text-white px-3 py-1 rounded text-sm">
           Add Activity
+        </button>
+        <button
+          type="button"
+          @click="removeActivity(startIndex)"
+          class="bg-red-500 text-white px-3 py-1 rounded text-sm ml-2"
+          :disabled="form.activities.length <= 1"
+        >
+          Remove Activity
         </button>
       </div>
     </div>
