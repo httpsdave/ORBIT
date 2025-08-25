@@ -438,7 +438,6 @@ const submit = () => {
             <div>
                 <label class="block font-bold">Director/Chairperson, OSAS</label>
                 <input v-model="form.director_name" class="border p-2 w-full bg-gray-100 text-gray-600" readonly>
-                <p class="text-sm text-gray-500 mt-1">This field is automatically populated by system defaults.</p>
             </div>
         </div>
 

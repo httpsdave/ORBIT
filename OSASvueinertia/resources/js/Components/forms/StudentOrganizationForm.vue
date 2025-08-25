@@ -243,13 +243,11 @@ const submit = () => {
       </div>
       <div>
         <label class="block font-bold">Coordinator Name</label>
-        <input v-model="form.coordinator_name" class="border p-2 w-full" required>
-        <p v-if="errors.coordinator_name" class="text-red-500 text-sm mt-1">{{ errors.coordinator_name }}</p>
+        <input v-model="form.coordinator_name" class="border p-2 w-full bg-gray-100 text-gray-600" readonly>
       </div>
       <div>
         <label class="block font-bold">Director Name</label>
-        <input v-model="form.director_name" class="border p-2 w-full" required>
-        <p v-if="errors.director_name" class="text-red-500 text-sm mt-1">{{ errors.director_name }}</p>
+        <input v-model="form.director_name" class="border p-2 w-full bg-gray-100 text-gray-600" readonly>
       </div>
     </div>
     <div class="mt-6 text-center">
