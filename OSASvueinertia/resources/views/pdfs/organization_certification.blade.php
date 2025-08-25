@@ -132,7 +132,7 @@
             text-align: justify;
             margin: 20px 0;
             line-height: 1.5; /* Changed from 2 to 1.5 for 1.5 spacing */
-            padding-left: 40px;
+            padding-left: 60px;
             padding-right: 40px;
         }
 
@@ -352,7 +352,7 @@
                     <p style="text-align: right; margin-right: 37px;">Date</p>
             </div>
 
-            <div class="cert-content">
+            <div class="cert-content" style="padding-left: 50px;">
             This certifies that 
             <div style="display: inline-block; vertical-align: bottom; position: relative; top: 6px;">
                 <div>
@@ -361,7 +361,8 @@
                 <div style="text-align: center; font-size: 11; margin-top: -5px;">
                     <span style="font-size: 10pt;">(LAST NAME, FIRST NAME, MIDDLE INITIAL)</span>
                 </div>
-            </div>, a 
+            </div>,
+            <span style="position: absolute; right: 10px; top: 247px;">   a</span>
             <br><br>
             </div>
             
