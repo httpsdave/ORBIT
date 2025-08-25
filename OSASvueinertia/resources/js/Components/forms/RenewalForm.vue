@@ -209,47 +209,46 @@ const submit = () => {
   </div>
 
     <div class="section text-right">
-  <p class="respectfully-text" style="font-size:11pt; position:relative; left:-10px; top:-10px;">Very respectfully yours,</p>
-
-        <div class="signature">
-            <p><span class="signature-line" style="min-width:160px; font-size:11pt;">{{ form.president_name }}</span></p>
-            <p><span class="title-under-signature title-left-adjust" style="font-size:11pt;"><strong>Organization President</strong></span></p>
-        </div>
+  <p class="respectfully-text" style="font-size:11pt; margin-left:calc(59% - 45px); margin-bottom:10px;">Very respectfully yours,</p>
+  <div class="signature" style="margin-bottom:20px;">
+    <p><span class="signature-line" style="min-width:160px; font-size:11pt;">{{ form.president_name }}</span></p>
+    <p><span class="title-under-signature title-left-adjust" style="font-size:11pt;"><strong>Organization President</strong></span></p>
+  </div>
     </div>
 
     <div class="section text-right">
-        <div class="signature">
-            <p><span class="signature-line" style="min-width:160px; font-size:11pt;">{{ form.organization_name }}</span></p>
-            <p><span class="title-under-signature title-left-adjust-more" style="font-size:11pt;"><strong>Name of Organization</strong></span></p>
-        </div>
+  <div class="signature" style="margin-bottom:20px;">
+    <p><span class="signature-line" style="min-width:160px; font-size:11pt;">{{ form.organization_name }}</span></p>
+    <p><span class="title-under-signature title-left-adjust-more" style="font-size:11pt;"><strong>Name of Organization</strong></span></p>
+  </div>
     </div>
 
     <div class="section text-left">
-  <p style="font-size:11pt; font-weight:bold; margin-bottom:0; position:relative; top:-20px;"><strong>NOTED:</strong></p>
-    <div class="signature" style="margin-top:0; margin-bottom:10px;">
-      <p style="margin-bottom:0;"><span class="signature-line" style="min-width:220px; font-size:11pt;"><strong>{{ form.adviser_name }}</strong></span></p>
-      <p style="margin-top:0;"><span class="title-under-signature title-right-adjust" style="font-size:11pt;"><strong>Adviser/s, Student Organization</strong></span></p>
-    </div>
-    <div class="signature" style="margin-top:0; margin-bottom:15px;">
-      <p style="margin-bottom:0;"><span class="signature-line" style="min-width:305px; font-size:11pt;"><strong>{{ form.dean_name }}</strong></span></p>
-      <p style="margin-top:0;"><span class="title-under-signature" style="font-size:11pt;"><strong>Dean/Assoc. Dean, College of</strong> <span class="signature-line signature-line-inline" style="min-width:120px; font-size:11pt;">{{ form.college }}</span></span></p>
-    </div>
-    </div>
-
-    <div class="section text-center">
-    <p style="margin-left:-380px; font-size:11pt; font-weight:bold; margin-bottom:0;">Recommending Approval:</p>
-    <div class="signature" style="margin-top:0; margin-bottom:15px;">
-      <p style="margin-bottom:0;"><span class="signature-line" style="min-width:270px; font-size:11pt; font-weight:bold;"><strong>{{ form.coordinator_name }}</strong></span></p>
-      <p style="margin-top:0; font-size:11pt; font-weight:bold;"><strong>Coordinator, Student Organization Unit</strong></p>
-    </div>
+  <p style="font-size:11pt; font-weight:bold; margin-bottom:10px;"><strong>NOTED:</strong></p>
+  <div class="signature" style="margin-bottom:20px;">
+    <p><span class="signature-line" style="min-width:220px; font-size:11pt;"><strong>{{ form.adviser_name }}</strong></span></p>
+    <p><span class="title-under-signature title-right-adjust" style="font-size:11pt;margin-left:5px"><strong>Adviser/s, Student Organization</strong></span></p>
+  </div>
+  <div class="signature" style="margin-bottom:30px;">
+    <p><span class="signature-line" style="min-width:305px; font-size:11pt;"><strong>{{ form.dean_name }}</strong></span></p>
+    <p><span class="title-under-signature" style="font-size:11pt;"><strong>Dean/Assoc. Dean, College of</strong> <span class="signature-line signature-line-inline" style="min-width:120px; font-size:11pt;">{{ form.college }}</span></span></p>
+  </div>
     </div>
 
     <div class="section text-center">
-    <p style="margin-left:-380px; font-size:11pt; font-weight:bold; margin-bottom:0;">Approved / Disapproved:</p>
-    <div class="signature" style="margin-top:0; margin-bottom:15px;">
-      <p style="margin-bottom:0;"><span class="signature-line" style="min-width:390px; font-size:11pt; font-weight:bold;"><strong>{{ form.director_name }}</strong></span></p>
-      <p style="margin-top:0; font-size:11pt; font-weight:bold;"><strong>Director/Chairperson, Office of Student Affairs and Services</strong></p>
+  <p style="margin-left:-380px; font-size:11pt; font-weight:bold; margin-bottom:10px;">Recommending Approval:</p>
+  <div class="signature" style="margin-bottom:30px;">
+    <p><span class="signature-line" style="min-width:270px; font-size:11pt; font-weight:bold;"><strong>{{ form.coordinator_name }}</strong></span></p>
+    <p style="font-size:11pt; font-weight:bold;"><strong>Coordinator, Student Organization Unit</strong></p>
+  </div>
     </div>
+
+    <div class="section text-center">
+  <p style="margin-left:-380px; font-size:11pt; font-weight:bold; margin-bottom:10px;">Approved / Disapproved:</p>
+  <div class="signature" style="margin-bottom:30px;">
+    <p><span class="signature-line" style="min-width:390px; font-size:11pt; font-weight:bold;"><strong>{{ form.director_name }}</strong></span></p>
+    <p style="font-size:11pt; font-weight:bold;"><strong>Director/Chairperson, Office of Student Affairs and Services</strong></p>
+  </div>
     </div>
 
     <!-- Form inputs -->
