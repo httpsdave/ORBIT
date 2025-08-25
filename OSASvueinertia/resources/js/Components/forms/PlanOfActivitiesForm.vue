@@ -642,7 +642,7 @@ nextTick(() => {
         <span class="block mb-2">Province of Laguna</span>
       </div>
       <div class="font-bold text-[11pt] mt-1 mb-1" style="font-family:'Times New Roman',serif;">OFFICE OF STUDENT AFFAIRS AND SERVICES</div>
-      <div class="font-bold text-[13pt] mt-4 mb-4" style="font-family:'Times New Roman',serif;">PLAN OF ACTIVITIES</div>
+      <div class="font-bold text-[15pt] mt-4 mb-4" style="font-family:'Times New Roman',serif;">PLAN OF ACTIVITIES</div>
       
       <!-- Organization Name Section -->
       <div class="mt-4 text-center">
@@ -654,7 +654,7 @@ nextTick(() => {
       
       <!-- Academic Year Section -->
       <div class="text-center mt-3 text-[11pt] font-bold" style="font-family:'Times New Roman',serif;">
-        <span class="border-b border-black px-2 min-w-[48px] inline-block">{{ form.semester || '__' }}</span>
+        <span class="border-b border-black px-2 min-w-[48px] inline-block">{{ form.semester }}</span>
         Semester AY 20<span class="border-b border-black px-2 min-w-[24px] inline-block">{{ form.academic_year_start || '__' }}</span>-20<span class="border-b border-black px-2 min-w-[24px] inline-block">{{ form.academic_year_end || '__' }}</span>
       </div>
     </div>
@@ -835,7 +835,7 @@ nextTick(() => {
         <div class="border-b border-black min-w-[200px] inline-block text-center pb-1 text-[11pt]" style="font-family:'Times New Roman',serif;">
           {{ form.adviser_name }}
         </div>
-        <div class="text-[11pt] mt-1" style="font-family:'Times New Roman',serif;">Organization Adviser(s)</div>
+        <div class="text-[11pt] mt-1" style="font-family:'Times New Roman',serif; margin-left: 25px">Organization Adviser(s)</div>
       </div>
       
       <!-- Third signature row with Dean -->
@@ -843,7 +843,7 @@ nextTick(() => {
         <div class="border-b border-black min-w-[200px] inline-block text-center pb-1 text-[11pt]" style="font-family:'Times New Roman',serif;">
           {{ form.dean_name }}
         </div>
-        <div class="text-[11pt] mt-1" style="font-family:'Times New Roman',serif;">Dean/Assoc. Dean</div>
+        <div class="text-[11pt] mt-1" style="font-family:'Times New Roman',serif;margin-left: 45px">Dean/Assoc. Dean</div>
       </div>
       
       <!-- Recommending Approval -->
