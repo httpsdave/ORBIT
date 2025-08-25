@@ -208,11 +208,13 @@ const submit = () => {
   <div class="mt-8 border-t pt-6">
     <h3 class="text-lg font-bold mb-4">Form Details</h3>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- Left Column -->
       <div>
         <label class="block font-bold">Organization Name</label>
         <input v-model="form.organization_name" class="border p-2 w-full" required>
         <p v-if="errors.organization_name" class="text-red-500 text-sm mt-1">{{ errors.organization_name }}</p>
       </div>
+      <!-- Right Column -->
       <div>
         <label class="block font-bold">Application Date</label>
         <input 
@@ -226,28 +228,33 @@ const submit = () => {
         >
         <p v-if="errors.application_date" class="text-red-500 text-sm mt-1">{{ errors.application_date }}</p>
       </div>
+      <!-- Left Column -->
       <div>
         <label class="block font-bold">President Name</label>
         <input v-model="form.president_name" class="border p-2 w-full" required>
         <p v-if="errors.president_name" class="text-red-500 text-sm mt-1">{{ errors.president_name }}</p>
       </div>
+      <!-- Right Column -->
+      <div>
+        <label class="block font-bold">Coordinator Name</label>
+        <input v-model="form.coordinator_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none;">
+      </div>
+      <!-- Left Column -->
       <div>
         <label class="block font-bold">Adviser Name</label>
         <input v-model="form.adviser_name" class="border p-2 w-full" required>
         <p v-if="errors.adviser_name" class="text-red-500 text-sm mt-1">{{ errors.adviser_name }}</p>
       </div>
+      <!-- Right Column -->
+      <div>
+        <label class="block font-bold">Director Name</label>
+        <input v-model="form.director_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none;">
+      </div>
+      <!-- Left Column -->
       <div>
         <label class="block font-bold">Dean Name</label>
         <input v-model="form.dean_name" class="border p-2 w-full" required>
         <p v-if="errors.dean_name" class="text-red-500 text-sm mt-1">{{ errors.dean_name }}</p>
-      </div>
-      <div>
-        <label class="block font-bold">Coordinator Name</label>
-        <input v-model="form.coordinator_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none;">
-      </div>
-      <div>
-        <label class="block font-bold">Director Name</label>
-        <input v-model="form.director_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none;">
       </div>
     </div>
     <div class="mt-6 text-center">
