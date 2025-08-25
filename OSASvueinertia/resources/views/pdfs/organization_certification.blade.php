@@ -363,10 +363,10 @@
                 </div>
             </div>,
             <span style="position: absolute; right: 10px; top: 247px;">   a</span>
-            <br><br>
+            <br>
             </div>
             
-            <div style="padding-left: 0px; text-align: left; margin-top: -35px;">
+            <div style="padding-left: 0px; text-align: left; margin-top: -22px;">
             student taking up 
             <div style="display: inline-block; vertical-align: bottom; position: relative; top: 6px;">
                 <div>
