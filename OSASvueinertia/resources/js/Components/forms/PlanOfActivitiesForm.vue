@@ -38,8 +38,11 @@ const activeField = ref(null);
 // Initialize activities first, before the form
 const initializeActivities = () => {
   if (props.initialFormData?.activities && props.initialFormData.activities.length > 0) {
-    // Copy activities from initialFormData
-    return [...props.initialFormData.activities];
+    // Copy activities from initialFormData and format target_date properly
+    return props.initialFormData.activities.map(act => ({
+      ...act,
+      target_date: formatDateForInput(act.target_date)
+    }));
   } else {
     // Add only one default empty activity
     return [
@@ -76,13 +79,30 @@ function formatDateForInput(dateStr) {
   if (!dateStr) return '';
   // If already in yyyy-MM-dd, return as is
   if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
-  // Otherwise, try to parse and format
-  const d = new Date(dateStr);
-  if (isNaN(d.getTime())) return '';
-  const yyyy = d.getFullYear();
-  const mm = String(d.getMonth() + 1).padStart(2, '0');
-  const dd = String(d.getDate()).padStart(2, '0');
-  return `${yyyy}-${mm}-${dd}`;
+  
+  // Handle different date formats without timezone issues
+  try {
+    // If it's a date string like "2025-08-25T00:00:00.000Z" or similar
+    if (dateStr.includes('T') || dateStr.includes('Z')) {
+      // Extract just the date part before 'T'
+      const datePart = dateStr.split('T')[0];
+      if (/^\d{4}-\d{2}-\d{2}$/.test(datePart)) {
+        return datePart;
+      }
+    }
+    
+    // Try to parse as a regular date but avoid timezone shifts
+    const d = new Date(dateStr + 'T12:00:00'); // Add midday to avoid timezone issues
+    if (isNaN(d.getTime())) return '';
+    
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  } catch (error) {
+    console.warn('Date formatting error:', error, 'for date:', dateStr);
+    return '';
+  }
 }
 
 // Watch for changes in initialFormData to update form fields ONLY on initial load

@@ -18,7 +18,7 @@ class Activity extends Model
     ];
     protected $casts = [
         'budget' => 'decimal:2',
-        'target_date' => 'date'
+        'target_date' => 'date:Y-m-d'
     ];
 
     public function organizationApplication()
