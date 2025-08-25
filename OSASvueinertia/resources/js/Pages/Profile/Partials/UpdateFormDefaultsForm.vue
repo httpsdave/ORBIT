@@ -4,12 +4,17 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { useForm, usePage, router } from '@inertiajs/vue3';
-import { watch } from 'vue';
+import { watch, ref } from 'vue';
 
 const user = usePage().props.auth.user;
 
-// Form defaults for admin
 const form = useForm({
+    coordinator_name: user.coordinator_name || '',
+    director_name: user.director_name || '',
+});
+
+const isEditing = ref(false);
+const originalDefaults = ref({
     coordinator_name: user.coordinator_name || '',
     director_name: user.director_name || '',
 });
@@ -19,14 +24,31 @@ watch(() => user, (newUser) => {
     if (newUser) {
         form.coordinator_name = newUser.coordinator_name || '';
         form.director_name = newUser.director_name || '';
+        originalDefaults.value = {
+            coordinator_name: newUser.coordinator_name || '',
+            director_name: newUser.director_name || '',
+        };
+        isEditing.value = false;
     }
 }, { deep: true });
+
+function startEdit() {
+    isEditing.value = true;
+}
+
+function cancelEdit() {
+    form.coordinator_name = originalDefaults.value.coordinator_name;
+    form.director_name = originalDefaults.value.director_name;
+    isEditing.value = false;
+    form.clearErrors();
+}
 
 function submit() {
     form.patch(route('profile.form-defaults.update'), {
         preserveScroll: true,
         onSuccess: () => {
             router.reload({ only: ['auth'] });
+            isEditing.value = false;
         },
     });
 }
@@ -42,6 +64,8 @@ function submit() {
                     type="text"
                     class="mt-1 block w-full border-gray-300 dark:border-gray-600 focus:border-purple-500 focus:ring focus:ring-purple-200 focus:ring-opacity-50 rounded-md shadow-sm dark:bg-gray-700 dark:text-gray-300"
                     v-model="form.coordinator_name"
+                    :disabled="!isEditing"
+                    :class="!isEditing ? 'bg-gray-100 dark:bg-gray-600 text-gray-400 dark:text-gray-500 cursor-not-allowed select-none pointer-events-none' : ''"
                     placeholder="Enter coordinator name"
                 />
                 <InputError class="mt-2" :message="form.errors.coordinator_name" />
@@ -54,6 +78,8 @@ function submit() {
                     type="text"
                     class="mt-1 block w-full border-gray-300 dark:border-gray-600 focus:border-purple-500 focus:ring focus:ring-purple-200 focus:ring-opacity-50 rounded-md shadow-sm dark:bg-gray-700 dark:text-gray-300"
                     v-model="form.director_name"
+                    :disabled="!isEditing"
+                    :class="!isEditing ? 'bg-gray-100 dark:bg-gray-600 text-gray-400 dark:text-gray-500 cursor-not-allowed select-none pointer-events-none' : ''"
                     placeholder="Enter director/chairperson name"
                 />
                 <InputError class="mt-2" :message="form.errors.director_name" />
@@ -61,9 +87,20 @@ function submit() {
         </div>
 
         <div class="flex items-center gap-4">
-            <PrimaryButton :disabled="form.processing" class="bg-purple-500 hover:bg-purple-600 focus:bg-purple-600">
+            <PrimaryButton v-if="isEditing" :disabled="form.processing" class="bg-purple-500 hover:bg-purple-600 focus:bg-purple-600">
                 <span v-if="form.processing">Saving...</span>
                 <span v-else>Save Form Defaults</span>
+            </PrimaryButton>
+            <button
+                v-if="isEditing"
+                type="button"
+                @click="cancelEdit"
+                class="inline-flex items-center justify-center px-4 py-2 bg-gray-200 text-sm font-medium text-gray-700 rounded-xl shadow-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group"
+            >
+                Cancel
+            </button>
+            <PrimaryButton v-if="!isEditing" type="button" @click="startEdit" class="bg-purple-500 hover:bg-purple-600 focus:bg-purple-600">
+                Edit Form Defaults
             </PrimaryButton>
 
             <Transition
