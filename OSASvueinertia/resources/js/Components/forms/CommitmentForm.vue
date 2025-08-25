@@ -342,7 +342,7 @@ const submit = () => {
           </div>
           <div>
             <label class="block font-bold">Coordinator Name</label>
-            <input v-model="form.coordinator_name" class="border p-2 w-full bg-gray-100 text-gray-600" readonly>
+            <input v-model="form.coordinator_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none;">
           </div>
           <!-- President Name field removed for Commitment Form -->
         </div>
@@ -414,7 +414,7 @@ const submit = () => {
           </div>
           <div>
             <label class="block font-bold">Director Name</label>
-            <input v-model="form.director_name" class="border p-2 w-full bg-gray-100 text-gray-600" readonly>
+            <input v-model="form.director_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none;">
           </div>
         </div>
       </div>

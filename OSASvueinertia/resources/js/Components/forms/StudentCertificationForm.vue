@@ -437,7 +437,7 @@ const submit = () => {
 
             <div>
                 <label class="block font-bold">Director/Chairperson, OSAS</label>
-                <input v-model="form.director_name" class="border p-2 w-full bg-gray-100 text-gray-600" readonly>
+                <input v-model="form.director_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none;">
             </div>
         </div>
 
