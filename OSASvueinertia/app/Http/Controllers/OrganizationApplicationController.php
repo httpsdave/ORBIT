@@ -140,7 +140,7 @@ class OrganizationApplicationController extends Controller
         }  elseif ($request->form_type === 'LSPU-OSAS-SF-004') {
             $validationRules = array_merge($validationRules, [
                 'secretary_name' => 'required|string|max:255',
-                'semester' => 'required|string|in:1st,2nd,Summer,Inter',
+                'semester' => 'required|string|in:1st,2nd,Inter',
                 'academic_year_start' => 'required|string|max:10',
                 'academic_year_end' => 'required|string|max:10',
                 'director_name' => 'required|string|max:255',
@@ -463,7 +463,7 @@ class OrganizationApplicationController extends Controller
         } elseif ($application->form_type === 'LSPU-OSAS-SF-004') {
             $validationRules = array_merge($validationRules, [
                 'secretary_name' => 'required|string|max:255',
-                'semester' => 'required|string|in:1st,2nd,Summer,Inter',
+                'semester' => 'required|string|in:1st,2nd,Inter',
                 'academic_year_start' => 'required|string|max:10',
                 'academic_year_end' => 'required|string|max:10',
                 'director_name' => 'required|string|max:255',

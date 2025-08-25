@@ -575,7 +575,6 @@ nextTick(() => {
 
 <template>
   <div class="mt-6 form-content">
-    <!-- REMOVE: <StatusBanner ... /> -->
     <!-- Rich Text Toolbar -->
     <div 
       v-if="showToolbar" 
@@ -632,92 +631,341 @@ nextTick(() => {
       >
         1.
       </button>
-      
-      <!-- Divider -->
-      <div class="w-px h-6 bg-gray-300 mx-1"></div>
-      
-      <!-- Left Align -->
-      <button 
-        @click="applyFormat('justifyLeft')" 
-        class="p-2 hover:bg-gray-100 rounded"
-        title="Left Align"
-      >
-        ⬅
-      </button>
-      
-      <!-- Center Align -->
-      <button 
-        @click="applyFormat('justifyCenter')" 
-        class="p-2 hover:bg-gray-100 rounded"
-        title="Center Align"
-      >
-        ↔
-      </button>
-      
-      <!-- Right Align -->
-      <button 
-        @click="applyFormat('justifyRight')" 
-        class="p-2 hover:bg-gray-100 rounded"
-        title="Right Align"
-      >
-        ➡
-      </button>
-      
-      <!-- Justify -->
-      <button 
-        @click="applyFormat('justifyFull')" 
-        class="p-2 hover:bg-gray-100 rounded"
-        title="Justify"
-      >
-        ⬌
-      </button>
     </div>
 
-    <div class="header text-center relative">
-                <img src="/images/lspu-logo.png" alt="LSPU Logo" class="absolute top-[-0.5cm] left-[-2cm] w-[250px] h-auto">
-                <p class="text-sm font-bold mb-0">Republic of the Philippines</p>
-                <p class="text-base font-bold university-name mb-0">Laguna State Polytechnic University</p>
-                <p class="text-sm mb-0">Province of Laguna</p>
-                <p class="text-sm font-bold mb-0 mt-3">OFFICE OF STUDENT AFFAIRS AND SERVICES</p>
-                <p class="text-sm font-bold form-title mt-4 mb-4">PLAN OF ACTIVITIES</p>
-                <div style="margin-top: 15px; text-align: center;">
-                    <div class="signature-line border-b border-black min-w-[330px] inline-block text-center mb-0">{{ form.organization_name }}</div>
-                    <div class="title-under-signature mt-1">Name of Organization</div>
-                </div>
-                <div class="text-center mt-2">
-                    <span class="min-w-[300px]">
-                        {{ form.semester || '__' }} Sem. / A.Y. 20{{ form.academic_year_start || '__' }}-20{{ form.academic_year_end || '__' }}
-                    </span>
-                </div>
+    <!-- Document Header (similar to blade template) -->
+    <div class="header text-center relative py-4">
+      <img src="/images/lspu-logo.png" alt="LSPU Logo" class="absolute top-[-20px] left-[-60px] w-[180px] h-auto">
+      <div class="font-normal text-[11pt] leading-tight" style="font-family:Calibri,sans-serif;">
+        Republic of the Philippines<br>
+        <img src="/images/lspu-name.png" alt="Laguna State Polytechnic University" class="inline-block align-middle h-[22px] max-w-[55%] my-1 university-name" /><br>
+        <span class="block mb-2">Province of Laguna</span>
+      </div>
+      <div class="font-bold text-[11pt] mt-1 mb-1" style="font-family:'Times New Roman',serif;">OFFICE OF STUDENT AFFAIRS AND SERVICES</div>
+      <div class="font-bold text-[13pt] mt-4 mb-4" style="font-family:'Times New Roman',serif;">PLAN OF ACTIVITIES</div>
+      
+      <!-- Organization Name Section -->
+      <div class="mt-4 text-center">
+        <div class="border-b border-black min-w-[330px] inline-block text-center font-bold text-[11pt] pb-1" style="font-family:'Times New Roman',serif;">
+          {{ form.organization_name || '________________________' }}
+        </div>
+        <div class="text-[11pt] mt-1 font-bold" style="font-family:'Times New Roman',serif;">Name of Organization</div>
+      </div>
+      
+      <!-- Academic Year Section -->
+      <div class="text-center mt-3 text-[11pt] font-bold" style="font-family:'Times New Roman',serif;">
+        <span class="border-b border-black px-2 min-w-[48px] inline-block">{{ form.semester || '__' }}</span>
+        Semester AY 20<span class="border-b border-black px-2 min-w-[24px] inline-block">{{ form.academic_year_start || '__' }}</span>-20<span class="border-b border-black px-2 min-w-[24px] inline-block">{{ form.academic_year_end || '__' }}</span>
+      </div>
+    </div>
+
+    <!-- Activities Table (similar to blade template) -->
+    <div class="mt-6">
+      <div class="mb-2">
+        <h4 class="text-md font-bold">Activities</h4>
+      </div>
+      
+      <p v-if="errors.activities_general" class="text-red-500 text-sm mb-2">{{ errors.activities_general }}</p>
+      
+      <!-- Activity Count Display -->
+      <div class="mb-4 p-2 bg-gray-50 border border-gray-200 rounded text-sm">
+        <span class="font-semibold">📋 Total Activities: {{ form.activities.length }}</span>
+        <span v-if="form.activities.length > 0" class="ml-4 text-gray-600">
+          • Page {{ currentPage }} of {{ totalPages }}
+        </span>
+      </div>
+
+      <!-- Pagination Controls (Top) -->
+      <div v-if="totalPages > 1" class="pagination-controls flex justify-center items-center mb-4 gap-4">
+        <button 
+          @click="prevPage" 
+          :disabled="currentPage === 1 || isChangingPage"
+          class="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed">
+          Previous
+        </button>
+        
+        <div class="flex gap-2">
+          <template v-for="page in visiblePages" :key="page">
+            <button 
+              v-if="page !== '...'"
+              @click="goToPage(page)" 
+              :class="[
+                'px-3 py-2 rounded',
+                currentPage === page 
+                  ? 'bg-blue-600 text-white' 
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              ]"
+              :disabled="isChangingPage"
+            >
+              {{ page }}
+            </button>
+            <span v-else class="px-3 py-2 text-gray-500">...</span>
+          </template>
+        </div>
+        
+        <button 
+          @click="nextPage" 
+          :disabled="currentPage === totalPages || isChangingPage"
+          class="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed">
+          Next
+        </button>
+      </div>
+
+      <!-- Page Info -->
+      <div v-if="totalPages > 1" class="text-center mb-4 text-sm text-gray-600">
+        Page {{ currentPage }} of {{ totalPages }} • Activity {{ startIndex + 1 }} of {{ form.activities.length }}
+      </div>
+      
+      <!-- Activities Table (matching blade template structure) -->
+      <div class="overflow-x-auto">
+        <table class="w-full border-collapse border border-gray-300 mb-4 min-w-[1000px]" style="table-layout: fixed;">
+          <thead>
+            <tr class="bg-gray-100">
+              <th class="border border-gray-300 p-2 text-xs" style="width: 15%;">OBJECTIVE</th>
+              <th class="border border-gray-300 p-2 text-xs" style="width: 15%;">ACTIVITIES</th>
+              <th class="border border-gray-300 p-2 text-xs" style="width: 25%;">BRIEF<br>DESCRIPTION</th>
+              <th class="border border-gray-300 p-2 text-xs" style="width: 15%;">PERSONS INVOLVED</th>
+              <th class="border border-gray-300 p-2 text-xs" style="width: 15%;">TARGET DATE</th>
+              <th class="border border-gray-300 p-2 text-xs" style="width: 15%;">BUDGET</th>
+              <th class="border border-gray-300 p-2 text-xs" style="width: 10%;">ACTION</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(activity, idx) in currentPageActivities" :key="startIndex + idx" style="height: 150px;">
+              <td class="border border-gray-300 p-2" style="vertical-align: top;">
+                <div 
+                  :data-field="`objective-${startIndex + idx}`"
+                  contenteditable="true"
+                  @input="handleContentEditableInput($event, startIndex + idx, 'objective')"
+                  @mouseup="handleMouseUp"
+                  class="w-full p-1 text-sm min-h-[20px] focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  placeholder="Enter objective..."
+                  style="word-wrap: break-word; overflow-wrap: break-word;"
+                ></div>
+                <p v-if="errors.activities?.[startIndex + idx]?.objective" class="text-red-500 text-xs mt-1">{{ errors.activities[startIndex + idx].objective }}</p>
+              </td>
+              <td class="border border-gray-300 p-2" style="vertical-align: top;">
+                <div 
+                  :data-field="`name-${startIndex + idx}`"
+                  contenteditable="true"
+                  @input="handleContentEditableInput($event, startIndex + idx, 'name')"
+                  @mouseup="handleMouseUp"
+                  class="w-full p-1 text-sm min-h-[20px] focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  placeholder="Enter activity name..."
+                  style="word-wrap: break-word; overflow-wrap: break-word;"
+                ></div>
+                <p v-if="errors.activities?.[startIndex + idx]?.name" class="text-red-500 text-xs mt-1">{{ errors.activities[startIndex + idx].name }}</p>
+              </td>
+              <td class="border border-gray-300 p-2" style="vertical-align: top;">
+                <div 
+                  :data-field="`description-${startIndex + idx}`"
+                  contenteditable="true"
+                  @input="handleContentEditableInput($event, startIndex + idx, 'description')"
+                  @mouseup="handleMouseUp"
+                  class="w-full p-1 text-sm min-h-[20px] focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  placeholder="Enter brief description..."
+                  style="word-wrap: break-word; overflow-wrap: break-word;"
+                ></div>
+                <p v-if="errors.activities?.[startIndex + idx]?.description" class="text-red-500 text-xs mt-1">{{ errors.activities[startIndex + idx].description }}</p>
+              </td>
+              <td class="border border-gray-300 p-2" style="vertical-align: top;">
+                <div 
+                  :data-field="`persons_involved-${startIndex + idx}`"
+                  contenteditable="true"
+                  @input="handleContentEditableInput($event, startIndex + idx, 'persons_involved')"
+                  @mouseup="handleMouseUp"
+                  class="w-full p-1 text-sm min-h-[20px] focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  placeholder="Enter persons involved..."
+                  style="word-wrap: break-word; overflow-wrap: break-word;"
+                ></div>
+                <p v-if="errors.activities?.[startIndex + idx]?.persons_involved" class="text-red-500 text-xs mt-1">{{ errors.activities[startIndex + idx].persons_involved }}</p>
+              </td>
+              <td class="border border-gray-300 p-2" style="vertical-align: top;">
+                <input type="date" v-model="activity.target_date" class="w-full p-1 text-sm" required>
+                <p v-if="errors.activities?.[startIndex + idx]?.target_date" class="text-red-500 text-xs mt-1">{{ errors.activities[startIndex + idx].target_date }}</p>
+              </td>
+              <td class="border border-gray-300 p-2" style="vertical-align: top;">
+                <input type="number" v-model.number="activity.budget" step="0.01" min="0" max="9999999999999.99" class="w-full p-1 text-sm" required>
+                <p v-if="errors.activities?.[startIndex + idx]?.budget" class="text-red-500 text-xs mt-1">{{ errors.activities[startIndex + idx].budget }}</p>
+              </td>
+              <td class="border border-gray-300 p-2 text-center" style="vertical-align: top;">
+                <button type="button" @click="removeActivity(startIndex + idx)" class="bg-red-500 text-white px-2 py-1 rounded text-xs" :disabled="form.activities.length <= 1">
+                  Remove
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Add Activity Button -->
+      <div class="text-center mb-6">
+        <button type="button" @click="addActivity" class="bg-blue-500 text-white px-3 py-1 rounded text-sm">
+          Add Activity
+        </button>
+      </div>
+    </div>
+
+    <!-- Signatures Section (similar to blade template) -->
+    <div v-if="form.activities.length > 0" class="mt-6 signatures-section">
+      <!-- Prepared by label -->
+      <div class="text-left mb-2 text-[11pt]" style="font-family:'Times New Roman',serif;">Prepared by:</div>
+      
+      <!-- First signature row with President and Secretary -->
+      <div class="flex justify-between mb-6">
+        <div class="text-center" style="width: 45%;">
+          <div class="border-b border-black min-w-[200px] inline-block text-center pb-1 text-[11pt]" style="font-family:'Times New Roman',serif;">
+            {{ form.president_name || '________________________' }}
+          </div>
+          <div class="text-[11pt] mt-1" style="font-family:'Times New Roman',serif;">Organization President</div>
+        </div>
+        <div class="text-center" style="width: 45%;">
+          <div class="border-b border-black min-w-[200px] inline-block text-center pb-1 text-[11pt]" style="font-family:'Times New Roman',serif;">
+            {{ form.secretary_name || '________________________' }}
+          </div>
+          <div class="text-[11pt] mt-1" style="font-family:'Times New Roman',serif;">Organization Secretary</div>
+        </div>
+      </div>
+      
+      <!-- Noted label -->
+      <div class="text-left mb-2 text-[11pt]" style="font-family:'Times New Roman',serif;"><strong>Noted:</strong></div>
+      
+      <!-- Second signature row with Faculty Adviser -->
+      <div class="text-left mb-6" style="width: 45%;">
+        <div class="border-b border-black min-w-[200px] inline-block text-center pb-1 text-[11pt]" style="font-family:'Times New Roman',serif;">
+          {{ form.adviser_name || '________________________' }}
+        </div>
+        <div class="text-[11pt] mt-1" style="font-family:'Times New Roman',serif;">Organization Adviser(s)</div>
+      </div>
+      
+      <!-- Third signature row with Dean -->
+      <div class="text-left mb-6" style="width: 45%;">
+        <div class="border-b border-black min-w-[200px] inline-block text-center pb-1 text-[11pt]" style="font-family:'Times New Roman',serif;">
+          {{ form.dean_name || '________________________' }}
+        </div>
+        <div class="text-[11pt] mt-1" style="font-family:'Times New Roman',serif;">Dean/Assoc. Dean</div>
+      </div>
+      
+      <!-- Recommending Approval -->
+      <div class="text-center mt-6 mb-6">
+        <div class="font-bold mb-2 text-[11pt]" style="font-family:'Times New Roman',serif;"><strong>Recommending Approval:</strong></div>
+        <div class="border-b border-black min-w-[290px] inline-block text-center pb-1 text-[11pt]" style="font-family:'Times New Roman',serif;">
+          {{ form.coordinator_name || '________________________' }}
+        </div>
+        <div class="text-[11pt] mt-1" style="font-family:'Times New Roman',serif;">Coordinator, Student Organization Unit</div>
+      </div>
+      
+      <!-- Approved/Disapproved -->
+      <div class="text-center mt-6 mb-6">
+        <div class="font-bold mb-2 text-[11pt]" style="font-family:'Times New Roman',serif;"><strong>Approved/Disapproved:</strong></div>
+        <div class="border-b border-black min-w-[415px] inline-block text-center pb-1 text-[11pt]" style="font-family:'Times New Roman',serif;">
+          {{ form.director_name || '________________________' }}
+        </div>
+        <div class="text-[11pt] mt-1" style="font-family:'Times New Roman',serif;">Director/Chairperson, Office of Student Affairs and Services</div>
+      </div>
+    </div>
+
+    <!-- Form inputs section -->
+    <div class="mt-8 border-t pt-6">
+      <h3 class="text-lg font-bold mb-4">Form Details</h3>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block font-bold">Organization Name</label>
+          <input v-model="form.organization_name" class="border p-2 w-full" required>
+          <p v-if="errors.organization_name" class="text-red-500 text-sm mt-1">{{ errors.organization_name }}</p>
+        </div>
+
+        <div>
+          <label class="block font-bold">Semester</label>
+          <select v-model="form.semester" class="border p-2 w-full" required>
+            <option value="">Select Semester</option>
+            <option value="1st">1st</option>
+            <option value="2nd">2nd</option>
+            <option value="Inter">Inter semester</option>
+          </select>
+          <p v-if="errors.semester" class="text-red-500 text-sm mt-1">{{ errors.semester }}</p>
+        </div>
+
+        <div class="flex items-end space-x-2">
+          <div>
+            <label class="block font-bold">Academic Year</label>
+            <div class="flex items-center space-x-2">
+              <span>20</span>
+              <input 
+                v-model="form.academic_year_start" 
+                @input="limitTo2Digits" 
+                class="border p-2 w-16 text-center" 
+                :placeholder="currentYear" 
+                maxlength="2" 
+                required
+                style="user-select: none; -webkit-user-select: none;"
+              >
+              <span class="mx-1">-</span>
+              <span>20</span>
+              <input 
+                v-model="form.academic_year_end" 
+                @input="limitTo2Digits" 
+                class="border p-2 w-16 text-center" 
+                :placeholder="nextYear" 
+                maxlength="2" 
+                required
+                style="user-select: none; -webkit-user-select: none;"
+              >
             </div>
+          </div>
+        </div>
 
-            <!-- Form inputs -->
-            <div class="mt-8">
-                <h3 class="text-lg font-bold mb-4">Form Details</h3>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block font-bold">Organization Name</label>
-                        <input v-model="form.organization_name" class="border p-2 w-full" required>
-                        <p v-if="errors.organization_name" class="text-red-500 text-sm mt-1">{{ errors.organization_name }}</p>
-                    </div>
+        <div>
+          <label class="block font-bold">President Name</label>
+          <input v-model="form.president_name" class="border p-2 w-full" required>
+          <p v-if="errors.president_name" class="text-red-500 text-sm mt-1">{{ errors.president_name }}</p>
+        </div>
 
-                    <div>
-                        <label class="block font-bold">Semester</label>
-                        <select v-model="form.semester" class="border p-2 w-full" required>
-                            <option value="">Select Semester</option>
-                            <option value="1st">1st</option>
-                            <option value="2nd">2nd</option>
-                              <option value="Inter">Inter Semester</option>
-                        </select>
-                        <p v-if="errors.semester" class="text-red-500 text-sm mt-1">{{ errors.semester }}</p>
-                    </div>
+        <div>
+          <label class="block font-bold">Secretary Name</label>
+          <input v-model="form.secretary_name" class="border p-2 w-full" required>
+          <p v-if="errors.secretary_name" class="text-red-500 text-sm mt-1">{{ errors.secretary_name }}</p>
+        </div>
 
+        <div>
+          <label class="block font-bold">Adviser Name</label>
+          <input v-model="form.adviser_name" class="border p-2 w-full" required>
+          <p v-if="errors.adviser_name" class="text-red-500 text-sm mt-1">{{ errors.adviser_name }}</p>
+        </div>
 
-                      <div class="flex items-end space-x-2">
-                        <div>
-                          <label class="block font-bold">Academic Year</label>
-                          <div class="flex items-center space-x-2">
+        <div>
+          <label class="block font-bold">Dean Name</label>
+          <input v-model="form.dean_name" class="border p-2 w-full" required>
+          <p v-if="errors.dean_name" class="text-red-500 text-sm mt-1">{{ errors.dean_name }}</p>
+        </div>
+
+        <div>
+          <label class="block font-bold">Coordinator Name</label>
+          <input v-model="form.coordinator_name" class="border p-2 w-full" required>
+          <p v-if="errors.coordinator_name" class="text-red-500 text-sm mt-1">{{ errors.coordinator_name }}</p>
+        </div>
+
+        <div>
+          <label class="block font-bold">Director Name</label>
+          <input v-model="form.director_name" class="border p-2 w-full" required>
+          <p v-if="errors.director_name" class="text-red-500 text-sm mt-1">{{ errors.director_name }}</p>
+        </div>
+      </div>
+
+      <div class="mt-6 text-center">
+        <button type="submit" @click="submit" class="bg-green-500 text-white px-4 py-2 rounded">Submit</button>
+      </div>
+    </div>
+
+    <!-- Footer (matching blade template) -->
+    <div class="footer mt-8 text-xs flex justify-between text-[10pt]" style="font-family: Calibri, sans-serif;">
+      <span>LSPU-OSAS-SF-004</span>
+      <span>Rev. 1</span>
+      <span>09 November 2020</span>
+    </div>
+  </div>
+</template>
                             <input 
                               v-model="form.academic_year_start" 
                               class="border p-2 w-16 bg-gray-200 text-gray-500 select-none pointer-events-none text-center" 
@@ -949,6 +1197,18 @@ nextTick(() => {
 </template>
 
 <style scoped>
+/* Ensure A4 Paper Size */
+.form-content {
+    width: 210mm;
+    min-height: 297mm;
+    padding: 20mm;
+    margin: auto;
+    background: white;
+    font-family: 'Times New Roman', serif;
+    font-size: 11pt;
+    line-height: 1.1;
+}
+
 [contenteditable]:empty:before {
   content: attr(placeholder);
   color: #9ca3af;
@@ -966,5 +1226,70 @@ nextTick(() => {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* Table styling to match blade template */
+table {
+  table-layout: fixed;
+  overflow-wrap: break-word;
+}
+
+table td {
+  vertical-align: top;
+  word-wrap: break-word;
+  padding: 8px;
+}
+
+/* Header styling */
+.header {
+  font-family: 'Times New Roman', serif;
+}
+
+.university-name {
+  max-width: 55%;
+  height: auto;
+  margin: 4px 0;
+  display: inline-block;
+}
+
+/* Signature styling */
+.signatures-section {
+  font-family: 'Times New Roman', serif;
+  font-size: 11pt;
+}
+
+/* Footer styling */
+.footer {
+  font-family: Calibri, sans-serif;
+  font-size: 10pt;
+}
+
+/* Ensure proper printing */
+@media print {
+  .form-content {
+    width: 210mm;
+    height: 297mm;
+    margin: 0;
+    padding: 20mm;
+  }
+  
+  table { 
+    page-break-inside: avoid; 
+    margin-bottom: 20px;
+  }
+  
+  tr { 
+    page-break-inside: avoid; 
+    page-break-after: auto; 
+  }
+  
+  td { 
+    vertical-align: top; 
+    word-wrap: break-word;
+  }
+  
+  .signatures-section {
+    page-break-inside: avoid;
+  }
 }
 </style>
