@@ -104,7 +104,10 @@ onUnmounted(() => {
             class="cursor-pointer select-none relative py-2.5 pl-3 pr-9 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors duration-150 text-gray-900 dark:text-gray-100"
             :class="{ 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300': selectedForm === option.value }"
           >
-            {{ option.label }}
+              <div class="flex justify-between items-center">
+                <span class="font-medium">{{ option.label }}</span>
+                <span v-if="!['LSPU-OSAS-SF-EVAL','LSPU-OSAS-SF-ACCOMPLISHMENT','LSPU-OSAS-SF-NARRATIVE','LSPU-OSAS-SF-FINANCIAL','LSPU-OSAS-SF-BYLAWS','LSPU-OSAS-SF-007'].includes(option.value)" class="text-xs text-gray-500 dark:text-gray-400 font-mono ml-2">{{ option.value }}</span>
+              </div>
           </div>
         </div>
       </div>
