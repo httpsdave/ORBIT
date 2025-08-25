@@ -73,6 +73,35 @@ class ProfileController extends Controller
     }
 
     /**
+     * Update the user's form default values (admin only).
+     */
+    public function updateFormDefaults(Request $request): RedirectResponse
+    {
+        $user = $request->user();
+        
+        // Check if user is admin
+        $isAdmin = $user && ($user->role === 'admin' || 
+                   (is_object($user->role) && (
+                       (isset($user->role->name) && $user->role->name === 'admin') || 
+                       (isset($user->role->slug) && $user->role->slug === 'admin') || 
+                       (isset($user->role->id) && $user->role->id === 1)
+                   )));
+
+        if (!$isAdmin) {
+            return Redirect::back()->withErrors(['error' => 'Unauthorized access.']);
+        }
+
+        $validated = $request->validate([
+            'coordinator_name' => 'nullable|string|max:255',
+            'director_name' => 'nullable|string|max:255',
+        ]);
+
+        $user->update($validated);
+
+        return Redirect::route('profile.edit')->with('status', 'form-defaults-updated');
+    }
+
+    /**
      * Delete the user's account.
      */
     public function destroy(Request $request): RedirectResponse

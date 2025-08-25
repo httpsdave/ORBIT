@@ -119,6 +119,7 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::post('/profile', [ProfileController::class, 'update']);
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::patch('/profile/form-defaults', [ProfileController::class, 'updateFormDefaults'])->name('profile.form-defaults.update');
     
     // Applications routes
     Route::get('/applications', [OrganizationApplicationController::class, 'index'])->name('applications.index');

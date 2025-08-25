@@ -4,6 +4,7 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { useForm, usePage, router } from '@inertiajs/vue3';
+import { watch } from 'vue';
 
 const user = usePage().props.auth.user;
 
@@ -12,6 +13,14 @@ const form = useForm({
     coordinator_name: user.coordinator_name || '',
     director_name: user.director_name || '',
 });
+
+// Watch for changes in user data and update form values
+watch(() => user, (newUser) => {
+    if (newUser) {
+        form.coordinator_name = newUser.coordinator_name || '';
+        form.director_name = newUser.director_name || '';
+    }
+}, { deep: true });
 
 function submit() {
     form.patch(route('profile.form-defaults.update'), {
