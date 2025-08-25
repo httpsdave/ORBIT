@@ -578,85 +578,71 @@ const submit = () => {
 
     <!-- Form inputs -->
     <div class="mt-8 border-t pt-6">
-        <h3 class="text-lg font-bold mb-4">Form Details</h3>
+    <h3 class="text-lg font-bold mb-4">Form Details</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- 1st Column -->
+      <div>
+        <label class="block font-bold">Organization Name</label>
+        <input v-model="form.organization_name" class="border p-2 w-full" required>
+        <div v-if="errors.organization_name" class="text-red-500 text-sm mt-1">{{ errors.organization_name }}</div>
+
+        <label class="block font-bold mt-4">Semester</label>
+        <select v-model="form.semester" class="border p-2 w-full" required>
+          <option value="">-- Select Semester --</option>
+          <option value="1st">1st Semester</option>
+          <option value="2nd">2nd Semester</option>
+          <option value="Summer">Summer</option>
+        </select>
+        <div v-if="errors.semester" class="text-red-500 text-sm mt-1">{{ errors.semester }}</div>
+
+        <label class="block font-bold mt-4">Faculty Adviser Name</label>
+        <input v-model="form.adviser_name" class="border p-2 w-full">
+     
+        <div v-if="errors.adviser_name" class="text-red-500 text-sm mt-1">{{ errors.adviser_name }}</div>
+
+        <label class="block font-bold mt-4">Second Faculty Adviser Name (Optional)</label>
+        <input v-model="form.second_adviser" class="border p-2 w-full">
+
+        <label class="block font-bold mt-4">Dean/Assoc. Dean Name</label>
+        <input v-model="form.dean_name" class="border p-2 w-full">
         
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-                <label class="block font-bold">Organization Name</label>
-                <input v-model="form.organization_name" class="border p-2 w-full" required>
-                <div v-if="errors.organization_name" class="text-red-500 text-sm mt-1">{{ errors.organization_name }}</div>
-            </div>
+        <div v-if="errors.dean_name" class="text-red-500 text-sm mt-1">{{ errors.dean_name }}</div>
+      </div>
 
-            <!-- President Name field removed for List of Members Form -->
-
-            <div>
-                <label class="block font-bold">Coordinator Name</label>
-                <input v-model="form.coordinator_name" class="border p-2 w-full bg-gray-100 text-gray-600" readonly>
-            </div>
-
-            <div>
-                <label class="block font-bold">Semester</label>
-                <select v-model="form.semester" class="border p-2 w-full" required>
-                    <option value="">-- Select Semester --</option>
-                    <option value="1st">1st Semester</option>
-                    <option value="2nd">2nd Semester</option>
-                    <option value="Summer">Summer</option>
-                </select>
-                <div v-if="errors.semester" class="text-red-500 text-sm mt-1">{{ errors.semester }}</div>
-            </div>
-
-            <!-- Right Column -->
-            <div class="flex items-end space-x-2">
-                <div>
-                  <label class="block font-bold">Academic Year</label>
-                  <div class="flex items-center space-x-2">
-                    <input 
-                      v-model="form.academic_year_start" 
-                      class="border p-2 w-16 bg-gray-200 text-gray-500 select-none pointer-events-none text-center" 
-                      :placeholder="currentYear" 
-                      readonly 
-                      tabindex="-1" 
-                      style="user-select: none; -webkit-user-select: none;" 
-                    >
-                    <span class="mx-1">-</span>
-                    <input 
-                      v-model="form.academic_year_end" 
-                      class="border p-2 w-16 bg-gray-200 text-gray-500 select-none pointer-events-none text-center" 
-                      :placeholder="nextYear" 
-                      readonly 
-                      tabindex="-1" 
-                      style="user-select: none; -webkit-user-select: none;" 
-                    >
-                  </div>
-                  <div class="flex space-x-2">
-                    <p v-if="errors.academic_year_start" class="text-red-500 text-sm mt-1">{{ errors.academic_year_start }}</p>
-                    <p v-if="errors.academic_year_end" class="text-red-500 text-sm mt-1">{{ errors.academic_year_end }}</p>
-                  </div>
-                </div>
-            </div>
-
-            <div>
-                <label class="block font-bold">Faculty Adviser Name</label>
-                <input v-model="form.adviser_name" class="border p-2 w-full" required>
-                <div v-if="errors.adviser_name" class="text-red-500 text-sm mt-1">{{ errors.adviser_name }}</div>
-            </div>
-
-            <div>
-                <label class="block font-bold">Second Faculty Adviser Name (Optional)</label>
-                <input v-model="form.second_adviser" class="border p-2 w-full">
-            </div>
-
-            <div>
-                <label class="block font-bold">Dean/Assoc. Dean Name</label>
-                <input v-model="form.dean_name" class="border p-2 w-full" required>
-                <div v-if="errors.dean_name" class="text-red-500 text-sm mt-1">{{ errors.dean_name }}</div>
-            </div>
-
-            <div>
-                <label class="block font-bold">Director/Chairperson Name</label>
-                <input v-model="form.director_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none;">
-            </div>
+      <!-- 2nd Column -->
+      <div>
+        <label class="block font-bold">Academic Year</label>
+        <div class="flex items-center space-x-2">
+          <input 
+            v-model="form.academic_year_start" 
+            class="border p-2 w-16 bg-gray-200 text-gray-500 select-none pointer-events-none text-center" 
+            :placeholder="currentYear" 
+            readonly 
+            tabindex="-1" 
+            style="user-select: none; -webkit-user-select: none;" 
+          >
+          <span class="mx-1">-</span>
+          <input 
+            v-model="form.academic_year_end" 
+            class="border p-2 w-16 bg-gray-200 text-gray-500 select-none pointer-events-none text-center" 
+            :placeholder="nextYear" 
+            readonly 
+            tabindex="-1" 
+            style="user-select: none; -webkit-user-select: none;" 
+          >
         </div>
+        <div class="flex space-x-2">
+          <p v-if="errors.academic_year_start" class="text-red-500 text-sm mt-1">{{ errors.academic_year_start }}</p>
+          <p v-if="errors.academic_year_end" class="text-red-500 text-sm mt-1">{{ errors.academic_year_end }}</p>
+        </div>
+
+        <label class="block font-bold mt-4">Coordinator Name</label>
+        <input v-model="form.coordinator_name" class="border p-2 w-full bg-gray-100 text-gray-600" readonly>
+
+        <label class="block font-bold mt-4">Director/Chairperson Name</label>
+        <input v-model="form.director_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none;">
+      </div>
+    </div>
 
         <!-- Member List Management -->
         <div class="mt-6">
