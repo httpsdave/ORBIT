@@ -364,25 +364,26 @@ const submit = () => {
 <template>
   <div class="mt-6 form-content">
     <!-- REMOVE: <StatusBanner :show="showStatus" :type="statusType" :message="statusMessage" @close="showStatus = false" /> -->
-    <div class="header text-center relative py-4">
-      <img src="/images/lspu-logo.png" alt="LSPU Logo" class="absolute top-[-20px] left-[-60px] w-[180px] h-auto">
-      <div class="font-normal text-[11pt] leading-tight" style="font-family:Calibri,sans-serif;">
+    <div class="header text-center relative">
+      <img src="/images/lspu-logo.png" alt="LSPU Logo" class="absolute logo" style="position: absolute; top: -0.5cm; left: -2cm; width: 250px; height: auto;">
+      <div class="font-normal text-[11pt] leading-tight header-text" style="font-family:Calibri,sans-serif;">
         Republic of the Philippines<br>
-        <img src="/images/lspu-name.png" alt="Laguna State Polytechnic University" class="inline-block align-middle h-[22px] max-w-[55%] my-1 university-name" /><br>
-        <span class="block mb-2">Province of Laguna</span>
+        <img src="/images/lspu-name.png" alt="Laguna State Polytechnic University" class="inline-block align-middle max-w-[55%] my-1 university-name" style="max-width: 55%; height: auto; margin: 3px 0; display: inline-block;" /><br>
+        <span class="block mb-3 province-text" style="margin-bottom: 12px; display: block;">Province of Laguna</span>
       </div>
-      <div class="font-bold text-[11pt] mt-1 mb-1" style="font-family:'Times New Roman',serif;">OFFICE OF STUDENT AFFAIRS AND SERVICES</div>
-      <div class="font-bold text-[11pt] mt-1 mb-1" style="font-family:'Times New Roman',serif;">LIST OF MEMBERS OF THE ORGANIZATION</div>
+      <div class="font-bold text-[11pt] office-title" style="font-family:'Times New Roman',serif; font-size:11pt; font-weight:bold; margin-bottom:10px; margin-top:10px; display: block;">OFFICE OF STUDENT AFFAIRS AND SERVICES</div>
+      <div class="font-bold text-[11pt] sub-header" style="font-family:'Times New Roman',serif; font-size:11pt; font-weight:bold; margin-bottom:10px; margin-top:6px; display: block;">LIST OF MEMBERS OF THE ORGANIZATION</div>
     </div>
 
-    <div class="text-center mt-2">
-      <div class="inline-block text-[11pt] font-bold mb-1" style="font-family:'Times New Roman',serif;">
-        <span class="inline-block border-b border-black px-2 min-w-[48px]">{{ form.semester || '1st' }}</span>
-        Semester AY 20<span class="inline-block border-b border-black px-2 min-w-[36px]">{{ form.academic_year_start || currentYear }}</span>-20<span class="inline-block border-b border-black px-2 min-w-[36px]">{{ form.academic_year_end || nextYear }}</span>
+  <div class="text-center" style="margin-top: 2px;">
+  <div class="inline-block text-[11pt] font-bold mb-4" style="font-family:'Times New Roman',serif; font-size: 11pt; font-weight: bold; position: relative; top: 5px;">
+        <span class="inline-block border-b border-black text-center" style="display:inline-block !important; min-width:0.5cm !important; margin:0 !important; margin-right:0.05cm !important; padding:0 !important; border-bottom:1px solid black !important; line-height:10px; font-family: Times New Roman, serif; font-size: 11pt; font-weight: bold; text-align:center; position:relative; top:-0px;">{{ form.semester || '1st' }}</span>Semester AY 20<span class="inline-block border-b border-black text-center" style="display:inline-block !important; min-width:0.4cm !important; margin:0 !important; margin-left:0.02cm !important; margin-right:0.02cm !important; padding:0 !important; border-bottom:1px solid black !important; line-height:10px; font-family: Times New Roman, serif; font-size: 11pt; font-weight: bold; text-align:center; position:relative; top:0px; left:-0.03cm;">{{ form.academic_year_start || currentYear }}</span>-20<span class="inline-block border-b border-black text-center" style="display:inline-block !important; min-width:0.4cm !important; margin:0 !important; margin-left:0.02cm !important; padding:0 !important; border-bottom:1px solid black !important; line-height:10px; font-family: Times New Roman, serif; font-size: 11pt; font-weight: bold; text-align:center; position:relative; top:0px; left:-0.03cm;">{{ form.academic_year_end || nextYear }}</span>
       </div>
-      <div class="w-full text-center mt-1">
-        <span class="font-bold text-[11pt]" style="font-family:'Times New Roman',serif;">Name of Organization</span>
-        <span class="block border-b border-black min-w-[200px] mx-auto font-bold text-[11pt]" style="font-family:'Times New Roman',serif;">{{ form.organization_name }}</span>
+      <div class="w-full text-center" style="margin-top: 15px;">
+        <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
+          <span class="font-bold text-[11pt]" style="font-family:'Times New Roman',serif; font-size: 11pt; font-weight: bold; text-align: left;">Name of Organization</span>
+          <span class="signature-line" style="margin-bottom:0px; min-width:200px; font-family:'Times New Roman',serif; font-size: 11pt; text-align: center; border-bottom: 1px solid #000; display: inline-block; font-weight: bold;">{{ form.organization_name }}</span>
+        </div>
       </div>
     </div>
 
