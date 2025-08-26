@@ -54,16 +54,16 @@ const formattedDate = computed(() => {
 
 const form = useForm({
   form_type: 'LSPU-OSAS-SF-002',
-  organization_name: props.initialFormData.organization_name || '',
+  organization_name: props.initialFormData.organization_name?.toUpperCase() || '',
   college: props.initialFormData.college || '',
   application_date: props.initialFormData.application_date || new Date().toISOString().slice(0, 10),
   academic_year_start: props.initialFormData.academic_year_start || currentYear.value,
   academic_year_end: props.initialFormData.academic_year_end || nextYear.value,
-  president_name: props.initialFormData.president_name || '',
-  adviser_name: props.initialFormData.adviser_name || '',
-  dean_name: props.initialFormData.dean_name || '',
-  coordinator_name: props.initialFormData.coordinator_name || '',
-  director_name: props.initialFormData.director_name || '',
+  president_name: props.initialFormData.president_name?.toUpperCase() || '',
+  adviser_name: props.initialFormData.adviser_name?.toUpperCase() || '',
+  dean_name: props.initialFormData.dean_name?.toUpperCase() || '',
+  coordinator_name: props.initialFormData.coordinator_name?.toUpperCase() || '',
+  director_name: props.initialFormData.director_name?.toUpperCase() || '',
 });
 
 // Initialize auto-save functionality
@@ -231,7 +231,7 @@ const submit = () => {
   </div>
   <div class="signature" style="margin-bottom:30px;">
     <p><span class="signature-line" style="min-width:305px; font-size:11pt;"><strong>{{ form.dean_name }}</strong></span></p>
-    <p><span class="title-under-signature" style="font-size:11pt;"><strong>Dean/Assoc. Dean, College of</strong> <span class="signature-line signature-line-inline" style="min-width:120px; font-size:11pt;">{{ form.college }}</span></span></p>
+    <p><span class="title-under-signature" style="font-size:11pt;"><strong>Dean/Assoc. Dean, College of</strong> <span class="signature-line signature-line-inline" style="min-width:120px; font-size:11pt;"><strong>{{ form.college }}</strong></span></span></p>
   </div>
     </div>
 
@@ -260,7 +260,11 @@ const submit = () => {
               <!-- Left Column -->
               <div>
                   <label class="block font-bold">Organization Name</label>
-                  <input v-model="form.organization_name" class="border p-2 w-full">
+                  <input 
+                    v-model="form.organization_name" 
+                    @input="form.organization_name = $event.target.value.toUpperCase()"
+                    class="border p-2 w-full" 
+                    style="text-transform: uppercase;">
                   <p v-if="errors.organization_name" class="text-red-500 text-sm mt-1">{{ errors.organization_name }}</p>
               </div>
 
@@ -325,7 +329,11 @@ const submit = () => {
               <!-- Left Column -->
               <div>
                   <label class="block font-bold">President Name</label>
-                  <input v-model="form.president_name" class="border p-2 w-full">
+                  <input 
+                    v-model="form.president_name" 
+                    @input="form.president_name = $event.target.value.toUpperCase()"
+                    class="border p-2 w-full" 
+                    style="text-transform: uppercase;">
                   <p v-if="errors.president_name" class="text-red-500 text-sm mt-1">{{ errors.president_name }}</p>
               </div>
 
@@ -346,27 +354,35 @@ const submit = () => {
               <!-- Left Column -->
               <div>
                   <label class="block font-bold">Adviser Name</label>
-                  <input v-model="form.adviser_name" class="border p-2 w-full">
+                  <input 
+                    v-model="form.adviser_name" 
+                    @input="form.adviser_name = $event.target.value.toUpperCase()"
+                    class="border p-2 w-full" 
+                    style="text-transform: uppercase;">
                   <p v-if="errors.adviser_name" class="text-red-500 text-sm mt-1">{{ errors.adviser_name }}</p>
               </div>
 
               <!-- Right Column -->
               <div>
                   <label class="block font-bold">Coordinator Name</label>
-                  <input v-model="form.coordinator_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none;">
+                  <input v-model="form.coordinator_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none; text-transform: uppercase;">
               </div>
 
               <!-- Left Column -->
               <div>
                   <label class="block font-bold">Dean Name</label>
-                  <input v-model="form.dean_name" class="border p-2 w-full">
+                  <input 
+                    v-model="form.dean_name" 
+                    @input="form.dean_name = $event.target.value.toUpperCase()"
+                    class="border p-2 w-full" 
+                    style="text-transform: uppercase;">
                   <p v-if="errors.dean_name" class="text-red-500 text-sm mt-1">{{ errors.dean_name }}</p>
               </div>
 
               <!-- Right Column -->
               <div>
                   <label class="block font-bold">Chairperson Name</label>
-                  <input v-model="form.director_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none;">
+                  <input v-model="form.director_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none; text-transform: uppercase;">
               </div>
           </div>
 
