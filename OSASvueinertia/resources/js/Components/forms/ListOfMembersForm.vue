@@ -394,13 +394,13 @@ const submit = () => {
               <span class="photo-box-text text-center leading-tight">1 x 1<br>PICTURE</span>
             </div>
             <div class="member-info flex flex-col justify-center text-center" style="width:220px;">
-              <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black mx-auto" style="width:220px;">
+              <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black mx-auto" style="width:260px;">
                 <span class="filled-text">(Signature Over Printed Name)</span>
               </div>
-              <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black mx-auto" style="width:220px;">
+              <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black mx-auto" style="width:260px;">
                 <span class="filled-text">(Student Number)</span>
               </div>
-              <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black mx-auto" style="width:220px;">
+              <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black mx-auto" style="width:260px;">
                 <span class="filled-text">(Course / Year Section)</span>
               </div>
             </div>
@@ -416,8 +416,8 @@ const submit = () => {
         <div class="flex mt-4">
           <!-- Left Column -->
           <div class="w-1/2 pr-4">
-            <div v-for="rowIndex in 4" :key="`left-${rowIndex}`" class="flex mb-8" style="gap:0px;">
-              <div v-if="startIndex + (rowIndex - 1) < form.members.length" class="w-full flex" style="gap:0px;">
+            <div v-for="rowIndex in 4" :key="`left-${rowIndex}`" class="flex mb-8" style="gap:8px;">
+              <div v-if="startIndex + (rowIndex - 1) < form.members.length" class="w-full flex" style="gap:8px;">
                 <div class="photo-box border border-black w-[96px] h-[96px] flex items-center justify-center text-xs flex-shrink-0">
                   <img v-if="getPhotoPreview(form.members[startIndex + (rowIndex - 1)])"
                        :src="getPhotoPreview(form.members[startIndex + (rowIndex - 1)])"
@@ -426,25 +426,25 @@ const submit = () => {
                   <span v-else class="photo-box-text text-center leading-tight">1 x 1<br>PICTURE</span>
                 </div>
                 <div class="member-info flex-1 flex flex-col justify-center text-center">
-                  <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black w-4/5 mx-auto">
+                  <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black mx-auto" style="width: calc(80% + 40px);">
                     <span class="filled-text">{{ form.members[startIndex + (rowIndex - 1)].student_name }}</span>
                   </div>
-                  <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black w-4/5 mx-auto">
+                  <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black mx-auto" style="width: calc(80% + 40px);">
                     <span class="filled-text">{{ form.members[startIndex + (rowIndex - 1)].student_number }}</span>
                   </div>
-                  <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black w-4/5 mx-auto">
+                  <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black mx-auto" style="width: calc(80% + 40px);">
                     <span class="filled-text">{{ form.members[startIndex + (rowIndex - 1)].course_year_section }}</span>
                   </div>
                 </div>
               </div>
-              <div v-else class="w-full flex" style="gap:0px;">
+              <div v-else class="w-full flex" style="gap:8px;">
                 <div class="photo-box border border-black w-[96px] h-[96px] flex items-center justify-center text-xs flex-shrink-0">
                   <span class="photo-box-text text-center leading-tight">1 x 1<br>PICTURE</span>
                 </div>
                 <div class="member-info flex-1 flex flex-col justify-center text-center">
-                  <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black w-4/5 mx-auto"><span class="filled-text"></span></div>
-                  <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black w-4/5 mx-auto"><span class="filled-text"></span></div>
-                  <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black w-4/5 mx-auto"><span class="filled-text"></span></div>
+                  <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black mx-auto" style="width: calc(80% + 40px);"><span class="filled-text"></span></div>
+                  <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black mx-auto" style="width: calc(80% + 40px);"><span class="filled-text"></span></div>
+                  <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black mx-auto" style="width: calc(80% + 40px);"><span class="filled-text"></span></div>
                 </div>
               </div>
             </div>
@@ -452,8 +452,8 @@ const submit = () => {
 
           <!-- Right Column -->
           <div class="w-1/2 pl-4">
-            <div v-for="rowIndex in 4" :key="`right-${rowIndex}`" class="flex mb-8" style="gap:0px;">
-              <div v-if="startIndex + (rowIndex - 1) + 4 < form.members.length" class="w-full flex" style="gap:0px;">
+            <div v-for="rowIndex in 4" :key="`right-${rowIndex}`" class="flex mb-8" style="gap:8px;">
+              <div v-if="startIndex + (rowIndex - 1) + 4 < form.members.length" class="w-full flex" style="gap:8px;">
                 <div class="photo-box border border-black w-[96px] h-[96px] flex items-center justify-center text-xs flex-shrink-0">
                   <img v-if="getPhotoPreview(form.members[startIndex + (rowIndex - 1) + 4])"
                        :src="getPhotoPreview(form.members[startIndex + (rowIndex - 1) + 4])"
@@ -462,13 +462,13 @@ const submit = () => {
                   <span v-else class="photo-box-text text-center leading-tight">1 x 1<br>PICTURE</span>
                 </div>
                 <div class="member-info flex-1 flex flex-col justify-center text-center">
-                  <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black w-4/5 mx-auto">
+                  <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black mx-auto" style="width: calc(80% + 40px);">
                     <span class="filled-text">{{ form.members[startIndex + (rowIndex - 1) + 4].student_name }}</span>
                   </div>
-                  <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black w-4/5 mx-auto">
+                  <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black mx-auto" style="width: calc(80% + 40px);">
                     <span class="filled-text">{{ form.members[startIndex + (rowIndex - 1) + 4].student_number }}</span>
                   </div>
-                  <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black w-4/5 mx-auto">
+                  <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black mx-auto" style="width: calc(80% + 40px);">
                     <span class="filled-text">{{ form.members[startIndex + (rowIndex - 1) + 4].course_year_section }}</span>
                   </div>
                 </div>
@@ -478,9 +478,9 @@ const submit = () => {
                   <span class="photo-box-text text-center leading-tight">1 x 1<br>PICTURE</span>
                 </div>
                 <div class="member-info flex-1 flex flex-col justify-center text-center">
-                  <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black w-4/5 mx-auto"><span class="filled-text"></span></div>
-                  <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black w-4/5 mx-auto"><span class="filled-text"></span></div>
-                  <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black w-4/5 mx-auto"><span class="filled-text"></span></div>
+                  <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black mx-auto" style="width: calc(80% + 40px);"><span class="filled-text"></span></div>
+                  <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black mx-auto" style="width: calc(80% + 40px);"><span class="filled-text"></span></div>
+                  <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black mx-auto" style="width: calc(80% + 40px);"><span class="filled-text"></span></div>
                 </div>
               </div>
             </div>
