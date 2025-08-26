@@ -13,7 +13,7 @@ const collegeOptions = [
 // Handler for college select change
 function handleCollegeChange(e) {
   const selected = e.target.value;
-  form.college = selected.replace('College of ', '');
+  form.college = selected.replace('College of ', '').toUpperCase();
 }
 import { ref, computed } from 'vue';
 import { useForm } from '@inertiajs/vue3';
@@ -99,9 +99,9 @@ const handleCSVUpload = (event) => {
           // Add student if at least one field has data
           if (studentName || courseYearSection) {
             form.students.push({
-              student_name: studentName,
-              course_year_section: courseYearSection,
-              position_rank: positionRank,
+              student_name: studentName.toUpperCase(),
+              course_year_section: courseYearSection.toUpperCase(),
+              position_rank: positionRank.toUpperCase(),
               certification_date: form.certification_date, // Always include certification_date
             });
           }
@@ -193,17 +193,20 @@ const prevPage = () => {
 
 const form = useForm({
   form_type: 'LSPU-OSAS-SF-006',
-  organization_name: props.initialFormData.organization_name || '',
+  organization_name: props.initialFormData.organization_name?.toUpperCase() || '',
   // president_name removed for Student Certification Form
   application_date: props.initialFormData.application_date || '',
-  adviser_name: props.initialFormData.adviser_name || '',
-  dean_name: props.initialFormData.dean_name || '',
-  director_name: props.initialFormData.director_name || '',
-  coordinator_name: props.initialFormData.coordinator_name || '',
+  adviser_name: props.initialFormData.adviser_name?.toUpperCase() || '',
+  dean_name: props.initialFormData.dean_name?.toUpperCase() || '',
+  director_name: props.initialFormData.director_name?.toUpperCase() || '',
+  coordinator_name: props.initialFormData.coordinator_name?.toUpperCase() || '',
   college: props.initialFormData.college || '',
   certification_date: new Date().toISOString().slice(0, 10), // Always current date
   students: (props.initialFormData.students || []).map(student => ({
     ...student,
+    student_name: student.student_name?.toUpperCase() || '',
+    course_year_section: student.course_year_section?.toUpperCase() || '',
+    position_rank: student.position_rank?.toUpperCase() || '',
     certification_date: student.certification_date || new Date().toISOString().slice(0, 10), // Ensure each student has certification_date
   })),
 });
@@ -357,18 +360,18 @@ const submit = () => {
         <div class="noted-section" style="padding-left:40px;">
           <div class="faculty-adviser-signature" style="margin-top:0; margin-left:-42px;">
             <div style="text-align:left;">
-              <span style="display:inline-block; min-width:200px; width:auto; border-bottom:1px solid black; padding-bottom:2px; text-align:center; margin-left:0px;">{{ form.adviser_name }}</span>
+              <span style="display:inline-block; min-width:200px; width:auto; border-bottom:1px solid black; padding-bottom:2px; text-align:center; margin-left:0px; text-transform: uppercase;">{{ form.adviser_name }}</span>
               <span style="display:block; text-align:left; margin-left:25px;">Organization Adviser(s)</span>
             </div>
           </div>
           <div style="margin-top:40px; text-align:left; margin-left:-42px;">
-            <span style="display:inline-block; min-width:220px; width:auto; border-bottom:1px solid black; padding-bottom:2px; text-align:center;">{{ form.dean_name }}</span>
+            <span style="display:inline-block; min-width:220px; width:auto; border-bottom:1px solid black; padding-bottom:2px; text-align:center; text-transform: uppercase;">{{ form.dean_name }}</span>
             <span style="display:block; text-align:left; margin-left:25px;">Dean/Assoc. Dean of College</span>
           </div>
           <div style="text-align:center; margin-top:40px; margin-left:0;">Noted:</div>
         </div>
         <div style="margin-top:40px; text-align:center;">
-          <span style="min-width:415px; border-bottom:1px solid black; display:inline-block; margin-bottom:0px;">{{ form.director_name }}</span>
+          <span style="min-width:415px; border-bottom:1px solid black; display:inline-block; margin-bottom:0px; text-transform: uppercase;">{{ form.director_name }}</span>
           <span style="display:block; text-align:center; margin-top:2px;">Director/Chairperson, Office of Student Affairs and Services</span>
         </div>
       </div>
@@ -441,7 +444,12 @@ const submit = () => {
       </div>
             <div>
                 <label class="block font-bold">Organization Name</label>
-                <input v-model="form.organization_name" class="border p-2 w-full" required>
+                <input 
+                  v-model="form.organization_name" 
+                  @input="form.organization_name = $event.target.value.toUpperCase()"
+                  class="border p-2 w-full" 
+                  style="text-transform: uppercase;" 
+                  required>
                 <p v-if="errors.organization_name" class="text-red-500 text-sm mt-1">{{ errors.organization_name }}</p>
             </div>
 
@@ -449,19 +457,29 @@ const submit = () => {
 
             <div>
                 <label class="block font-bold">Faculty Adviser(s)</label>
-                <input v-model="form.adviser_name" class="border p-2 w-full" required>
+                <input 
+                  v-model="form.adviser_name" 
+                  @input="form.adviser_name = $event.target.value.toUpperCase()"
+                  class="border p-2 w-full" 
+                  style="text-transform: uppercase;" 
+                  required>
                 <p v-if="errors.adviser_name" class="text-red-500 text-sm mt-1">{{ errors.adviser_name }}</p>
             </div>
 
             <div>
                 <label class="block font-bold">Dean/Assoc. Dean Name</label>
-                <input v-model="form.dean_name" class="border p-2 w-full" required>
+                <input 
+                  v-model="form.dean_name" 
+                  @input="form.dean_name = $event.target.value.toUpperCase()"
+                  class="border p-2 w-full" 
+                  style="text-transform: uppercase;" 
+                  required>
                 <p v-if="errors.dean_name" class="text-red-500 text-sm mt-1">{{ errors.dean_name }}</p>
             </div>
 
             <div>
                 <label class="block font-bold">Director/Chairperson, OSAS</label>
-                <input v-model="form.director_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none;">
+                <input v-model="form.director_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none; text-transform: uppercase;">
             </div>
         </div>
 
@@ -528,19 +546,33 @@ const submit = () => {
 
           <div>
             <label class="block font-bold">Student Name (Last name, First Name, M.I.)</label>
-            <input v-model="student.student_name" class="border p-2 w-full" required>
+            <input 
+              v-model="student.student_name" 
+              @input="student.student_name = $event.target.value.toUpperCase()"
+              class="border p-2 w-full" 
+              style="text-transform: uppercase;" 
+              required>
             <p v-if="errors[`student_${startIndex + idx}_name`]" class="text-red-500 text-sm mt-1">{{ errors[`student_${startIndex + idx}_name`] }}</p>
           </div>
 
                     <div>
                         <label class="block font-bold">course, year and section</label>
-                        <input v-model="student.course_year_section" class="border p-2 w-full" required>
+                        <input 
+                          v-model="student.course_year_section" 
+                          @input="student.course_year_section = $event.target.value.toUpperCase()"
+                          class="border p-2 w-full" 
+                          style="text-transform: uppercase;" 
+                          required>
                         <p v-if="errors[`student_${startIndex + idx}_course`]" class="text-red-500 text-sm mt-1">{{ errors[`student_${startIndex + idx}_course`] }}</p>
                     </div>
 
                     <div>
                         <label class="block font-bold">Position/rank</label>
-                        <input v-model="student.position_rank" class="border p-2 w-full">
+                        <input 
+                          v-model="student.position_rank" 
+                          @input="student.position_rank = $event.target.value.toUpperCase()"
+                          class="border p-2 w-full" 
+                          style="text-transform: uppercase;">
                     </div>
                     
                     <!-- Student Status fields removed -->

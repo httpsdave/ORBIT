@@ -107,10 +107,25 @@ const formData = computed(() => {
       }));
       console.log('Edit.vue - Created default students:', data.students);
     } else {
-      console.log('Edit.vue - Using existing students:', data.students);
+      // Apply uppercase transformation to existing student data
+      data.students = data.students.map(student => ({
+        ...student,
+        student_name: student.student_name?.toUpperCase() || '',
+        course_year_section: student.course_year_section?.toUpperCase() || '',
+        position_rank: student.position_rank?.toUpperCase() || '',
+      }));
+      console.log('Edit.vue - Using existing students with uppercase:', data.students);
     }
     // Always set certification_date to current date
     data.certification_date = new Date().toISOString().slice(0, 10);
+    
+    // Apply uppercase transformation to form fields
+    data.organization_name = data.organization_name?.toUpperCase() || '';
+    data.adviser_name = data.adviser_name?.toUpperCase() || '';
+    data.dean_name = data.dean_name?.toUpperCase() || '';
+    data.director_name = data.director_name?.toUpperCase() || '';
+    data.coordinator_name = data.coordinator_name?.toUpperCase() || '';
+    data.college = data.college || '';
   }
   
   // Initialize officers for List of Officers form if they don't exist
