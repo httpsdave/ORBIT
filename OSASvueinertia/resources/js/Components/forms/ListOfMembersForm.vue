@@ -589,13 +589,13 @@ const submit = () => {
           </select>
         <div v-if="errors.semester" class="text-red-500 text-sm mt-1">{{ errors.semester }}</div>
 
-        <label class="block font-bold mt-4">Faculty Adviser Name</label>
-        <input v-model="form.adviser_name" class="border p-2 w-full">
-     
-        <div v-if="errors.adviser_name" class="text-red-500 text-sm mt-1">{{ errors.adviser_name }}</div>
 
-        <label class="block font-bold mt-4">Second Faculty Adviser Name (Optional)</label>
-        <input v-model="form.second_adviser" class="border p-2 w-full">
+  <label class="block font-bold mt-4">Organization Adviser</label>
+  <input v-model="form.adviser_name" class="border p-2 w-full">
+  <div v-if="errors.adviser_name" class="text-red-500 text-sm mt-1">{{ errors.adviser_name }}</div>
+
+  <label class="block font-bold mt-4">Secondary Organization Adviser (Optional)</label>
+  <input v-model="form.second_adviser" class="border p-2 w-full">
 
         <label class="block font-bold mt-4">Dean/Assoc. Dean Name</label>
         <input v-model="form.dean_name" class="border p-2 w-full">
