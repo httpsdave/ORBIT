@@ -17,8 +17,8 @@ const emit = defineEmits(['submitted', 'error']);
 
 const form = useForm({
   form_type: 'LSPU-OSAS-SF-001',
-  organization_name: props.initialFormData.organization_name || '',
-  president_name: props.initialFormData.president_name || '',
+  organization_name: props.initialFormData.organization_name?.toUpperCase() || '',
+  president_name: props.initialFormData.president_name?.toUpperCase() || '',
   application_date: (() => {
     const today = new Date();
     const yyyy = today.getFullYear();
@@ -26,10 +26,10 @@ const form = useForm({
     const dd = String(today.getDate()).padStart(2, '0');
     return `${yyyy}-${mm}-${dd}`;
   })(),
-  adviser_name: props.initialFormData.adviser_name || '',
-  dean_name: props.initialFormData.dean_name || '',
-  coordinator_name: props.initialFormData.coordinator_name || '',
-  director_name: props.initialFormData.director_name || '',
+  adviser_name: props.initialFormData.adviser_name?.toUpperCase() || '',
+  dean_name: props.initialFormData.dean_name?.toUpperCase() || '',
+  coordinator_name: props.initialFormData.coordinator_name?.toUpperCase() || '',
+  director_name: props.initialFormData.director_name?.toUpperCase() || '',
   status: props.initialFormData.status || 'Pending',
 });
 
@@ -211,7 +211,12 @@ const submit = () => {
       <!-- Left Column -->
       <div>
         <label class="block font-bold">Organization Name</label>
-        <input v-model="form.organization_name" class="border p-2 w-full" required>
+        <input 
+          v-model="form.organization_name" 
+          @input="form.organization_name = $event.target.value.toUpperCase()"
+          class="border p-2 w-full" 
+          style="text-transform: uppercase;" 
+          required>
         <p v-if="errors.organization_name" class="text-red-500 text-sm mt-1">{{ errors.organization_name }}</p>
       </div>
       <!-- Right Column -->
@@ -231,29 +236,44 @@ const submit = () => {
       <!-- Left Column -->
       <div>
         <label class="block font-bold">President Name</label>
-        <input v-model="form.president_name" class="border p-2 w-full" required>
+        <input 
+          v-model="form.president_name" 
+          @input="form.president_name = $event.target.value.toUpperCase()"
+          class="border p-2 w-full" 
+          style="text-transform: uppercase;" 
+          required>
         <p v-if="errors.president_name" class="text-red-500 text-sm mt-1">{{ errors.president_name }}</p>
       </div>
       <!-- Right Column -->
       <div>
         <label class="block font-bold">Coordinator Name</label>
-        <input v-model="form.coordinator_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none;">
+        <input v-model="form.coordinator_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none; text-transform: uppercase;">
       </div>
       <!-- Left Column -->
       <div>
         <label class="block font-bold">Adviser Name</label>
-        <input v-model="form.adviser_name" class="border p-2 w-full" required>
+        <input 
+          v-model="form.adviser_name" 
+          @input="form.adviser_name = $event.target.value.toUpperCase()"
+          class="border p-2 w-full" 
+          style="text-transform: uppercase;" 
+          required>
         <p v-if="errors.adviser_name" class="text-red-500 text-sm mt-1">{{ errors.adviser_name }}</p>
       </div>
       <!-- Right Column -->
       <div>
         <label class="block font-bold">Director Name</label>
-        <input v-model="form.director_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none;">
+        <input v-model="form.director_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none; text-transform: uppercase;">
       </div>
       <!-- Left Column -->
       <div>
         <label class="block font-bold">Dean Name</label>
-        <input v-model="form.dean_name" class="border p-2 w-full" required>
+        <input 
+          v-model="form.dean_name" 
+          @input="form.dean_name = $event.target.value.toUpperCase()"
+          class="border p-2 w-full" 
+          style="text-transform: uppercase;" 
+          required>
         <p v-if="errors.dean_name" class="text-red-500 text-sm mt-1">{{ errors.dean_name }}</p>
       </div>
     </div>
