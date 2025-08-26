@@ -210,8 +210,8 @@ const form = useForm({
   coordinator_name: props.initialFormData.coordinator_name || '',
   director_name: props.initialFormData.director_name || '',
 
-  academic_year_end: props.initialFormData.academic_year_end || '',
-  academic_year_start: props.initialFormData.academic_year_start || '',
+  academic_year_start: props.initialFormData.academic_year_start || currentYear.value,
+  academic_year_end: props.initialFormData.academic_year_end || nextYear.value,
   officers: [],
 });
 
@@ -447,19 +447,34 @@ const submit = () => {
           <div v-if="errors.organization_name" class="text-red-500 text-sm mt-1">{{ errors.organization_name }}</div>
         </div>
 
-        <div>
-          <label class="block font-bold">Academic Year Start</label>
-          <input v-model="form.academic_year_start" class="border p-2 w-full" :placeholder="currentYear" required>
-          <div v-if="errors.academic_year_start" class="text-red-500 text-sm mt-1">{{ errors.academic_year_start }}</div>
+        <div class="flex items-end space-x-2">
+          <div>
+            <label class="block font-bold">Academic Year</label>
+            <div class="flex items-center space-x-2">
+              <input 
+                v-model="form.academic_year_start" 
+                class="border p-2 w-16 bg-gray-200 text-gray-500 select-none pointer-events-none text-center" 
+                :placeholder="currentYear" 
+                readonly 
+                tabindex="-1" 
+                style="user-select: none; -webkit-user-select: none;" 
+              >
+              <span class="mx-1">-</span>
+              <input 
+                v-model="form.academic_year_end" 
+                class="border p-2 w-16 bg-gray-200 text-gray-500 select-none pointer-events-none text-center" 
+                :placeholder="nextYear" 
+                readonly 
+                tabindex="-1" 
+                style="user-select: none; -webkit-user-select: none;" 
+              >
+            </div>
+            <div class="flex space-x-2">
+              <p v-if="errors.academic_year_start" class="text-red-500 text-sm mt-1">{{ errors.academic_year_start }}</p>
+              <p v-if="errors.academic_year_end" class="text-red-500 text-sm mt-1">{{ errors.academic_year_end }}</p>
+            </div>
+          </div>
         </div>
-
-        <div>
-          <label class="block font-bold">Academic Year End</label>
-          <input v-model="form.academic_year_end" class="border p-2 w-full" :placeholder="nextYear" required>
-          <div v-if="errors.academic_year_end" class="text-red-500 text-sm mt-1">{{ errors.academic_year_end }}</div>
-        </div>
-
-        <!-- President Name field removed for List of Officers Form -->
 
         <div>
           <label class="block font-bold">Faculty Adviser Name</label>
