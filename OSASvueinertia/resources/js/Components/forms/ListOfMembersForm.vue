@@ -364,6 +364,8 @@ const submit = () => {
 <template>
   <div class="mt-6 form-content">
     <!-- REMOVE: <StatusBanner :show="showStatus" :type="statusType" :message="statusMessage" @close="showStatus = false" /> -->
+
+    <!-- Uniform header for all pages -->
     <div class="header text-center relative">
       <img src="/images/lspu-logo.png" alt="LSPU Logo" class="absolute logo" style="position: absolute; top: -0.5cm; left: -2cm; width: 250px; height: auto;">
       <div class="font-normal text-[11pt] leading-tight header-text" style="font-family:Calibri,sans-serif;">
@@ -375,8 +377,8 @@ const submit = () => {
       <div class="font-bold text-[11pt] sub-header" style="font-family:'Times New Roman',serif; font-size:11pt; font-weight:bold; margin-bottom:10px; margin-top:6px; display: block;">LIST OF MEMBERS OF THE ORGANIZATION</div>
     </div>
 
-  <div class="text-center" style="margin-top: 2px;">
-  <div class="inline-block text-[11pt] font-bold mb-4" style="font-family:'Times New Roman',serif; font-size: 11pt; font-weight: bold; position: relative; top: 5px;">
+    <div class="text-center" style="margin-top: 2px;">
+      <div class="inline-block text-[11pt] font-bold mb-4" style="font-family:'Times New Roman',serif; font-size: 11pt; font-weight: bold; position: relative; top: 5px;">
         <span class="inline-block border-b border-black text-center" style="display:inline-block !important; min-width:0.5cm !important; margin:0 !important; margin-right:0.05cm !important; padding:0 !important; border-bottom:1px solid black !important; line-height:10px; font-family: Times New Roman, serif; font-size: 11pt; font-weight: bold; text-align:center; position:relative; top:-0px;">{{ form.semester || '1st' }}</span>Semester AY 20<span class="inline-block border-b border-black text-center" style="display:inline-block !important; min-width:0.4cm !important; margin:0 !important; margin-left:0.02cm !important; margin-right:0.02cm !important; padding:0 !important; border-bottom:1px solid black !important; line-height:10px; font-family: Times New Roman, serif; font-size: 11pt; font-weight: bold; text-align:center; position:relative; top:0px; left:-0.03cm;">{{ form.academic_year_start || currentYear }}</span>-20<span class="inline-block border-b border-black text-center" style="display:inline-block !important; min-width:0.4cm !important; margin:0 !important; margin-left:0.02cm !important; padding:0 !important; border-bottom:1px solid black !important; line-height:10px; font-family: Times New Roman, serif; font-size: 11pt; font-weight: bold; text-align:center; position:relative; top:0px; left:-0.03cm;">{{ form.academic_year_end || nextYear }}</span>
       </div>
       <div class="w-full text-center" style="margin-top: 7px;">
@@ -407,27 +409,8 @@ const submit = () => {
       </div>
     </div>
 
-    <!-- Member list preview with pagination -->
-    <div class="member-section mt-6">
-        <!-- Page header for additional pages -->
-        <div v-if="currentPage > 1" class="page-break-header text-center mt-8 pt-8 border-t-2">
-            <p class="text-sm font-normal mb-0">Republic of the Philippines</p>
-            <p class="text-base font-bold university-name mb-0">Laguna State Polytechnic University</p>
-            <p class="text-sm mb-0">Province of Laguna</p>
-            <p class="text-sm font-bold mb-0 mt-3">OFFICE OF STUDENT AFFAIRS AND SERVICES</p>
-            <p class="text-sm font-bold mt-2 mb-0">List of Members</p>
-            <div class="semester-section text-center mt-4">
-                <p class="mb-0">
-                    <span class="border p-1 mr-1">{{ form.semester || '--' }}</span> 
-                    Sem. / AY 
-                    <span class="border p-1 w-16 mx-1 inline-block">{{ form.academic_year_start || '20__' }}</span>-
-                    <span class="border p-1 w-16 mx-1 inline-block">{{ form.academic_year_end || '20__' }}</span>
-                </p>
-            </div>
-            <div class="section text-center mt-4">
-                <p class="mb-0">Name of Organization: <span class="signature-line border-b border-black min-w-[250px] inline-block text-center">{{ form.organization_name }}</span></p>
-            </div>
-        </div>
+  <!-- Member list preview with pagination -->
+  <div class="member-section mt-6">
 
         <!-- Members for current page (8 per page: 4 rows × 2 columns) -->
         <div class="flex mt-4">
