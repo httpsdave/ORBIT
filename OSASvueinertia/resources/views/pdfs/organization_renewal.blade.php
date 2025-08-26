@@ -265,7 +265,7 @@
         <div class="section">
             <p style="margin-top:5px;">Sir/Madam:</p>
             <div style="height:15px;"></div>
-            <p class="indented">The <span style="display:inline-block; min-width:200px; max-width:100%; border-bottom:1px solid black; text-align:center; line-height:0.85; vertical-align:middle; padding:0; margin-bottom:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-indent:0;">{{ $application->organization_name }}</span> <span style="word-spacing:7px;">wishes to seek renewal of its recognition to</span> function as a duly recognized LSPU Organization for Academic Year 20<span class="dynamic-text"><u>{{ $application->academic_year_start }}</u></span> - 20<span class="dynamic-text"><u>{{ $application->academic_year_end }}</u></span>.</p>
+            <p class="indented">The <span class="dynamic-text"><u>{{ $application->organization_name }}</u></span> wishes to seek renewal of its recognition to function as a duly recognized LSPU Organization for Academic Year 20<span class="dynamic-text"><u>{{ $application->academic_year_start }}</u></span> - 20<span class="dynamic-text"><u>{{ $application->academic_year_end }}</u></span>.</p>
             
             <p class="indented">In this connection, we are respectfully requesting from your good office to grant us permission to operate in our institution, subject to the existing rules & regulations of our University.</p>
             <br>
@@ -297,7 +297,7 @@
             
             <div class="signature">
                 <p><span class="signature-line" style="min-width:305px;">{{ $application->dean_name }}</span></p>
-                <p><span class="title-under-signature"><strong>Dean/Assoc. Dean, College of</strong> <span class="signature-line signature-line-inline" style="min-width:120px;">{{ $application->college ?? '' }}</span></span></p>
+                <p><span class="title-under-signature"><strong>Dean/Assoc. Dean, College of</strong> <span class="signature-line signature-line-inline" style="min-width:120px;"><strong>{{ $application->college ?? '' }}</strong></span></span></p>
             </div>
         </div>
 
