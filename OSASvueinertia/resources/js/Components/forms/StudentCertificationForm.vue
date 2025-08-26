@@ -1,4 +1,20 @@
 <script setup>
+// College options for the select dropdown
+const collegeOptions = [
+  'College of Computer Studies',
+  'College of Arts and Sciences',
+  'College of Engineering',
+  'College of Industrial Technology',
+  'College of Hospitality Management and Tourism',
+  'College of Teacher Education',
+  'College of Criminal Justice Education'
+];
+
+// Handler for college select change
+function handleCollegeChange(e) {
+  const selected = e.target.value;
+  form.college = selected.replace('College of ', '');
+}
 import { ref, computed } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 // REMOVE: import StatusBanner from '@/Components/StatusBanner.vue';
@@ -314,7 +330,7 @@ const submit = () => {
           <div style="text-align: center; font-size: 10pt; margin-top: -5px;">
             <span>(course, year and section)</span>
           </div>
-        </span> from the College of <span class="signature-line" style="min-width:445px; border-bottom: 1px solid black; display: inline-block; margin-top: 20px;">{{ form.college }}</span> is a bonafide LSPU Student, not
+        </span> from the College of <span class="signature-line" style="min-width:445px; border-bottom: 1px solid black; display: inline-block; margin-top: 20px;text-align:center;">{{ form.college }}</span> is a bonafide LSPU Student, not
       </div>
           <br>
           <span style="display:inline-block; width:100%; height:0.5em;"></span>
@@ -412,7 +428,15 @@ const submit = () => {
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
         <label class="block font-bold">College</label>
-        <input v-model="form.college" class="border p-2 w-full" required>
+        <select 
+          :value="'College of ' + form.college"
+          @change="handleCollegeChange"
+          class="border p-2 w-full text-black"
+          required
+        >
+          <option value="" disabled>Select College</option>
+          <option v-for="option in collegeOptions" :key="option" :value="option">{{ option }}</option>
+        </select>
         <p v-if="errors.college" class="text-red-500 text-sm mt-1">{{ errors.college }}</p>
       </div>
             <div>
