@@ -368,7 +368,7 @@ const submit = () => {
       <img src="/images/lspu-logo.png" alt="LSPU Logo" class="absolute logo" style="position: absolute; top: -0.5cm; left: -2cm; width: 250px; height: auto;">
       <div class="font-normal text-[11pt] leading-tight header-text" style="font-family:Calibri,sans-serif;">
         Republic of the Philippines<br>
-        <img src="/images/lspu-name.png" alt="Laguna State Polytechnic University" class="inline-block align-middle max-w-[55%] my-1 university-name" style="max-width: 55%; height: auto; margin: 3px 0; display: inline-block;" /><br>
+        <img src="/images/lspu-name.png" alt="Laguna State Polytechnic University" class="inline-block align-middle max-w-[50%] my-1 university-name" style="max-width: 50%; height: auto; margin: 3px 0; display: inline-block;" /><br>
         <span class="block mb-3 province-text" style="margin-bottom: 12px; display: block;">Province of Laguna</span>
       </div>
       <div class="font-bold text-[11pt] office-title" style="font-family:'Times New Roman',serif; font-size:11pt; font-weight:bold; margin-bottom:10px; margin-top:10px; display: block;">OFFICE OF STUDENT AFFAIRS AND SERVICES</div>
