@@ -60,17 +60,17 @@ const initializeActivities = () => {
 
 const form = useForm({
   form_type: 'LSPU-OSAS-SF-004',
-  organization_name: props.initialFormData.organization_name || '',
+  organization_name: props.initialFormData.organization_name?.toUpperCase() || '',
   academic_year_start: props.initialFormData.academic_year_start || '',
   academic_year_end: props.initialFormData.academic_year_end || '',
   semester: props.initialFormData.semester || '',
-  president_name: props.initialFormData.president_name || '',
-  secretary_name: props.initialFormData.secretary_name || '',
+  president_name: props.initialFormData.president_name?.toUpperCase() || '',
+  secretary_name: props.initialFormData.secretary_name?.toUpperCase() || '',
   // Removed application_date for Plan of Activities
-  adviser_name: props.initialFormData.adviser_name || '',
-  dean_name: props.initialFormData.dean_name || '',
-  coordinator_name: props.initialFormData.coordinator_name || '',
-  director_name: props.initialFormData.director_name || '',
+  adviser_name: props.initialFormData.adviser_name?.toUpperCase() || '',
+  dean_name: props.initialFormData.dean_name?.toUpperCase() || '',
+  coordinator_name: props.initialFormData.coordinator_name?.toUpperCase() || '',
+  director_name: props.initialFormData.director_name?.toUpperCase() || '',
   activities: initializeActivities(),
 });
 
@@ -110,16 +110,16 @@ watch(() => props.initialFormData, (newData) => {
   if (!newData || !props.isEdit) return; // Only update for edit mode
   
   // Only update if the form field is currently empty to avoid overwriting user input
-  if (!form.organization_name) form.organization_name = newData.organization_name || '';
+  if (!form.organization_name) form.organization_name = newData.organization_name?.toUpperCase() || '';
   if (!form.academic_year_start) form.academic_year_start = newData.academic_year_start || '';
   if (!form.academic_year_end) form.academic_year_end = newData.academic_year_end || '';
   if (!form.semester) form.semester = newData.semester || '';
-  if (!form.president_name) form.president_name = newData.president_name || '';
-  if (!form.secretary_name) form.secretary_name = newData.secretary_name || '';
-  if (!form.adviser_name) form.adviser_name = newData.adviser_name || '';
-  if (!form.dean_name) form.dean_name = newData.dean_name || '';
-  if (!form.coordinator_name) form.coordinator_name = newData.coordinator_name || '';
-  if (!form.director_name) form.director_name = newData.director_name || '';
+  if (!form.president_name) form.president_name = newData.president_name?.toUpperCase() || '';
+  if (!form.secretary_name) form.secretary_name = newData.secretary_name?.toUpperCase() || '';
+  if (!form.adviser_name) form.adviser_name = newData.adviser_name?.toUpperCase() || '';
+  if (!form.dean_name) form.dean_name = newData.dean_name?.toUpperCase() || '';
+  if (!form.coordinator_name) form.coordinator_name = newData.coordinator_name?.toUpperCase() || '';
+  if (!form.director_name) form.director_name = newData.director_name?.toUpperCase() || '';
   
   if (Array.isArray(newData.activities) && (!form.activities || form.activities.length === 0)) {
     form.activities = newData.activities.map(act => ({
@@ -889,7 +889,12 @@ nextTick(() => {
         <!-- Left Column -->
         <div>
           <label class="block font-bold">Organization Name</label>
-          <input v-model="form.organization_name" class="border p-2 w-full" required>
+          <input 
+            v-model="form.organization_name" 
+            @input="form.organization_name = $event.target.value.toUpperCase()"
+            class="border p-2 w-full" 
+            style="text-transform: uppercase;" 
+            required>
           <p v-if="errors.organization_name" class="text-red-500 text-sm mt-1">{{ errors.organization_name }}</p>
         </div>
 
@@ -938,26 +943,36 @@ nextTick(() => {
         <!-- Right Column -->
         <div>
           <label class="block font-bold">Coordinator Name</label>
-          <input v-model="form.coordinator_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none;">
+          <input v-model="form.coordinator_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none; text-transform: uppercase;">
         </div>
 
         <!-- Left Column -->
         <div>
           <label class="block font-bold">President Name</label>
-          <input v-model="form.president_name" class="border p-2 w-full" required>
+          <input 
+            v-model="form.president_name" 
+            @input="form.president_name = $event.target.value.toUpperCase()"
+            class="border p-2 w-full" 
+            style="text-transform: uppercase;" 
+            required>
           <p v-if="errors.president_name" class="text-red-500 text-sm mt-1">{{ errors.president_name }}</p>
         </div>
 
         <!-- Right Column -->
         <div>
           <label class="block font-bold">Director Name</label>
-          <input v-model="form.director_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none;">
+          <input v-model="form.director_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none; text-transform: uppercase;">
         </div>
 
         <!-- Left Column -->
         <div>
           <label class="block font-bold">Secretary Name</label>
-          <input v-model="form.secretary_name" class="border p-2 w-full" required>
+          <input 
+            v-model="form.secretary_name" 
+            @input="form.secretary_name = $event.target.value.toUpperCase()"
+            class="border p-2 w-full" 
+            style="text-transform: uppercase;" 
+            required>
           <p v-if="errors.secretary_name" class="text-red-500 text-sm mt-1">{{ errors.secretary_name }}</p>
         </div>
 
@@ -967,7 +982,12 @@ nextTick(() => {
         <!-- Left Column -->
         <div>
           <label class="block font-bold">Adviser Name</label>
-          <input v-model="form.adviser_name" class="border p-2 w-full" required>
+          <input 
+            v-model="form.adviser_name" 
+            @input="form.adviser_name = $event.target.value.toUpperCase()"
+            class="border p-2 w-full" 
+            style="text-transform: uppercase;" 
+            required>
           <p v-if="errors.adviser_name" class="text-red-500 text-sm mt-1">{{ errors.adviser_name }}</p>
         </div>
 
@@ -977,7 +997,12 @@ nextTick(() => {
         <!-- Left Column -->
         <div>
           <label class="block font-bold">Dean Name</label>
-          <input v-model="form.dean_name" class="border p-2 w-full" required>
+          <input 
+            v-model="form.dean_name" 
+            @input="form.dean_name = $event.target.value.toUpperCase()"
+            class="border p-2 w-full" 
+            style="text-transform: uppercase;" 
+            required>
           <p v-if="errors.dean_name" class="text-red-500 text-sm mt-1">{{ errors.dean_name }}</p>
         </div>
       </div>
