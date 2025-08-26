@@ -202,13 +202,13 @@ const prevPage = () => {
 
 const form = useForm({
   form_type: 'LSPU-OSAS-SF-007',
-  organization_name: props.initialFormData.organization_name || '',
+  organization_name: props.initialFormData.organization_name?.toUpperCase() || '',
   // president_name removed for List of Officers Form
   application_date: props.initialFormData.application_date || '',
-  adviser_name: props.initialFormData.adviser_name || '',
-  dean_name: props.initialFormData.dean_name || '',
-  coordinator_name: props.initialFormData.coordinator_name || '',
-  director_name: props.initialFormData.director_name || '',
+  adviser_name: props.initialFormData.adviser_name?.toUpperCase() || '',
+  dean_name: props.initialFormData.dean_name?.toUpperCase() || '',
+  coordinator_name: props.initialFormData.coordinator_name?.toUpperCase() || '',
+  director_name: props.initialFormData.director_name?.toUpperCase() || '',
 
   academic_year_start: props.initialFormData.academic_year_start || currentYear.value,
   academic_year_end: props.initialFormData.academic_year_end || nextYear.value,
@@ -251,6 +251,8 @@ if (props.initialFormData?.officers && props.initialFormData.officers.length > 0
   // Copy members from initialFormData
   form.officers = [...props.initialFormData.officers.map(officer => ({
     ...officer,
+    student_name: officer.student_name?.toUpperCase() || '',
+    position: officer.position?.toUpperCase() || '',
     photo_preview: null
   }))];
 } else {
@@ -443,7 +445,12 @@ const submit = () => {
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label class="block font-bold">Organization Name</label>
-          <input v-model="form.organization_name" class="border p-2 w-full" required>
+          <input 
+            v-model="form.organization_name" 
+            @input="form.organization_name = $event.target.value.toUpperCase()"
+            class="border p-2 w-full" 
+            style="text-transform: uppercase;" 
+            required>
           <div v-if="errors.organization_name" class="text-red-500 text-sm mt-1">{{ errors.organization_name }}</div>
         </div>
 
@@ -478,18 +485,28 @@ const submit = () => {
 
         <div>
           <label class="block font-bold">Faculty Adviser Name</label>
-          <input v-model="form.adviser_name" class="border p-2 w-full" required>
+          <input 
+            v-model="form.adviser_name" 
+            @input="form.adviser_name = $event.target.value.toUpperCase()"
+            class="border p-2 w-full" 
+            style="text-transform: uppercase;" 
+            required>
           <div v-if="errors.adviser_name" class="text-red-500 text-sm mt-1">{{ errors.adviser_name }}</div>
         </div>
 
         <div>
           <label class="block font-bold">Coordinator Name</label>
-          <input v-model="form.coordinator_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none;">
+          <input v-model="form.coordinator_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none; text-transform: uppercase;">
         </div>
 
         <div>
           <label class="block font-bold">Dean/Assoc. Dean Name</label>
-          <input v-model="form.dean_name" class="border p-2 w-full" required>
+          <input 
+            v-model="form.dean_name" 
+            @input="form.dean_name = $event.target.value.toUpperCase()"
+            class="border p-2 w-full" 
+            style="text-transform: uppercase;" 
+            required>
           <div v-if="errors.dean_name" class="text-red-500 text-sm mt-1">{{ errors.dean_name }}</div>
         </div>
       </div>
@@ -555,13 +572,23 @@ const submit = () => {
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="block font-bold">Name</label>
-                    <input v-model="officer.student_name" class="border p-2 w-full" required>
+                    <input 
+                      v-model="officer.student_name" 
+                      @input="officer.student_name = $event.target.value.toUpperCase()"
+                      class="border p-2 w-full" 
+                      style="text-transform: uppercase;" 
+                      required>
                     <div v-if="errors[`officer_${startIndex + idx}_name`]" class="text-red-500 text-sm mt-1">{{ errors[`officer_${startIndex + idx}_name`] }}</div>
                 </div>
 
                 <div>
                     <label class="block font-bold">Position</label>
-                    <input v-model="officer.position" class="border p-2 w-full" required>
+                    <input 
+                      v-model="officer.position" 
+                      @input="officer.position = $event.target.value.toUpperCase()"
+                      class="border p-2 w-full" 
+                      style="text-transform: uppercase;" 
+                      required>
                     <div v-if="errors[`officer_${startIndex + idx}_position`]" class="text-red-500 text-sm mt-1">{{ errors[`officer_${startIndex + idx}_position`] }}</div>
                 </div>
 
