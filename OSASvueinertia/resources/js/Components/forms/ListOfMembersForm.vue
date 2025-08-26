@@ -587,12 +587,11 @@ const submit = () => {
         <div v-if="errors.organization_name" class="text-red-500 text-sm mt-1">{{ errors.organization_name }}</div>
 
         <label class="block font-bold mt-4">Semester</label>
-        <select v-model="form.semester" class="border p-2 w-full" required>
-          <option value="">-- Select Semester --</option>
-          <option value="1st">1st Semester</option>
-          <option value="2nd">2nd Semester</option>
-          <option value="Summer">Summer</option>
-        </select>
+          <select v-model="form.semester" class="border p-2 w-full" required>
+            <option value="1st">1st Semester</option>
+            <option value="2nd">2nd Semester</option>
+            <option value="Inter">Inter Semester</option>
+          </select>
         <div v-if="errors.semester" class="text-red-500 text-sm mt-1">{{ errors.semester }}</div>
 
         <label class="block font-bold mt-4">Faculty Adviser Name</label>
