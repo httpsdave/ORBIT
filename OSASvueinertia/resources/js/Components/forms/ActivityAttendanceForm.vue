@@ -115,7 +115,7 @@ const emit = defineEmits(['submitted']);
 
 const form = useForm({
   form_type: 'LSPU-OSAS-SF-009',
-  organization_name: props.initialFormData.organization_name || '',
+  organization_name: props.initialFormData.organization_name?.toUpperCase() || '',
   // president_name removed for Activity Attendance Form
   application_date: props.initialFormData.application_date || '',
   adviser_name: props.initialFormData.adviser_name || '',
@@ -123,9 +123,9 @@ const form = useForm({
   coordinator_name: props.initialFormData.coordinator_name || '',
   director_name: props.initialFormData.director_name || '',
   
-  college:props.initialFormData.college || '',
-  activity_name:props.initialFormData.activity_name || '',
-  activity_date:props.initialFormData.activity_date || '',
+  college: props.initialFormData.college?.toUpperCase() || '',
+  activity_name: props.initialFormData.activity_name || '',
+  activity_date: props.initialFormData.activity_date || '',
   attendees: [],
 
 });
@@ -247,7 +247,12 @@ const submit = () => {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
                 <label class="block font-bold">College</label>
-                <input v-model="form.college" class="border p-2 w-full" required>
+                <input 
+                  v-model="form.college" 
+                  @input="form.college = $event.target.value.toUpperCase()"
+                  class="border p-2 w-full" 
+                  style="text-transform: uppercase;" 
+                  required>
                 <p v-if="errors.college" class="text-red-500 text-sm mt-1">{{ errors.college }}</p>
             </div>
 
@@ -263,7 +268,12 @@ const submit = () => {
 
             <div>
                 <label class="block font-bold">Organization Name</label>
-                <input v-model="form.organization_name" class="border p-2 w-full" required>
+                <input 
+                  v-model="form.organization_name" 
+                  @input="form.organization_name = $event.target.value.toUpperCase()"
+                  class="border p-2 w-full" 
+                  style="text-transform: uppercase;" 
+                  required>
                 <p v-if="errors.organization_name" class="text-red-500 text-sm mt-1">{{ errors.organization_name }}</p>
             </div>
 
