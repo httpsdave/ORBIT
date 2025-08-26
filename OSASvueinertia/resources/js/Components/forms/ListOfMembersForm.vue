@@ -425,15 +425,15 @@ const submit = () => {
                        class="w-[94px] h-[94px] object-cover">
                   <span v-else class="photo-box-text text-center leading-tight">1 x 1<br>PICTURE</span>
                 </div>
-                <div class="member-info flex-1 flex flex-col justify-center text-center">
-                  <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black mx-auto" style="width: calc(80% + 40px);">
-                    <span class="filled-text">{{ form.members[startIndex + (rowIndex - 1)].student_name }}</span>
+                <div class="member-info flex-1 flex flex-col justify-center text-center" style="max-width: calc(100% - 106px);">
+                  <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black mx-auto" style="width: calc(80% + 40px); max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    <span class="filled-text" style="display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;">{{ form.members[startIndex + (rowIndex - 1)].student_name }}</span>
                   </div>
-                  <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black mx-auto" style="width: calc(80% + 40px);">
-                    <span class="filled-text">{{ form.members[startIndex + (rowIndex - 1)].student_number }}</span>
+                  <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black mx-auto" style="width: calc(80% + 40px); max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    <span class="filled-text" style="display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;">{{ form.members[startIndex + (rowIndex - 1)].student_number }}</span>
                   </div>
-                  <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black mx-auto" style="width: calc(80% + 40px);">
-                    <span class="filled-text">{{ form.members[startIndex + (rowIndex - 1)].course_year_section }}</span>
+                  <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black mx-auto" style="width: calc(80% + 40px); max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    <span class="filled-text" style="display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;">{{ form.members[startIndex + (rowIndex - 1)].course_year_section }}</span>
                   </div>
                 </div>
               </div>
@@ -441,10 +441,10 @@ const submit = () => {
                 <div class="photo-box border border-black w-[96px] h-[96px] flex items-center justify-center text-xs flex-shrink-0">
                   <span class="photo-box-text text-center leading-tight">1 x 1<br>PICTURE</span>
                 </div>
-                <div class="member-info flex-1 flex flex-col justify-center text-center">
-                  <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black mx-auto" style="width: calc(80% + 40px);"><span class="filled-text"></span></div>
-                  <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black mx-auto" style="width: calc(80% + 40px);"><span class="filled-text"></span></div>
-                  <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black mx-auto" style="width: calc(80% + 40px);"><span class="filled-text"></span></div>
+                <div class="member-info flex-1 flex flex-col justify-center text-center" style="max-width: calc(100% - 106px);">
+                  <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black mx-auto" style="width: calc(80% + 40px); max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span class="filled-text" style="display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;"></span></div>
+                  <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black mx-auto" style="width: calc(80% + 40px); max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span class="filled-text" style="display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;"></span></div>
+                  <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black mx-auto" style="width: calc(80% + 40px); max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span class="filled-text" style="display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;"></span></div>
                 </div>
               </div>
             </div>
@@ -461,15 +461,15 @@ const submit = () => {
                        class="w-[94px] h-[94px] object-cover">
                   <span v-else class="photo-box-text text-center leading-tight">1 x 1<br>PICTURE</span>
                 </div>
-                <div class="member-info flex-1 flex flex-col justify-center text-center">
-                  <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black mx-auto" style="width: calc(80% + 40px);">
-                    <span class="filled-text">{{ form.members[startIndex + (rowIndex - 1) + 4].student_name }}</span>
+                <div class="member-info flex-1 flex flex-col justify-center text-center" style="max-width: calc(100% - 106px);">
+                  <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black mx-auto" style="width: calc(80% + 40px); max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    <span class="filled-text" style="display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;">{{ form.members[startIndex + (rowIndex - 1) + 4].student_name }}</span>
                   </div>
-                  <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black mx-auto" style="width: calc(80% + 40px);">
-                    <span class="filled-text">{{ form.members[startIndex + (rowIndex - 1) + 4].student_number }}</span>
+                  <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black mx-auto" style="width: calc(80% + 40px); max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    <span class="filled-text" style="display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;">{{ form.members[startIndex + (rowIndex - 1) + 4].student_number }}</span>
                   </div>
-                  <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black mx-auto" style="width: calc(80% + 40px);">
-                    <span class="filled-text">{{ form.members[startIndex + (rowIndex - 1) + 4].course_year_section }}</span>
+                  <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black mx-auto" style="width: calc(80% + 40px); max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    <span class="filled-text" style="display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;">{{ form.members[startIndex + (rowIndex - 1) + 4].course_year_section }}</span>
                   </div>
                 </div>
               </div>
@@ -477,10 +477,10 @@ const submit = () => {
                 <div class="photo-box border border-black w-[96px] h-[96px] flex items-center justify-center text-xs flex-shrink-0">
                   <span class="photo-box-text text-center leading-tight">1 x 1<br>PICTURE</span>
                 </div>
-                <div class="member-info flex-1 flex flex-col justify-center text-center">
-                  <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black mx-auto" style="width: calc(80% + 40px);"><span class="filled-text"></span></div>
-                  <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black mx-auto" style="width: calc(80% + 40px);"><span class="filled-text"></span></div>
-                  <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black mx-auto" style="width: calc(80% + 40px);"><span class="filled-text"></span></div>
+                <div class="member-info flex-1 flex flex-col justify-center text-center" style="max-width: calc(100% - 106px);">
+                  <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black mx-auto" style="width: calc(80% + 40px); max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span class="filled-text" style="display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;"></span></div>
+                  <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black mx-auto" style="width: calc(80% + 40px); max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span class="filled-text" style="display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;"></span></div>
+                  <div class="member-line mb-0 min-h-[18px] py-0 border-b border-black mx-auto" style="width: calc(80% + 40px); max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span class="filled-text" style="display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;"></span></div>
                 </div>
               </div>
             </div>
