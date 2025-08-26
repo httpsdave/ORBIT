@@ -69,18 +69,18 @@ const today = (() => {
 
 const form = useForm({
   form_type: 'LSPU-OSAS-SF-003',
-  organization_name: props.initialFormData.organization_name || '',
+  organization_name: props.initialFormData.organization_name?.toUpperCase() || '',
   // president_name removed for Commitment Form
   application_date: props.initialFormData.application_date || '',
-  adviser_name: props.initialFormData.adviser_name || '',
+  adviser_name: props.initialFormData.adviser_name?.toUpperCase() || '',
   adviser_college:props.initialFormData.adviser_college || '',
   adviser_rank:props.initialFormData.adviser_rank || '',
   adviser_address:props.initialFormData.adviser_address || '',
   adviser_contact:props.initialFormData.adviser_contact || '',
   form_date: today,
-  dean_name: props.initialFormData.dean_name || '',
-  coordinator_name: props.initialFormData.coordinator_name || '',
-  director_name: props.initialFormData.director_name || '',
+  dean_name: props.initialFormData.dean_name?.toUpperCase() || '',
+  coordinator_name: props.initialFormData.coordinator_name?.toUpperCase() || '',
+  director_name: props.initialFormData.director_name?.toUpperCase() || '',
   academic_year_start: currentYear.value,
   academic_year_end: nextYear.value,
 });
@@ -353,7 +353,12 @@ const submit = () => {
         <!-- Left Column -->
         <div>
           <label class="block font-bold">Organization Name</label>
-          <input v-model="form.organization_name" class="border p-2 w-full" required>
+          <input 
+            v-model="form.organization_name" 
+            @input="form.organization_name = $event.target.value.toUpperCase()"
+            class="border p-2 w-full" 
+            style="text-transform: uppercase;" 
+            required>
           <p v-if="errors.organization_name" class="text-red-500 text-sm mt-1">{{ errors.organization_name }}</p>
         </div>
         <!-- Right Column -->
@@ -388,8 +393,13 @@ const submit = () => {
         <!-- Left Column -->
         <div>
           <label class="block font-bold">Adviser Name</label>
-          <input v-model="form.adviser_name" class="border p-2 w-full" required maxlength="32"
-            @input="e => { form.adviser_name = e.target.value.slice(0, 32); }">
+          <input 
+            v-model="form.adviser_name" 
+            @input="form.adviser_name = $event.target.value.toUpperCase().slice(0, 32)"
+            class="border p-2 w-full" 
+            style="text-transform: uppercase;" 
+            required 
+            maxlength="32">
           <p v-if="errors.adviser_name" class="text-red-500 text-sm mt-1">{{ errors.adviser_name }}</p>
         </div>
         <!-- Right Column -->
@@ -422,7 +432,7 @@ const submit = () => {
         <!-- Right Column -->
         <div>
           <label class="block font-bold">Coordinator Name</label>
-          <input v-model="form.coordinator_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none;">
+          <input v-model="form.coordinator_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none; text-transform: uppercase;">
         </div>
         <!-- Left Column -->
         <div>
@@ -440,7 +450,7 @@ const submit = () => {
         <!-- Right Column -->
         <div>
           <label class="block font-bold">Director Name</label>
-          <input v-model="form.director_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none;">
+          <input v-model="form.director_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none; text-transform: uppercase;">
         </div>
         <!-- Left Column -->
         <div>
@@ -469,8 +479,13 @@ const submit = () => {
         <!-- Left Column -->
         <div>
           <label class="block font-bold">Dean Name</label>
-          <input v-model="form.dean_name" class="border p-2 w-full" required maxlength="54"
-            @input="e => { form.dean_name = e.target.value.slice(0, 54); }">
+          <input 
+            v-model="form.dean_name" 
+            @input="form.dean_name = $event.target.value.toUpperCase().slice(0, 54)"
+            class="border p-2 w-full" 
+            style="text-transform: uppercase;" 
+            required 
+            maxlength="54">
           <p v-if="errors.dean_name" class="text-red-500 text-sm mt-1">{{ errors.dean_name }}</p>
         </div>
       </div>
