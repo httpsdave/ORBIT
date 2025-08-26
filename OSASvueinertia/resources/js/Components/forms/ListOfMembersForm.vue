@@ -527,12 +527,6 @@ const submit = () => {
           </div>
         </div>
 
-        <!-- Fixed footer to match PDF -->
-        <div class="footer fixed bottom-0 left-0 w-full flex justify-between px-8 py-1 text-[11pt] font-normal" style="font-family:Calibri,sans-serif; background:transparent;">
-          <div class="footer-left">LSPU-OSAS-SF-005</div>
-          <div class="footer-center">Rev. 1</div>
-          <div class="footer-right">09 November 2020</div>
-        </div>
 
         <!-- Pagination Controls -->
         <div v-if="totalPages > 1" class="pagination-controls flex justify-center items-center mt-8 gap-4">
