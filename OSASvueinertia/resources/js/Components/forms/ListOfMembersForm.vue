@@ -384,6 +384,26 @@ const submit = () => {
           <span class="font-bold text-[11pt] mr-2" style="font-family:'Times New Roman',serif; font-size: 11pt; font-weight: bold; text-align: left;">Name of Organization</span>
           <span class="signature-line" style="margin-bottom:0px; width:360px; font-family:'Times New Roman',serif; font-size: 11pt; text-align: center; border-bottom: 1px solid #000; display: inline-block; font-weight: bold;">{{ form.organization_name }}</span>
         </div>
+        <!-- SAMPLE FORMAT section -->
+        <div style="width:340px; margin:0 auto -5px auto;">
+          <div style="text-align:center; font-weight:normal; margin-bottom:4px; margin-top:10px; margin-left:100px;">SAMPLE FORMAT:</div>
+          <div style="display:flex; justify-content:center;">
+            <div class="photo-box border border-black w-[96px] h-[96px] flex items-center justify-center mr-3 text-xs flex-shrink-0">
+              <span class="photo-box-text text-center leading-tight">1 x 1<br>PICTURE</span>
+            </div>
+            <div class="member-info flex flex-col justify-center text-center" style="width:220px;">
+              <div class="member-line mb-1 min-h-[20px] py-1 border-b border-black mx-auto" style="width:220px;">
+                <span class="filled-text">(Signature Over Printed Name)</span>
+              </div>
+              <div class="member-line mb-1 min-h-[20px] py-1 border-b border-black mx-auto" style="width:220px;">
+                <span class="filled-text">(Student Number)</span>
+              </div>
+              <div class="member-line mb-1 min-h-[20px] py-1 border-b border-black mx-auto" style="width:220px;">
+                <span class="filled-text">(Course / Year Section)</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
