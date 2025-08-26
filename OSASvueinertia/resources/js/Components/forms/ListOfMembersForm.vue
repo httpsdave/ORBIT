@@ -379,10 +379,10 @@ const submit = () => {
   <div class="inline-block text-[11pt] font-bold mb-4" style="font-family:'Times New Roman',serif; font-size: 11pt; font-weight: bold; position: relative; top: 5px;">
         <span class="inline-block border-b border-black text-center" style="display:inline-block !important; min-width:0.5cm !important; margin:0 !important; margin-right:0.05cm !important; padding:0 !important; border-bottom:1px solid black !important; line-height:10px; font-family: Times New Roman, serif; font-size: 11pt; font-weight: bold; text-align:center; position:relative; top:-0px;">{{ form.semester || '1st' }}</span>Semester AY 20<span class="inline-block border-b border-black text-center" style="display:inline-block !important; min-width:0.4cm !important; margin:0 !important; margin-left:0.02cm !important; margin-right:0.02cm !important; padding:0 !important; border-bottom:1px solid black !important; line-height:10px; font-family: Times New Roman, serif; font-size: 11pt; font-weight: bold; text-align:center; position:relative; top:0px; left:-0.03cm;">{{ form.academic_year_start || currentYear }}</span>-20<span class="inline-block border-b border-black text-center" style="display:inline-block !important; min-width:0.4cm !important; margin:0 !important; margin-left:0.02cm !important; padding:0 !important; border-bottom:1px solid black !important; line-height:10px; font-family: Times New Roman, serif; font-size: 11pt; font-weight: bold; text-align:center; position:relative; top:0px; left:-0.03cm;">{{ form.academic_year_end || nextYear }}</span>
       </div>
-      <div class="w-full text-center" style="margin-top: 15px;">
-        <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
-          <span class="font-bold text-[11pt]" style="font-family:'Times New Roman',serif; font-size: 11pt; font-weight: bold; text-align: left;">Name of Organization</span>
-          <span class="signature-line" style="margin-bottom:0px; min-width:200px; font-family:'Times New Roman',serif; font-size: 11pt; text-align: center; border-bottom: 1px solid #000; display: inline-block; font-weight: bold;">{{ form.organization_name }}</span>
+      <div class="w-full text-center" style="margin-top: 7px;">
+        <div style="display: flex; flex-direction: row; align-items: center; justify-content: center; width: 100%;">
+          <span class="font-bold text-[11pt] mr-2" style="font-family:'Times New Roman',serif; font-size: 11pt; font-weight: bold; text-align: left;">Name of Organization</span>
+          <span class="signature-line" style="margin-bottom:0px; width:360px; font-family:'Times New Roman',serif; font-size: 11pt; text-align: center; border-bottom: 1px solid #000; display: inline-block; font-weight: bold;">{{ form.organization_name }}</span>
         </div>
       </div>
     </div>
