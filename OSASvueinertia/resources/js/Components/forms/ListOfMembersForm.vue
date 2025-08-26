@@ -427,13 +427,13 @@ const submit = () => {
                 </div>
                 <div class="member-info flex-1 flex flex-col justify-center text-center">
                   <div class="member-line mb-1 min-h-[20px] py-1 border-b border-black w-4/5 mx-auto">
-                    <span class="filled-text">{{ form.members[startIndex + (rowIndex - 1)].student_name || '(Signature Over Printed Name)' }}</span>
+                    <span class="filled-text">{{ form.members[startIndex + (rowIndex - 1)].student_name }}</span>
                   </div>
                   <div class="member-line mb-1 min-h-[20px] py-1 border-b border-black w-4/5 mx-auto">
-                    <span class="filled-text">{{ form.members[startIndex + (rowIndex - 1)].student_number || '(Student Number)' }}</span>
+                    <span class="filled-text">{{ form.members[startIndex + (rowIndex - 1)].student_number }}</span>
                   </div>
                   <div class="member-line mb-1 min-h-[20px] py-1 border-b border-black w-4/5 mx-auto">
-                    <span class="filled-text">{{ form.members[startIndex + (rowIndex - 1)].course_year_section || '(Course / Year Section)' }}</span>
+                    <span class="filled-text">{{ form.members[startIndex + (rowIndex - 1)].course_year_section }}</span>
                   </div>
                 </div>
               </div>
@@ -442,9 +442,9 @@ const submit = () => {
                   <span class="photo-box-text text-center leading-tight">1 x 1<br>PICTURE</span>
                 </div>
                 <div class="member-info flex-1 flex flex-col justify-center text-center">
-                  <div class="member-line mb-1 min-h-[20px] py-1 border-b border-black w-4/5 mx-auto"><span class="filled-text">(Signature Over Printed Name)</span></div>
-                  <div class="member-line mb-1 min-h-[20px] py-1 border-b border-black w-4/5 mx-auto"><span class="filled-text">(Student Number)</span></div>
-                  <div class="member-line mb-1 min-h-[20px] py-1 border-b border-black w-4/5 mx-auto"><span class="filled-text">(Course / Year Section)</span></div>
+                  <div class="member-line mb-1 min-h-[20px] py-1 border-b border-black w-4/5 mx-auto"><span class="filled-text"></span></div>
+                  <div class="member-line mb-1 min-h-[20px] py-1 border-b border-black w-4/5 mx-auto"><span class="filled-text"></span></div>
+                  <div class="member-line mb-1 min-h-[20px] py-1 border-b border-black w-4/5 mx-auto"><span class="filled-text"></span></div>
                 </div>
               </div>
             </div>
@@ -463,13 +463,13 @@ const submit = () => {
                 </div>
                 <div class="member-info flex-1 flex flex-col justify-center text-center">
                   <div class="member-line mb-1 min-h-[20px] py-1 border-b border-black w-4/5 mx-auto">
-                    <span class="filled-text">{{ form.members[startIndex + (rowIndex - 1) + 4].student_name || '(Signature Over Printed Name)' }}</span>
+                    <span class="filled-text">{{ form.members[startIndex + (rowIndex - 1) + 4].student_name }}</span>
                   </div>
                   <div class="member-line mb-1 min-h-[20px] py-1 border-b border-black w-4/5 mx-auto">
-                    <span class="filled-text">{{ form.members[startIndex + (rowIndex - 1) + 4].student_number || '(Student Number)' }}</span>
+                    <span class="filled-text">{{ form.members[startIndex + (rowIndex - 1) + 4].student_number }}</span>
                   </div>
                   <div class="member-line mb-1 min-h-[20px] py-1 border-b border-black w-4/5 mx-auto">
-                    <span class="filled-text">{{ form.members[startIndex + (rowIndex - 1) + 4].course_year_section || '(Course / Year Section)' }}</span>
+                    <span class="filled-text">{{ form.members[startIndex + (rowIndex - 1) + 4].course_year_section }}</span>
                   </div>
                 </div>
               </div>
@@ -478,9 +478,9 @@ const submit = () => {
                   <span class="photo-box-text text-center leading-tight">1 x 1<br>PICTURE</span>
                 </div>
                 <div class="member-info flex-1 flex flex-col justify-center text-center">
-                  <div class="member-line mb-1 min-h-[20px] py-1 border-b border-black w-4/5 mx-auto"><span class="filled-text">(Signature Over Printed Name)</span></div>
-                  <div class="member-line mb-1 min-h-[20px] py-1 border-b border-black w-4/5 mx-auto"><span class="filled-text">(Student Number)</span></div>
-                  <div class="member-line mb-1 min-h-[20px] py-1 border-b border-black w-4/5 mx-auto"><span class="filled-text">(Course / Year Section)</span></div>
+                  <div class="member-line mb-1 min-h-[20px] py-1 border-b border-black w-4/5 mx-auto"><span class="filled-text"></span></div>
+                  <div class="member-line mb-1 min-h-[20px] py-1 border-b border-black w-4/5 mx-auto"><span class="filled-text"></span></div>
+                  <div class="member-line mb-1 min-h-[20px] py-1 border-b border-black w-4/5 mx-auto"><span class="filled-text"></span></div>
                 </div>
               </div>
             </div>
