@@ -277,6 +277,59 @@
     </style>
 </head>
 <body>
+    @php
+        // Define variables for address line breaks at the start to make them available globally
+        $address = $application->adviser_address ?? '';
+        $firstLine = '';
+        $secondLine = '';
+        $thirdLine = '';
+        if (mb_strlen($address) > 25) {
+            $breakPos1 = mb_strrpos(mb_substr($address, 0, 25), ' ');
+            if ($breakPos1 === false) {
+                $breakPos1 = 25;
+            }
+            $firstLine = trim(mb_substr($address, 0, $breakPos1));
+            $remaining = trim(mb_substr($address, $breakPos1));
+            if (mb_strlen($remaining) > 42) {
+                $breakPos2 = mb_strrpos(mb_substr($remaining, 0, 42), ' ');
+                if ($breakPos2 === false) {
+                    $breakPos2 = 42;
+                }
+                $secondLine = trim(mb_substr($remaining, 0, $breakPos2));
+                $thirdLine = trim(mb_substr($remaining, $breakPos2));
+            } else {
+                $secondLine = $remaining;
+            }
+        } else {
+            $firstLine = $address;
+        }
+
+        // Define variables for college line breaks
+        $college = $application->adviser_college ?? '';
+        $firstLineCollege = '';
+        $secondLineCollege = '';
+        $thirdLineCollege = '';
+        if (mb_strlen($college) > 25) {
+            $breakPos1 = mb_strrpos(mb_substr($college, 0, 25), ' ');
+            if ($breakPos1 === false) {
+                $breakPos1 = 25;
+            }
+            $firstLineCollege = trim(mb_substr($college, 0, $breakPos1));
+            $remaining = trim(mb_substr($college, $breakPos1));
+            if (mb_strlen($remaining) > 42) {
+                $breakPos2 = mb_strrpos(mb_substr($remaining, 0, 42), ' ');
+                if ($breakPos2 === false) {
+                    $breakPos2 = 42;
+                }
+                $secondLineCollege = trim(mb_substr($remaining, 0, $breakPos2));
+                $thirdLineCollege = trim(mb_substr($remaining, $breakPos2));
+            } else {
+                $secondLineCollege = $remaining;
+            }
+        } else {
+            $firstLineCollege = $college;
+        }
+    @endphp
 
     <div class="header">
         <img src="{{ public_path('images/lspu-logo.png') }}" alt="LSPU Logo" class="logo">
@@ -326,10 +379,52 @@
                 <span class="signature-label">Signature:</span>
                 <span class="signature-value sig-signature">{{ $application->adviser_signature ?? '' }}</span>
             </div>
-            <div class="signature-field">
-                <span class="signature-label">College:</span>
-                <span class="signature-value sig-college">{{ $application->adviser_college ?? '' }}</span>
-            </div>
+                                        @php
+                                            $college = $application->adviser_college ?? '';
+                                            $firstLineCollege = '';
+                                            $secondLineCollege = '';
+                                            $thirdLineCollege = '';
+                                            if (mb_strlen($college) > 35) {
+                                                $breakPos1 = mb_strrpos(mb_substr($college, 0, 35), ' ');
+                                                if ($breakPos1 === false) {
+                                                    $breakPos1 = 35;
+                                                }
+                                                $firstLineCollege = trim(mb_substr($college, 0, $breakPos1));
+                                                $remaining = trim(mb_substr($college, $breakPos1));
+                                                if (mb_strlen($remaining) > 42) {
+                                                    $breakPos2 = mb_strrpos(mb_substr($remaining, 0, 42), ' ');
+                                                    if ($breakPos2 === false) {
+                                                        $breakPos2 = 42;
+                                                    }
+                                                    $secondLineCollege = trim(mb_substr($remaining, 0, $breakPos2));
+                                                    $thirdLineCollege = trim(mb_substr($remaining, $breakPos2));
+                                                } else {
+                                                    $secondLineCollege = $remaining;
+                                                }
+                                            } else {
+                                                $firstLineCollege = $college;
+                                            }
+                                        @endphp
+                                        <div class="signature-field">
+                                            <span class="signature-label">College:</span>
+                                            <span class="signature-value sig-college">
+                                                {{ $firstLineCollege }}
+                                            </span>
+                                        </div>
+                                        @if($secondLineCollege)
+                                        <div class="signature-field" style="margin-left: 0;">
+                                            <span class="signature-value sig-college" style="margin-left: 0; padding-left: 0;">
+                                                {{ $secondLineCollege }}
+                                            </span>
+                                        </div>
+                                        @endif
+                                        @if($thirdLineCollege)
+                                        <div class="signature-field" style="margin-left: 0;">
+                                            <span class="signature-value sig-college" style="margin-left: 0; padding-left: 0;">
+                                                {{ $thirdLineCollege }}
+                                            </span>
+                                        </div>
+                                        @endif
             <div class="signature-field">
                 <span class="signature-label">Academic Rank:</span>
                 <span class="signature-value sig-rank">{{ $application->adviser_rank ?? '' }}</span>
