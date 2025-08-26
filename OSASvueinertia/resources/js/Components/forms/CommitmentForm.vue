@@ -220,7 +220,53 @@ const submit = () => {
         </span>
       </div>
       <div class="sig-row"><span class="sig-label">Signature:</span><span class="sig-line sig-signature">&nbsp;</span></div>
-      <div class="sig-row"><span class="sig-label">College:</span><span class="sig-line sig-college">{{ form.adviser_college }}</span></div>
+      <!-- College signature lines: split into up to 3 lines -->
+      <div class="sig-row">
+        <span class="sig-label">College:</span>
+        <span class="sig-line sig-college">
+          {{ form.adviser_college.length > 25 ? form.adviser_college.slice(0, form.adviser_college.slice(0,25).lastIndexOf(' ') > 0 ? form.adviser_college.slice(0,25).lastIndexOf(' ') : 25) : form.adviser_college }}
+        </span>
+      </div>
+      <div v-if="form.adviser_college.length > 25" class="sig-row" style="margin-left: -5px;">
+        <span class="sig-label"></span>
+        <span class="sig-line sig-college">
+          {{ (() => {
+            const college = form.adviser_college;
+            const break1 = college.length > 25 ? (college.slice(0,25).lastIndexOf(' ') > 0 ? college.slice(0,25).lastIndexOf(' ') : 25) : college.length;
+            const remaining = college.slice(break1).trim();
+            if (remaining.length > 42) {
+              const break2 = remaining.slice(0,42).lastIndexOf(' ') > 0 ? remaining.slice(0,42).lastIndexOf(' ') : 42;
+              return remaining.slice(0,break2);
+            } else {
+              return remaining;
+            }
+          })() }}
+        </span>
+      </div>
+      <div v-if="(() => {
+        const college = form.adviser_college;
+        const break1 = college.length > 25 ? (college.slice(0,25).lastIndexOf(' ') > 0 ? college.slice(0,25).lastIndexOf(' ') : 25) : college.length;
+        const remaining = college.slice(break1).trim();
+        if (remaining.length > 42) {
+          const break2 = remaining.slice(0,42).lastIndexOf(' ') > 0 ? remaining.slice(0,42).lastIndexOf(' ') : 42;
+          return remaining.slice(break2).trim().length > 0;
+        }
+        return false;
+      })()" class="sig-row" style="margin-left: -5px;">
+        <span class="sig-label"></span>
+        <span class="sig-line sig-college">
+          {{ (() => {
+            const college = form.adviser_college;
+            const break1 = college.length > 25 ? (college.slice(0,25).lastIndexOf(' ') > 0 ? college.slice(0,25).lastIndexOf(' ') : 25) : college.length;
+            const remaining = college.slice(break1).trim();
+            if (remaining.length > 42) {
+              const break2 = remaining.slice(0,42).lastIndexOf(' ') > 0 ? remaining.slice(0,42).lastIndexOf(' ') : 42;
+              return remaining.slice(break2).trim();
+            }
+            return '';
+          })() }}
+        </span>
+      </div>
       <div class="sig-row"><span class="sig-label">Academic Rank:</span><span class="sig-line sig-rank">{{ form.adviser_rank }}</span></div>
       <!-- Home Address signature lines: split into up to 3 lines -->
       <div class="sig-row">
