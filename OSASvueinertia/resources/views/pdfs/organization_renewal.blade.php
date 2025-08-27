@@ -245,7 +245,7 @@
     </div>
 
     <div class="section right-align">
-        <p><u>{{ \Carbon\Carbon::parse($application->application_date)->format('F d, Y') }}</u></p>
+    <p><u><strong>{{ \Carbon\Carbon::parse($application->application_date)->format('F d, Y') }}</strong></u></p>
         <p style="margin-top: 0; text-align: left; width: max-content; padding-left: 540px;">Date</p>
     </div>
     
@@ -265,7 +265,7 @@
         <div class="section">
             <p style="margin-top:5px;">Sir/Madam:</p>
             <div style="height:15px;"></div>
-            <p class="indented">The <span class="dynamic-text"><u>{{ $application->organization_name }}</u></span> wishes to seek renewal of its recognition to function as a duly recognized LSPU Organization for Academic Year 20<span class="dynamic-text"><u>{{ $application->academic_year_start }}</u></span> - 20<span class="dynamic-text"><u>{{ $application->academic_year_end }}</u></span>.</p>
+            <p class="indented">The <span class="dynamic-text"><u><strong>{{ $application->organization_name }}</strong></u></span> wishes to seek renewal of its recognition to function as a duly recognized LSPU Organization for Academic Year 20<span class="dynamic-text"><u><strong>{{ $application->academic_year_start }}</strong></u></span> - 20<span class="dynamic-text"><u><strong>{{ $application->academic_year_end }}</strong></u></span>.</p>
             
             <p class="indented">In this connection, we are respectfully requesting from your good office to grant us permission to operate in our institution, subject to the existing rules & regulations of our University.</p>
             <br>
@@ -276,14 +276,14 @@
             <p class="respectfully-text" style="margin-left:calc(59% - 45px);">Very respectfully yours,</p>
 
             <div class="signature">
-                <p><span class="signature-line" style="min-width:160px;">{{ $application->president_name }}</span></p>
+                <p><span class="signature-line" style="min-width:160px;"><strong>{{ $application->president_name }}</strong></span></p>
                 <p><span class="title-under-signature title-left-adjust"><strong>Organization President</strong></span></p>
             </div>
         </div>
 
         <div class="section right-align">
             <div class="signature">
-                <p><span class="signature-line" style="min-width:160px; {{ strlen($application->organization_name) > 84 ? 'font-size: 8pt;' : (strlen($application->organization_name) > 74 ? 'font-size: 9pt;' : (strlen($application->organization_name) > 65 ? 'font-size: 10pt;' : '')) }}">{{ $application->organization_name }}</span></p>
+                <p><span class="signature-line" style="min-width:160px; {{ strlen($application->organization_name) > 84 ? 'font-size: 8pt;' : (strlen($application->organization_name) > 74 ? 'font-size: 9pt;' : (strlen($application->organization_name) > 65 ? 'font-size: 10pt;' : '')) }}"><strong>{{ $application->organization_name }}</strong></span></p>
                 <p><span class="title-under-signature title-left-adjust-more"><strong>Name of Organization</strong></span></p>
             </div>
         </div>
@@ -291,12 +291,12 @@
         <div class="section left-align">
             <p><strong>NOTED:</strong></p>
             <div class="signature">
-                <p><span class="signature-line" style="min-width:220px;">{{ $application->adviser_name }}</span></p>
+                <p><span class="signature-line" style="min-width:220px;"><strong>{{ $application->adviser_name }}</strong></span></p>
                 <p><span class="title-under-signature title-right-adjust"><strong>Adviser/s, Student Organization</strong></span></p>
             </div>
             
             <div class="signature">
-                <p><span class="signature-line" style="min-width:305px;">{{ $application->dean_name }}</span></p>
+                <p><span class="signature-line" style="min-width:305px;"><strong>{{ $application->dean_name }}</strong></span></p>
                 <p><span class="title-under-signature"><strong>Dean/Assoc. Dean, College of</strong> <span class="signature-line signature-line-inline" style="min-width:120px;"><strong>{{ $application->college ?? '' }}</strong></span></span></p>
             </div>
         </div>
