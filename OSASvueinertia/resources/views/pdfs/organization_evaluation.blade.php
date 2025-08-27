@@ -42,7 +42,7 @@
             font-size: 11pt;
             font-family: Calibri, Arial, sans-serif;
             font-weight: bold;
-            max-width: 55%;
+            max-width: 45%;
             height: auto;
             margin: 4px 0;
             display: inline-block;
@@ -116,9 +116,9 @@
 <body>
     <div class="header">
         <img src="{{ public_path('images/lspu-logo.png') }}" alt="LSPU Logo" class="logo">
-        <p class="calibri-font" style="margin-bottom: 0;">Republic of the Philippines</p>
+        <p class="calibri-font" style="margin-bottom: 0; font-size:10pt;">Republic of the Philippines</p>
         <img src="{{ public_path('images/lspu-name.png') }}" alt="Laguna State Polytechnic University" class="university-name"><br>
-        <p class="calibri-font" style="margin-top: 0;">Province of Laguna</p>
+        <p class="calibri-font" style="margin-top: 0; font-size:10pt;">Province of Laguna</p>
         <br>
         <p class="form-title" style="margin-bottom: 24px;">Evaluation Sheet for all Programs/Activities</p>
     </div>

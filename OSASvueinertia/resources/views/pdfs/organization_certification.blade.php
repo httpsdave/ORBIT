@@ -313,7 +313,7 @@
             margin-top: 2px;
         }
         .university-name {
-            max-width: 55%; /* Adjust as needed */
+            max-width: 45%; /* Adjust as needed */
             height: auto;
             margin: 4px 0; /* Add some spacing above and below */
             display: inline-block;
@@ -339,9 +339,9 @@
         <div class="certification-page">
             <div class="header">
                 <img src="{{ public_path('images/lspu-logo.png') }}" alt="LSPU Logo" class="logo">
-                <div class="header-title">Republic of the Philippines</div>
+                <div class="header-title"style="font-size:10pt;">Republic of the Philippines</div>
                 <img src="{{ public_path('images/lspu-name.png') }}" alt="Laguna State Polytechnic University" class="university-name"><br>
-                <div class="header-province">Province of Laguna</div>
+                <div class="header-province"style="font-size:10pt;">Province of Laguna</div>
                 <p class="office-title" style="font-size:11pt; font-weight:bold; margin-bottom:10px; margin-top:12px;">OFFICE OF STUDENT AFFAIRS AND SERVICES</p>
                 <div class="cert-title" style="text-align: center; font-size: 15pt; font-weight: bold; margin-top: 13px; margin-bottom: 0;">CERTIFICATION</div>
             </div>

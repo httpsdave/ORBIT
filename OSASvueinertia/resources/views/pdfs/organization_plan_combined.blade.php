@@ -226,7 +226,7 @@
         }
 
         .university-name {
-            max-width: 55%; /* Adjust as needed */
+            max-width: 45%; /* Adjust as needed */
             height: auto;
             margin: 4px 0; /* Add some spacing above and below */
             display: inline-block;
@@ -275,9 +275,9 @@
         <div class="header">
             <img src="{{ public_path('images/lspu-logo.png') }}" alt="LSPU Logo" class="logo">
 
-            <span class="calibri-text">Republic of the Philippines</span><br>
+            <span class="calibri-text"style="font-size:10pt;">Republic of the Philippines</span><br>
             <img src="{{ public_path('images/lspu-name.png') }}" alt="Laguna State Polytechnic University" class="university-name"><br>
-            <span class="calibri-text">Province of Laguna</span><br>
+            <span class="calibri-text"style="font-size:10pt;">Province of Laguna</span><br>
             <br>
             <p class="office-title" style="font-size:11pt; font-weight:bold; margin-bottom:10px; margin-top:5px;">OFFICE OF STUDENT AFFAIRS AND SERVICES</p>
             <div class="subtitle" style="margin-top:15px; font-size:13pt;">PLAN OF ACTIVITIES</div>

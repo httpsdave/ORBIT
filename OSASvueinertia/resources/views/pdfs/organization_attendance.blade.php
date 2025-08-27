@@ -43,7 +43,7 @@
         }
 
         .university-name {
-            max-width: 55%; /* Adjust as needed */
+            max-width: 45%; /* Adjust as needed */
             height: auto;
             margin: 4px 0; /* Add some spacing above and below */
             display: inline-block;
@@ -173,9 +173,9 @@
     @foreach($chunks as $chunkIndex => $attendeeChunk)
         <div class="header">
             <img src="{{ public_path('images/lspu-logo.png') }}" alt="LSPU Logo" class="logo">
-            <span class="calibri-text">Republic of the Philippines</span><br>
+            <span class="calibri-text"style="font-size:10pt;">Republic of the Philippines</span><br>
             <img src="{{ public_path('images/lspu-name.png') }}" alt="Laguna State Polytechnic University" class="university-name"><br>
-            <span class="calibri-text">Province of Laguna</span><br>
+            <span class="calibri-text"style="font-size:10pt;">Province of Laguna</span><br>
             <div style="margin-top: 5px; font-weight: bold;">OFFICE OF STUDENT AFFAIRS AND SERVICES</div>
             <div class="title" style="margin-top: 5px;">STUDENT ACTIVITY ATTENDANCE SHEET</div>
             <span class= "underline" style="font-weight: bold; margin-top: 5px;">COLLEGE OF {{ $application->college ?? '' }}</span>
