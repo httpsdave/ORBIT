@@ -271,16 +271,16 @@
     <p class="office-title" style="font-size:11pt; font-weight:bold; margin-bottom:10px; margin-top:5px;">OFFICE OF STUDENT AFFAIRS AND SERVICES</p>
     <div class="subtitle" style="margin-top:15px; font-size:13pt;">PLAN OF ACTIVITIES</div>
         <div style="margin-top: 15px; text-align: center;">
-            <div class="signature-line" style="margin-bottom:0px; min-width:330px;">{{ $application->organization_name }}</div>
+            <div class="signature-line" style="margin-bottom:0px; min-width:330px;"><strong>{{ $application->organization_name }}</strong></div>
             <div class="title-under-signature" style="margin-top:2px;">Name of Organization</div>
         </div>
         <div style="text-align:center; margin-top:10px;">
             <span class="signature-line" style="min-width:20px; margin-bottom:-2px; line-height:10px; padding:0 0 0 0;">
-                <span style="position:relative; top:0px;">{{ $application->semester ?? '1st' }}</span>
+                <span style="position:relative; top:0px;"><strong>{{ $application->semester ?? '1st' }}</strong></span>
             </span> Semester AY 20<span class="signature-line" style="min-width:20px; margin-bottom:-2px; margin-top:-1px; line-height:10px; padding:0 0 0 0;">
-                <span style="position:relative; top:1px;">{{ $application->academic_year_start ?? '24' }}</span>
+                <span style="position:relative; top:1px;"><strong>{{ $application->academic_year_start ?? '24' }}</strong></span>
             </span>-20<span class="signature-line" style="min-width:20px; margin-bottom:-2px; margin-top:-1px; line-height:10px; padding:0 0 0 0;">
-                <span style="position:relative; top:1px;">{{ $application->academic_year_end ?? '25' }}</span>
+                <span style="position:relative; top:1px;"><strong>{{ $application->academic_year_end ?? '25' }}</strong></span>
             </span>
         </div>
         @if(isset($activityIndex) && isset($totalActivities))
@@ -328,11 +328,11 @@
         <!-- First signature row with President and Secretary -->
         <div class="signature-container clearfix">
             <div class="signature-left">
-                <div class="signature-line" style="margin-bottom:0px;">{{ $application->president_name }}</div>
+                <div class="signature-line" style="margin-bottom:0px;"><strong>{{ $application->president_name }}</strong></div>
                 <p style="margin-top:2px;">Organization President</p>
             </div>
             <div class="signature-right">
-                <div class="signature-line" style="margin-bottom:0px;">{{ $application->secretary_name ?? 'N/A' }}</div>
+                <div class="signature-line" style="margin-bottom:0px;"><strong>{{ $application->secretary_name ?? 'N/A' }}</strong></div>
                 <p style="margin-top:2px;">Organization Secretary</p>
             </div>
         </div>
@@ -344,7 +344,7 @@
         <!-- Second signature row with Faculty Adviser -->
         <div class="signature-container clearfix">
             <div class="signature-left">
-                <div class="signature-line" style="margin-bottom:0px;">{{ $application->adviser_name ?? 'N/A' }}</div>
+                <div class="signature-line" style="margin-bottom:0px;"><strong>{{ $application->adviser_name ?? 'N/A' }}</strong></div>
                 <p style="margin-top:2px;">Organization Adviser(s)</p>
             </div>
         </div>
@@ -352,20 +352,20 @@
         <!-- Third signature row with Dean -->
             <div class="signature-container clearfix" style="margin-top:5px;">
                 <div class="signature-left">
-                    <div class="signature-line" style="margin-bottom:0px; white-space:nowrap; min-width:180px; display:inline-block;">{{ $application->dean_name ?? 'N/A' }}</div>
+                    <div class="signature-line" style="margin-bottom:0px; white-space:nowrap; min-width:180px; display:inline-block;"><strong>{{ $application->dean_name ?? 'N/A' }}</strong></div>
                     <p style="margin-top:2px;">Dean/Assoc. Dean </p>
                 </div>
             </div>
         
         <div class="recommendation" style="margin-top:20px;">
             <p><strong>Recommending Approval:</strong></p>
-            <div class="signature-line" style="min-width:290px; margin-bottom:0px;">{{ $application->coordinator_name ?? 'N/A' }}</div>
+            <div class="signature-line" style="min-width:290px; margin-bottom:0px;"><strong>{{ $application->coordinator_name ?? 'N/A' }}</strong></div>
             <p style="margin-top:2px; margin-bottom:20px;">Coordinator, Student Organization Unit</p>
         </div>
         
     <div class="signature-block" style="margin-top:20px;">
             <p><strong>Approved/Disapproved:</strong></p>
-            <div class="signature-line" style="min-width:415px; margin-bottom:0px;">{{ $application->director_name ?? 'N/A' }}</div>
+            <div class="signature-line" style="min-width:415px; margin-bottom:0px;"><strong>{{ $application->director_name ?? 'N/A' }}</strong></div>
             <p style="margin-top:2px;">Director/Chairperson, Office of Student Affairs and Services</p>
         </div>
     </div>
