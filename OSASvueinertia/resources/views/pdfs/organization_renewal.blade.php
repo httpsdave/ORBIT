@@ -283,7 +283,7 @@
 
         <div class="section right-align">
             <div class="signature">
-                <p><span class="signature-line" style="min-width:160px;">{{ $application->organization_name }}</span></p>
+                <p><span class="signature-line" style="min-width:160px; {{ strlen($application->organization_name) > 84 ? 'font-size: 8pt;' : (strlen($application->organization_name) > 74 ? 'font-size: 9pt;' : (strlen($application->organization_name) > 65 ? 'font-size: 10pt;' : '')) }}">{{ $application->organization_name }}</span></p>
                 <p><span class="title-under-signature title-left-adjust-more"><strong>Name of Organization</strong></span></p>
             </div>
         </div>
