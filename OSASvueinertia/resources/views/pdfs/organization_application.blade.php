@@ -264,7 +264,7 @@
     </div>
 
     <div class="signature right-align">
-        <p><span class="signature-line" style="{{ strlen($application->organization_name) > 80 ? 'font-size: 11pt;' : '' }}">{{ $application->organization_name }}</span></p>
+        <p><span class="signature-line" style="{{ strlen($application->organization_name) > 65 ? 'font-size: 8pt;' : '' }}">{{ $application->organization_name }}</span></p>
         <p><span class="title-text">Name of Organization</span></p>
     </div>
 
