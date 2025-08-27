@@ -274,6 +274,11 @@
             margin: 4px 0; /* Add some spacing above and below */
             display: inline-block;
         }
+
+        .dynamic-text {
+            display: inline;
+            word-break: break-word;
+        }
     </style>
 </head>
 <body>
@@ -360,7 +365,7 @@
         <div class="section justified">
             <p class="sir-greeting" style="margin-bottom:20px;">Sir/Madam:</p>
             <p class="indented">This letter is in connection with the application for recognition/renewal of 
-            <span style="display:inline-block; min-width:200px; max-width:100%; border-bottom:1px solid black; text-align:center; line-height:0.85; vertical-align:middle; padding:0; margin-bottom:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-left:0; text-indent:0;">{{ $application->organization_name ?? '________________' }}</span> as a duly recognized LSPU Organization.</p>
+            <span class="dynamic-text"><u>{{ $application->organization_name ?? '________________' }}</u></span> as a duly recognized LSPU Organization.</p>
             <p class="indented">I, the undersigned, have committed to serve as the organization's 
             Adviser for the academic year 20<u>{{ $application->academic_year_start ?? '__' }}</u>-20<u>{{ $application->academic_year_end ?? '__' }}</u>, and shall therefore assume full responsibility as 
             provided in the guidelines for the recognition of student organizations.</p>
