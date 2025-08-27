@@ -230,7 +230,7 @@
         <p><strong>THE DIRECTOR/CHAIRPERSON</strong><br>Office of Student Affairs and Services<br>LSPU</p>
     </div>
 
-    <div style="height: -3px;"></div>
+    <div style="height: 7px;"></div>
     <div class="section justified">
         <p>Sir/Madam:</p>
     <div style="height: 12px;"></div>
@@ -264,7 +264,7 @@
     </div>
 
     <div class="signature right-align">
-        <p><span class="signature-line" style="{{ strlen($application->organization_name) > 69 ? 'font-size: 8pt;' : '' }}">{{ $application->organization_name }}</span></p>
+        <p><span class="signature-line" style="{{ strlen($application->organization_name) > 80 ? 'font-size: 9pt;' : '' }}">{{ $application->organization_name }}</span></p>
         <p><span class="title-text">Name of Organization</span></p>
     </div>
 
