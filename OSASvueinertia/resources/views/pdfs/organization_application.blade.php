@@ -204,7 +204,7 @@
         /* Add this to your CSS */
         .respectfully-yours {
             text-align: right;
-            padding-right: 90px; /* Adjust this value to move it more to the left */
+            padding-right: 110px; /* Adjusted to move it 15px more to the left */
         }
     </style>
 </head>
