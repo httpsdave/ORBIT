@@ -222,7 +222,7 @@
     </div>
 
     <div class="section right-align">
-        <p><u>{{ \Carbon\Carbon::parse($application->application_date)->format('F d, Y') }}</u></p>
+    <p><u><strong>{{ \Carbon\Carbon::parse($application->application_date)->format('F d, Y') }}</strong></u></p>
         <p style="margin-top: 0; text-align: left; width: max-content; padding-left: 540px;">Date</p>
     </div>
     
@@ -234,7 +234,7 @@
     <div class="section justified">
         <p>Sir/Madam:</p>
     <div style="height: 12px;"></div>
-    <p class="indented">I have the honor to apply for recognition/renewal of the organization, <span class="dynamic-text"><u>{{ $application->organization_name }}</u></span>, to be duly recognized by Laguna State Polytechnic University.</p>
+    <p class="indented">I have the honor to apply for recognition/renewal of the organization, <span class="dynamic-text"><u><strong>{{ $application->organization_name }}</strong></u></span>, to be duly recognized by Laguna State Polytechnic University.</p>
     <div style="height: 5px;"></div>
         <p class="indented">In compliance with CHED Memo Order No. 9s. 2013, Subj.: Enhanced Policies & Guidelines on Student Affairs and Services (Article VIII-Student Development, Section 19. Student Organizations and Activities), I am submitting for proper action the following requirements for recognition and accreditation, to wit:</p>
     </div>
@@ -259,12 +259,12 @@
     </div>
 
     <div class="signature right-align">
-        <p><span class="signature-line">{{ $application->president_name }}</span></p>
+    <p><span class="signature-line"><strong>{{ $application->president_name }}</strong></span></p>
         <p><span class="title-text">Organization President</span></p>
     </div>
 
     <div class="signature right-align">
-        <p><span class="signature-line" style="{{ strlen($application->organization_name) > 84 ? 'font-size: 8pt;' : (strlen($application->organization_name) > 74 ? 'font-size: 9pt;' : (strlen($application->organization_name) > 65 ? 'font-size: 10pt;' : '')) }}">{{ $application->organization_name }}</span></p>
+    <p><span class="signature-line" style="{{ strlen($application->organization_name) > 84 ? 'font-size: 8pt;' : (strlen($application->organization_name) > 74 ? 'font-size: 9pt;' : (strlen($application->organization_name) > 65 ? 'font-size: 10pt;' : '')) }}"><strong>{{ $application->organization_name }}</strong></span></p>
         <p><span class="title-text">Name of Organization</span></p>
     </div>
 
@@ -276,12 +276,12 @@
         <tr style="vertical-align: top;">
             <td style="width: 50%; text-align: left;">
                 <div class="signature left-align">
-                    <p><span class="signature-line">{{ $application->adviser_name ?? 'N/A' }}</span></p>
+                    <p><span class="signature-line"><strong>{{ $application->adviser_name ?? 'N/A' }}</strong></span></p>
                     <p style="text-align:left;"><span class="title-text">Adviser, Student Organization</span></p>
             </td>
             <td style="width: 50%; text-align: right;">
                 <div class="signature right-align">
-                    <p><span class="signature-line">{{ $application->dean_name ?? 'N/A' }}</span></p>
+                    <p><span class="signature-line"><strong>{{ $application->dean_name ?? 'N/A' }}</strong></span></p>
                     <p><span class="title-text">Dean/Assoc. Dean of College</span></p>
                 </div>
             </td>
