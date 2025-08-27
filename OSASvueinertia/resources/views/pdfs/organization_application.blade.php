@@ -234,7 +234,7 @@
     <div class="section justified">
         <p>Sir/Madam:</p>
     <div style="height: 12px;"></div>
-    <p class="indented">I have the honor to apply for recognition/renewal of the organization, <span class="dynamic-text"><u>{{ $application->organization_name }}</u></span>, to be duly recognized by Laguna State Polytechnic University.</p>
+    <p class="indented";word-spacing:10px>I have the honor to apply for recognition/renewal of the organization, <span class="dynamic-text"><u>{{ $application->organization_name }}</u></span>, to be duly recognized by Laguna State Polytechnic University.</p>
     <div style="height: 5px;"></div>
         <p class="indented">In compliance with CHED Memo Order No. 9s. 2013, Subj.: Enhanced Policies & Guidelines on Student Affairs and Services (Article VIII-Student Development, Section 19. Student Organizations and Activities), I am submitting for proper action the following requirements for recognition and accreditation, to wit:</p>
     </div>
@@ -264,12 +264,12 @@
     </div>
 
     <div class="signature right-align">
-        <p><span class="signature-line" style="{{ strlen($application->organization_name) > 80 ? 'font-size: 9pt;' : '' }}">{{ $application->organization_name }}</span></p>
+        <p><span class="signature-line" style="{{ strlen($application->organization_name) > 80 ? 'font-size: 11pt;' : '' }}">{{ $application->organization_name }}</span></p>
         <p><span class="title-text">Name of Organization</span></p>
     </div>
 
     <div class="section left-align">
-    <p style="margin-top: 20px; margin-bottom: 0;">NOTED:</p>
+    <p style="margin-top: -10px; margin-bottom: 0;">NOTED:</p>
     </div>
 
     <table style="width: 100%; margin-top: 2px;">
