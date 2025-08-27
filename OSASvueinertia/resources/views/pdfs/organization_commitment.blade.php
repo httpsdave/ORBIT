@@ -334,6 +334,20 @@
         } else {
             $firstLineCollege = $college;
         }
+
+        $adviserName = $application->adviser_name ?? '';
+        $firstLineAdviserName = '';
+        $secondLineAdviserName = '';
+        if (mb_strlen($adviserName) > 24) {
+            $breakPos = mb_strrpos(mb_substr($adviserName, 0, 24), ' ');
+            if ($breakPos === false) {
+                $breakPos = 24;
+            }
+            $firstLineAdviserName = trim(mb_substr($adviserName, 0, $breakPos));
+            $secondLineAdviserName = trim(mb_substr($adviserName, $breakPos));
+        } else {
+            $firstLineAdviserName = $adviserName;
+        }
     @endphp
 
     <div class="header">
@@ -378,8 +392,17 @@
             <p style="margin-bottom: 18px;"><strong>Very respectfully yours,</strong></p>
             <div class="signature-field">
                 <span class="signature-label">Name:</span>
-                <span class="signature-value sig-name"><strong>{{ $application->adviser_name ?? '' }}</strong></span>
+                <span class="signature-value sig-name">
+                    <strong>{{ $firstLineAdviserName }}</strong>
+                </span>
             </div>
+            @if($secondLineAdviserName)
+            <div class="signature-field" style="margin-left: 0;">
+                <span class="signature-value sig-name" style="margin-left: 0; padding-left: 0;">
+                    <strong>{{ $secondLineAdviserName }}</strong>
+                </span>
+            </div>
+            @endif
             <div class="signature-field">
                 <span class="signature-label">Signature:</span>
                 <span class="signature-value sig-signature">{{ $application->adviser_signature ?? '' }}</span>
