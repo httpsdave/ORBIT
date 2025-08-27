@@ -318,11 +318,11 @@
         $info = '<div style="width:100%; text-align:center; margin-top:-18px; font-family: Times New Roman, serif; font-size: 11pt; font-weight: bold;">
             <span style="display:inline-block; text-align:center;">
                 <span style="display:inline-block !important; min-width:0.5cm !important; margin:0 !important; margin-right:0.05cm !important; padding:0 !important; border-bottom:1px solid black !important; line-height:10px; font-family: Times New Roman, serif; font-size: 11pt; font-weight: bold; text-align:center; position:relative; top:0.05cm;">
-                    <span style="position:relative; top:0px; font-weight:bold;">' . ($application->semester ?? '<b>1st</b>') . '</span>
+                    <span style="position:relative; top:0px; font-weight:bold;"><strong>' . ($application->semester ?? '<b>1st</b>') . '</strong></span>
                 </span>Semester AY 20<span style="display:inline-block !important; min-width:0.4cm !important; margin:0 !important; margin-left:0.02cm !important; margin-right:0.02cm !important; padding:0 !important; border-bottom:1px solid black !important; line-height:10px; font-family: Times New Roman, serif; font-size: 11pt; font-weight: bold; text-align:center; position:relative; top:0.05cm; left:-0.03cm;">
-                    <span style="position:relative; top:1px; font-weight:bold;">' . ($application->academic_year_start ?? '<b>24</b>') . '</span>
+                    <span style="position:relative; top:1px; font-weight:bold;"><strong>' . ($application->academic_year_start ?? '<b>24</b>') . '</strong></span>
                 </span>-20<span style="display:inline-block !important; min-width:0.4cm !important; margin:0 !important; margin-left:0.02cm !important; padding:0 !important; border-bottom:1px solid black !important; line-height:10px; font-family: Times New Roman, serif; font-size: 11pt; font-weight: bold; text-align:center; position:relative; top:0.05cm; left:-0.03cm;">
-                    <span style="position:relative; top:1px; font-weight:bold;">' . ($application->academic_year_end ?? '<b>25</b>') . '</span>
+                    <span style="position:relative; top:1px; font-weight:bold;"><strong>' . ($application->academic_year_end ?? '<b>25</b>') . '</strong></span>
                 </span>
             </span>
         </div>';
@@ -330,7 +330,7 @@
             <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
                 <span style="font-family: Times New Roman, serif; font-size: 11pt; font-weight: bold; text-align: left;">Name of Organization</span>
                 <span class="signature-line" style="margin-bottom:0px; min-width:200px; font-family: Times New Roman, serif; font-size: 11pt; text-align: center; border-bottom: 1px solid #000; display: inline-block;">
-                    <span style="font-weight: bold;">' . ($application->organization_name ?? '') . '</span>
+                    <span style="font-weight: bold;"><strong>' . ($application->organization_name ?? '') . '</strong></span>
                 </span>
             </div>
         </div>';
@@ -534,39 +534,39 @@
                 <td style="width: 50%; vertical-align: top; text-align: center; padding-top: 0;">
                     <div style="width: 200px; margin: 0 auto; margin-left: 35px;">
                         <p style="margin-bottom: 0;">
-                            <span class="date-signature-line" style="display: block; min-width: 200px; text-align: center;">{{ $application->adviser_name ?? '' }}</span>
+                            <span class="date-signature-line" style="display: block; min-width: 200px; text-align: center;"><strong>{{ $application->adviser_name ?? '' }}</strong></span>
                         </p>
                         <p style="margin-top: 2px; text-align: center;">Organization Adviser</p>
                     </div>
-                    <p style="text-align: left; padding-left: 35px; margin-top: -10px;">Date: <span class="date-signature-line">{{ now()->format('F d, Y') }}</span></p>
+                    <p style="text-align: left; padding-left: 35px; margin-top: -10px;">Date: <span class="date-signature-line"><strong>{{ now()->format('F d, Y') }}</strong></span></p>
                 </td>
                 <td style="width: 50%; vertical-align: top; text-align: center; padding-top: 0;">
                     <div style="width: 200px; margin: 0 auto; margin-left: 110px;">
                         <p style="margin-bottom: 0;">
-                                <span class="date-signature-line" style="display: block; min-width: 200px; text-align: center;">{{ $application->second_adviser ?? 'Sample Data' }}</span>
+                                <span class="date-signature-line" style="display: block; min-width: 200px; text-align: center;"><strong>{{ $application->second_adviser ?? 'Sample Data' }}</strong></span>
                         </p>
                         <p style="margin-top: 2px; text-align: center;">Organization Adviser</p>
                     </div>
-                    <p style="text-align: left; padding-left: 110px; margin-top: -10px;">Date: <span class="date-signature-line">{{ now()->format('F d, Y') }}</span></p>
+                    <p style="text-align: left; padding-left: 110px; margin-top: -10px;">Date: <span class="date-signature-line"><strong>{{ now()->format('F d, Y') }}</strong></span></p>
                 </td>
             </tr>
         </table>
         <div class="dean-signature center-align" style="width: 50% !important; margin-top: 3px; text-align: center !important;">
             <p style="margin-bottom: 0; font-weight: bold !important; margin-left: 10px !important; text-align: left !important; margin-top: -5px;">Noted:</p>
-            <p style="margin-bottom: 0; text-align: center !important; margin-top: -3px;"><span class="date-signature-line" style="display: inline-block; min-width: 180px;">{{ $application->dean_name ?? '' }}</span></p>
+            <p style="margin-bottom: 0; text-align: center !important; margin-top: -3px;"><span class="date-signature-line" style="display: inline-block; min-width: 180px;"><strong>{{ $application->dean_name ?? '' }}</strong></span></p>
             <p style="margin-top: 3px; font-weight: normal; margin-left: 0 !important; text-align: center !important;">Dean/Assoc. Dean of College</p>
         </div>
 
         <div class="recommendation" style="margin-top:-10px; text-align: center;">
             <p style="margin-bottom:5px;"><strong>Recommending Approval:</strong></p>
-            <div class="signature-line" style="min-width:290px; margin-bottom:0px; display: inline-block; border-bottom: 1px solid black; text-align: center;">{{ $application->coordinator_name ?? 'N/A' }}</div>
+            <div class="signature-line" style="min-width:290px; margin-bottom:0px; display: inline-block; border-bottom: 1px solid black; text-align: center;"><strong>{{ $application->coordinator_name ?? 'N/A' }}</strong></div>
             <p style="margin-top:2px; margin-bottom:22px;">Coordinator, Student Organization Unit</p>
         </div>
         
         <div class="signature-block" style="margin-top:-10px; text-align: center;">
                     <div class="signature-block" style="margin-top:-10px; text-align: center;">
             <p style="margin-bottom:5px;"><strong>Approved/Disapproved:</strong></p>
-                    <div class="signature-line" style="min-width:415px; margin-bottom:0px; display: inline-block; border-bottom: 1px solid black; text-align: center;">{{ $application->director_name ?? 'Sample Data' }}</div>
+                    <div class="signature-line" style="min-width:415px; margin-bottom:0px; display: inline-block; border-bottom: 1px solid black; text-align: center;"><strong>{{ $application->director_name ?? 'Sample Data' }}</strong></div>
             <p style="margin-top:2px;">Director/Chairperson, Office of Student Affairs and Services</p>
         </div>
     @endif
@@ -762,39 +762,39 @@
                     <td style="width: 50%; vertical-align: top; text-align: center; padding-top: 0;">
                         <div style="width: 200px; margin: 0 auto; margin-left: 10px;">
                             <p style="margin-bottom: 0;">
-                                <span class="date-signature-line" style="display: block; min-width: 200px; text-align: center;">{{ $application->adviser_name ?? '' }}</span>
+                                <span class="date-signature-line" style="display: block; min-width: 200px; text-align: center;"><strong>{{ $application->adviser_name ?? '' }}</strong></span>
                             </p>
                             <p style="margin-top: 2px; text-align: center; font-weight: normal;">Organization Adviser</p>
                         </div>
-                        <p style="text-align: left; padding-left: 10px; margin-top: -10px;">Date: <span class="date-signature-line">{{ now()->format('F d, Y') }}</span></p>
+                        <p style="text-align: left; padding-left: 10px; margin-top: -10px;">Date: <span class="date-signature-line"><strong>{{ now()->format('F d, Y') }}</strong></span></p>
                     </td>
                     <td style="width: 50%; vertical-align: top; text-align: center; padding-top: 0;">
                         <div style="width: 200px; margin: 0 auto; margin-left: 110px;">
                             <p style="margin-bottom: 0;">
-                                    <span class="date-signature-line" style="display: block; min-width: 200px; text-align: center;">{{ $application->second_adviser ?? 'Sample Organization Adviser' }}</span>
+                                    <span class="date-signature-line" style="display: block; min-width: 200px; text-align: center;"><strong>{{ $application->second_adviser ?? 'Sample Organization Adviser' }}</strong></span>
                             </p>
                             <p style="margin-top: 2px; text-align: center; font-weight: normal;">Organization Adviser</p>
                         </div>
-                        <p style="text-align: left; padding-left: 110px; margin-top: -10px;">Date: <span class="date-signature-line">{{ now()->format('F d, Y') }}</span></p>
+                        <p style="text-align: left; padding-left: 110px; margin-top: -10px;">Date: <span class="date-signature-line"><strong>{{ now()->format('F d, Y') }}</strong></span></p>
                     </td>
                 </tr>
             </table>
             <div class="dean-signature center-align" style="width: 50% !important; margin-top: 3px; text-align: center !important;">
                 <p style="margin-bottom: 0; font-weight: bold !important; margin-left: 10px !important; text-align: left !important; margin-top: -5px;">Noted:</p>
-                <p style="margin-bottom: 0; text-align: center !important;"><span class="date-signature-line" style="display: inline-block; min-width: 180px;">{{ $application->dean_name ?? '' }}</span></p>
+                <p style="margin-bottom: 0; text-align: center !important;"><span class="date-signature-line" style="display: inline-block; min-width: 180px;"><strong>{{ $application->dean_name ?? '' }}</strong></span></p>
                 <p style="margin-top: 2px; font-weight: normal; margin-left: 0 !important; text-align: center !important;">Dean/Assoc. Dean of College</p>
             </div>
 
             <div class="recommendation" style="margin-top:-10px; text-align: center;">
                 <p style="margin-bottom:5px;"><strong>Recommending Approval:</strong></p>
-                <div class="signature-line" style="min-width:290px; margin-bottom:0px; display: inline-block; border-bottom: 1px solid black; text-align: center;">{{ $application->coordinator_name ?? 'N/A' }}</div>
-                <p style="margin-top:2px; margin-bottom:14px;">Coordinator, Student Organization Unit</p>
+                <div class="signature-line" style="min-width:290px; margin-bottom:0px; display: inline-block; border-bottom: 1px solid black; text-align: center;"><strong>{{ $application->coordinator_name ?? 'N/A' }}</strong></div>
+                <p style="margin-top:2px; margin-bottom:22px;">Coordinator, Student Organization Unit</p>
             </div>
             
             <div class="signature-block" style="margin-top:-10px; text-align: center;">
                         <div class="signature-block" style="margin-top:-10px; text-align: center;">
                 <p style="margin-bottom:5px;"><strong>Approved/Disapproved:</strong></p>
-                            <div class="signature-line" style="min-width:415px; margin-bottom:0px; display: inline-block; border-bottom: 1px solid black; text-align: center;">{{ $application->director_name ?? 'Sample Data' }}</div>
+                            <div class="signature-line" style="min-width:415px; margin-bottom:0px; display: inline-block; border-bottom: 1px solid black; text-align: center;"><strong>{{ $application->director_name ?? 'Sample Data' }}</strong></div>
                 <p style="margin-top:2px;">Director/Chairperson, Office of Student Affairs and Services</p>
             </div>
         @endif
