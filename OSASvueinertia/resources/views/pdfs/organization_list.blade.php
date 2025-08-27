@@ -27,7 +27,7 @@
             text-align: center;
             font-size: 11pt;
             font-weight: bold;
-            margin: 0 0 0.3cm 0;
+            margin: 15px 0 0.3cm 0;
             padding-top: 0.3cm;
         }
         
@@ -233,7 +233,7 @@
         }
 
         .university-name {
-            max-width: 55%;
+            max-width: 45%;
             height: auto;
             margin: 3px 0;
             display: inline-block;
@@ -295,9 +295,9 @@
         // This function will be called to generate the header for each page
         $header = '<div class="header">
                 <img src="' . public_path('images/lspu-logo.png') . '" alt="LSPU Logo" class="logo">
-                <span class="header-text">Republic of the Philippines<br>
+                <span class="header-text"style="font-size:10pt;">Republic of the Philippines<br>
                 <img src="' . public_path('images/lspu-name.png') .  '" alt="Laguna State Polytechnic University" class="university-name"><br>
-                <span class="province-text">Province of Laguna</span></span>
+                <span class="province-text"style="font-size:10pt;">Province of Laguna</span></span>
                 <p class="office-title" style="font-size:11pt; font-weight:bold; margin-bottom:10px; margin-top:5px;">OFFICE OF STUDENT AFFAIRS AND SERVICES</p>
                 <p class="sub-header" style="font-size:11pt; font-weight:bold; margin-bottom:10px; margin-top:5px;">LIST OF MEMBERS OF THE ORGANIZATION</p>
             </div>';
@@ -326,11 +326,21 @@
                 </span>
             </span>
         </div>';
+        $orgName = $application->organization_name ?? '';
+        $orgNameLen = strlen($orgName);
+        $orgFontSize = '11pt';
+        if ($orgNameLen > 84) {
+            $orgFontSize = '8pt';
+        } elseif ($orgNameLen > 74) {
+            $orgFontSize = '9pt';
+        } elseif ($orgNameLen > 65) {
+            $orgFontSize = '10pt';
+        }
         $info .= '<div style="width:100%; margin-top: 15px; text-align: center;">
             <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
                 <span style="font-family: Times New Roman, serif; font-size: 11pt; font-weight: bold; text-align: left;">Name of Organization</span>
-                <span class="signature-line" style="margin-bottom:0px; min-width:200px; font-family: Times New Roman, serif; font-size: 11pt; text-align: center; border-bottom: 1px solid #000; display: inline-block;">
-                    <span style="font-weight: bold;"><strong>' . ($application->organization_name ?? '') . '</strong></span>
+                <span class="signature-line" style="margin-bottom:0px; min-width:200px; font-family: Times New Roman, serif; font-size: ' . $orgFontSize . '; text-align: center; border-bottom: 1px solid #000; display: inline-block;">
+                    <span style="font-weight: bold;"><strong>' . $orgName . '</strong></span>
                 </span>
             </div>
         </div>';
@@ -781,8 +791,8 @@
             </table>
             <div class="dean-signature center-align" style="width: 50% !important; margin-top: 3px; text-align: center !important;">
                 <p style="margin-bottom: 0; font-weight: bold !important; margin-left: 10px !important; text-align: left !important; margin-top: -5px;">Noted:</p>
-                <p style="margin-bottom: 0; text-align: center !important;"><span class="date-signature-line" style="display: inline-block; min-width: 180px;"><strong>{{ $application->dean_name ?? '' }}</strong></span></p>
-                <p style="margin-top: 2px; font-weight: normal; margin-left: 0 !important; text-align: center !important;">Dean/Assoc. Dean of College</p>
+                <p style="margin-bottom: 0; text-align: center !important; margin-top: -3px;"><span class="date-signature-line" style="display: inline-block; min-width: 180px;"><strong>{{ $application->dean_name ?? '' }}</strong></span></p>
+                <p style="margin-top: 3px; font-weight: normal; margin-left: 0 !important; text-align: center !important;">Dean/Assoc. Dean of College</p>
             </div>
 
             <div class="recommendation" style="margin-top:-10px; text-align: center;">
