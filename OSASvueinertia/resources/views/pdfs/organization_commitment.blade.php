@@ -347,7 +347,7 @@
     </div>
 
     <div class="section right-align">
-        <p><u>{{ \Carbon\Carbon::parse($application->form_date)->format('F d, Y') }}</u></p>
+        <p><u><strong>{{ \Carbon\Carbon::parse($application->form_date)->format('F d, Y') }}</strong></u></p>
         <p style="margin-top: 0; text-align: left; width: max-content; padding-left: 540px;">Date</p>
     </div>
     
@@ -364,10 +364,10 @@
 
         <div class="section justified">
             <p class="sir-greeting" style="margin-bottom:20px;">Sir/Madam:</p>
-            <p class="indented">This letter is in connection with the application for recognition/renewal of 
-            <span class="dynamic-text"><u>{{ $application->organization_name ?? '________________' }}</u></span> as a duly recognized LSPU Organization.</p>
+            <p class="indented"><span style="word-spacing:5px;">This letter is in connection with the application for recognition/renewal of</span> 
+            <span class="dynamic-text"><u><strong>{{ $application->organization_name ?? '________________' }}</strong></u></span> as a duly recognized LSPU Organization.</p>
             <p class="indented">I, the undersigned, have committed to serve as the organization's 
-            Adviser for the academic year 20<u>{{ $application->academic_year_start ?? '__' }}</u>-20<u>{{ $application->academic_year_end ?? '__' }}</u>, and shall therefore assume full responsibility as 
+            Adviser for the academic year 20<u><strong>{{ $application->academic_year_start ?? '__' }}</strong></u>-20<u><strong>{{ $application->academic_year_end ?? '__' }}</strong></u>, and shall therefore assume full responsibility as 
             provided in the guidelines for the recognition of student organizations.</p>
             <p class="indented">Furthermore, I certify to the correctness and completeness of the documents 
             attached to the organization application for recognition.</p>
@@ -378,7 +378,7 @@
             <p style="margin-bottom: 18px;"><strong>Very respectfully yours,</strong></p>
             <div class="signature-field">
                 <span class="signature-label">Name:</span>
-                <span class="signature-value sig-name">{{ $application->adviser_name ?? '' }}</span>
+                <span class="signature-value sig-name"><strong>{{ $application->adviser_name ?? '' }}</strong></span>
             </div>
             <div class="signature-field">
                 <span class="signature-label">Signature:</span>
@@ -389,10 +389,10 @@
                                             $firstLineCollege = '';
                                             $secondLineCollege = '';
                                             $thirdLineCollege = '';
-                                            if (mb_strlen($college) > 35) {
-                                                $breakPos1 = mb_strrpos(mb_substr($college, 0, 35), ' ');
+                                            if (mb_strlen($college) > 32) {
+                                                $breakPos1 = mb_strrpos(mb_substr($college, 0, 32), ' ');
                                                 if ($breakPos1 === false) {
-                                                    $breakPos1 = 35;
+                                                    $breakPos1 = 32;
                                                 }
                                                 $firstLineCollege = trim(mb_substr($college, 0, $breakPos1));
                                                 $remaining = trim(mb_substr($college, $breakPos1));
@@ -413,26 +413,26 @@
                                         <div class="signature-field">
                                             <span class="signature-label">College:</span>
                                             <span class="signature-value sig-college">
-                                                {{ $firstLineCollege }}
+                                                <strong>{{ $firstLineCollege }}</strong>
                                             </span>
                                         </div>
                                         @if($secondLineCollege)
                                         <div class="signature-field" style="margin-left: 0;">
                                             <span class="signature-value sig-college" style="margin-left: 0; padding-left: 0;">
-                                                {{ $secondLineCollege }}
+                                                <strong>{{ $secondLineCollege }}</strong>
                                             </span>
                                         </div>
                                         @endif
                                         @if($thirdLineCollege)
                                         <div class="signature-field" style="margin-left: 0;">
                                             <span class="signature-value sig-college" style="margin-left: 0; padding-left: 0;">
-                                                {{ $thirdLineCollege }}
+                                                <strong>{{ $thirdLineCollege }}</strong>
                                             </span>
                                         </div>
                                         @endif
             <div class="signature-field">
                 <span class="signature-label">Academic Rank:</span>
-                <span class="signature-value sig-rank">{{ $application->adviser_rank ?? '' }}</span>
+                <span class="signature-value sig-rank"><strong>{{ $application->adviser_rank ?? '' }}</strong></span>
             </div>
                                         @php
                                             $address = $application->adviser_address ?? '';
@@ -463,30 +463,30 @@
                                         <div class="signature-field">
                                             <span class="signature-label">Home Address:</span>
                                             <span class="signature-value sig-address">
-                                                {{ $firstLine }}
+                                                <strong>{{ $firstLine }}</strong>
                                             </span>
                                         </div>
                                         @if($secondLine)
                                         <div class="signature-field" style="margin-left: 0;">
                                             <span class="signature-value sig-address" style="margin-left: 0; padding-left: 0;">
-                                                {{ $secondLine }}
+                                                <strong>{{ $secondLine }}</strong>
                                             </span>
                                         </div>
                                         @endif
                                         @if($thirdLine)
                                         <div class="signature-field" style="margin-left: 0;">
                                             <span class="signature-value sig-address" style="margin-left: 0; padding-left: 0;">
-                                                {{ $thirdLine }}
+                                                <strong>{{ $thirdLine }}</strong>
                                             </span>
                                         </div>
                                         @endif
             <div class="signature-field">
                 <span class="signature-label">Contact Number(s):</span>
-                <span class="signature-value sig-contact">{{ $application->adviser_contact ?? '' }}</span>
+                <span class="signature-value sig-contact"><strong>{{ $application->adviser_contact ?? '' }}</strong></span>
             </div>
             <div class="signature-field">
                 <span class="signature-label">Date:</span>
-                <span class="signature-value sig-date">{{ \Carbon\Carbon::parse($application->form_date)->format('F d, Y') ?? '' }}</span>
+                <span class="signature-value sig-date"><strong>{{ \Carbon\Carbon::parse($application->form_date)->format('F d, Y') ?? '' }}</strong></span>
             </div>
         </div>
 
@@ -494,7 +494,7 @@
     <div class="noted-section" style="bottom: {{ ($secondLine || $thirdLine) ? '275px' : '315px' }}; left: 0;">
             <p style="margin-bottom: 20px;"><strong>Noted:</strong></p>
             <div>
-                <p style="margin-left:65px;"><span class="underline" style="min-width:180px;">{{ $application->dean_name ?? '_______________________________' }}</span></p>
+                <p style="margin-left:65px;"><span class="underline" style="min-width:180px;"><strong>{{ $application->dean_name ?? '_______________________________' }}</strong></span></p>
                 <p style="margin-left:65px;"><strong>Dean/Assoc. Dean of College</strong></p>
             </div>
         </div>
