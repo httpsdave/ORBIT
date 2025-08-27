@@ -188,6 +188,11 @@
             font-family: Calibri, sans-serif;
         }
 
+        .dynamic-text {
+            display: inline;
+            word-break: break-word;
+        }
+
         /* Add this to your CSS */
         .section.center-align.last-section {
             padding-bottom: 0.3cm; /* Reduced from 0.5cm to bring closer to footer */
@@ -225,11 +230,11 @@
         <p><strong>THE DIRECTOR/CHAIRPERSON</strong><br>Office of Student Affairs and Services<br>LSPU</p>
     </div>
 
-    <div style="height: 7px;"></div>
+    <div style="height: -3px;"></div>
     <div class="section justified">
         <p>Sir/Madam:</p>
     <div style="height: 12px;"></div>
-    <p class="indented">I have the honor to apply for recognition/renewal of the organization <span style="display:inline-block; min-width:200px; max-width:100%; border-bottom:1px solid black; text-align:center; line-height:0.85; vertical-align:middle; padding:0; margin-bottom:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-indent:0; {{ strlen($application->organization_name) > 69 ? 'font-size: 8pt;' : '' }}">{{ $application->organization_name }}</span>, to be duly recognized by Laguna State Polytechnic University.</p>
+    <p class="indented">I have the honor to apply for recognition/renewal of the organization, <span class="dynamic-text"><u>{{ $application->organization_name }}</u></span>, to be duly recognized by Laguna State Polytechnic University.</p>
     <div style="height: 5px;"></div>
         <p class="indented">In compliance with CHED Memo Order No. 9s. 2013, Subj.: Enhanced Policies & Guidelines on Student Affairs and Services (Article VIII-Student Development, Section 19. Student Organizations and Activities), I am submitting for proper action the following requirements for recognition and accreditation, to wit:</p>
     </div>
