@@ -18,7 +18,7 @@ function handleCollegeChange(e) {
   if (selected === 'None') {
     form.college = '';
   } else {
-    form.college = selected.replace('College of ', '');
+    form.college = selected.replace('College of ', '').toUpperCase();
   }
 }
 import { ref, computed } from 'vue';
@@ -436,7 +436,7 @@ const submit = () => {
       <div>
         <label class="block font-bold">College</label>
         <select 
-          :value="form.college ? ('College of ' + form.college) : 'None'"
+          :value="form.college ? collegeOptions.find(option => option.replace('College of ', '').toUpperCase() === form.college) || 'None' : 'None'"
           @change="handleCollegeChange"
           class="border p-2 w-full text-black"
         >

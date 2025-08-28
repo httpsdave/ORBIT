@@ -373,7 +373,7 @@
                     <span class="course-blank">{{ $certification->course_year_section ?? '' }}</span>
                 </div>
                 <div style="text-align: center; font-size: 11pt; margin-top: -5px;">
-                    <span style="font-size: 11pt; position: relative; top: 5px;">(course, year and section)</span>
+                    <span style="font-size: 10pt; position: relative; top: 5px;">(course, year and section)</span>
                 </div>
             </div> from the College of <span class="signature-line" style="min-width:385px; border-bottom: 1px solid black; display: inline-block;margin-top: 30px">{{ $application->college ?? '' }}</span> is a bonafide LSPU Student, not
             <br><br>
