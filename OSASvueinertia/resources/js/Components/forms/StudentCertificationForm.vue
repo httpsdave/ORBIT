@@ -314,9 +314,9 @@ const submit = () => {
       <!-- Date line -->
       <div class="date-line" style="text-align:right; margin-bottom:20px;">
         <div style="display:inline-block; text-align:right;">
-          <span style="display:inline-block; min-width:120px; border-bottom:1px solid black; padding-bottom:2px; text-align:center;">{{ new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) }}</span>
+          <span style="display:inline-block; min-width:120px; border-bottom:1px solid black; padding-bottom:2px; text-align:center; font-weight:bold;">{{ new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) }}</span>
           <br>
-          <span style="display:inline-block; text-align:center; width:100%; margin-top:2px;">Date</span>
+          <span style="display:inline-block; text-align:center; width:100%; margin-top:2px; font-weight:bold;">Date</span>
         </div>
       </div>
 
@@ -326,18 +326,18 @@ const submit = () => {
             This certifies that
           </span>
           <span style="display:inline-block; vertical-align:bottom; position:relative; top:10px;">
-    <span style="min-width:435px; border-bottom:1px solid black; text-align:center; display:inline-block; position:relative; top:10px;">{{ student.student_name }}</span>
-      <span style="display:block; text-align:center; font-size:10pt; margin-top:6px;">(LAST NAME, FIRST NAME, MIDDLE INITIAL)</span>
+    <span style="min-width:435px; border-bottom:1px solid black; text-align:center; display:inline-block; position:relative; top:10px; font-weight:bold;">{{ student.student_name }}</span>
+          <span style="display:block; text-align:center; font-size:10pt; margin-top:6px;">(LAST NAME, FIRST NAME, MIDDLE INITIAL)</span>
           </span>, a
           <br>
           <div style="padding-left: 0px; text-align: left; margin-top: -5px;">
         student taking up 
         <span style="display: inline-block; vertical-align: bottom; position: relative; top: 11px;">
-          <span class="course-blank" style="min-width: 420px; border-bottom: 1px solid black; text-align: center; display: inline-block;">{{ student.course_year_section }}</span>
+          <span class="course-blank" style="min-width: 420px; border-bottom: 1px solid black; text-align: center; display: inline-block; font-weight:bold;">{{ student.course_year_section }}</span>
           <div style="text-align: center; font-size: 10pt; margin-top: -5px;">
             <span>(course, year and section)</span>
           </div>
-        </span> from the College of <span class="signature-line" style="min-width:445px; border-bottom: 1px solid black; display: inline-block; margin-top: 20px;text-align:center;">{{ form.college }}</span> is a bonafide LSPU Student, not
+        </span> from the College of <span class="signature-line" style="min-width:445px; border-bottom: 1px solid black; display: inline-block; margin-top: 20px;text-align:center; font-weight:bold;">{{ form.college }}</span> is a bonafide LSPU Student, not
       </div>
           <br>
           <span style="display:inline-block; width:100%; height:0.5em;"></span>
@@ -346,12 +346,12 @@ const submit = () => {
           <span style="display:inline-block; width:100%; height:0.5em;"></span>
           <div style="display: flex; align-items: flex-start; margin-top: 10px;">
             <div style="flex: 1; min-width: 230px;">
-              <span style="display: block; min-width: 230px; border-bottom: 1px solid black; text-align: center;">{{ student.position_rank }}</span>
+              <span style="display: block; min-width: 230px; border-bottom: 1px solid black; text-align: center; font-weight:bold;">{{ student.position_rank }}</span>
               <span style="display: block; text-align: center; font-size: 10pt; margin-top: 2px; width: 120px;margin-left:50px">(position/rank)</span>
             </div>
             <span style="margin: 0 10px;">of</span>
             <div style="flex: 1; min-width: 315px; text-align: right;">
-              <span style="display: block; min-width: 315px; border-bottom: 1px solid black; text-align: center;">{{ form.organization_name }}</span>
+              <span style="display: block; min-width: 315px; border-bottom: 1px solid black; text-align: center; font-weight:bold;">{{ form.organization_name }}</span>
               <span style="display: block; text-align: right; font-size: 10pt; margin-top: 2px; width: 150px;margin-left:30px">(organization)</span>
             </div>
             <span style="margin-left: 10px;">.</span>
@@ -360,22 +360,22 @@ const submit = () => {
 
       <!-- Signature Section -->
       <div class="signature-section" style="margin-top:100px;">
-        <div class="college-is-text" style="padding-left:10px; margin-bottom:40px;">Certified true and correct:</div>
+  <div class="college-is-text" style="padding-left:10px; margin-bottom:40px;">Certified true and correct:</div>
         <div class="noted-section" style="padding-left:40px;">
           <div class="faculty-adviser-signature" style="margin-top:0; margin-left:-42px;">
             <div style="text-align:left;">
-              <span style="display:inline-block; min-width:200px; width:auto; border-bottom:1px solid black; padding-bottom:2px; text-align:center; margin-left:0px; text-transform: uppercase;">{{ form.adviser_name }}</span>
+              <span style="display:inline-block; min-width:200px; width:auto; border-bottom:1px solid black; padding-bottom:2px; text-align:center; margin-left:0px; text-transform: uppercase; font-weight:bold;">{{ form.adviser_name }}</span>
               <span style="display:block; text-align:left; margin-left:25px;">Organization Adviser(s)</span>
             </div>
           </div>
           <div style="margin-top:40px; text-align:left; margin-left:-42px;">
-            <span style="display:inline-block; min-width:220px; width:auto; border-bottom:1px solid black; padding-bottom:2px; text-align:center; text-transform: uppercase;">{{ form.dean_name }}</span>
+            <span style="display:inline-block; min-width:220px; width:auto; border-bottom:1px solid black; padding-bottom:2px; text-align:center; text-transform: uppercase; font-weight:bold;">{{ form.dean_name }}</span>
             <span style="display:block; text-align:left; margin-left:25px;">Dean/Assoc. Dean of College</span>
           </div>
           <div style="text-align:center; margin-top:40px; margin-left:0;">Noted:</div>
         </div>
         <div style="margin-top:40px; text-align:center;">
-          <span style="min-width:415px; border-bottom:1px solid black; display:inline-block; margin-bottom:0px; text-transform: uppercase;">{{ form.director_name }}</span>
+          <span style="min-width:415px; border-bottom:1px solid black; display:inline-block; margin-bottom:0px; text-transform: uppercase; font-weight:bold;">{{ form.director_name }}</span>
           <span style="display:block; text-align:center; margin-top:2px;">Director/Chairperson, Office of Student Affairs and Services</span>
         </div>
       </div>
