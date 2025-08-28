@@ -198,7 +198,21 @@ const submit = () => {
       <p class="sir-greeting" style="margin-top: 10px; margin-bottom: 20px;">Sir/Madam:</p>
       <p class="indented justified" style="text-indent: 1.45cm;">
         This letter is in connection with the application for recognition/renewal of
-        <span style="display: inline-block; min-width: 300px; border-bottom: 1px solid #000; vertical-align: middle; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ form.organization_name }}</span>
+        <span
+          :style="{
+            display: 'inline-block',
+            minWidth: '300px',
+            borderBottom: '1px solid #000',
+            verticalAlign: 'middle',
+            fontWeight: 'bold',
+            whiteSpace: form.organization_name.length > 69 ? 'normal' : 'nowrap',
+            overflow: form.organization_name.length > 69 ? 'visible' : 'hidden',
+            textOverflow: form.organization_name.length > 69 ? 'clip' : 'ellipsis',
+            wordBreak: form.organization_name.length > 69 ? 'break-word' : 'normal',
+            lineHeight: '1.1',
+            paddingBottom: '2px'
+          }"
+        >{{ form.organization_name }}</span>
         as a duly recognized LSPU Organization.
       </p>
       <p class="indented" style="text-indent: 1.45cm;">
