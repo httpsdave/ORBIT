@@ -281,7 +281,7 @@
             </td>
             <td style="width: 50%; text-align: right;">
                 <div class="signature right-align">
-                    <p><span class="signature-line"><strong>{{ $application->dean_name ?? 'N/A' }}</strong></span></p>
+                    <p><span class="signature-line"><strong>{{ $application->dean_name ?? '' }}</strong></span></p>
                     <p><span class="title-text">Dean/Assoc. Dean of College</span></p>
                 </div>
             </td>

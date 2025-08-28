@@ -1,6 +1,7 @@
 <script setup>
 // College options for the select dropdown
 const collegeOptions = [
+  'None',
   'College of Computer Studies',
   'College of Arts and Sciences',
   'College of Engineering',
@@ -13,7 +14,11 @@ const collegeOptions = [
 // Handler for college select change
 function handleCollegeChange(e) {
   const selected = e.target.value;
-  form.college = selected.replace('College of ', '');
+  if (selected === 'None') {
+    form.college = '';
+  } else {
+    form.college = selected.replace('College of ', '');
+  }
 }
 import { ref, onUnmounted, computed } from 'vue';
 import { useForm } from '@inertiajs/vue3';
@@ -92,10 +97,7 @@ const validateForm = () => {
     isValid = false;
   }
 
-  if (!form.college.trim()) {
-    errors.value.college = 'College is required';
-    isValid = false;
-  }
+  // College is now optional
   
   if (!form.application_date.trim()) {
     errors.value.application_date = 'Application Date is required';
@@ -122,10 +124,7 @@ const validateForm = () => {
     isValid = false;
   }
 
-  if (!form.dean_name.trim()) {
-    errors.value.dean_name = 'Dean Name is required';
-    isValid = false;
-  }
+  // Dean name is now optional
 
   if (!form.coordinator_name.trim()) {
     errors.value.coordinator_name = 'Coordinator Name is required';
@@ -302,7 +301,7 @@ const submit = () => {
               <div>
                   <label class="block font-bold">College</label>
                   <select 
-                    :value="'College of ' + form.college"
+                    :value="form.college ? ('College of ' + form.college) : 'None'"
                     @change="handleCollegeChange"
                     class="border p-2 w-full text-black"
                   >
