@@ -5,6 +5,7 @@ import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { useGlobalLoading } from '@/Composables/useGlobalLoading';
 
 defineProps({
     canResetPassword: {
@@ -20,6 +21,8 @@ const form = useForm({
     password: '',
     remember: false,
 });
+
+const { startLoading, stopLoading } = useGlobalLoading();
 
 const passwordVisible = ref(false);
 const isLoading = ref(false);
@@ -49,9 +52,12 @@ const submit = () => {
     if (form.processing) return;
     
     isLoading.value = true;
+    startLoading('login-form'); // Show loading bar for manual form submission
+    
     form.post(route('login'), {
         onFinish: () => {
             isLoading.value = false;
+            stopLoading('login-form'); // Hide loading bar
             form.reset('password');
         },
     });
