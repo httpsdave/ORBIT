@@ -18,7 +18,7 @@ function handleCollegeChange(e) {
   if (selected === 'None') {
     form.college = '';
   } else {
-    form.college = selected.replace('College of ', '').toUpperCase();
+    form.college = selected.replace('College of ', '');
   }
 }
 import { ref, computed } from 'vue';
@@ -206,7 +206,7 @@ const form = useForm({
   dean_name: props.initialFormData.dean_name?.toUpperCase() || '',
   director_name: props.initialFormData.director_name?.toUpperCase() || '',
   coordinator_name: props.initialFormData.coordinator_name?.toUpperCase() || '',
-  college: props.initialFormData.college || '',
+  college: props.initialFormData.college?.toUpperCase() || '',
   certification_date: new Date().toISOString().slice(0, 10), // Always current date
   students: (props.initialFormData.students || []).map(student => ({
     ...student,
@@ -436,10 +436,9 @@ const submit = () => {
       <div>
         <label class="block font-bold">College</label>
         <select 
-          :value="'College of ' + form.college"
+          :value="form.college ? ('College of ' + form.college) : 'None'"
           @change="handleCollegeChange"
           class="border p-2 w-full text-black"
-          required
         >
           <option value="" disabled>Select College</option>
           <option v-for="option in collegeOptions" :key="option" :value="option">{{ option }}</option>
