@@ -13,7 +13,7 @@
             margin-left: 2.54cm;
             margin-right: 2.54cm;                <div class="faculty-adviser-signature" style="margin-top: -15px; margin-left: -42px;">
                     <div style="text-align: left;">
-                        <div class="signature-name-adviser" style="display: inline-block; min-width: 200px; width: auto; border-bottom: 1px solid black; padding-bottom: 2px; text-align: center; margin-left: 0px; font-weight: bold; font-size: {{ strlen($application->adviser_name ?? '') > 25 ? '10pt' : '12pt' }}; word-wrap: break-word; overflow-wrap: break-word;">{{ $application->adviser_name ?? 'Sample Data' }}</div>
+                        <div class="signature-name-adviser" style="display: inline-block; min-width: 200px; width: auto; border-bottom: 1px solid black; padding-bottom: 2px; text-align: center; margin-left: 0px; font-weight: bold; font-size: {{ strlen($application->adviser_name ?? '') > 25 ? '10pt' : '11pt' }}; word-wrap: break-word; overflow-wrap: break-word;">{{ $application->adviser_name ?? 'Sample Data' }}</div>
                         <div class="signature-title-adviser" style="text-align: left; margin-left: 25px;">Organization Adviser(s)</div>
                     </div>
                 </div>   }
@@ -360,7 +360,7 @@
             This certifies that 
             <div style="display: inline-block; vertical-align: bottom; position: relative; top: 6px;">
                 <div>
-                    <span class="student-blank" style="min-width: 390px; border-bottom: 1px solid black; text-align: center; font-weight: bold; font-size: {{ strlen($certification->student_name ?? '') > 30 ? '10pt' : '12pt' }}; word-wrap: break-word; overflow-wrap: break-word;">{{ $certification->student_name ?? '' }}</span>
+                    <span class="student-blank" style="min-width: 390px; border-bottom: 1px solid black; text-align: center; font-weight: bold; font-size: {{ strlen($certification->student_name ?? '') > 30 ? '10pt' : '11pt' }}; word-wrap: break-word; overflow-wrap: break-word;">{{ $certification->student_name ?? '' }}</span>
                 </div>
                 <div style="text-align: center; font-size: 11; margin-top: -5px;">
                     <span style="font-size: 10pt;">(LAST NAME, FIRST NAME, MIDDLE INITIAL)</span>
@@ -374,7 +374,7 @@
             student taking up 
             <div style="display: inline-block; vertical-align: bottom; position: relative; top: 6px;">
                 <div>
-                    <span class="course-blank" style="font-weight: bold; font-size: {{ strlen($certification->course_year_section ?? '') > 35 ? '10pt' : '12pt' }}; word-wrap: break-word; overflow-wrap: break-word;">{{ $certification->course_year_section ?? '' }}</span>
+                    <span class="course-blank" style="font-weight: bold; font-size: {{ strlen($certification->course_year_section ?? '') > 35 ? '10pt' : '11pt' }}; word-wrap: break-word; overflow-wrap: break-word;">{{ $certification->course_year_section ?? '' }}</span>
                 </div>
                 <div style="text-align: center; font-size: 11pt; margin-top: -5px;">
                     <span style="font-size: 10pt; position: relative; top: 5px;">(course, year and section)</span>
@@ -388,7 +388,7 @@
             <span style="display: inline-block; margin-top: -15px;word-spacing: 5px">under academic probation, not under disciplinary probation, and the elected/appointed</span>
             <br><br>
             <div style="margin-top: -55px;">
-                <span class="signature-line" style="min-width:230px; border-bottom: 1px solid black; display: inline-block; font-weight: bold; font-size: {{ strlen($certification->position_rank ?? '') > 20 ? '10pt' : '12pt' }}; word-wrap: break-word; overflow-wrap: break-word;">{{ $certification->position_rank ?? ' ' }}</span> of the <span class="signature-line" style="min-width:315px; max-width:315px; border-bottom: 1px solid black; display: inline-block; font-weight: bold; font-size: {{ strlen($application->organization_name ?? '') > 40 ? '10pt' : '12pt' }}; word-wrap: break-word; overflow-wrap: break-word; white-space: normal; line-height: 1.2;">{{ $application->organization_name ?? 'Sample Data' }}</span>.
+                <span class="signature-line" style="min-width:230px; border-bottom: 1px solid black; display: inline-block; font-weight: bold; font-size: {{ strlen($certification->position_rank ?? '') > 20 ? '10pt' : '11pt' }}; word-wrap: break-word; overflow-wrap: break-word;">{{ $certification->position_rank ?? ' ' }}</span> of the <span class="signature-line" style="min-width:315px; max-width:315px; border-bottom: 1px solid black; display: inline-block; font-weight: bold; font-size: {{ strlen($application->organization_name ?? '') > 40 ? '10pt' : '11pt' }}; word-wrap: break-word; overflow-wrap: break-word; white-space: normal; line-height: 1.2;">{{ $application->organization_name ?? 'Sample Data' }}</span>.
                 <br>
                 <div style="text-align: center; font-size: 11pt; margin-top: -5px; display: inline-block; width: 120px; margin-left: 45px;">
                     <span style="font-size: 10pt; margin-top: -3px; display: inline-block;">(position/rank)</span>
@@ -417,7 +417,7 @@
                 
                 <!-- Dean signature right under adviser -->
                 <div style="margin-top: 30px; text-align: left; margin-left: -50px;">
-                    <div class="signature-name" style="display: inline-block; min-width: 220px; width: auto; border-bottom: 1px solid black; padding-bottom: 2px; text-align: center; font-weight: bold; font-size: {{ strlen($application->dean_name ?? '') > 25 ? '10pt' : '12pt' }}; word-wrap: break-word; overflow-wrap: break-word;">{{ $application->dean_name ?? '' }}</div>
+                    <div class="signature-name" style="display: inline-block; min-width: 220px; width: auto; border-bottom: 1px solid black; padding-bottom: 2px; text-align: center; font-weight: bold; font-size: {{ strlen($application->dean_name ?? '') > 25 ? '10pt' : '11pt' }}; word-wrap: break-word; overflow-wrap: break-word;">{{ $application->dean_name ?? '' }}</div>
                     <div class="signature-title" style="text-align: left;margin-left: 25px;">Dean/Assoc. Dean of College</div>
                 </div>
                 <div style="text-align: center; margin-top: 20px; margin-left: -70px;">Noted:</div>
@@ -425,7 +425,7 @@
             
             <!-- Director/Chairperson signature section -->
             <div style="margin-top: -65px; text-align: center;">
-                <div class="signature-name" style="min-width: 415px; margin-bottom: 0px; font-weight: bold; font-size: {{ strlen($application->director_name ?? '') > 30 ? '10pt' : '12pt' }}; word-wrap: break-word; overflow-wrap: break-word;">{{ strtoupper($application->director_name ?? 'Sample Data') }}</div>
+                <div class="signature-name" style="min-width: 415px; margin-bottom: 0px; font-weight: bold; font-size: {{ strlen($application->director_name ?? '') > 30 ? '10pt' : '11pt' }}; word-wrap: break-word; overflow-wrap: break-word;">{{ strtoupper($application->director_name ?? 'Sample Data') }}</div>
                 <div class="signature-title" style="margin-top: 2px;">Director/Chairperson, Office of Student Affairs and Services</div>
             </div>
         </div>
