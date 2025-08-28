@@ -235,9 +235,7 @@ const validateForm = () => {
     errors.value.adviser_name = 'Faculty Adviser is required';
   }
   
-  if (!form.dean_name.trim()) {
-    errors.value.dean_name = 'Dean/Assoc. Dean Name is required';
-  }
+  // Dean name is now optional
 
   if (!form.director_name.trim()) {
     errors.value.director_name = 'Director/Chairperson is required';
@@ -475,8 +473,7 @@ const submit = () => {
                   v-model="form.dean_name" 
                   @input="form.dean_name = $event.target.value.toUpperCase()"
                   class="border p-2 w-full" 
-                  style="text-transform: uppercase;" 
-                  required>
+                  style="text-transform: uppercase;">
                 <p v-if="errors.dean_name" class="text-red-500 text-sm mt-1">{{ errors.dean_name }}</p>
             </div>
 
