@@ -6,9 +6,10 @@ const collegeOptions = [
   'College of Arts and Sciences',
   'College of Engineering',
   'College of Industrial Technology',
-  'College of Hospitality Management and Tourism',
+  'College of International Hospitality and Tourism Management',
   'College of Teacher Education',
-  'College of Criminal Justice Education'
+  'College of Criminal Justice Education',
+  'College of Business Administration and Accountancy'
 ];
 
 // Handler for college select change

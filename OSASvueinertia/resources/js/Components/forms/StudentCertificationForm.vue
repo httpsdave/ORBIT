@@ -1,19 +1,25 @@
 <script setup>
 // College options for the select dropdown
 const collegeOptions = [
+  'None',
   'College of Computer Studies',
   'College of Arts and Sciences',
   'College of Engineering',
   'College of Industrial Technology',
-  'College of Hospitality Management and Tourism',
+  'College of International Hospitality and Tourism Management',
   'College of Teacher Education',
-  'College of Criminal Justice Education'
+  'College of Criminal Justice Education',
+  'College of Business Administration and Accountancy'
 ];
 
 // Handler for college select change
 function handleCollegeChange(e) {
   const selected = e.target.value;
-  form.college = selected.replace('College of ', '').toUpperCase();
+  if (selected === 'None') {
+    form.college = '';
+  } else {
+    form.college = selected.replace('College of ', '').toUpperCase();
+  }
 }
 import { ref, computed } from 'vue';
 import { useForm } from '@inertiajs/vue3';
@@ -245,9 +251,7 @@ const validateForm = () => {
     if (!student.course_year_section.trim()) {
       errors.value[`student_${index}_course`] = 'Course/Year and Section is required';
     }
-    if (!form.college.trim()) {
-      errors.value.college = 'College is required';
-    }
+    // college is optional (can be "None")
   });
   
   return Object.keys(errors.value).length === 0;

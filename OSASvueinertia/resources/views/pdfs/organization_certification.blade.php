@@ -375,7 +375,7 @@
                 <div style="text-align: center; font-size: 11pt; margin-top: -5px;">
                     <span style="font-size: 10pt; position: relative; top: 5px;">(course, year and section)</span>
                 </div>
-            </div> from the College of <span class="signature-line" style="min-width:385px; border-bottom: 1px solid black; display: inline-block;margin-top: 20px">{{ $application->college ?? 'Sample Data' }}</span> is a bonafide LSPU Student, not
+            </div> from the College of <span class="signature-line" style="min-width:385px; border-bottom: 1px solid black; display: inline-block;margin-top: 20px">{{ $application->college ?? '' }}</span> is a bonafide LSPU Student, not
             <br><br>
             </div>
             
@@ -413,7 +413,7 @@
                 
                 <!-- Dean signature right under adviser -->
                 <div style="margin-top: 30px; text-align: left; margin-left: -50px;">
-                    <div class="signature-name" style="display: inline-block; min-width: 220px; width: auto; border-bottom: 1px solid black; padding-bottom: 2px; text-align: center;">{{ $application->dean_name ?? 'Sample Data' }}</div>
+                    <div class="signature-name" style="display: inline-block; min-width: 220px; width: auto; border-bottom: 1px solid black; padding-bottom: 2px; text-align: center;">{{ $application->dean_name ?? '' }}</div>
                     <div class="signature-title" style="text-align: left;margin-left: 25px;">Dean/Assoc. Dean of College</div>
                 </div>
                 <div style="text-align: center; margin-top: 20px; margin-left: -70px;">Noted:</div>

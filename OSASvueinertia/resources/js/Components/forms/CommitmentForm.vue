@@ -15,14 +15,27 @@ const rankOptions = [
   'Part Time Instructor'
 ];
 const collegeOptions = [
+  'None',
   'College of Computer Studies',
   'College of Arts and Sciences',
   'College of Engineering',
   'College of Industrial Technology',
-  'College of Hospitality Management and Tourism',
+  'College of International Hospitality and Tourism Management',
   'College of Teacher Education',
-  'College of Criminal Justice Education'
+  'College of Criminal Justice Education',
+  'College of Business Administration and Accountancy'
 ];
+
+// Handler for college select change
+function handleCollegeChange(e) {
+  const selected = e.target.value;
+  if (selected === 'None') {
+    form.adviser_college = '';
+  } else {
+    form.adviser_college = selected;
+  }
+}
+
 import { ref, computed } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 
@@ -102,9 +115,7 @@ const validateForm = () => {
     errors.value.adviser_name = 'Adviser name is required';
   }
   
-  if (!form.adviser_college.trim()) {
-    errors.value.adviser_college = 'Adviser college is required';
-  }
+  // adviser_college is optional (can be "None")
   
   if (!form.adviser_rank.trim()) {
     errors.value.adviser_rank = 'Academic rank is required';
@@ -435,6 +446,7 @@ const submit = () => {
           <label class="block font-bold">Adviser College</label>
           <select 
             v-model="form.adviser_college"
+            @change="handleCollegeChange"
             class="border p-2 w-full text-black"
             required
           >
