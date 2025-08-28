@@ -377,9 +377,9 @@
                     <span class="course-blank" style="font-weight: bold; font-size: {{ strlen($certification->course_year_section ?? '') > 35 ? '10pt' : '11pt' }}; word-wrap: break-word; overflow-wrap: break-word;">{{ $certification->course_year_section ?? '' }}</span>
                 </div>
                 <div style="text-align: center; font-size: 11pt; margin-top: -5px;">
-                    <span style="font-size: 10pt; position: relative; top: 5px;">(course, year and section)</span>
+                    <span style="font-size: 11pt; position: relative; top: 5px;">(course, year and section)</span>
                 </div>
-            </div> from the College of <span class="signature-line" style="min-width:385px; border-bottom: 1px solid black; display: inline-block;margin-top: 30px; font-size: {{ strlen($application->college ?? '') > 45 ? '9pt' : '11pt' }}; font-weight: bold; word-wrap: break-word; overflow-wrap: break-word;">{{ $application->college ?? '' }}</span> is a bonafide LSPU Student, not
+            </div> from the College of <span class="signature-line" style="min-width:385px; border-bottom: 1px solid black; display: inline-block;margin-top: {{ empty($application->college) ? '30px' : '25px' }}; font-size: {{ strlen($application->college ?? '') > 45 ? '9pt' : '11pt' }}; font-weight: bold; word-wrap: break-word; overflow-wrap: break-word;">{{ $application->college ?? '' }}</span> is a bonafide LSPU Student, not
             <br><br>
             </div>
             
