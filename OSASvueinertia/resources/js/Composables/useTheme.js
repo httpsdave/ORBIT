@@ -12,7 +12,7 @@ const THEMES = {
 };
 
 // Current theme preference (light, dark, or system)
-const currentTheme = ref(THEMES.SYSTEM);
+const currentTheme = ref(THEMES.LIGHT);
 
 export function useTheme() {
   // Initialize theme from localStorage and system preference
@@ -24,7 +24,7 @@ export function useTheme() {
     if (savedTheme && Object.values(THEMES).includes(savedTheme)) {
       currentTheme.value = savedTheme;
     } else {
-      currentTheme.value = THEMES.SYSTEM;
+      currentTheme.value = THEMES.LIGHT;
     }
 
     updateTheme();
