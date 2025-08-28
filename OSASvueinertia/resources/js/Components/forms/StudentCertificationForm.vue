@@ -459,7 +459,7 @@ const submit = () => {
             <!-- President Name field removed for Student Certification Form -->
 
             <div>
-                <label class="block font-bold">Faculty Adviser(s)</label>
+                <label class="block font-bold">Organization Adviser(s)</label>
                 <input 
                   v-model="form.adviser_name" 
                   @input="form.adviser_name = $event.target.value.toUpperCase()"
