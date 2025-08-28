@@ -28,7 +28,8 @@ class DatabaseSeeder extends Seeder
             ['name' => 'College of Engineering', 'acronym' => 'COE'],
             ['name' => 'College of Industrial Technology', 'acronym' => 'CIT'],
             ['name' => 'College of Teacher Education', 'acronym' => 'CTE'],
-            ['name' => 'College of Hospitality Management and Tourism', 'acronym' => 'CHMT'],
+            ['name' => 'College of International Hospitality and Tourism Management', 'acronym' => 'CIHTM'],
+            ['name' => 'College of Business Administration and Accountancy', 'acronym' => 'CBAA'],
         ];
 
         foreach ($colleges as $college) {
