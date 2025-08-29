@@ -33,6 +33,12 @@ const activeSlide = ref(0);
 const slideInterval = ref(null);
 const gradientIndex = ref(0);
 const gradientInterval = ref(null);
+const windowWidth = ref(0);
+
+// Track window width for responsive behavior
+const updateWindowWidth = () => {
+    windowWidth.value = window.innerWidth;
+};
 
 // Slideshow images
 const slideshowImages = [
@@ -76,6 +82,10 @@ const startGradientAnimation = () => {
 };
 
 onMounted(() => {
+    // Initialize window width
+    updateWindowWidth();
+    window.addEventListener('resize', updateWindowWidth);
+    
     // Fade in animation on page load
     if (formElement.value) {
         formElement.value.classList.add('opacity-100');
@@ -89,6 +99,9 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
+    // Remove resize listener
+    window.removeEventListener('resize', updateWindowWidth);
+    
     // Clear slideshow interval when component is unmounted
     if (slideInterval.value) {
         clearInterval(slideInterval.value);
@@ -123,7 +136,62 @@ onBeforeUnmount(() => {
         </div>
         
         <!-- Left side - Main content area -->
-        <div class="flex-1 relative z-20 flex items-center justify-center sm:justify-end px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
+        <!-- Left side - Main content area -->
+        <div class="flex-1 relative z-20 flex items-center justify-center lg:justify-between xl:justify-between px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
+            <!-- ORBIT Information - Only visible on screens wider than 1240px -->
+            <div v-show="windowWidth > 1240" class="lg:max-w-md xl:max-w-lg mr-8 xl:mr-12">
+                <div class="opacity-90" :class="isDarkMode ? 'text-white' : 'text-gray-100'">
+                    <!-- ORBIT Heading -->
+                    <h2 class="text-3xl xl:text-4xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-green-400">
+                        What is ORBIT?
+                    </h2>
+                    
+                    <!-- Colored accent line -->
+                    <div class="flex mb-6 w-32">
+                        <div class="w-1/4 h-1 bg-blue-500"></div>
+                        <div class="w-1/4 h-1 bg-green-500"></div>
+                        <div class="w-1/4 h-1 bg-blue-500"></div>
+                        <div class="w-1/4 h-1 bg-green-500"></div>
+                    </div>
+                    
+                    <!-- ORBIT Definition -->
+                    <div class="space-y-4 text-sm xl:text-base leading-relaxed" :class="isDarkMode ? 'text-gray-300' : 'text-gray-200'">
+                        <p class="font-semibold text-lg xl:text-xl text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-green-300">
+                            Organized Records for Better Institutional Tracking
+                        </p>
+                        
+                        <p>
+                            ORBIT is an Information System developed for Student Organizations aimed at simplifying the process of preparing, submission, and approval of required documents under the Office of Student Affairs and Services.
+                        </p>
+                        
+                        <!-- Features list -->
+                        <div class="space-y-2 mt-6">
+                            <div class="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-3 text-green-400 flex-shrink-0">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                    <polyline points="22,4 12,14.01 9,11.01"></polyline>
+                                </svg>
+                                <span class="text-sm xl:text-base">Streamlined document preparation</span>
+                            </div>
+                            <div class="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-3 text-blue-400 flex-shrink-0">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                    <polyline points="22,4 12,14.01 9,11.01"></polyline>
+                                </svg>
+                                <span class="text-sm xl:text-base">Simplified submission process</span>
+                            </div>
+                            <div class="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-3 text-green-400 flex-shrink-0">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                    <polyline points="22,4 12,14.01 9,11.01"></polyline>
+                                </svg>
+                                <span class="text-sm xl:text-base">Efficient approval workflow</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
             <!-- Content container positioned to the right -->
             <div 
                 ref="formElement"
