@@ -417,10 +417,7 @@ const validateForm = () => {
     isValid = false;
   }
 
-  if (!form.dean_name.trim()) {
-    errors.value.dean_name = 'Dean Name is required';
-    isValid = false;
-  }
+  // dean_name is optional for Plan of Activities
 
   if (!form.coordinator_name.trim()) {
     errors.value.coordinator_name = 'Coordinator Name is required';
@@ -1067,7 +1064,7 @@ nextTick(() => {
 
                     <div>
                         <label class="block font-bold">Dean Name</label>
-                        <input v-model="form.dean_name" class="border p-2 w-full" required>
+                        <input v-model="form.dean_name" class="border p-2 w-full">
                         <p v-if="errors.dean_name" class="text-red-500 text-sm mt-1">{{ errors.dean_name }}</p>
                     </div>
 
