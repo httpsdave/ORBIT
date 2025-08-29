@@ -438,7 +438,7 @@ const submit = () => {
 }
 
 .university-name {
-    max-width: 55%;
+    max-width: 45%;
     height: auto;
     margin: 4px 0;
     display: inline-block;
