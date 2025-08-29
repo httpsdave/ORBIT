@@ -496,23 +496,23 @@ const submit = () => {
             <tr>
               <td class="align-top text-center w-1/2 p-0" style="vertical-align:top; text-align:center;">
                 <div style="width:200px; margin:0 auto; margin-left:35px;">
-                  <span class="border-b border-black min-w-[150px] inline-block text-center">{{ form.adviser_name }}</span>
+                  <span class="border-b border-black min-w-[150px] inline-block text-center"><strong>{{ form.adviser_name }}</strong></span>
                   <div class="text-center">Organization Adviser</div>
                 </div>
-                <div class="text-left mt-1" style="padding-left:35px;">Date: <span class="border-b border-black min-w-[140px] inline-block text-center">{{ currentDate }}</span></div>
+                <div class="text-left mt-1" style="padding-left:35px;">Date: <span class="border-b border-black min-w-[140px] inline-block text-center"><strong>{{ currentDate }}</strong></span></div>
                 <!-- Noted / Dean section under left date -->
                 <div class="mt-4">
                   <div class="font-bold text-left ml-8">Noted:</div>
-                  <span class="border-b border-black min-w-[180px] inline-block text-center">{{ form.dean_name }}</span>
+                  <span class="border-b border-black min-w-[180px] inline-block text-center"><strong>{{ form.dean_name }}</strong></span>
                   <div class="text-center">Dean/Assoc. Dean of College</div>
                 </div>
               </td>
               <td class="align-top text-center w-1/2 p-0" style="vertical-align:top; text-align:center;">
                 <div style="width:200px; margin:0 auto; margin-left:110px;">
-                  <span class="border-b border-black min-w-[150px] inline-block text-center">{{ form.second_adviser }}</span>
+                  <span class="border-b border-black min-w-[150px] inline-block text-center"><strong>{{ form.second_adviser }}</strong></span>
                   <div class="text-center">Organization Adviser</div>
                 </div>
-                <div class="text-left mt-1" style="padding-left:110px;">Date: <span class="border-b border-black min-w-[140px] inline-block text-center">{{ currentDate }}</span></div>
+                <div class="text-left mt-1" style="padding-left:110px;">Date: <span class="border-b border-black min-w-[140px] inline-block text-center"><strong>{{ currentDate }}</strong></span></div>
               </td>
             </tr>
           </table>
@@ -520,14 +520,14 @@ const submit = () => {
           <!-- Recommending Approval -->
           <div class="text-center mt-4">
             <div class="font-bold mb-1"><strong>Recommending Approval:</strong></div>
-            <div class="border-b border-black min-w-[230px] inline-block text-center">{{ form.coordinator_name }}</div>
+            <div class="border-b border-black min-w-[230px] inline-block text-center"><strong>{{ form.coordinator_name }}</strong></div>
             <div class="mt-1 mb-1">Coordinator, Student Organization Unit</div>
           </div>
 
           <!-- Approved/Disapproved -->
           <div class="text-center mt-4">
             <div class="font-bold mb-1"><strong>Approved/Disapproved:</strong></div>
-            <div class="border-b border-black min-w-[340px] inline-block text-center">{{ form.director_name }}</div>
+            <div class="border-b border-black min-w-[340px] inline-block text-center"><strong>{{ form.director_name }}</strong></div>
             <div class="mt-1">Director/Chairperson, Office of Student Affairs and Services</div>
           </div>
         </div>
