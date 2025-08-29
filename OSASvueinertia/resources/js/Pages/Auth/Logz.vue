@@ -161,7 +161,7 @@ onBeforeUnmount(() => {
                         </p>
                         
                         <p>
-                            ORBIT is an Information System developed for Student Organizations aimed at simplifying the process of preparing, submission, and approval of required documents under the Office of Student Affairs and Services.
+                            ORBIT is an Information System developed for Student Organizations aimed at simplifying the process of preparation, submission, and approval of required documents under the Office of Student Affairs and Services.
                         </p>
                         
                         <!-- Features list -->
