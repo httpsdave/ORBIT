@@ -1,4 +1,26 @@
 <script setup>
+// College options for the select dropdown
+const collegeOptions = [
+    'None',
+    'College of Computer Studies',
+    'College of Arts and Sciences',
+    'College of Engineering',
+    'College of Industrial Technology',
+    'College of International Hospitality and Tourism Management',
+    'College of Teacher Education',
+    'College of Criminal Justice Education',
+    'College of Business Administration and Accountancy'
+];
+
+// Handler for college select change
+function handleCollegeChange(e) {
+    const selected = e.target.value;
+    if (selected === 'None') {
+        form.college = '';
+    } else {
+        form.college = selected.replace('College of ', '');
+    }
+}
 import { ref, computed, watch } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 
@@ -96,10 +118,7 @@ const validateForm = () => {
   let isValid = true;
 
   // Check each required field
-  if (!form.college || form.college.trim() === '') {
-    errors.value.college = 'College is required';
-    isValid = false;
-  }
+    // College is nullable, so no required validation
 
   if (!form.organization_name || form.organization_name.trim() === '') {
     errors.value.organization_name = 'Organization Name is required';
@@ -245,16 +264,18 @@ const submit = () => {
         <h3 class="text-lg font-bold mb-4">Form Details</h3>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-                <label class="block font-bold">College</label>
-                <input 
-                  v-model="form.college" 
-                  @input="form.college = $event.target.value.toUpperCase()"
-                  class="border p-2 w-full" 
-                  style="text-transform: uppercase;" 
-                  required>
-                <p v-if="errors.college" class="text-red-500 text-sm mt-1">{{ errors.college }}</p>
-            </div>
+                        <div>
+                                <label class="block font-bold">College</label>
+                                <select 
+                                    :value="form.college ? ('College of ' + form.college) : 'None'"
+                                    @change="handleCollegeChange"
+                                    class="border p-2 w-full text-black"
+                                >
+                                    <option value="" disabled>Select College</option>
+                                    <option v-for="option in collegeOptions" :key="option" :value="option">{{ option }}</option>
+                                </select>
+                                <p v-if="errors.college" class="text-red-500 text-sm mt-1">{{ errors.college }}</p>
+                        </div>
 
             <div>
                 <label class="block font-bold">Activity Name</label>
