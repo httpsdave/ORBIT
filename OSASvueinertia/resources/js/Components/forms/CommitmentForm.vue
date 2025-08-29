@@ -179,15 +179,15 @@ const submit = () => {
   <div class="mt-6 form-content">
     <div class="header text-center relative">
       <img src="/images/lspu-logo.png" alt="LSPU Logo" class="absolute top-[-0.5cm] left-[-2cm] w-[250px] h-auto">
-      <p class="text-sm font-bold mb-0">Republic of the Philippines</p>
-      <p class="text-base font-bold university-name mb-0">Laguna State Polytechnic University</p>
-      <p class="text-sm mb-0">Province of Laguna</p>
+  <p class="header-republic-text mb-0" style="padding-top: 20px; font-family: 'Calibri', sans-serif; font-weight: normal; font-size: 11pt;">Republic of the Philippines</p>
+  <img src="/images/lspu-name.png" alt="Laguna State Polytechnic University" class="university-name mb-0" style="max-width: 45%; height: auto; margin: 4px 0; display: inline-block;" />
+  <p class="header-province-text mb-0" style="font-family: 'Calibri', sans-serif; font-weight: normal; font-size: 11pt;">Province of Laguna</p>
     <div style="height:10px;"></div>
     <p class="office-title" style="margin-bottom:10px; font-size:12pt; font-family: 'Times New Roman', serif; text-align:center; font-weight:bold;">OFFICE OF STUDENT AFFAIRS AND SERVICES</p>
       <p class="commitment-form-title mb-4">ORGANIZATION ADVISER COMMITMENT FORM</p>
     </div>
 
-    <div class="section right-align" style="text-align: right; margin-bottom: 0;">
+    <div class="section right-align" style="text-align: right; margin-bottom: 0;margin-top: 25px;">
       <p style="margin: 0;">
         <span class="signature-line date-underline" style="min-width: 150px; display: inline-block; border-bottom: 1px solid black; text-align: center; padding-bottom: 2px;">{{ formattedDate }}</span>
       </p>
@@ -195,14 +195,14 @@ const submit = () => {
     </div>
     <div style="height: -3px;"></div>
 
-    <div class="section text-left">
+    <div class="section text-left"style="font-size: 11pt;margin-top: 20px;">
       <p class="mb-0 font-bold">THE DIRECTOR/CHAIRPERSON</p>
       <p class="mb-0">OFFICE OF STUDENT AFFAIRS AND SERVICES</p>
       <p class="mb-0">LSPU</p>
     </div>
 
     <div class="section">
-      <p class="thru-line font-bold mb-2" style="padding-left: 1.27cm; text-indent: 0;">Thru: The Coordinator, Student Organization Unit</p>
+      <p class="thru-line font-bold mb-2" style="padding-left: 1.27cm; text-indent: 0;font-size: 11pt;">Thru: The Coordinator, Student Organization Unit</p>
     </div>
 
     <div class="section commitment-body" style="text-align: justify; font-family: 'Times New Roman', Times, serif; font-size: 12pt; line-height: 1.1;">
