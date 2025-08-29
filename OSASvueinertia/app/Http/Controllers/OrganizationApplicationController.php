@@ -137,7 +137,7 @@ class OrganizationApplicationController extends Controller
             // Commitment form specific validation
             $validationRules = array_merge($validationRules, [
                 'adviser_signature' => 'nullable|string|max:255',
-                'adviser_college' => 'required|string|max:255',
+                'adviser_college' => 'nullable|string|max:255',
                 'adviser_rank' => 'required|string|max:255',
                 'adviser_address' => 'required|string|max:255',
                 'adviser_contact' => 'required|string|max:255',
@@ -476,7 +476,7 @@ class OrganizationApplicationController extends Controller
         } elseif ($application->form_type === 'LSPU-OSAS-SF-003') {
             $validationRules = array_merge($validationRules, [
                 'adviser_signature' => 'nullable|string|max:255',
-                'adviser_college' => 'required|string|max:255',
+                'adviser_college' => 'nullable|string|max:255',
                 'adviser_rank' => 'required|string|max:255',
                 'adviser_address' => 'required|string|max:255',
                 'adviser_contact' => 'required|string|max:255',
