@@ -475,7 +475,7 @@ const submit = () => {
                   </div>
                 </div>
               </div>
-              <div v-else class="w-full flex" style="gap:0x;">
+              <div v-else class="w-full flex" style="gap:8px;">
                 <div class="photo-box border border-black w-[96px] h-[96px] flex items-center justify-center text-xs flex-shrink-0">
                   <span class="photo-box-text text-center leading-tight">1 x 1<br>PICTURE</span>
                 </div>
