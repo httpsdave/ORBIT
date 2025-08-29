@@ -633,9 +633,9 @@ nextTick(() => {
     <!-- Document Header (similar to blade template) -->
     <div class="header text-center relative py-4">
   <img src="/images/lspu-logo.png" alt="LSPU Logo" class="absolute top-[-0.5cm] left-[-2cm] w-[250px] h-auto">
-      <div class="font-normal text-[11pt] leading-tight" style="font-family:Calibri,sans-serif;">
+      <div class="font-normal text-[10pt] leading-tight" style="font-family:Calibri,sans-serif;margin-bottom: 15px;">
         Republic of the Philippines<br>
-        <img src="/images/lspu-name.png" alt="Laguna State Polytechnic University" class="inline-block align-middle h-[22px] max-w-[55%] my-1 university-name" /><br>
+        <img src="/images/lspu-name.png" alt="Laguna State Polytechnic University" class="inline-block align-middle h-[22px] max-w-[45%] my-1 university-name" /><br>
         <span class="block mb-2">Province of Laguna</span>
       </div>
       <div class="font-bold text-[11pt] mt-1 mb-1" style="font-family:'Times New Roman',serif;">OFFICE OF STUDENT AFFAIRS AND SERVICES</div>
@@ -652,7 +652,7 @@ nextTick(() => {
       <div style="height: .5rem;"></div>
       <!-- Academic Year Section -->
       <div class="text-center mt-3 text-[11pt] font-bold" style="font-family:'Times New Roman',serif;">
-        <span class="border-b border-black px-2 min-w-[48px] inline-block">{{ form.semester }}</span>
+        <span class="border-b border-black px-2 min-w-[35px] inline-block">{{ form.semester }}</span>
         Semester AY 20<span class="border-b border-black px-2 min-w-[24px] inline-block">{{ form.academic_year_start || '__' }}</span>-20<span class="border-b border-black px-2 min-w-[24px] inline-block">{{ form.academic_year_end || '__' }}</span>
       </div>
     </div>
@@ -1295,7 +1295,7 @@ table td {
 }
 
 .university-name {
-  max-width: 55%;
+  max-width: 45%;
   height: auto;
   margin: 4px 0;
   display: inline-block;
