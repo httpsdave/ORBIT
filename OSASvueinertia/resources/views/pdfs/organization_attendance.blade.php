@@ -178,7 +178,7 @@
             <span class="calibri-text"style="font-size:10pt;">Province of Laguna</span><br>
             <div style="margin-top: 5px; font-weight: bold;">OFFICE OF STUDENT AFFAIRS AND SERVICES</div>
             <div class="title" style="margin-top: 5px;">STUDENT ACTIVITY ATTENDANCE SHEET</div>
-            <span class= "underline" style="font-weight: bold; margin-top: 5px;">COLLEGE OF {{ $application->college ?? '' }}</span>
+            <span class= "underline" style="font-weight: bold; margin-top: 5px;">COLLEGE OF {{ strtoupper($application->college ?? '') }}</span>
         </div>
 
         <div class="content">
