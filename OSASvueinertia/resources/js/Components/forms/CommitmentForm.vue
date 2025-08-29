@@ -1,5 +1,6 @@
 <script setup>
 const rankOptions = [
+  'None',
   'Instructor I',
   'Instructor II',
   'Instructor III',
@@ -33,6 +34,16 @@ function handleCollegeChange(e) {
     form.adviser_college = '';
   } else {
     form.adviser_college = selected;
+  }
+}
+
+// Handler for rank select change
+function handleRankChange(e) {
+  const selected = e.target.value;
+  if (selected === 'None') {
+    form.adviser_rank = '';
+  } else {
+    form.adviser_rank = selected;
   }
 }
 
@@ -117,9 +128,7 @@ const validateForm = () => {
   
   // adviser_college is optional (can be "None")
   
-  if (!form.adviser_rank.trim()) {
-    errors.value.adviser_rank = 'Academic rank is required';
-  }
+  // adviser_rank is optional (can be "None")
   
   if (!form.adviser_address.trim()) {
     errors.value.adviser_address = 'Home address is required';
@@ -465,6 +474,7 @@ const submit = () => {
           <label class="block font-bold">Academic Rank</label>
           <select 
             v-model="form.adviser_rank"
+            @change="handleRankChange"
             class="border p-2 w-full text-black"
             required
           >

@@ -138,7 +138,7 @@ class OrganizationApplicationController extends Controller
             $validationRules = array_merge($validationRules, [
                 'adviser_signature' => 'nullable|string|max:255',
                 'adviser_college' => 'nullable|string|max:255',
-                'adviser_rank' => 'required|string|max:255',
+                'adviser_rank' => 'nullable|string|max:255',
                 'adviser_address' => 'required|string|max:255',
                 'adviser_contact' => 'required|string|max:255',
                 'form_date' => 'required|date',
@@ -477,7 +477,7 @@ class OrganizationApplicationController extends Controller
             $validationRules = array_merge($validationRules, [
                 'adviser_signature' => 'nullable|string|max:255',
                 'adviser_college' => 'nullable|string|max:255',
-                'adviser_rank' => 'required|string|max:255',
+                'adviser_rank' => 'nullable|string|max:255',
                 'adviser_address' => 'required|string|max:255',
                 'adviser_contact' => 'required|string|max:255',
                 'form_date' => 'required|date',
