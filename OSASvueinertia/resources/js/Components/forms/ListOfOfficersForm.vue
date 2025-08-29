@@ -206,7 +206,6 @@ const form = useForm({
   // president_name removed for List of Officers Form
   application_date: props.initialFormData.application_date || '',
   adviser_name: props.initialFormData.adviser_name?.toUpperCase() || '',
-  dean_name: props.initialFormData.dean_name?.toUpperCase() || '',
   coordinator_name: props.initialFormData.coordinator_name?.toUpperCase() || '',
   director_name: props.initialFormData.director_name?.toUpperCase() || '',
 
@@ -287,10 +286,6 @@ const validateForm = () => {
   
   if (!form.coordinator_name.trim()) {
     errors.value.coordinator_name = 'Coordinator name is required';
-  }
-  
-  if (!form.dean_name.trim()) {
-    errors.value.dean_name = 'Dean/Assoc. Dean name is required';
   }
   
   // Validate officers
@@ -497,17 +492,6 @@ const submit = () => {
         <div>
           <label class="block font-bold">Coordinator Name</label>
           <input v-model="form.coordinator_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none; text-transform: uppercase;">
-        </div>
-
-        <div>
-          <label class="block font-bold">Dean/Assoc. Dean Name</label>
-          <input 
-            v-model="form.dean_name" 
-            @input="form.dean_name = $event.target.value.toUpperCase()"
-            class="border p-2 w-full" 
-            style="text-transform: uppercase;" 
-            required>
-          <div v-if="errors.dean_name" class="text-red-500 text-sm mt-1">{{ errors.dean_name }}</div>
         </div>
       </div>
 
