@@ -198,16 +198,16 @@ const submit = () => {
 
     <div class="section right-align" style="text-align: right; margin-bottom: 0;margin-top: 25px;">
       <p style="margin: 0;">
-        <span class="signature-line date-underline" style="min-width: 150px; display: inline-block; border-bottom: 1px solid black; text-align: center; padding-bottom: 2px;">{{ formattedDate }}</span>
+        <span class="signature-line date-underline" style="min-width: 150px; display: inline-block; border-bottom: 1px solid black; text-align: center; padding-bottom: 2px;"><strong>{{ formattedDate }}</strong></span>
       </p>
   <p style="margin-top: 0; text-align: left; width: max-content; padding-left: 550px;">Date</p>
     </div>
     <div style="height: -3px;"></div>
 
     <div class="section text-left"style="font-size: 11pt;margin-top: 20px;">
-      <p class="mb-0 font-bold">THE DIRECTOR/CHAIRPERSON</p>
-      <p class="mb-0">OFFICE OF STUDENT AFFAIRS AND SERVICES</p>
-      <p class="mb-0">LSPU</p>
+  <p class="mb-0 font-bold">THE DIRECTOR/CHAIRPERSON</p>
+  <p class="mb-0 font-bold">OFFICE OF STUDENT AFFAIRS AND SERVICES</p>
+  <p class="mb-0 font-bold">LSPU</p>
     </div>
 
     <div class="section">
@@ -358,7 +358,7 @@ const submit = () => {
       <div class="mb-8" style="text-align:left;">
   <div class="noted-label mb-1" style="font-size: 1rem; font-weight: bold; margin-bottom: 10px;">Noted:</div>
         <div class="noted-signature-block" style="width: 350px; margin-left: 65px;">
-          <span class="signature-line" style="min-width: 180px; border-bottom: 1px solid #000; display: inline-block; margin-left: 0; font-size: 12pt; font-family: 'Times New Roman', serif; font-weight: bold; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ form.dean_name }}</span>
+          <span class="signature-line" style="min-width: 180px; border-bottom: 1px solid #000; display: inline-block; margin-left: 0; font-size: 12pt; font-family: 'Times New Roman', serif; font-weight: bold; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ form.dean_name }}</span>
           <p class="mb-0 text-xs text-center" style="font-size: 11pt; font-family: 'Times New Roman', serif; font-weight: bold; margin-top: 2px; font-weight: bold;margin-left:-175px">Dean/Assoc. Dean of College</p>
         </div>
       </div>
