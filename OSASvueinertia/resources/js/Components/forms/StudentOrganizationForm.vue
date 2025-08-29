@@ -109,7 +109,8 @@ const submit = () => {
   <div class="header text-center relative" style="font-size: 15px; margin: 0 0 0.5cm 0; padding-top: 0.5cm;">
     <img src="/images/lspu-logo.png" alt="LSPU Logo" style="position: absolute; top: -0.5cm; left: -2cm; width: 250px; height: auto;">
     <span style="font-family: Calibri, sans-serif;">Republic of the Philippines</span><br>
-    <span class="university-name" style="max-width: 55%; height: auto; margin: 4px 0; display: inline-block; font-weight: bold; font-size: 15px;">Laguna State Polytechnic University</span><br>
+    <img src="/images/lspu-name.png" alt="Laguna State Polytechnic University" class="university-name" style="max-width: 45%; height: auto; margin: 4px 0; display: inline-block;" />
+    <br>
     <span style="font-family: Calibri, sans-serif;">Province of Laguna</span><br>
     <br>
     <strong>OFFICE OF STUDENT AFFAIRS AND SERVICES</strong><br>
