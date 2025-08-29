@@ -346,7 +346,7 @@
             <!-- Third signature row with Dean -->
             <div class="signature-container clearfix" style="margin-top:5px;">
                 <div style="width: 100%; text-align: left;">
-                    <div class="signature-line" style="margin-bottom:0px; white-space:nowrap; min-width:200px; display:inline-block; text-align: center;margin-left: 35px;"><strong>{{ $application->dean_name ?? 'N/A' }}</strong></div>
+                    <div class="signature-line" style="margin-bottom:0px; white-space:nowrap; min-width:200px; display:inline-block; text-align: center;margin-left: 35px;"><strong>{!! $application->dean_name ?: '&nbsp;' !!}</strong></div>
                     <p style="margin-top:2px; text-align: left; width: 180px;margin-left: 85px;">Dean/Assoc. Dean</p>
                 </div>
             </div>
