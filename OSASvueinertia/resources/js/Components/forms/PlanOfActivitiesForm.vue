@@ -384,6 +384,46 @@ const removeActivity = (index) => {
 // Add errors ref object
 const errors = ref({});
 
+// Character limits constants
+const MAX_CHAR_GENERAL = 144;
+const MAX_CHAR_ACTIVITIES = 99;
+const MAX_CHAR_PERSONS = 99;
+
+// Helper to strip HTML tags
+const stripHtml = (html) => {
+  const tmp = document.createElement('div');
+  tmp.innerHTML = html || '';
+  return tmp.textContent || tmp.innerText || '';
+};
+
+// Computed properties for character counts
+const getCharacterCount = (activityIndex, fieldType) => {
+  if (!form.activities[activityIndex]) return 0;
+  const content = form.activities[activityIndex][fieldType] || '';
+  return stripHtml(content).length;
+};
+
+const getMaxCharacters = (fieldType) => {
+  switch (fieldType) {
+    case 'objective':
+    case 'description':
+      return MAX_CHAR_GENERAL;
+    case 'name':
+    case 'persons_involved':
+      return fieldType === 'name' ? MAX_CHAR_ACTIVITIES : MAX_CHAR_PERSONS;
+    default:
+      return 0;
+  }
+};
+
+const getCharacterCountClass = (currentCount, maxCount) => {
+  const percentage = (currentCount / maxCount) * 100;
+  if (percentage >= 100) return 'text-red-600 font-semibold';
+  if (percentage >= 80) return 'text-orange-500 font-medium';
+  if (percentage >= 60) return 'text-yellow-600';
+  return 'text-gray-500';
+};
+
 // Add validateForm function
 const validateForm = () => {
   errors.value = {};
@@ -445,17 +485,7 @@ const validateForm = () => {
       errors.value.activities[index] = {};
     }
 
-    // Strip HTML tags for validation
-    const stripHtml = (html) => {
-      const tmp = document.createElement('div');
-      tmp.innerHTML = html;
-      return tmp.textContent || tmp.innerText || '';
-    };
-
-    // Character limit validation
-    const MAX_CHAR_GENERAL = 144;
-    const MAX_CHAR_ACTIVITIES = 99;
-    const MAX_CHAR_PERSONS = 99;
+    // Check required fields and character limits
     if (!activity.objective || !stripHtml(activity.objective).trim()) {
       errors.value.activities[index].objective = 'Objective is required';
       isValid = false;
@@ -531,6 +561,31 @@ const submit = () => {
 // Function to handle contenteditable input without disrupting cursor position
 const handleContentEditableInput = (event, activityIndex, fieldType) => {
   const content = event.target.innerHTML;
+  const maxChars = getMaxCharacters(fieldType);
+  const currentLength = stripHtml(content).length;
+  
+  // Check if content exceeds limit
+  if (currentLength > maxChars) {
+    // Prevent the input and restore previous content
+    event.preventDefault();
+    
+    // Get the previous content and trim it to max length
+    const previousContent = form.activities[activityIndex][fieldType] || '';
+    const trimmedText = stripHtml(content).substring(0, maxChars);
+    
+    // Set the trimmed content back
+    event.target.innerHTML = trimmedText;
+    
+    // Restore cursor to end
+    const range = document.createRange();
+    const selection = window.getSelection();
+    range.selectNodeContents(event.target);
+    range.collapse(false);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    
+    return;
+  }
   
   // Update the form data directly without triggering reactive updates that would rewrite the DOM
   if (fieldType === 'objective') {
@@ -734,7 +789,12 @@ nextTick(() => {
                   @mouseup="handleMouseUp"
                   style="outline:none;word-break:break-word;overflow-wrap:break-word;"
                 ></div>
-                <p v-if="errors.activities && errors.activities[startIndex + idx] && errors.activities[startIndex + idx].objective" class="text-red-500 text-xs mt-1">{{ errors.activities[startIndex + idx].objective }}</p>
+                <div class="flex justify-between items-center mt-1">
+                  <p v-if="errors.activities && errors.activities[startIndex + idx] && errors.activities[startIndex + idx].objective" class="text-red-500 text-xs">{{ errors.activities[startIndex + idx].objective }}</p>
+                  <span :class="['text-xs', getCharacterCountClass(getCharacterCount(startIndex + idx, 'objective'), getMaxCharacters('objective'))]">
+                    {{ getCharacterCount(startIndex + idx, 'objective') }}/{{ getMaxCharacters('objective') }}
+                  </span>
+                </div>
               </td>
               <td class="border align-top" style="min-height:150px;padding:8px;vertical-align:top;">
                 <div 
@@ -746,7 +806,12 @@ nextTick(() => {
                   @mouseup="handleMouseUp"
                   style="outline:none;word-break:break-word;overflow-wrap:break-word;"
                 ></div>
-                <p v-if="errors.activities && errors.activities[startIndex + idx] && errors.activities[startIndex + idx].name" class="text-red-500 text-xs mt-1">{{ errors.activities[startIndex + idx].name }}</p>
+                <div class="flex justify-between items-center mt-1">
+                  <p v-if="errors.activities && errors.activities[startIndex + idx] && errors.activities[startIndex + idx].name" class="text-red-500 text-xs">{{ errors.activities[startIndex + idx].name }}</p>
+                  <span :class="['text-xs', getCharacterCountClass(getCharacterCount(startIndex + idx, 'name'), getMaxCharacters('name'))]">
+                    {{ getCharacterCount(startIndex + idx, 'name') }}/{{ getMaxCharacters('name') }}
+                  </span>
+                </div>
               </td>
               <td class="border align-top" style="min-height:150px;padding:8px;vertical-align:top;">
                 <div 
@@ -758,7 +823,12 @@ nextTick(() => {
                   @mouseup="handleMouseUp"
                   style="outline:none;word-break:break-word;overflow-wrap:break-word;"
                 ></div>
-                <p v-if="errors.activities && errors.activities[startIndex + idx] && errors.activities[startIndex + idx].description" class="text-red-500 text-xs mt-1">{{ errors.activities[startIndex + idx].description }}</p>
+                <div class="flex justify-between items-center mt-1">
+                  <p v-if="errors.activities && errors.activities[startIndex + idx] && errors.activities[startIndex + idx].description" class="text-red-500 text-xs">{{ errors.activities[startIndex + idx].description }}</p>
+                  <span :class="['text-xs', getCharacterCountClass(getCharacterCount(startIndex + idx, 'description'), getMaxCharacters('description'))]">
+                    {{ getCharacterCount(startIndex + idx, 'description') }}/{{ getMaxCharacters('description') }}
+                  </span>
+                </div>
               </td>
               <td class="border align-top" style="min-height:150px;padding:8px;vertical-align:top;">
                 <div 
@@ -770,7 +840,12 @@ nextTick(() => {
                   @mouseup="handleMouseUp"
                   style="outline:none;word-break:break-word;overflow-wrap:break-word;"
                 ></div>
-                <p v-if="errors.activities && errors.activities[startIndex + idx] && errors.activities[startIndex + idx].persons_involved" class="text-red-500 text-xs mt-1">{{ errors.activities[startIndex + idx].persons_involved }}</p>
+                <div class="flex justify-between items-center mt-1">
+                  <p v-if="errors.activities && errors.activities[startIndex + idx] && errors.activities[startIndex + idx].persons_involved" class="text-red-500 text-xs">{{ errors.activities[startIndex + idx].persons_involved }}</p>
+                  <span :class="['text-xs', getCharacterCountClass(getCharacterCount(startIndex + idx, 'persons_involved'), getMaxCharacters('persons_involved'))]">
+                    {{ getCharacterCount(startIndex + idx, 'persons_involved') }}/{{ getMaxCharacters('persons_involved') }}
+                  </span>
+                </div>
               </td>
               <td class="border align-top" style="min-height:150px;padding:8px;vertical-align:top;">
                 <input 
@@ -1119,7 +1194,12 @@ nextTick(() => {
                                             class="w-full p-1 text-sm min-h-[20px] focus:outline-none focus:ring-1 focus:ring-blue-500"
                                             placeholder="Enter objective..."
                                         ></div>
-                                        <p v-if="errors.activities?.[startIndex + idx]?.objective" class="text-red-500 text-xs mt-1">{{ errors.activities[startIndex + idx].objective }}</p>
+                                        <div class="flex justify-between items-center mt-1">
+                                            <p v-if="errors.activities?.[startIndex + idx]?.objective" class="text-red-500 text-xs">{{ errors.activities[startIndex + idx].objective }}</p>
+                                            <span :class="['text-xs', getCharacterCountClass(getCharacterCount(startIndex + idx, 'objective'), getMaxCharacters('objective'))]">
+                                                {{ getCharacterCount(startIndex + idx, 'objective') }}/{{ getMaxCharacters('objective') }}
+                                            </span>
+                                        </div>
                                     </td>
                                     <td class="border border-gray-300 p-2">
                                         <div 
@@ -1130,7 +1210,12 @@ nextTick(() => {
                                             class="w-full p-1 text-sm min-h-[20px] focus:outline-none focus:ring-1 focus:ring-blue-500"
                                             placeholder="Enter activity name..."
                                         ></div>
-                                        <p v-if="errors.activities?.[startIndex + idx]?.name" class="text-red-500 text-xs mt-1">{{ errors.activities[startIndex + idx].name }}</p>
+                                        <div class="flex justify-between items-center mt-1">
+                                            <p v-if="errors.activities?.[startIndex + idx]?.name" class="text-red-500 text-xs">{{ errors.activities[startIndex + idx].name }}</p>
+                                            <span :class="['text-xs', getCharacterCountClass(getCharacterCount(startIndex + idx, 'name'), getMaxCharacters('name'))]">
+                                                {{ getCharacterCount(startIndex + idx, 'name') }}/{{ getMaxCharacters('name') }}
+                                            </span>
+                                        </div>
                                     </td>
                                     <td class="border border-gray-300 p-2">
                                         <div 
@@ -1141,7 +1226,12 @@ nextTick(() => {
                                             class="w-full p-1 text-sm min-h-[40px] focus:outline-none focus:ring-1 focus:ring-blue-500"
                                             placeholder="Enter description..."
                                         ></div>
-                                        <p v-if="errors.activities?.[startIndex + idx]?.description" class="text-red-500 text-xs mt-1">{{ errors.activities[startIndex + idx].description }}</p>
+                                        <div class="flex justify-between items-center mt-1">
+                                            <p v-if="errors.activities?.[startIndex + idx]?.description" class="text-red-500 text-xs">{{ errors.activities[startIndex + idx].description }}</p>
+                                            <span :class="['text-xs', getCharacterCountClass(getCharacterCount(startIndex + idx, 'description'), getMaxCharacters('description'))]">
+                                                {{ getCharacterCount(startIndex + idx, 'description') }}/{{ getMaxCharacters('description') }}
+                                            </span>
+                                        </div>
                                     </td>
                                     <td class="border border-gray-300 p-2">
                                         <div 
@@ -1152,7 +1242,12 @@ nextTick(() => {
                                             class="w-full p-1 text-sm min-h-[20px] focus:outline-none focus:ring-1 focus:ring-blue-500"
                                             placeholder="Enter persons involved..."
                                         ></div>
-                                        <p v-if="errors.activities?.[startIndex + idx]?.persons_involved" class="text-red-500 text-xs mt-1">{{ errors.activities[startIndex + idx].persons_involved }}</p>
+                                        <div class="flex justify-between items-center mt-1">
+                                            <p v-if="errors.activities?.[startIndex + idx]?.persons_involved" class="text-red-500 text-xs">{{ errors.activities[startIndex + idx].persons_involved }}</p>
+                                            <span :class="['text-xs', getCharacterCountClass(getCharacterCount(startIndex + idx, 'persons_involved'), getMaxCharacters('persons_involved'))]">
+                                                {{ getCharacterCount(startIndex + idx, 'persons_involved') }}/{{ getMaxCharacters('persons_involved') }}
+                                            </span>
+                                        </div>
                                     </td>
                                     <td class="border border-gray-300 p-2">
                                         <input type="date" v-model="activity.target_date" class="w-full p-1 text-sm" required>
