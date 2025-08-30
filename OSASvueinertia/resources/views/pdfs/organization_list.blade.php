@@ -336,10 +336,10 @@
         } elseif ($orgNameLen > 65) {
             $orgFontSize = '10pt';
         }
-        $info .= '<div style="width:100%; margin-top: 15px; text-align: center;">
-            <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
+        $info .= '<div style="margin-top: 15px; text-align: center; overflow: visible;">
+            <div style="display: flex; flex-direction: column; align-items: center; overflow: visible;">
                 <span style="font-family: Times New Roman, serif; font-size: 11pt; font-weight: bold; text-align: left;">Name of Organization</span>
-                <span class="signature-line" style="margin-bottom:0px; min-width:375px; font-family: Times New Roman, serif; font-size: ' . $orgFontSize . '; text-align: center; border-bottom: 1px solid #000; display: inline-block;">
+                <span class="signature-line" style="margin-bottom:0px; min-width:375px; width:auto; font-family: Times New Roman, serif; font-size: ' . $orgFontSize . '; text-align: center; border-bottom: 1px solid #000; display: inline-block; overflow: visible; white-space: nowrap;">
                     <span style="font-weight: bold;"><strong>' . $orgName . '</strong></span>
                 </span>
             </div>
