@@ -339,7 +339,7 @@
         $info .= '<div style="width:100%; margin-top: 15px; text-align: center;">
             <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
                 <span style="font-family: Times New Roman, serif; font-size: 11pt; font-weight: bold; text-align: left;">Name of Organization</span>
-                <span class="signature-line" style="margin-bottom:0px; min-width:200px; font-family: Times New Roman, serif; font-size: ' . $orgFontSize . '; text-align: center; border-bottom: 1px solid #000; display: inline-block;">
+                <span class="signature-line" style="margin-bottom:0px; min-width:375px; font-family: Times New Roman, serif; font-size: ' . $orgFontSize . '; text-align: center; border-bottom: 1px solid #000; display: inline-block;">
                     <span style="font-weight: bold;"><strong>' . $orgName . '</strong></span>
                 </span>
             </div>
@@ -355,7 +355,7 @@
     <!-- Centered single member field under Name of Organization with hardcoded sample data (never uses real data) -->
 
     <div style="width: 340px; margin: 0 auto -5px auto;">
-    <div style="text-align: center; font-weight: normal; margin-bottom: 4px; margin-top: 10px; margin-left: 100px;">SAMPLE FORMAT:</div>
+    <div style="text-align: center; font-weight: normal; margin-bottom: 4px; margin-top: 7px; margin-left: 100px;">SAMPLE FORMAT:</div>
     <table class="member-table" style="margin: 0 auto; margin-top: 10px;">
             <tr>
                 <td class="photo-cell">
@@ -389,7 +389,7 @@
 
     <!-- First page members -->
     <div class="content">
-    <table style="margin-left: -35px;">
+    <table style="margin-left: -55px;">
             @php
                 $startIndex = 0;
                 $endIndex = min($membersPerPage, $totalMembers);
@@ -623,7 +623,7 @@
         @endphp
         
         <div class="content">
-            <table style="margin-left: -35px;">
+            <table style="margin-left: -55px;">
                 @for ($row = 0; $row < $membersPerColumn; $row++)
                     <tr>
                         <!-- Left Column -->
