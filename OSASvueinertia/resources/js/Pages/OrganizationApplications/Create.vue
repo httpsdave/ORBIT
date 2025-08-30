@@ -112,7 +112,7 @@ const handleFormSelection = (formId) => {
                     description: '',
                     persons_involved: '',
                     target_date: '',
-                    budget: 0
+                    budget: ''
                 }
             ];
         }

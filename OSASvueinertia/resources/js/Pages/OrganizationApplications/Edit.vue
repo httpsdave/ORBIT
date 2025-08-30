@@ -37,7 +37,7 @@ const formData = computed(() => {
         description: '',
         persons_involved: '',
         target_date: '',
-        budget: 0
+        budget: ''
       }));
     }
     // Ensure all required fields are preserved
