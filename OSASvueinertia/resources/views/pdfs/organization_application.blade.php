@@ -264,7 +264,46 @@
     </div>
 
     <div class="signature right-align">
-    <p><span class="signature-line" style="{{ strlen($application->organization_name) > 84 ? 'font-size: 8pt;' : (strlen($application->organization_name) > 74 ? 'font-size: 9pt;' : (strlen($application->organization_name) > 65 ? 'font-size: 10pt;' : '')) }}"><strong>{{ $application->organization_name }}</strong></span></p>
+        @php
+            $orgNameLength = strlen($application->organization_name);
+            $orgName = $application->organization_name;
+            
+            if ($orgNameLength > 74) {
+                // Triple stack for names over 84 characters
+                $words = explode(' ', $orgName);
+                $totalWords = count($words);
+                $wordsPerLine = ceil($totalWords / 3);
+                $line1 = implode(' ', array_slice($words, 0, $wordsPerLine));
+                $line2 = implode(' ', array_slice($words, $wordsPerLine, $wordsPerLine));
+                $line3 = implode(' ', array_slice($words, $wordsPerLine * 2));
+                $stackedName = $line1 . '<br>' . $line2 . '<br>' . $line3;
+                $fontSize = 'font-size: 9pt;';
+                $textAlign = 'text-align: center;';
+                $lineHeight = 'line-height: 0.9;';
+            } elseif ($orgNameLength > 74) {
+                // Double stack for names over 74 characters
+                $words = explode(' ', $orgName);
+                $totalWords = count($words);
+                $wordsPerLine = ceil($totalWords / 2);
+                $line1 = implode(' ', array_slice($words, 0, $wordsPerLine));
+                $line2 = implode(' ', array_slice($words, $wordsPerLine));
+                $stackedName = $line1 . '<br>' . $line2;
+                $fontSize = 'font-size: 9pt;';
+                $textAlign = 'text-align: center;';
+                $lineHeight = 'line-height: 0.9;';
+            } elseif ($orgNameLength > 65) {
+                $stackedName = $orgName;
+                $fontSize = 'font-size: 10pt;';
+                $textAlign = '';
+                $lineHeight = '';
+            } else {
+                $stackedName = $orgName;
+                $fontSize = '';
+                $textAlign = '';
+                $lineHeight = '';
+            }
+        @endphp
+        <p style="margin-bottom: 2px;"><span class="signature-line" style="{{ $fontSize }} {{ $textAlign }} {{ $lineHeight }}"><strong>{!! $stackedName !!}</strong></span></p>
         <p><span class="title-text">Name of Organization</span></p>
     </div>
 
