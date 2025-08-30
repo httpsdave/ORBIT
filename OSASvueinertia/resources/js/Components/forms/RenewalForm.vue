@@ -218,7 +218,42 @@ const submit = () => {
 
     <div class="section text-right">
   <div class="signature" style="margin-bottom:20px;">
-    <p><span class="signature-line" style="min-width:160px; font-size:11pt;">{{ form.organization_name }}</span></p>
+    <p>
+      <span class="signature-line" style="min-width:160px; font-size:11pt;" 
+            :style="{
+              'font-size': form.organization_name.length > 84 ? '9pt' : 
+                          form.organization_name.length > 74 ? '9pt' : 
+                          form.organization_name.length > 65 ? '10pt' : '11pt',
+              'text-align': form.organization_name.length > 74 ? 'center' : 'center',
+              'line-height': form.organization_name.length > 74 ? '0.9' : 'normal'
+            }"
+            v-html="(() => {
+              const orgName = form.organization_name;
+              const orgNameLength = orgName.length;
+              
+              if (orgNameLength > 84) {
+                // Triple stack for names over 84 characters
+                const words = orgName.split(' ');
+                const totalWords = words.length;
+                const wordsPerLine = Math.ceil(totalWords / 3);
+                const line1 = words.slice(0, wordsPerLine).join(' ');
+                const line2 = words.slice(wordsPerLine, wordsPerLine * 2).join(' ');
+                const line3 = words.slice(wordsPerLine * 2).join(' ');
+                return line1 + '<br>' + line2 + '<br>' + line3;
+              } else if (orgNameLength > 74) {
+                // Double stack for names over 74 characters
+                const words = orgName.split(' ');
+                const totalWords = words.length;
+                const wordsPerLine = Math.ceil(totalWords / 2);
+                const line1 = words.slice(0, wordsPerLine).join(' ');
+                const line2 = words.slice(wordsPerLine).join(' ');
+                return line1 + '<br>' + line2;
+              } else {
+                return orgName;
+              }
+            })()">
+      </span>
+    </p>
     <p><span class="title-under-signature title-left-adjust-more" style="font-size:11pt;"><strong>Name of Organization</strong></span></p>
   </div>
     </div>
