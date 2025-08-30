@@ -119,7 +119,7 @@ const submit = () => {
   </div>
 
   <div class="section right-align" style="text-align: right; margin-top: 0.5cm;">
-    <p style="margin-bottom: 0; margin-top: 0.1cm;"><span class="signature-line" style="display: inline-block; min-width: 150px; border-bottom: 1px solid black; padding-bottom: 2px; text-align: center;">{{ formattedDate }}</span></p>
+  <p style="margin-bottom: 0; margin-top: 0.1cm;"><span class="signature-line" style="display: inline-block; min-width: 150px; border-bottom: 1px solid black; padding-bottom: 2px; text-align: center;"><strong>{{ formattedDate }}</strong></span></p>
     <p style="margin-top: 0; text-align: left; width: 150px; display: inline-block; padding-left: 70px;">Date</p>
   </div>
 
@@ -158,12 +158,12 @@ const submit = () => {
   </div>
 
   <div class="signature right-align" style="margin-top: 0.5cm; text-align: right;">
-    <p><span class="signature-line" style="display: inline-block; min-width: 200px; border-bottom: 1px solid black; padding-bottom: 2px; text-align: center;">{{ form.president_name }}</span></p>
+  <p><span class="signature-line" style="display: inline-block; min-width: 200px; border-bottom: 1px solid black; padding-bottom: 2px; text-align: center;"><strong>{{ form.president_name }}</strong></span></p>
   <p style="margin: 0; padding: 0;"><span class="title-text" style="display: block; width: 200px; margin-left: 440px; text-align: center; white-space: nowrap; font-size: 11pt;">Organization President</span></p>
   </div>
 
   <div class="signature right-align" style="margin-top: 0.3cm; text-align: right;">
-    <p><span class="signature-line" style="display: inline-block; min-width: 200px; border-bottom: 1px solid black; padding-bottom: 2px; text-align: center;">{{ form.organization_name }}</span></p>
+  <p><span class="signature-line" style="display: inline-block; min-width: 200px; border-bottom: 1px solid black; padding-bottom: 2px; text-align: center;"><strong>{{ form.organization_name }}</strong></span></p>
   <p style="margin: 0; padding: 0;"><span class="title-text" style="display: block; width: 200px; margin-left: 440px; text-align: center; white-space: nowrap; font-size: 11pt;">Name of Organization</span></p>
   </div>
 
@@ -174,13 +174,13 @@ const submit = () => {
   <div style="width: 100%; margin-top: 0.1cm; display: flex;">
     <div style="width: 50%; text-align: left;">
       <div class="signature left-align" style="margin-top: 0.3cm; text-align: left;">
-        <p><span class="signature-line" style="display: inline-block; min-width: 200px; border-bottom: 1px solid black; padding-bottom: 2px; text-align: center;">{{ form.adviser_name }}</span></p>
+  <p><span class="signature-line" style="display: inline-block; min-width: 200px; border-bottom: 1px solid black; padding-bottom: 2px; text-align: center;"><strong>{{ form.adviser_name }}</strong></span></p>
         <p><span class="title-text" style="display: block; width: 200px; text-align: center; white-space: nowrap; font-size: 11pt;">Adviser, Student Organization</span></p>
       </div>
     </div>
     <div style="width: 50%; text-align: right;">
       <div class="signature right-align" style="margin-top: 0.3cm; text-align: right;">
-        <p><span class="signature-line" style="display: inline-block; min-width: 200px; border-bottom: 1px solid black; padding-bottom: 2px; text-align: center;">{{ form.dean_name }}</span></p>
+  <p><span class="signature-line" style="display: inline-block; min-width: 200px; border-bottom: 1px solid black; padding-bottom: 2px; text-align: center;"><strong>{{ form.dean_name }}</strong></span></p>
   <p style="margin: 0; padding: 0;"><span class="title-text" style="display: block; width: 200px; margin-left: 120px; text-align: center; white-space: nowrap; font-size: 11pt;">Dean/Assoc. Dean of College</span></p>
       </div>
     </div>
