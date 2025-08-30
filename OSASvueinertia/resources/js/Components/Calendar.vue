@@ -774,6 +774,18 @@
       display: flex;
       flex-direction: column;
       align-items: flex-start;
+      width: 100%;
+      max-width: 100%;
+      overflow: hidden;
+    }
+    
+    :deep(.fc-custom-event .event-title-truncated) {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      width: 100%;
+      max-width: 100%;
+      display: block;
     }
     :deep(.fc-custom-event:hover) {
       background: #2563EB;
@@ -1008,11 +1020,25 @@ export default {
         }));
       }),
       eventContent: function(arg) {
-        // Custom rendering for calendar events
+        // Custom rendering for calendar events with responsive text truncation
+        const title = arg.event.title;
+        
+        // Determine truncation length based on viewport width
+        let maxLength = 20; // Default for desktop
+        if (window.innerWidth < 640) {
+          maxLength = 8; // Very small screens
+        } else if (window.innerWidth < 768) {
+          maxLength = 12; // Mobile screens
+        } else if (window.innerWidth < 1024) {
+          maxLength = 16; // Tablet screens
+        }
+        
+        const truncatedTitle = title.length > maxLength ? title.substring(0, maxLength) + '...' : title;
+        
         return {
           html: `
             <div class="fc-custom-event">
-              <span class="font-bold">${arg.event.title}</span>
+              <span class="font-bold event-title-truncated" title="${title}">${truncatedTitle}</span>
               <span class="block text-xs">${dayjs(arg.event.start).format('h:mm A')}</span>
             </div>
           `
@@ -2111,6 +2137,12 @@ function exportPastEventsCsv(pastEvents) {
     font-size: 0.5rem;
     padding: 0 1px;
     line-height: 1.1;
+  }
+  
+  /* Better event title truncation on small screens */
+  :deep(.fc-custom-event .event-title-truncated) {
+    font-size: 0.5rem;
+    max-width: 100%;
   }
   
   /* Adjust calendar wrapper padding */
