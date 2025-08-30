@@ -183,7 +183,7 @@ const submit = () => {
     </div>
 
     <div class="mt-6 text-right">
-  <p class="mb-0" style="font-size:11pt;"><span class="signature-line text-center border-b border-black min-w-[150px] inline-block" style="font-size:11pt;">{{ formattedDate }}</span></p>
+  <p class="mb-0" style="font-size:11pt;"><span class="signature-line text-center border-b border-black min-w-[150px] inline-block" style="font-size:11pt;"><strong>{{ formattedDate }}</strong></span></p>
   <p class="mb-0" style="text-align: center; width: 150px; display: inline-block; font-size:11pt;">Date</p>
     </div>
     
@@ -202,7 +202,7 @@ const submit = () => {
   <div class="section" style="margin-bottom:10px;">
   <p style="margin-top:5px; font-family:'Times New Roman', serif; font-size:11pt; font-weight:normal;">Sir/Madam:</p>
   <div style="height:15px; font-size:11pt;"></div>
-  <p style="margin-bottom:20px; font-family:'Times New Roman', serif; font-size:11pt; font-weight:normal;">The <span class="dynamic-text signature-line" style="min-width:200px; display:inline-flex; align-items:center; justify-content:center; border-bottom:1px solid #000; padding-bottom:2px; vertical-align:middle; font-size:11pt;"><span style="border-bottom:none; display:inline-block; width:100%; text-align:center; font-size:11pt;">{{ form.organization_name }}</span></span> <span style="display:inline-block; width:12px; font-size:11pt;"></span>wishes<span style="display:inline-block; width:12px; font-size:11pt;"></span>to<span style="display:inline-block; width:12px; font-size:11pt;"></span>seek<span style="display:inline-block; width:12px; font-size:11pt;"></span>renewal<span style="display:inline-block; width:12px; font-size:11pt;"></span>of<span style="display:inline-block; width:12px; font-size:11pt;"></span>its<span style="display:inline-block; width:12px; font-size:11pt;"></span>recognition<span style="display:inline-block; width:12px; font-size:11pt;"></span>to function as a duly recognized LSPU Organization for Academic Year 20<span class="dynamic-text" style="font-size:11pt;"><u>{{ form.academic_year_start }}</u></span> - 20<span class="dynamic-text" style="font-size:11pt;"><u>{{ form.academic_year_end }}</u></span>.</p>
+  <p style="margin-bottom:20px; font-family:'Times New Roman', serif; font-size:11pt; font-weight:normal;">The <span class="dynamic-text signature-line" style="min-width:200px; display:inline-flex; align-items:center; justify-content:center; border-bottom:1px solid #000; padding-bottom:2px; vertical-align:middle; font-size:11pt;"><span style="border-bottom:none; display:inline-block; width:100%; text-align:center; font-size:11pt;"><strong>{{ form.organization_name }}</strong></span></span> <span style="display:inline-block; width:12px; font-size:11pt;"></span>wishes<span style="display:inline-block; width:12px; font-size:11pt;"></span>to<span style="display:inline-block; width:12px; font-size:11pt;"></span>seek<span style="display:inline-block; width:12px; font-size:11pt;"></span>renewal<span style="display:inline-block; width:12px; font-size:11pt;"></span>of<span style="display:inline-block; width:12px; font-size:11pt;"></span>its<span style="display:inline-block; width:12px; font-size:11pt;"></span>recognition<span style="display:inline-block; width:12px; font-size:11pt;"></span>to function as a duly recognized LSPU Organization for Academic Year 20<span class="dynamic-text" style="font-size:11pt;"><u><strong>{{ form.academic_year_start }}</strong></u></span> - 20<span class="dynamic-text" style="font-size:11pt;"><u><strong>{{ form.academic_year_end }}</strong></u></span>.</p>
   <p class="indented" style="text-indent:1.45cm; margin-bottom:20px; font-family:'Times New Roman', serif; font-size:11pt; font-weight:normal; word-spacing:0.8em;">In this connection, we are respectfully requesting from your good office to grant us permission to operate in our institution, subject to the existing rules & regulations of our University.</p>
     <br>
   <p class="indented" style="margin-top:-10px; margin-left:30px; font-family:'Times New Roman', serif; font-size:11pt; font-weight:normal;">Thank you very much.</p>
@@ -239,7 +239,7 @@ const submit = () => {
                 const line1 = words.slice(0, wordsPerLine).join(' ');
                 const line2 = words.slice(wordsPerLine, wordsPerLine * 2).join(' ');
                 const line3 = words.slice(wordsPerLine * 2).join(' ');
-                return line1 + '<br>' + line2 + '<br>' + line3;
+                return '<strong>' + line1 + '<br>' + line2 + '<br>' + line3 + '</strong>';
               } else if (orgNameLength > 74) {
                 // Double stack for names over 74 characters
                 const words = orgName.split(' ');
@@ -247,9 +247,9 @@ const submit = () => {
                 const wordsPerLine = Math.ceil(totalWords / 2);
                 const line1 = words.slice(0, wordsPerLine).join(' ');
                 const line2 = words.slice(wordsPerLine).join(' ');
-                return line1 + '<br>' + line2;
+                return '<strong>' + line1 + '<br>' + line2 + '</strong>';
               } else {
-                return orgName;
+                return '<strong>' + orgName + '</strong>';
               }
             })()">
       </span>
