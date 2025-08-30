@@ -356,7 +356,7 @@ const addActivity = () => {
         description: '',
         persons_involved: '',
         target_date: '',
-        budget: 0
+        budget: ''
     });
     // Go to the new activity page
     currentPage.value = totalPages.value;
@@ -493,13 +493,7 @@ const validateForm = () => {
       isValid = false;
     }
 
-   if (activity.budget === null || activity.budget === undefined || activity.budget < 0) {
-      errors.value.activities[index].budget = 'Budget is required and must be 0 or greater';
-      isValid = false;
-    } else if (activity.budget > 9999999999999.99) {
-      errors.value.activities[index].budget = 'Budget cannot exceed 9,999,999,999,999.99';
-      isValid = false;
-    }
+    // Budget is now optional - no validation needed
   });
 
   return isValid;
@@ -789,12 +783,11 @@ nextTick(() => {
               </td>
               <td class="border align-top" style="min-height:150px;padding:8px;vertical-align:top;">
                 <input 
-                  type="number"
-                  v-model.number="activity.budget"
-                  min="0"
-                  step="0.01"
+                  type="text"
+                  v-model="activity.budget"
                   class="w-full border p-1 text-right"
                   style="min-height:40px;"
+                  placeholder=''
                 >
                 <p v-if="errors.activities && errors.activities[startIndex + idx] && errors.activities[startIndex + idx].budget" class="text-red-500 text-xs mt-1">{{ errors.activities[startIndex + idx].budget }}</p>
               </td>
@@ -1166,7 +1159,7 @@ nextTick(() => {
                                         <p v-if="errors.activities?.[startIndex + idx]?.target_date" class="text-red-500 text-xs mt-1">{{ errors.activities[startIndex + idx].target_date }}</p>
                                     </td>
                                     <td class="border border-gray-300 p-2">
-                                        <input type="number" v-model.number="activity.budget" step="0.01" min="0" max="9999999999999.99" class="w-full p-1 text-sm" required>
+                                        <input type="text" v-model="activity.budget" class="w-full p-1 text-sm" placeholder=''>
                                         <p v-if="errors.activities?.[startIndex + idx]?.budget" class="text-red-500 text-xs mt-1">{{ errors.activities[startIndex + idx].budget }}</p>
                                     </td>
                                     <td class="border border-gray-300 p-2 text-center">

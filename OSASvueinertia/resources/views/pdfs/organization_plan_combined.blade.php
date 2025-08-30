@@ -313,7 +313,7 @@
                     <td>{!! $activity->description !!}</td>
                     <td>{!! $activity->persons_involved !!}</td>
                     <td>{{ \Carbon\Carbon::parse($activity->target_date)->format('F d, Y') }}</td>
-                    <td>{{ number_format($activity->budget, 2) }}</td>
+                    <td>{{ $activity->budget ?? '' }}</td>
                 </tr>
             </table>
             

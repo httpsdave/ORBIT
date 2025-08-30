@@ -17,7 +17,6 @@ class Activity extends Model
         'budget',
     ];
     protected $casts = [
-        'budget' => 'decimal:2',
         'target_date' => 'date:Y-m-d'
     ];
 
