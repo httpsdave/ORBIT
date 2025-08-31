@@ -1,6 +1,5 @@
 <script setup>
 import { ref, computed, watch, onUnmounted } from 'vue';
-import FormSelector from '@/Components/FormSelector.vue';
 import StudentOrganizationForm from '@/Components/forms/StudentOrganizationForm.vue';
 import RenewalForm from '@/Components/forms/RenewalForm.vue';
 import CommitmentForm from '@/Components/forms/CommitmentForm.vue';
@@ -12,15 +11,19 @@ import ActivityAttendanceForm from '@/Components/forms/ActivityAttendanceForm.vu
 import EvaluationForm from '@/Components/forms/EvaluationForm.vue';
 import { router } from '@inertiajs/vue3';
 
-// Get saved form data from props
+// Get saved form data and selected form type from props
 const props = defineProps({
     savedFormData: {
         type: Object,
         default: () => ({})
+    },
+    selectedFormType: {
+        type: String,
+        required: true
     }
 });
 
-const currentForm = ref('');
+const currentForm = ref(props.selectedFormType);
 const formData = ref({});
 const uploadFile = ref(null);
 const uploadError = ref('');
@@ -44,23 +47,6 @@ onUnmounted(() => {
     }
 });
 
-const formOptions = [
-    { value: 'LSPU-OSAS-SF-001', label: 'Recognition Form' },
-    { value: 'LSPU-OSAS-SF-002', label: 'Renewal Form' },
-    { value: 'LSPU-OSAS-SF-003', label: 'Commitment Form' },
-    { value: 'LSPU-OSAS-SF-004', label: 'Plan of Activities' },
-    { value: 'LSPU-OSAS-SF-005', label: 'List of Members' },
-    { value: 'LSPU-OSAS-SF-006', label: 'Student Certification' },
-    { value: 'LSPU-OSAS-SF-007', label: 'List of Officers' }, 
-    { value: 'LSPU-OSAS-SF-009', label: 'Student Activity Attendance Sheet' },
-    { value: 'LSPU-OSAS-SF-EVAL', label: 'Evaluation Form' },
-    { value: 'LSPU-OSAS-SF-ACCOMPLISHMENT', label: 'Accomplishment Report' },
-    { value: 'LSPU-OSAS-SF-NARRATIVE', label: 'Narrative Report' },
-    { value: 'LSPU-OSAS-SF-BYLAWS', label: 'Constitution & By-laws' },
-    { value: 'LSPU-OSAS-SF-FINANCIAL', label: 'Financial Report' },
-    { value: 'LSPU-ACAD-RL', label: 'Event Letter' },
-];
-
 const isDirectUploadForm = computed(() => [
     'LSPU-OSAS-SF-ACCOMPLISHMENT',
     'LSPU-OSAS-SF-NARRATIVE',
@@ -81,9 +67,8 @@ function formatDateForInput(dateStr) {
     return `${yyyy}-${mm}-${dd}`;
 }
 
-const handleFormSelection = (formId) => {
-    currentForm.value = formId;
-    
+// Initialize form data based on selected form type
+const initializeFormData = () => {
     // Filter out array fields from saved data to prevent issues
     const filteredSavedData = {};
     Object.keys(props.savedFormData).forEach(key => {
@@ -96,8 +81,8 @@ const handleFormSelection = (formId) => {
         }
     });
     
-    // Initialize form data with saved data if available
-    if (formId === 'LSPU-OSAS-SF-004') {
+    // Initialize form data based on form type
+    if (currentForm.value === 'LSPU-OSAS-SF-004') {
         let activities = [];
         if (Array.isArray(props.savedFormData.activities) && props.savedFormData.activities.length > 0) {
             activities = props.savedFormData.activities.map(act => ({
@@ -122,7 +107,7 @@ const handleFormSelection = (formId) => {
         };
     }
     // Initialize members for List of Members form
-    else if (formId === 'LSPU-OSAS-SF-005') {
+    else if (currentForm.value === 'LSPU-OSAS-SF-005') {
         formData.value = {
             ...filteredSavedData,
             members: Array(4).fill().map(() => ({
@@ -134,7 +119,7 @@ const handleFormSelection = (formId) => {
         };
     }
     // Initialize students for Student Certification form
-    else if (formId === 'LSPU-OSAS-SF-006') {
+    else if (currentForm.value === 'LSPU-OSAS-SF-006') {
         formData.value = {
             ...filteredSavedData,
             students: Array(1).fill().map(() => ({
@@ -150,7 +135,7 @@ const handleFormSelection = (formId) => {
         };
     }
     // Initialize officers for List of Officers form
-    else if (formId === 'LSPU-OSAS-SF-007') {
+    else if (currentForm.value === 'LSPU-OSAS-SF-007') {
         formData.value = {
             ...filteredSavedData,
             officers: Array(4).fill().map(() => ({
@@ -162,7 +147,7 @@ const handleFormSelection = (formId) => {
         };
     }
     // Initialize attendees for Student Activity Attendance Sheet
-    else if (formId === 'LSPU-OSAS-SF-009') {
+    else if (currentForm.value === 'LSPU-OSAS-SF-009') {
         formData.value = {
             ...filteredSavedData,
             attendees: Array(10).fill().map(() => ({
@@ -177,6 +162,9 @@ const handleFormSelection = (formId) => {
         formData.value = { ...filteredSavedData };
     }
 };
+
+// Initialize form data when component mounts
+initializeFormData();
 
 const handleFormSubmitted = (data) => {
     console.log('Form submitted:', data);
@@ -238,15 +226,8 @@ const handleDirectUploadSubmit = () => {
 
 <template>
   <div class="p-6 document">
-    <!-- Show form selector if no form is selected -->
-    <FormSelector 
-      v-if="!currentForm" 
-      :formOptions="formOptions" 
-      @form-selected="handleFormSelection" 
-    />
-
     <!-- Show the selected form -->
-    <div v-else-if="isDirectUploadForm">
+    <div v-if="isDirectUploadForm">
       <div class="w-full max-w-2xl mx-auto">
         <div
           class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer bg-gray-50 hover:bg-gray-100 transition"
@@ -302,55 +283,55 @@ const handleDirectUploadSubmit = () => {
       
       <!-- Renewal Form -->
       <RenewalForm 
-        v-else-if="currentForm === 'LSPU-OSAS-SF-002'" 
+        v-if="currentForm === 'LSPU-OSAS-SF-002'" 
         :initialFormData="formData"
         @submitted="handleFormSubmitted"
       />
       
       <!-- Commitment Form -->
       <CommitmentForm 
-        v-else-if="currentForm === 'LSPU-OSAS-SF-003'" 
+        v-if="currentForm === 'LSPU-OSAS-SF-003'" 
         :initialFormData="formData"
         @submitted="handleFormSubmitted"
       />
       
       <!-- Plan of Activities Form -->
       <PlanOfActivitiesForm 
-        v-else-if="currentForm === 'LSPU-OSAS-SF-004'" 
+        v-if="currentForm === 'LSPU-OSAS-SF-004'" 
         :initialFormData="formData"
         @submitted="handleFormSubmitted"
       />
       
       <!-- List of Members Form -->
       <ListOfMembersForm 
-        v-else-if="currentForm === 'LSPU-OSAS-SF-005'" 
+        v-if="currentForm === 'LSPU-OSAS-SF-005'" 
         :initialFormData="formData"
         @submitted="handleFormSubmitted"
       />
       
       <!-- Student Certification Form -->
       <StudentCertificationForm 
-        v-else-if="currentForm === 'LSPU-OSAS-SF-006'" 
+        v-if="currentForm === 'LSPU-OSAS-SF-006'" 
         :initialFormData="formData"
         @submitted="handleFormSubmitted"
       />
       
       <!-- List of Officers Form -->
       <ListOfOfficersForm 
-        v-else-if="currentForm === 'LSPU-OSAS-SF-007'" 
+        v-if="currentForm === 'LSPU-OSAS-SF-007'" 
         :initialFormData="formData"
         @submitted="handleFormSubmitted"
       />
       
       <!-- Student Activity Attendance Sheet -->
       <ActivityAttendanceForm 
-        v-else-if="currentForm === 'LSPU-OSAS-SF-009'" 
+        v-if="currentForm === 'LSPU-OSAS-SF-009'" 
         :initialFormData="formData"
         @submitted="handleFormSubmitted"
       />
       <!-- Evaluation Form -->
       <EvaluationForm 
-        v-else-if="currentForm === 'LSPU-OSAS-SF-EVAL'" 
+        v-if="currentForm === 'LSPU-OSAS-SF-EVAL'" 
         :initialFormData="formData"
         @submitted="handleFormSubmitted"
       />

@@ -86,8 +86,22 @@ class OrganizationApplicationController extends Controller
             $cleared ? 'Saved form data cleared successfully!' : 'No saved data found to clear.'
         );
     }
-    public function create()
+
+    /**
+     * Show form selector page
+     */
+    public function selectForm()
     {
+        return Inertia::render('OrganizationApplications/SelectForm');
+    }
+
+    public function create(Request $request)
+    {
+        // If no form_type provided, redirect to form selector
+        if (!$request->has('form_type')) {
+            return redirect()->route('applications.select-form');
+        }
+
         // Get saved form data for auto-fill
         $savedFormData = FormDataService::getSavedFormData();
         
@@ -100,7 +114,8 @@ class OrganizationApplicationController extends Controller
         }
         
         return Inertia::render('OrganizationApplications/Create', [
-            'savedFormData' => $savedFormData
+            'savedFormData' => $savedFormData,
+            'selectedFormType' => $request->input('form_type')
         ]);
     }
 
