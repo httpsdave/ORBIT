@@ -451,8 +451,8 @@ const activeTab = ref('applications');
                             <span class="text-lg font-bold text-green-800 dark:text-green-300">{{ formatDateOnly(event.start_date).split(' ')[1] }}</span>
                           </div>
                         </div>
-                        <div>
-                          <h4 class="font-medium text-gray-800 dark:text-gray-200">{{ event.title }}</h4>
+                        <div class="min-w-0 flex-1">
+                          <h4 class="font-medium text-gray-800 dark:text-gray-200 text-base truncate line-clamp-2 overflow-hidden">{{ event.title }}</h4>
                           <div class="text-sm text-gray-600 dark:text-gray-400 mt-2 space-y-1">
                             <div class="flex items-center text-xs">
                               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -467,7 +467,7 @@ const activeTab = ref('applications');
                               <span>End: {{ formatDate(event.end_date) }}</span>
                             </div>
                             <div v-if="event.description" class="mt-2 pt-2 border-t border-gray-100 dark:border-gray-700">
-                              <p class="text-xs text-gray-600 dark:text-gray-400 line-clamp-2">{{ event.description }}</p>
+                              <p class="text-xs text-gray-600 dark:text-gray-400 line-clamp-2 overflow-hidden">{{ event.description }}</p>
                             </div>
                           </div>
                         </div>
