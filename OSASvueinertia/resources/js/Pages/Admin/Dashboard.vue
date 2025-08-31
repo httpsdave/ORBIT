@@ -656,7 +656,7 @@ function exportAdvisersToCSV() {
                     
                     <div v-if="displayEvent" class="border border-gray-200 dark:border-gray-700 rounded-lg p-3 sm:p-4 bg-white dark:bg-gray-800 shadow-sm cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-700 transition">
                       <Link :href="route('calendar')" class="block">
-                        <h4 class="font-medium text-base sm:text-lg text-gray-800 dark:text-gray-200 mb-3">{{ displayEvent.title }}</h4>
+                        <h4 class="font-medium text-base sm:text-lg text-gray-800 dark:text-gray-200 mb-3 truncate line-clamp-2 overflow-hidden">{{ displayEvent.title }}</h4>
                         <div class="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-2 space-y-2">
                           <div class="flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:h-4 sm:w-4 mr-2 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -672,7 +672,7 @@ function exportAdvisersToCSV() {
                           </div>
                         </div>
                         <div class="mt-4 border-t border-gray-100 dark:border-gray-700 pt-3">
-                          <p class="text-xs sm:text-sm text-gray-700 dark:text-gray-300 line-clamp-3">{{ displayEvent.description }}</p>
+                          <p class="text-xs sm:text-sm text-gray-700 dark:text-gray-300 line-clamp-3 overflow-hidden">{{ displayEvent.description }}</p>
                         </div>
                       </Link>
                     </div>
