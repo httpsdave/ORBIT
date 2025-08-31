@@ -127,7 +127,7 @@ const getCollegeLogo = (acronym, customLogoPath = null) => {
         'COE': '/images/coe-logo.jpg',
         'CIT': '/images/cit-logo.jpg',
         'CTE': '/images/cte-logo.jpg',
-        'CHMT': '/images/chmt-logo.jpg',
+        'CIHTM': '/images/chmt-logo.jpg',
         'CBAA': '/images/cbaa-logo.jpg'
     };
     
