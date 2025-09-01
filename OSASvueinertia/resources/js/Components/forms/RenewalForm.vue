@@ -284,6 +284,11 @@ const submit = () => {
     <p><span class="signature-line" style="min-width:390px; font-size:11pt; font-weight:bold;"><strong>{{ form.director_name }}</strong></span></p>
     <p style="font-size:11pt; font-weight:bold;"><strong>Director/Chairperson, Office of Student Affairs and Services</strong></p>
   </div>
+      <div class="footer mt-8 text-xs flex justify-between calibri-font">
+        <span>LSPU-OSAS-SF-002</span>
+        <span>Rev. 1</span>
+        <span>09 November 2020</span>
+      </div>
     </div>
 
     <!-- Form inputs -->
@@ -422,27 +427,20 @@ const submit = () => {
           </div>
 
           <div class="mt-6 text-center">
-              <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">{{ props.isEdit ? 'Update' : 'Submit' }}</button>
-              
-              <!-- Auto-save indicator -->
-              <div v-if="isAutoSaving" class="mt-2 text-sm text-gray-600">
-                  <span class="inline-flex items-center">
-                      <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      Auto-saving...
-                  </span>
-              </div>
-          </div>
+        <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">{{ props.isEdit ? 'Update' : 'Submit' }}</button>
+        <!-- Auto-save indicator -->
+        <div v-if="isAutoSaving" class="mt-2 text-sm text-gray-600">
+          <span class="inline-flex items-center">
+            <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Auto-saving...
+          </span>
+        </div>
       </div>
-    </form>
-
-    <div class="footer mt-8 text-xs flex justify-between">
-        <span>LSPU-OSAS-SF-002</span>
-        <span>Rev. 1</span>
-        <span>09 November 2020</span>
     </div>
+  </form>
 </div>
 </template>
 
