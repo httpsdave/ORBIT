@@ -940,6 +940,8 @@ export default {
     // First-time user guidance
     const showFirstClickTooltip = ref(false);
     const hasSeenTooltip = ref(false);
+    const pendingClickInfo = ref(null);
+    const pendingSelectInfo = ref(null);
     
     const eventForm = reactive({
       title: '',
@@ -974,7 +976,18 @@ export default {
     onMounted(() => {
       // Check localStorage for tooltip preference
       const tooltipSeen = localStorage.getItem('calendar-tooltip-seen');
-      hasSeenTooltip.value = tooltipSeen === 'true';
+      const cooldownExpiry = localStorage.getItem('calendar-tooltip-cooldown');
+      
+      if (tooltipSeen === 'true') {
+        hasSeenTooltip.value = true;
+      } else if (cooldownExpiry) {
+        // Check if cooldown period has expired
+        const cooldownTime = parseInt(cooldownExpiry);
+        const now = new Date().getTime();
+        if (now < cooldownTime) {
+          hasSeenTooltip.value = true; // Still in cooldown period
+        }
+      }
       
       checkEventsTimer.value = setInterval(() => {
         filterExpiredEvents();
@@ -1547,6 +1560,8 @@ export default {
 
       // Show first-time tooltip if user hasn't seen it
       if (!hasSeenTooltip.value) {
+        // Store the pending click info for after tooltip dismissal
+        pendingClickInfo.value = info;
         showFirstClickTooltip.value = true;
         return; // Don't proceed with event creation on first click
       }
@@ -1606,6 +1621,14 @@ export default {
           info.view.calendar.unselect();
         }
         return;
+      }
+      
+      // Show first-time tooltip if user hasn't seen it
+      if (!hasSeenTooltip.value) {
+        // Store the pending selection info for after tooltip dismissal
+        pendingSelectInfo.value = info;
+        showFirstClickTooltip.value = true;
+        return; // Don't proceed with event creation on first drag
       }
       
       try {
@@ -1697,12 +1720,75 @@ export default {
     function dismissTooltip() {
       showFirstClickTooltip.value = false;
       hasSeenTooltip.value = true;
+      
+      // Set cooldown period in localStorage (1 day)
+      const cooldownExpiry = new Date();
+      cooldownExpiry.setDate(cooldownExpiry.getDate() + 1);
+      localStorage.setItem('calendar-tooltip-cooldown', cooldownExpiry.getTime().toString());
+      
+      // Process any pending interactions after tooltip is dismissed
+      processPendingInteraction();
     }
 
     function dismissTooltipPermanently() {
       showFirstClickTooltip.value = false;
       hasSeenTooltip.value = true;
       localStorage.setItem('calendar-tooltip-seen', 'true');
+      
+      // Process any pending interactions after tooltip is dismissed
+      processPendingInteraction();
+    }
+    
+    function processPendingInteraction() {
+      // Process pending click info if exists
+      if (pendingClickInfo.value) {
+        const clickInfo = pendingClickInfo.value;
+        pendingClickInfo.value = null;
+        
+        // Delay to ensure modal transition is complete
+        setTimeout(() => {
+          try {
+            const clickedDate = dayjs(clickInfo.date).format('YYYY-MM-DD');
+            
+            if (dayjs(clickedDate).isBefore(dayjs(), 'day')) {
+              showPastDateWarning('You are creating an event for a past date. Continue?', () => {
+                createEventForDate(clickedDate, clickInfo);
+              });
+            } else {
+              createEventForDate(clickedDate, clickInfo);
+            }
+          } catch (error) {
+            console.error('Error processing pending click:', error);
+          }
+        }, 200);
+      }
+      
+      // Process pending select info if exists
+      if (pendingSelectInfo.value) {
+        const selectInfo = pendingSelectInfo.value;
+        pendingSelectInfo.value = null;
+        
+        // Delay to ensure modal transition is complete
+        setTimeout(() => {
+          try {
+            const startDate = dayjs(selectInfo.start).format('YYYY-MM-DD');
+            const endDate = dayjs(selectInfo.end).subtract(1, 'day').format('YYYY-MM-DD');
+            
+            if (dayjs(startDate).isBefore(dayjs(), 'day')) {
+              showPastDateWarning(`You are creating an event starting in the past (${startDate}). Continue?`, () => {
+                createEventForDateRange(startDate, endDate, selectInfo);
+              });
+            } else {
+              createEventForDateRange(startDate, endDate, selectInfo);
+            }
+          } catch (error) {
+            console.error('Error processing pending selection:', error);
+            if (selectInfo.view?.calendar) {
+              selectInfo.view.calendar.unselect();
+            }
+          }
+        }, 200);
+      }
     }
 
     function handleFileProcessed(data) {
@@ -1801,9 +1887,12 @@ function exportPastEventsCsv(pastEvents) {
       confirmCancelEvent,
       cancelCancelEvent,
       // First-time tooltip
-              showFirstClickTooltip,
-        dismissTooltip,
-        dismissTooltipPermanently,
+      showFirstClickTooltip,
+      dismissTooltip,
+      dismissTooltipPermanently,
+      pendingClickInfo,
+      pendingSelectInfo,
+      processPendingInteraction,
         // Status banner
         showStatusBanner,
         statusMessage,
