@@ -244,24 +244,49 @@
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Event Title</label>
           <input v-model="eventForm.title" type="text" class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" />
         </div>
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Start Date</label>
-            <input v-model="eventForm.date" type="date" class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Start Time</label>
-            <input v-model="eventForm.start_time" type="time" class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" />
+        
+        <!-- Date Fields Section -->
+        <div>
+          <h4 class="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-3 flex items-center">
+            <svg class="w-4 h-4 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            Event Dates
+          </h4>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Start Date</label>
+              <input v-model="eventForm.date" type="date" class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">End Date</label>
+              <input v-model="eventForm.end_date" type="date" :min="eventForm.date" class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" />
+            </div>
           </div>
         </div>
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">End Date</label>
-            <input v-model="eventForm.end_date" type="date" :min="eventForm.date" class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">End Time</label>
-            <input v-model="eventForm.end_time" type="time" class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" />
+        
+        <!-- Time Fields Section -->
+        <div>
+          <h4 class="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-3 flex items-center">
+            <svg class="w-4 h-4 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Event Times
+          </h4>
+          <div class="flex items-center gap-3">
+            <div class="flex-shrink-0">
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Start Time</label>
+              <input v-model="eventForm.start_time" type="time" class="block w-33 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" />
+            </div>
+            
+            <div class="flex-shrink-0 mt-6">
+              <span class="text-gray-500 dark:text-gray-400 font-medium text-lg">—</span>
+            </div>
+            
+            <div class="flex-shrink-0">
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">End Time</label>
+              <input v-model="eventForm.end_time" type="time" class="block w-33 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" />
+            </div>
           </div>
         </div>
         <div>
