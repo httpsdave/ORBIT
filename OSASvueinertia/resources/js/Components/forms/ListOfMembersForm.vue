@@ -493,28 +493,30 @@ const submit = () => {
         <div v-if="form.members.length > 0" class="mt-4">
           <!-- Advisers and Dates -->
           <table class="w-full" style="border-collapse:collapse;">
-            <tr>
-              <td class="align-top text-center w-1/2 p-0" style="vertical-align:top; text-align:center;">
-                <div style="width:200px; margin:0 auto; margin-left:35px;">
-                  <span class="border-b border-black min-w-[150px] inline-block text-center"><strong>{{ form.adviser_name }}</strong></span>
-                  <div class="text-center">Organization Adviser</div>
-                </div>
-                <div class="text-left mt-1" style="padding-left:35px;">Date: <span class="border-b border-black min-w-[140px] inline-block text-center"><strong>{{ currentDate }}</strong></span></div>
-                <!-- Noted / Dean section under left date -->
-                <div class="mt-4">
-                  <div class="font-bold text-left ml-8">Noted:</div>
-                  <span class="border-b border-black min-w-[180px] inline-block text-center"><strong>{{ form.dean_name }}</strong></span>
-                  <div class="text-center">Dean/Assoc. Dean of College</div>
-                </div>
-              </td>
-              <td class="align-top text-center w-1/2 p-0" style="vertical-align:top; text-align:center;">
-                <div style="width:200px; margin:0 auto; margin-left:110px;">
-                  <span class="border-b border-black min-w-[150px] inline-block text-center"><strong>{{ form.second_adviser }}</strong></span>
-                  <div class="text-center">Organization Adviser</div>
-                </div>
-                <div class="text-left mt-1" style="padding-left:110px;">Date: <span class="border-b border-black min-w-[140px] inline-block text-center"><strong>{{ currentDate }}</strong></span></div>
-              </td>
-            </tr>
+            <tbody>
+              <tr>
+                <td class="align-top text-center w-1/2 p-0" style="vertical-align:top; text-align:center;">
+                  <div style="width:200px; margin:0 auto; margin-left:35px;">
+                    <span class="border-b border-black min-w-[150px] inline-block text-center"><strong>{{ form.adviser_name }}</strong></span>
+                    <div class="text-center">Organization Adviser</div>
+                  </div>
+                  <div class="text-left mt-1" style="padding-left:35px;">Date: <span class="border-b border-black min-w-[140px] inline-block text-center"><strong>{{ currentDate }}</strong></span></div>
+                  <!-- Noted / Dean section under left date -->
+                  <div class="mt-4">
+                    <div class="font-bold text-left ml-8">Noted:</div>
+                    <span class="border-b border-black min-w-[180px] inline-block text-center"><strong>{{ form.dean_name }}</strong></span>
+                    <div class="text-center">Dean/Assoc. Dean of College</div>
+                  </div>
+                </td>
+                <td class="align-top text-center w-1/2 p-0" style="vertical-align:top; text-align:center;">
+                  <div style="width:200px; margin:0 auto; margin-left:110px;">
+                    <span class="border-b border-black min-w-[150px] inline-block text-center"><strong>{{ form.second_adviser }}</strong></span>
+                    <div class="text-center">Organization Adviser</div>
+                  </div>
+                  <div class="text-left mt-1" style="padding-left:110px;">Date: <span class="border-b border-black min-w-[140px] inline-block text-center"><strong>{{ currentDate }}</strong></span></div>
+                </td>
+              </tr>
+            </tbody>
           </table>
 
           <!-- Recommending Approval -->
