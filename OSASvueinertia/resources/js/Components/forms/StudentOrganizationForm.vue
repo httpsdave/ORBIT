@@ -238,6 +238,12 @@ const submit = () => {
   <p style="margin-top: 0; margin-bottom: 0; text-align: center;"><span class="title-text long-title" style="display: block; width: 390px; margin-left: auto; margin-right: auto; text-align: center; white-space: nowrap; font-size: 11pt;">Director/Chairperson, Office of Student Affairs and Services</span></p>
   </div>
 
+  <div class="footer" style="margin-top: 0.5cm; font-size: 10pt; font-family: Calibri, sans-serif; display: flex; justify-content: space-between;">
+    <span>LSPU-OSAS-SF-001</span>
+    <span>Rev. 1</span>
+    <span>09 November 2020</span>
+  </div>
+
   <!-- Form inputs -->
   <div class="mt-8 border-t pt-6">
     <h3 class="text-lg font-bold mb-4">Form Details</h3>
@@ -313,12 +319,6 @@ const submit = () => {
     <div class="mt-6 text-center">
       <button type="submit" @click="submit" class="bg-green-500 text-white px-4 py-2 rounded">{{ props.isEdit ? 'Update' : 'Submit' }}</button>
     </div>
-  </div>
-
-  <div class="footer" style="margin-top: 2cm; font-size: 10pt; font-family: Calibri, sans-serif; display: flex; justify-content: space-between;">
-    <span>LSPU-OSAS-SF-001</span>
-    <span>Rev. 1</span>
-    <span>09 November 2020</span>
   </div>
 </div>
 
