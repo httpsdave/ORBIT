@@ -250,17 +250,74 @@ const submit = () => {
 
 <template>
   <div class="mt-6 form-content">
+    <!-- Header matching blade template -->
     <div class="header text-center relative">
-        <img src="/images/lspu-logo.png" alt="LSPU Logo" class="absolute top-[-0.5cm] left-[-2cm] w-[250px] h-auto">
-        <p class="text-sm font-bold mb-0">Republic of the Philippines</p>
-        <p class="text-base font-bold university-name mb-0">Laguna State Polytechnic University</p>
-        <p class="text-sm mb-0">Province of Laguna</p>
-        <p class="text-sm font-bold mb-0 mt-4">OFFICE OF STUDENT AFFAIRS AND SERVICES</p>
-        <p class="text-sm font-bold form-title mt-2 mb-2">STUDENT ACTIVITY ATTENDANCE SHEET</p>
+      <img src="/images/lspu-logo.png" alt="LSPU Logo" class="absolute logo" style="position: absolute; margin-top: -40px; left: -2cm; width: 250px; height: auto;">
+      <div class="font-normal text-[10pt] leading-tight header-text" style="font-family:Calibri,sans-serif;">
+        Republic of the Philippines<br>
+        <img src="/images/lspu-name.png" alt="Laguna State Polytechnic University" class="inline-block align-middle max-w-[45%] my-1 university-name" style="max-width: 45%; height: auto; margin: 3px 0; display: inline-block;" /><br>
+        <span class="block mb-3 province-text" style="margin-bottom: 12px; display: block;">Province of Laguna</span>
+      </div>
+      <div class="font-bold text-[11pt] office-title" style="font-family:Calibri,sans-serif; font-size:11pt; font-weight:bold; margin-bottom:10px; margin-top:30px; display: block;">OFFICE OF STUDENT AFFAIRS AND SERVICES</div>
+      <div class="font-bold text-[11pt] sub-header" style="font-family:Calibri,sans-serif; font-size:11pt; font-weight:bold; margin-bottom:10px; margin-top:6px; display: block; font-style: italic;">STUDENT ACTIVITY ATTENDANCE SHEET</div>
+      <div class="font-bold text-[11pt] college-header" style="font-family:Calibri,sans-serif; font-size:11pt; font-weight:bold; margin-top:6px; display: block;">
+        COLLEGE OF {{ form.college ? form.college.toUpperCase() : '' }}
+      </div>
+    </div>
+
+    <!-- Activity and Date row matching blade template -->
+    <div class="form-row" style="margin-top: 15px; clear: both;">
+      <div class="form-field" style="float: left; width: 60%;">
+        <span class="font-bold" style="font-family:'Calibri',sans-serif; font-size:11pt; font-weight:bold;">ACTIVITY: </span>
+        <span style="border-bottom: 1px solid black; display: inline-block; min-width: 300px; font-family:'Calibri',sans-serif; font-size:11pt; font-weight:bold;">{{ form.activity_name || '' }}</span>
+      </div>
+      <div class="form-field" style="float: right; width: 30%; text-align: right;">
+        <span class="font-bold" style="font-family:'Calibri',sans-serif; font-size:11pt; font-weight:bold;">DATE: </span>
+        <span style="border-bottom: 1px solid black; display: inline-block; min-width: 100px; font-family:'Calibri',sans-serif; font-size:11pt; font-weight:bold;">{{ form.activity_date ? new Date(form.activity_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '' }}</span>
+      </div>
+      <div style="clear: both;"></div>
+    </div>
+
+    <!-- Attendance Table matching blade template -->
+    <div class="attendance-table" style="margin-top: 20px;">
+      <table style="width: 100%; border-collapse: collapse; border: 1px solid black;">
+        <thead>
+          <tr>
+            <th style="border: 1px solid black; padding: 4px; text-align: center; font-family:'Calibri',sans-serif; font-size:10pt; font-weight:bold; width: 50%;">NAME</th>
+            <th style="border: 1px solid black; padding: 4px; text-align: center; font-family:'Calibri',sans-serif; font-size:10pt; font-weight:bold; width: 25%;">COURSE/YEAR &<br>SECTION</th>
+            <th style="border: 1px solid black; padding: 4px; text-align: center; font-family:'Calibri',sans-serif; font-size:10pt; font-weight:bold; width: 25%;">SIGNATURE</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(attendee, index) in form.attendees.slice(0, 35)" :key="index">
+            <td style="border: 1px solid black; padding: 2px; height: 18px; font-family:'Calibri',sans-serif; font-size:10pt; text-align: left;">
+              <span style="float: left; margin-right: 5px;">{{ index + 1 }}.</span>
+              {{ attendee.name }}
+            </td>
+            <td style="border: 1px solid black; padding: 2px; height: 18px; font-family:'Calibri',sans-serif; font-size:10pt; text-align: center;">{{ attendee.course_year_section }}</td>
+            <td style="border: 1px solid black; padding: 2px; height: 18px;">&nbsp;</td>
+          </tr>
+          <!-- Fill remaining rows up to 35 -->
+          <tr v-for="i in Math.max(0, 35 - form.attendees.length)" :key="'empty-' + i">
+            <td style="border: 1px solid black; padding: 2px; height: 18px; font-family:'Calibri',sans-serif; font-size:10pt;">
+              <span style="float: left; margin-right: 5px;">{{ form.attendees.length + i }}.</span>
+            </td>
+            <td style="border: 1px solid black; padding: 2px; height: 18px;">&nbsp;</td>
+            <td style="border: 1px solid black; padding: 2px; height: 18px;">&nbsp;</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Footer matching blade template -->
+    <div class="footer" style="margin-top: 20px; position: relative; height: 20px; font-family:Calibri,sans-serif; font-size:10pt;">
+      <div style="position: absolute; left: 0;">LSPU-OSAS-SF-009</div>
+      <div style="position: absolute; left: 50%; transform: translateX(-50%);">Rev. 0</div>
+      <div style="position: absolute; right: 0;">10 August 2016</div>
     </div>
 
     <!-- Form inputs -->
-    <div class="mt-6">
+    <div class="mt-8 border-t pt-6">
         <h3 class="text-lg font-bold mb-4">Form Details</h3>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -407,11 +464,6 @@ const submit = () => {
     </div>
 </div>
 
-<div class="footer mt-8 text-xs flex justify-between">
-    <span>LSPU-OSAS-SF-009</span>
-    <span>Rev. 0</span>
-    <span>10 August 2016</span>
-</div>
 </div>
 
 </template>
