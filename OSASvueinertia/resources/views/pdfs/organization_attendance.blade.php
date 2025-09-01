@@ -188,7 +188,7 @@
                     <span class="underline">{{ $application->activity_name ?? '' }}</span>
                 </div>
                 <div class="form-field" style="float: right; width: 30%; text-align: right;">
-                    <label>DATE: </label>
+                    <label style="margin-left: -10px;">DATE: </label>
                     <span class="underline" style="min-width: 100px;">{{ $application->activity_date ? \Carbon\Carbon::parse($application->activity_date)->format('F d, Y') : '' }}</span>
                 </div>
             </div>
