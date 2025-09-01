@@ -1,6 +1,10 @@
 <script setup>
 import { ref, watch, onMounted, onUnmounted } from 'vue';
 import { ChevronDown } from 'lucide-vue-next';
+import { useTheme } from '@/Composables/useTheme';
+
+// Initialize theme
+const { isDark } = useTheme();
 
 const props = defineProps({
   formOptions: {
@@ -63,7 +67,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="w-full max-w-md mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md" ref="dropdownRef">
+  <div class="w-full max-w-md mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700" ref="dropdownRef">
     <!-- Animated Color Banner -->
     <div class="flex w-full overflow-hidden rounded-t-lg">
       <div class="w-1/4 h-1.5 bg-blue-500 animate-pulse" style="animation-delay: 0.2s;"></div>
