@@ -379,7 +379,7 @@ const submit = () => {
       </div>
 
       <!-- Footer -->
-      <div class="footer mt-8 text-xs flex justify-between">
+  <div class="footer mt-8 text-xs flex justify-between font-[Calibri]">
         <span>LSPU-OSAS-SF-006</span>
         <span>Rev. 1</span>
         <span>09 November 2020</span>
