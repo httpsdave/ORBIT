@@ -225,10 +225,10 @@
   <Transition name="modal">
     <div 
       v-if="extractedData || isEditing" 
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
       @click.self="cancelEdit"
     >
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 max-w-md w-full mx-4">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 sm:p-6 w-full max-w-xs sm:max-w-md max-h-[90vh] overflow-y-auto">
       <div class="flex justify-between items-center mb-4">
         <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">
           {{ isEditing ? 'Edit Event' : 'Create New Event' }}
@@ -253,7 +253,7 @@
             </svg>
             Event Dates
           </h4>
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-2 gap-3 sm:gap-4">
             <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Start Date</label>
               <input v-model="eventForm.date" type="date" class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" />
@@ -273,10 +273,10 @@
             </svg>
             Event Times
           </h4>
-          <div class="flex items-center gap-3">
+          <div class="flex items-center gap-2 sm:gap-3">
             <div class="flex-shrink-0">
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Start Time</label>
-              <input v-model="eventForm.start_time" type="time" class="block w-33 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" />
+              <input v-model="eventForm.start_time" type="time" class="block w-28 sm:w-36 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" />
             </div>
             
             <div class="flex-shrink-0 mt-6">
@@ -285,13 +285,13 @@
             
             <div class="flex-shrink-0">
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">End Time</label>
-              <input v-model="eventForm.end_time" type="time" class="block w-33 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" />
+              <input v-model="eventForm.end_time" type="time" class="block w-28 sm:w-36 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" />
             </div>
           </div>
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
-          <textarea v-model="eventForm.description" rows="3" class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"></textarea>
+          <textarea v-model="eventForm.description" rows="3" class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 resize-none"></textarea>
         </div>
         <div class="pt-4 flex justify-end space-x-3">
           <button 
