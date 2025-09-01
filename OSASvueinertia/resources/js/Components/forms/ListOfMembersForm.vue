@@ -524,60 +524,65 @@ const submit = () => {
             <div class="mt-1 mb-1">Coordinator, Student Organization Unit</div>
           </div>
 
-          <!-- Approved/Disapproved -->
-          <div class="text-center mt-4">
-            <div class="font-bold mb-1"><strong>Approved/Disapproved:</strong></div>
-            <div class="border-b border-black min-w-[340px] inline-block text-center"><strong>{{ form.director_name }}</strong></div>
-            <div class="mt-1">Director/Chairperson, Office of Student Affairs and Services</div>
-          </div>
-        </div>
-
-
-        <!-- Pagination Controls -->
-        <div v-if="totalPages > 1" class="pagination-controls flex justify-center items-center mt-8 gap-4">
-            <button 
-                @click="prevPage" 
-                :disabled="currentPage === 1"
-                class="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed">
-                Previous
-            </button>
-            
-            <div class="flex gap-2">
-                <button 
-                    v-for="page in visiblePages" 
-                    :key="page"
-                    @click="page === '...' ? null : goToPage(page)"
-                    :disabled="page === '...'"
-                    :class="[
-                        'px-3 py-1 rounded',
-                        page === '...' 
-                            ? 'text-gray-400 cursor-default' 
-                            : currentPage === page 
-                                ? 'bg-blue-600 text-white' 
-                                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                    ]">
-                    {{ page }}
-                </button>
-            </div>
-            
-            <button 
-                @click="nextPage" 
-                :disabled="currentPage === totalPages"
-                class="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed">
-                Next
-            </button>
-        </div>
-
-        <!-- Page Info -->
-        <div v-if="totalPages > 1" class="text-center mt-4 text-sm text-gray-600">
-            Page {{ currentPage }} of {{ totalPages }} • Members {{ startIndex + 1 }}-{{ endIndex }} of {{ form.members.length }}
-        </div>
+      <!-- Approved/Disapproved -->
+      <div class="text-center mt-4">
+      <div class="font-bold mb-1"><strong>Approved/Disapproved:</strong></div>
+      <div class="border-b border-black min-w-[340px] inline-block text-center"><strong>{{ form.director_name }}</strong></div>
+      <div class="mt-1">Director/Chairperson, Office of Student Affairs and Services</div>
+      </div>
+      <!-- Footer moved here -->
+      <div class="footer mt-8 text-xs flex justify-between" style="font-family:Calibri,sans-serif;">
+      <span>LSPU-OSAS-SF-005</span>
+      <span>Rev. 1</span>
+      <span>09 November 2020</span>
+      </div>
     </div>
 
+    <!-- Pagination Controls -->
+    <div v-if="totalPages > 1" class="pagination-controls flex justify-center items-center mt-8 gap-4">
+      <button 
+        @click="prevPage" 
+        :disabled="currentPage === 1"
+        class="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed">
+        Previous
+      </button>
+            
+      <div class="flex gap-2">
+        <button 
+          v-for="page in visiblePages" 
+          :key="page"
+          @click="page === '...' ? null : goToPage(page)"
+          :disabled="page === '...'"
+          :class="[
+            'px-3 py-1 rounded',
+            page === '...' 
+              ? 'text-gray-400 cursor-default' 
+              : currentPage === page 
+                ? 'bg-blue-600 text-white' 
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+          ]">
+          {{ page }}
+        </button>
+      </div>
+            
+      <button 
+        @click="nextPage" 
+        :disabled="currentPage === totalPages"
+        class="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed">
+        Next
+      </button>
+    </div>
+
+    <!-- Page Info -->
+    <div v-if="totalPages > 1" class="text-center mt-4 text-sm text-gray-600">
+      Page {{ currentPage }} of {{ totalPages }} • Members {{ startIndex + 1 }}-{{ endIndex }} of {{ form.members.length }}
+    </div>
+  </div>
 
 
-    <!-- Form inputs -->
-    <div class="mt-8 border-t pt-6">
+
+  <!-- Form inputs -->
+  <div class="mt-8 border-t pt-6">
     <h3 class="text-lg font-bold mb-4">Form Details</h3>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <!-- 1st Column -->
@@ -815,11 +820,7 @@ const submit = () => {
         </div>
     </div>
 
-    <div class="footer mt-8 text-xs flex justify-between">
-        <span>LSPU-OSAS-SF-005</span>
-        <span>Rev. 1</span>
-        <span>09 November 2020</span>
-    </div>
+
 </div>
 
 </template>
