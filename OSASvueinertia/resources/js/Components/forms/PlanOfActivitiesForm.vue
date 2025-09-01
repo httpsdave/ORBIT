@@ -943,6 +943,11 @@ nextTick(() => {
           {{ form.director_name }}
         </div>
         <div class="text-[11pt] mt-1" style="font-family:'Times New Roman',serif;">Director/Chairperson, Office of Student Affairs and Services</div>
+        <div class="footer mt-8 text-xs flex justify-between text-[10pt]" style="font-family: Calibri, sans-serif;">
+          <span>LSPU-OSAS-SF-004</span>
+          <span>Rev. 1</span>
+          <span>09 November 2020</span>
+        </div>
       </div>
     </div>
 
@@ -1078,11 +1083,6 @@ nextTick(() => {
     </div>
 
     <!-- Footer (matching blade template) -->
-    <div class="footer mt-8 text-xs flex justify-between text-[10pt]" style="font-family: Calibri, sans-serif;">
-      <span>LSPU-OSAS-SF-004</span>
-      <span>Rev. 1</span>
-      <span>09 November 2020</span>
-    </div>
   </div>
 </template>
                             <input 
