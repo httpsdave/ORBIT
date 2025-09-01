@@ -380,6 +380,12 @@ const submit = () => {
       </div>
     </div>
 
+    <div class="footer mt-8 text-xs flex justify-between font-[Calibri]">
+      <span>LSPU-OSAS-SF-003</span>
+      <span>Rev. 1</span>
+      <span>09 November 2020</span>
+    </div>
+
     <!-- Form inputs -->
     <div class="mt-8 border-t pt-6">
       <h3 class="text-lg font-bold mb-4">Form Details</h3>
@@ -528,12 +534,6 @@ const submit = () => {
       <div class="mt-6 text-center">
         <button type="submit" @click="submit" class="bg-green-500 text-white px-4 py-2 rounded">{{ props.isEdit ? 'Update' : 'Submit' }}</button>
       </div>
-    </div>
-
-    <div class="footer mt-8 text-xs flex justify-between">
-      <span>LSPU-OSAS-SF-003</span>
-      <span>Rev. 1</span>
-      <span>09 November 2020</span>
     </div>
   </div>
 </template>
