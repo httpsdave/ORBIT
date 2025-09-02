@@ -228,7 +228,6 @@ const submit = () => {
   if (!validateForm()) {
     return;
   }
-  
   // Check if we're in edit mode
   if (props.isEdit) {
     // For edit mode, just emit the data - don't make HTTP request here
@@ -237,7 +236,7 @@ const submit = () => {
     // For create mode, make the POST request
     form.post('/applications', {
       onSuccess: () => {
-        alert('Form submitted successfully!');
+        // Removed system alert for successful submission
         emit('submitted', form.data());
       },
       onError: (errors) => {
