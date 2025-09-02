@@ -344,6 +344,41 @@ class NotificationController extends Controller
 
         return back()->with('success', 'Notification deleted successfully.');
     }
+
+    /**
+     * Remove multiple notifications from storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function bulkDestroy(Request $request)
+    {
+        $validated = $request->validate([
+            'notification_ids' => 'required|array|min:1',
+            'notification_ids.*' => 'integer|exists:notifications,id',
+        ]);
+
+        $notificationIds = $validated['notification_ids'];
+        $deletedCount = 0;
+
+        foreach ($notificationIds as $id) {
+            // First delete all user notification associations
+            \DB::table('user_notifications')->where('notification_id', $id)->delete();
+            
+            // Then delete the notification itself
+            $notification = Notification::find($id);
+            if ($notification) {
+                $notification->delete();
+                $deletedCount++;
+            }
+        }
+
+        $message = $deletedCount === 1 
+            ? 'Notification deleted successfully.' 
+            : "{$deletedCount} notifications deleted successfully.";
+
+        return back()->with('success', $message);
+    }
     
     
 }

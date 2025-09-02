@@ -1,6 +1,6 @@
 <script setup>
 import { Head, Link, router } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { ref, computed, watch, nextTick } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Pagination from '@/Components/Pagination.vue';
 import Modal from '@/Components/Modal.vue';
@@ -13,14 +13,68 @@ const props = defineProps({
 const showDeleteModal = ref(false);
 const notificationToDelete = ref(null);
 
+// For bulk delete
+const showBulkDeleteModal = ref(false);
+const selectedNotifications = ref([]);
+
 // For notification popup modal
 const showNotificationModal = ref(false);
 const selectedNotification = ref(null);
+
+// Refs for checkboxes to handle indeterminate state
+const selectAllCheckboxes = ref([]);
+
+// Computed properties for bulk operations
+const isAllSelected = computed(() => {
+  return props.notifications.data.length > 0 && selectedNotifications.value.length === props.notifications.data.length;
+});
+
+const isSomeSelected = computed(() => {
+  return selectedNotifications.value.length > 0 && selectedNotifications.value.length < props.notifications.data.length;
+});
+
+const hasSelectedNotifications = computed(() => {
+  return selectedNotifications.value.length > 0;
+});
+
+// Watch for changes in selection state to update indeterminate property
+watch([isAllSelected, isSomeSelected], () => {
+  nextTick(() => {
+    // Update all select-all checkboxes
+    document.querySelectorAll('input[type="checkbox"][data-select-all]').forEach(checkbox => {
+      checkbox.indeterminate = isSomeSelected.value;
+    });
+  });
+});
+
+// Toggle all notifications selection
+const toggleSelectAll = () => {
+  if (isAllSelected.value) {
+    selectedNotifications.value = [];
+  } else {
+    selectedNotifications.value = props.notifications.data.map(notification => notification.id);
+  }
+};
+
+// Toggle individual notification selection
+const toggleNotificationSelection = (notificationId) => {
+  const index = selectedNotifications.value.indexOf(notificationId);
+  if (index > -1) {
+    selectedNotifications.value.splice(index, 1);
+  } else {
+    selectedNotifications.value.push(notificationId);
+  }
+};
 
 // Show confirmation dialog before deletion
 const confirmDelete = (notification) => {
   notificationToDelete.value = notification;
   showDeleteModal.value = true;
+};
+
+// Show confirmation dialog before bulk deletion
+const confirmBulkDelete = () => {
+  showBulkDeleteModal.value = true;
 };
 
 // Delete notification
@@ -30,6 +84,20 @@ const deleteNotification = () => {
     onSuccess: () => {
       showDeleteModal.value = false;
       notificationToDelete.value = null;
+    },
+  });
+};
+
+// Bulk delete notifications
+const bulkDeleteNotifications = () => {
+  router.delete(route('admin.notifications.bulk-destroy'), {
+    data: {
+      notification_ids: selectedNotifications.value
+    },
+    preserveScroll: true,
+    onSuccess: () => {
+      showBulkDeleteModal.value = false;
+      selectedNotifications.value = [];
     },
   });
 };
@@ -79,6 +147,22 @@ const closeNotificationModal = () => {
 };
 </script>
 
+<style scoped>
+/* Handle indeterminate checkbox state */
+input[type="checkbox"]:indeterminate {
+  background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M4 8h8'/%3e%3c/svg%3e");
+}
+
+/* Line clamp for message truncation */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+</style>
+
 <template>
   <AuthenticatedLayout :is-admin="true">
     <Head title="Manage Notifications" />
@@ -96,7 +180,23 @@ const closeNotificationModal = () => {
         <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
           <div class="p-4 sm:p-6">
             <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 sm:mb-8">
-              <h2 class="text-lg sm:text-xl font-medium text-gray-800 dark:text-gray-200">Manage Notifications</h2>
+              <div class="flex items-center gap-4">
+                <h2 class="text-lg sm:text-xl font-medium text-gray-800 dark:text-gray-200">Manage Notifications</h2>
+                <div v-if="hasSelectedNotifications" class="flex items-center gap-2">
+                  <span class="text-sm text-gray-600 dark:text-gray-400">
+                    {{ selectedNotifications.length }} selected
+                  </span>
+                  <button
+                    @click="confirmBulkDelete"
+                    class="inline-flex items-center px-3 py-1.5 bg-red-500 border border-transparent rounded-md font-medium text-xs text-white uppercase tracking-wider hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition duration-150 ease-in-out"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    Delete Selected
+                  </button>
+                </div>
+              </div>
               <Link
                 :href="route('admin.notifications.create')"
                 class="inline-flex items-center justify-center px-4 py-2 bg-blue-500 border border-transparent rounded-md font-medium text-xs text-white uppercase tracking-wider hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition duration-150 ease-in-out w-full sm:w-auto"
@@ -113,12 +213,21 @@ const closeNotificationModal = () => {
               <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                 <thead class="bg-gray-50 dark:bg-gray-700">
                   <tr>
+                    <th scope="col" class="px-4 py-3 text-left">
+                      <input
+                        type="checkbox"
+                        :checked="isAllSelected"
+                        :indeterminate="isSomeSelected"
+                        @change="toggleSelectAll"
+                        data-select-all
+                        class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                      />
+                    </th>
                     <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Details</th>
                     <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Type</th>
                     <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Target Audience</th>
                     <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
                     <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Created</th>
-                    <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
                 <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -132,8 +241,16 @@ const closeNotificationModal = () => {
                       </div>
                     </td>
                   </tr>
-                  <tr v-for="notification in notifications.data" :key="notification.id" class="hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-150 cursor-pointer" @click="showNotificationPopup(notification)">
-                    <td class="px-4 py-4">
+                  <tr v-for="notification in notifications.data" :key="notification.id" class="hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-150">
+                    <td class="px-4 py-4" @click.stop>
+                      <input
+                        type="checkbox"
+                        :checked="selectedNotifications.includes(notification.id)"
+                        @change="toggleNotificationSelection(notification.id)"
+                        class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                      />
+                    </td>
+                    <td class="px-4 py-4 cursor-pointer" @click="showNotificationPopup(notification)">
                       <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ notification.title }}</div>
                       <div class="text-sm text-gray-500 dark:text-gray-400 truncate max-w-xs">{{ notification.message }}</div>
                       <div class="text-xs text-blue-600 dark:text-blue-400 mt-1 opacity-75">Click to view full message</div>
@@ -165,29 +282,6 @@ const closeNotificationModal = () => {
                     <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-400">
                       <div class="truncate max-w-24">{{ notification.created_at }}</div>
                     </td>
-                    <td class="px-4 py-4 text-right">
-                      <div class="flex justify-end space-x-2">
-                        <Link 
-                          :href="route('admin.notifications.edit', notification.id)" 
-                          class="text-gray-500 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors duration-150"
-                          title="Edit"
-                          @click.stop
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                          </svg>
-                        </Link>
-                        <button 
-                          @click.stop="confirmDelete(notification)" 
-                          class="text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors duration-150"
-                          title="Delete"
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                          </svg>
-                        </button>
-                      </div>
-                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -198,10 +292,19 @@ const closeNotificationModal = () => {
               <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                 <thead class="bg-gray-50 dark:bg-gray-700">
                   <tr>
+                    <th scope="col" class="px-3 py-3 text-left">
+                      <input
+                        type="checkbox"
+                        :checked="isAllSelected"
+                        :indeterminate="isSomeSelected"
+                        @change="toggleSelectAll"
+                        data-select-all
+                        class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                      />
+                    </th>
                     <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Details</th>
                     <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Type</th>
                     <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
-                    <th scope="col" class="px-3 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
                 <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -215,8 +318,16 @@ const closeNotificationModal = () => {
                       </div>
                     </td>
                   </tr>
-                  <tr v-for="notification in notifications.data" :key="notification.id" class="hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-150 cursor-pointer" @click="showNotificationPopup(notification)">
-                    <td class="px-3 py-4">
+                  <tr v-for="notification in notifications.data" :key="notification.id" class="hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-150">
+                    <td class="px-3 py-4" @click.stop>
+                      <input
+                        type="checkbox"
+                        :checked="selectedNotifications.includes(notification.id)"
+                        @change="toggleNotificationSelection(notification.id)"
+                        class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                      />
+                    </td>
+                    <td class="px-3 py-4 cursor-pointer" @click="showNotificationPopup(notification)">
                       <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ notification.title }}</div>
                       <div class="text-xs text-gray-500 dark:text-gray-400 truncate max-w-xs mt-1">{{ notification.message }}</div>
                       <div class="text-xs text-gray-400 dark:text-gray-500 mt-1">{{ notification.target_audience }}</div>
@@ -240,91 +351,89 @@ const closeNotificationModal = () => {
                         </span>
                       </button>
                     </td>
-                    <td class="px-3 py-4 text-right">
-                      <div class="flex justify-end space-x-2">
-                        <Link 
-                          :href="route('admin.notifications.edit', notification.id)" 
-                          class="text-gray-500 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors duration-150"
-                          title="Edit"
-                          @click.stop
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                          </svg>
-                        </Link>
-                        <button 
-                          @click.stop="confirmDelete(notification)" 
-                          class="text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors duration-150"
-                          title="Delete"
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                          </svg>
-                        </button>
-                      </div>
-                    </td>
                   </tr>
                 </tbody>
               </table>
             </div>
 
             <!-- Mobile/Tablet Responsive Cards -->
-            <div class="md:hidden flex flex-col gap-4">
-              <div v-if="notifications.data.length === 0" class="text-center text-gray-500 dark:text-gray-400 py-12">
-                <div class="flex flex-col items-center justify-center space-y-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                  </svg>
-                  <span>No notifications found</span>
-                </div>
-              </div>
-              <div v-for="notification in notifications.data" :key="notification.id" class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-100 dark:border-gray-700 p-4 flex flex-col gap-2 cursor-pointer hover:shadow-md transition-shadow duration-200" @click="showNotificationPopup(notification)">
-                <div class="flex items-center justify-between">
-                  <div>
-                    <div class="text-base font-semibold text-gray-900 dark:text-gray-100">{{ notification.title }}</div>
-                    <div class="text-sm text-gray-500 dark:text-gray-400">{{ notification.message }}</div>
-                    <div class="text-xs text-blue-600 dark:text-blue-400 mt-1 opacity-75">Click to view full message</div>
-                  </div>
-                  <span class="px-2.5 py-1 inline-flex text-xs leading-4 font-medium rounded-full h-fit" :class="getBadgeClass(notification.type)">
-                    {{ formatType(notification.type) }}
+            <div class="md:hidden">
+              <!-- Mobile selection header -->
+              <div v-if="notifications.data.length > 0" class="flex items-center justify-between mb-3 p-2.5 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                <div class="flex items-center gap-2.5">
+                  <input
+                    type="checkbox"
+                    :checked="isAllSelected"
+                    :indeterminate="isSomeSelected"
+                    @change="toggleSelectAll"
+                    data-select-all
+                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                  <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    {{ selectedNotifications.length > 0 ? `${selectedNotifications.length} selected` : 'Select all' }}
                   </span>
                 </div>
-                <div class="flex flex-wrap gap-2 text-xs text-gray-600 dark:text-gray-400 mt-1">
-                  <span><b class="text-gray-700 dark:text-gray-300">Audience:</b> {{ notification.target_audience }}</span>
-                  <span><b class="text-gray-700 dark:text-gray-300">Status:</b> <span :class="notification.is_active ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-gray-500'">{{ notification.is_active ? 'Active' : 'Inactive' }}</span></span>
-                  <span><b class="text-gray-700 dark:text-gray-300">Created:</b> {{ notification.created_at }}</span>
+                <button
+                  v-if="hasSelectedNotifications"
+                  @click="confirmBulkDelete"
+                  class="inline-flex items-center px-2.5 py-1.5 bg-red-500 border border-transparent rounded-md font-medium text-xs text-white uppercase tracking-wider hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition duration-150 ease-in-out"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                  Delete
+                </button>
+              </div>
+
+              <div class="flex flex-col gap-3">
+                <div v-if="notifications.data.length === 0" class="text-center text-gray-500 dark:text-gray-400 py-8">
+                  <div class="flex flex-col items-center justify-center space-y-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                    </svg>
+                    <span class="text-sm">No notifications found</span>
+                  </div>
                 </div>
-                <div class="flex items-center gap-3 mt-2">
-                  <button @click.stop="toggleActive(notification)" class="group relative flex items-center">
-                    <span 
-                      class="w-8 h-4 flex items-center flex-shrink-0 p-0.5 rounded-full duration-200 ease-in-out"
-                      :class="{ 'bg-blue-500': notification.is_active, 'bg-gray-200': !notification.is_active }"
-                    >
-                      <span 
-                        class="bg-white w-3 h-3 rounded-full shadow-sm transform duration-200 ease-in-out"
-                        :class="{ 'translate-x-4': notification.is_active, 'translate-x-0': !notification.is_active }"
-                      ></span>
-                    </span>
-                  </button>
-                  <Link 
-                    :href="route('admin.notifications.edit', notification.id)" 
-                    class="text-gray-500 hover:text-blue-500 transition-colors duration-150"
-                    title="Edit"
-                    @click.stop
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                  </Link>
-                  <button 
-                    @click.stop="confirmDelete(notification)" 
-                    class="text-gray-500 hover:text-red-500 transition-colors duration-150"
-                    title="Delete"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                  </button>
+                <div v-for="notification in notifications.data" :key="notification.id" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 p-3 hover:shadow-md transition-shadow duration-200">
+                  <div class="flex items-start gap-2.5">
+                    <input
+                      type="checkbox"
+                      :checked="selectedNotifications.includes(notification.id)"
+                      @change="toggleNotificationSelection(notification.id)"
+                      class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mt-0.5 flex-shrink-0"
+                      @click.stop
+                    />
+                    <div class="flex-1 min-w-0">
+                      <div class="flex items-start justify-between gap-2 cursor-pointer" @click="showNotificationPopup(notification)">
+                        <div class="flex-1 min-w-0">
+                          <div class="text-sm font-semibold text-gray-900 dark:text-gray-100 leading-tight">{{ notification.title }}</div>
+                          <div class="text-xs text-gray-500 dark:text-gray-400 mt-0.5 line-clamp-2">{{ notification.message }}</div>
+                        </div>
+                        <div class="flex flex-col items-end gap-1 flex-shrink-0">
+                          <span class="px-2 py-0.5 inline-flex text-xs leading-4 font-medium rounded-full" :class="getBadgeClass(notification.type)">
+                            {{ formatType(notification.type) }}
+                          </span>
+                          <button @click.stop="toggleActive(notification)" class="group relative flex items-center">
+                            <span 
+                              class="w-6 h-3 flex items-center flex-shrink-0 p-0.5 rounded-full duration-200 ease-in-out"
+                              :class="{ 'bg-blue-500': notification.is_active, 'bg-gray-200': !notification.is_active }"
+                            >
+                              <span 
+                                class="bg-white w-2 h-2 rounded-full shadow-sm transform duration-200 ease-in-out"
+                                :class="{ 'translate-x-3': notification.is_active, 'translate-x-0': !notification.is_active }"
+                              ></span>
+                            </span>
+                          </button>
+                        </div>
+                      </div>
+                      <div class="flex flex-wrap gap-1 text-xs text-gray-600 dark:text-gray-400 mt-2">
+                        <span class="bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded">{{ notification.target_audience }}</span>
+                        <span class="bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded" :class="notification.is_active ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-gray-500'">{{ notification.is_active ? 'Active' : 'Inactive' }}</span>
+                        <span class="bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded">{{ notification.created_at }}</span>
+                      </div>
+                      <div class="text-xs text-blue-600 dark:text-blue-400 mt-1.5 opacity-75">Tap to view full message</div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -364,6 +473,37 @@ const closeNotificationModal = () => {
             class="px-4 py-2 text-sm font-medium text-white bg-red-500 border border-transparent rounded-md shadow-sm hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition duration-150 ease-in-out"
           >
             Delete
+          </button>
+        </div>
+      </div>
+    </Modal>
+
+    <!-- Bulk Delete Confirmation Modal -->
+    <Modal :show="showBulkDeleteModal" @close="showBulkDeleteModal = false">
+      <div class="p-6 bg-white dark:bg-gray-800">
+        <div class="flex items-center mb-5">
+          <div class="flex-shrink-0 bg-red-100 dark:bg-red-900/20 rounded-full p-2 mr-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Delete Multiple Notifications</h3>
+        </div>
+        <p class="mb-6 text-sm text-gray-600 dark:text-gray-400">
+          Are you sure you want to delete {{ selectedNotifications.length }} notification{{ selectedNotifications.length !== 1 ? 's' : '' }}? This action cannot be undone.
+        </p>
+        <div class="flex justify-end space-x-3">
+          <button
+            @click="showBulkDeleteModal = false"
+            class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition duration-150 ease-in-out"
+          >
+            Cancel
+          </button>
+          <button
+            @click="bulkDeleteNotifications"
+            class="px-4 py-2 text-sm font-medium text-white bg-red-500 border border-transparent rounded-md shadow-sm hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition duration-150 ease-in-out"
+          >
+            Delete {{ selectedNotifications.length }} Notification{{ selectedNotifications.length !== 1 ? 's' : '' }}
           </button>
         </div>
       </div>

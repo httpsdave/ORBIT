@@ -231,6 +231,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/notifications/unread-count', [NotificationController::class, 'getUnreadCount'])->name('admin.notifications.unread-count');
         Route::get('/notifications/create', [NotificationController::class, 'create'])->name('admin.notifications.create');
         Route::post('/notifications', [NotificationController::class, 'store'])->name('admin.notifications.store');
+        Route::delete('/notifications/bulk-delete', [NotificationController::class, 'bulkDestroy'])->name('admin.notifications.bulk-destroy');
         Route::get('/notifications/{notification}/edit', [NotificationController::class, 'edit'])->name('admin.notifications.edit');
         Route::put('/notifications/{notification}', [NotificationController::class, 'update'])->name('admin.notifications.update');
         Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy'])->name('admin.notifications.destroy');
