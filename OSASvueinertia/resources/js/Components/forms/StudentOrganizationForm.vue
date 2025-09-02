@@ -37,6 +37,29 @@ const form = useForm({
   status: props.initialFormData.status || 'Pending',
 });
 
+// Computed properties for displaying combined names with prefix/suffix
+const displayAdviserName = computed(() => {
+  let name = form.adviser_name || '';
+  if (form.adviser_prefix) {
+    name = form.adviser_prefix + ' ' + name;
+  }
+  if (form.adviser_suffix) {
+    name = name + ', ' + form.adviser_suffix;
+  }
+  return name;
+});
+
+const displayDeanName = computed(() => {
+  let name = form.dean_name || '';
+  if (form.dean_prefix) {
+    name = form.dean_prefix + ' ' + name;
+  }
+  if (form.dean_suffix) {
+    name = name + ', ' + form.dean_suffix;
+  }
+  return name;
+});
+
 // Computed property to format the date
 const formattedDate = computed(() => {
   if (!form.application_date) return '';
@@ -213,13 +236,13 @@ const submit = () => {
   <div style="width: 100%; margin-top: 0.1cm; display: flex;">
     <div style="width: 50%; text-align: left;">
       <div class="signature left-align" style="margin-top: 0.3cm; text-align: left;">
-  <p><span class="signature-line" style="display: inline-block; min-width: 200px; border-bottom: 1px solid black; padding-bottom: 2px; text-align: center;"><strong>{{ [form.adviser_prefix, form.adviser_name, form.adviser_suffix].filter(Boolean).join(' ') }}</strong></span></p>
+  <p><span class="signature-line" style="display: inline-block; min-width: 200px; border-bottom: 1px solid black; padding-bottom: 2px; text-align: center;"><strong>{{ displayAdviserName }}</strong></span></p>
         <p><span class="title-text" style="display: block; width: 200px; text-align: center; white-space: nowrap; font-size: 11pt;">Adviser, Student Organization</span></p>
       </div>
     </div>
     <div style="width: 50%; text-align: right;">
       <div class="signature right-align" style="margin-top: 0.3cm; text-align: right;">
-  <p><span class="signature-line" style="display: inline-block; min-width: 200px; border-bottom: 1px solid black; padding-bottom: 2px; text-align: center;"><strong>{{ [form.dean_prefix, form.dean_name, form.dean_suffix].filter(Boolean).join(' ') }}</strong></span></p>
+  <p><span class="signature-line" style="display: inline-block; min-width: 200px; border-bottom: 1px solid black; padding-bottom: 2px; text-align: center;"><strong>{{ displayDeanName }}</strong></span></p>
   <p style="margin: 0; padding: 0;"><span class="title-text" style="display: block; width: 200px; margin-left: 120px; text-align: center; white-space: nowrap; font-size: 11pt;">Dean/Assoc. Dean of College</span></p>
       </div>
     </div>
