@@ -41,6 +41,29 @@ const emit = defineEmits(['submitted', 'error']);
 // Add errors ref object
 const errors = ref({});
 
+// Computed properties for displaying combined names with prefix/suffix
+const displayAdviserName = computed(() => {
+  let name = form.adviser_name || '';
+  if (form.adviser_prefix) {
+    name = form.adviser_prefix + ' ' + name;
+  }
+  if (form.adviser_suffix) {
+    name = name + ', ' + form.adviser_suffix;
+  }
+  return name;
+});
+
+const displayDeanName = computed(() => {
+  let name = form.dean_name || '';
+  if (form.dean_prefix) {
+    name = form.dean_prefix + ' ' + name;
+  }
+  if (form.dean_suffix) {
+    name = name + ', ' + form.dean_suffix;
+  }
+  return name;
+});
+
 // Add pagination state
 const currentPage = ref(1);
 const studentsPerPage = 1; // 1 student per page since each certification is a full page
@@ -203,7 +226,11 @@ const form = useForm({
   // president_name removed for Student Certification Form
   application_date: props.initialFormData.application_date || '',
   adviser_name: props.initialFormData.adviser_name?.toUpperCase() || '',
+  adviser_prefix: props.initialFormData.adviser_prefix || '',
+  adviser_suffix: props.initialFormData.adviser_suffix || '',
   dean_name: props.initialFormData.dean_name?.toUpperCase() || '',
+  dean_prefix: props.initialFormData.dean_prefix || '',
+  dean_suffix: props.initialFormData.dean_suffix || '',
   director_name: props.initialFormData.director_name?.toUpperCase() || '',
   coordinator_name: props.initialFormData.coordinator_name?.toUpperCase() || '',
   college: props.initialFormData.college?.toUpperCase() || '',
@@ -362,12 +389,12 @@ const submit = () => {
         <div class="noted-section" style="padding-left:40px;">
           <div class="faculty-adviser-signature" style="margin-top:0; margin-left:-42px;">
             <div style="text-align:left;">
-              <span style="display:inline-block; min-width:200px; width:auto; border-bottom:1px solid black; padding-bottom:2px; text-align:center; margin-left:0px; text-transform: uppercase; font-weight:bold;">{{ form.adviser_name }}</span>
+              <span style="display:inline-block; min-width:200px; width:auto; border-bottom:1px solid black; padding-bottom:2px; text-align:center; margin-left:0px; text-transform: uppercase; font-weight:bold;">{{ displayAdviserName }}</span>
               <span style="display:block; text-align:left; margin-left:25px;">Organization Adviser(s)</span>
             </div>
           </div>
           <div style="margin-top:40px; text-align:left; margin-left:-42px;">
-            <span style="display:inline-block; min-width:220px; width:auto; border-bottom:1px solid black; padding-bottom:2px; text-align:center; text-transform: uppercase; font-weight:bold;">{{ form.dean_name }}</span>
+            <span style="display:inline-block; min-width:220px; width:auto; border-bottom:1px solid black; padding-bottom:2px; text-align:center; text-transform: uppercase; font-weight:bold;">{{ displayDeanName }}</span>
             <span style="display:block; text-align:left; margin-left:25px;">Dean/Assoc. Dean of College</span>
           </div>
           <div style="text-align:center; margin-top:40px; margin-left:0;">Noted:</div>
@@ -458,22 +485,46 @@ const submit = () => {
 
             <div>
                 <label class="block font-bold">Organization Adviser(s)</label>
-                <input 
-                  v-model="form.adviser_name" 
-                  @input="form.adviser_name = $event.target.value.toUpperCase()"
-                  class="border p-2 w-full" 
-                  style="text-transform: uppercase;" 
-                  required>
+                <div class="flex gap-1 items-center">
+                  <input 
+                    v-model="form.adviser_prefix" 
+                    class="border p-2 w-12 text-xs" 
+                    placeholder="Pre"
+                    maxlength="6">
+                  <input 
+                    v-model="form.adviser_name" 
+                    @input="form.adviser_name = $event.target.value.toUpperCase()"
+                    class="border p-2 flex-1" 
+                    style="text-transform: uppercase;" 
+                    required>
+                  <input 
+                    v-model="form.adviser_suffix" 
+                    class="border p-2 w-14 text-xs" 
+                    placeholder="Suf"
+                    maxlength="8">
+                </div>
                 <p v-if="errors.adviser_name" class="text-red-500 text-sm mt-1">{{ errors.adviser_name }}</p>
             </div>
 
             <div>
                 <label class="block font-bold">Dean/Assoc. Dean Name</label>
-                <input 
-                  v-model="form.dean_name" 
-                  @input="form.dean_name = $event.target.value.toUpperCase()"
-                  class="border p-2 w-full" 
-                  style="text-transform: uppercase;">
+                <div class="flex gap-1 items-center">
+                  <input 
+                    v-model="form.dean_prefix" 
+                    class="border p-2 w-12 text-xs" 
+                    placeholder="Pre"
+                    maxlength="6">
+                  <input 
+                    v-model="form.dean_name" 
+                    @input="form.dean_name = $event.target.value.toUpperCase()"
+                    class="border p-2 flex-1" 
+                    style="text-transform: uppercase;">
+                  <input 
+                    v-model="form.dean_suffix" 
+                    class="border p-2 w-14 text-xs" 
+                    placeholder="Suf"
+                    maxlength="8">
+                </div>
                 <p v-if="errors.dean_name" class="text-red-500 text-sm mt-1">{{ errors.dean_name }}</p>
             </div>
 
