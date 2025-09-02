@@ -315,12 +315,12 @@
         <tr style="vertical-align: top;">
             <td style="width: 50%; text-align: left;">
                 <div class="signature left-align">
-                    <p><span class="signature-line"><strong>{{ $application->adviser_name ?? 'N/A' }}</strong></span></p>
+                    <p><span class="signature-line"><strong>{{ trim(($application->adviser_prefix ?? '') . ' ' . ($application->adviser_name ?? 'N/A') . ' ' . ($application->adviser_suffix ?? '')) }}</strong></span></p>
                     <p style="text-align:left;"><span class="title-text">Adviser, Student Organization</span></p>
             </td>
             <td style="width: 50%; text-align: right;">
                 <div class="signature right-align">
-                    <p><span class="signature-line"><strong>{{ $application->dean_name ?? '' }}</strong></span></p>
+                    <p><span class="signature-line"><strong>{{ trim(($application->dean_prefix ?? '') . ' ' . ($application->dean_name ?? '') . ' ' . ($application->dean_suffix ?? '')) }}</strong></span></p>
                     <p><span class="title-text">Dean/Assoc. Dean of College</span></p>
                 </div>
             </td>

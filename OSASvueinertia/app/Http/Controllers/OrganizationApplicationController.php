@@ -128,7 +128,11 @@ class OrganizationApplicationController extends Controller
             // president_name is nullable for specific forms: SF-003, SF-005, SF-006, SF-007, SF-009, SF-EVAL
             'president_name' => in_array($request->form_type, ['LSPU-OSAS-SF-003', 'LSPU-OSAS-SF-005', 'LSPU-OSAS-SF-006', 'LSPU-OSAS-SF-007', 'LSPU-OSAS-SF-009', 'LSPU-OSAS-SF-EVAL']) ? 'nullable|string|max:255' : 'required|string|max:255',
             'adviser_name' => 'required|string|max:255',
+            'adviser_prefix' => 'nullable|string|max:50',
+            'adviser_suffix' => 'nullable|string|max:50',
             'dean_name' => in_array($request->form_type, ['LSPU-OSAS-SF-001', 'LSPU-OSAS-SF-002', 'LSPU-OSAS-SF-004', 'LSPU-OSAS-SF-006', 'LSPU-OSAS-SF-007', 'LSPU-OSAS-SF-EVAL']) ? 'nullable|string|max:255' : 'required|string|max:255',
+            'dean_prefix' => 'nullable|string|max:50',
+            'dean_suffix' => 'nullable|string|max:50',
             'coordinator_name' => 'required|string|max:255',
             'status' => 'string|in:Pending,Approved,Disapproved',
             'signed_document' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240', // Add validation for signed document
@@ -471,7 +475,11 @@ class OrganizationApplicationController extends Controller
             // president_name is nullable for specific forms: SF-003, SF-005, SF-006, SF-007, SF-009, SF-EVAL
             'president_name' => in_array($application->form_type, ['LSPU-OSAS-SF-003', 'LSPU-OSAS-SF-005', 'LSPU-OSAS-SF-006', 'LSPU-OSAS-SF-007', 'LSPU-OSAS-SF-009', 'LSPU-OSAS-SF-EVAL']) ? 'nullable|string|max:255' : 'required|string|max:255',
             'adviser_name' => $application->form_type === 'LSPU-OSAS-SF-EVAL' ? 'nullable|string|max:255' : 'required|string|max:255',
+            'adviser_prefix' => 'nullable|string|max:50',
+            'adviser_suffix' => 'nullable|string|max:50',
             'dean_name' => in_array($application->form_type, ['LSPU-OSAS-SF-001', 'LSPU-OSAS-SF-002', 'LSPU-OSAS-SF-004', 'LSPU-OSAS-SF-006', 'LSPU-OSAS-SF-007', 'LSPU-OSAS-SF-EVAL']) ? 'nullable|string|max:255' : 'required|string|max:255',
+            'dean_prefix' => 'nullable|string|max:50',
+            'dean_suffix' => 'nullable|string|max:50',
             'coordinator_name' => ($application->form_type === 'LSPU-OSAS-SF-006' || $application->form_type === 'LSPU-OSAS-SF-EVAL') ? 'nullable|string|max:255' : 'required|string|max:255',
             'signed_document' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
         ];

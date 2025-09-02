@@ -27,7 +27,11 @@ const form = useForm({
     return `${yyyy}-${mm}-${dd}`;
   })(),
   adviser_name: props.initialFormData.adviser_name?.toUpperCase() || '',
+  adviser_prefix: props.initialFormData.adviser_prefix || '',
+  adviser_suffix: props.initialFormData.adviser_suffix || '',
   dean_name: props.initialFormData.dean_name?.toUpperCase() || '',
+  dean_prefix: props.initialFormData.dean_prefix || '',
+  dean_suffix: props.initialFormData.dean_suffix || '',
   coordinator_name: props.initialFormData.coordinator_name?.toUpperCase() || '',
   director_name: props.initialFormData.director_name?.toUpperCase() || '',
   status: props.initialFormData.status || 'Pending',
@@ -209,13 +213,13 @@ const submit = () => {
   <div style="width: 100%; margin-top: 0.1cm; display: flex;">
     <div style="width: 50%; text-align: left;">
       <div class="signature left-align" style="margin-top: 0.3cm; text-align: left;">
-  <p><span class="signature-line" style="display: inline-block; min-width: 200px; border-bottom: 1px solid black; padding-bottom: 2px; text-align: center;"><strong>{{ form.adviser_name }}</strong></span></p>
+  <p><span class="signature-line" style="display: inline-block; min-width: 200px; border-bottom: 1px solid black; padding-bottom: 2px; text-align: center;"><strong>{{ [form.adviser_prefix, form.adviser_name, form.adviser_suffix].filter(Boolean).join(' ') }}</strong></span></p>
         <p><span class="title-text" style="display: block; width: 200px; text-align: center; white-space: nowrap; font-size: 11pt;">Adviser, Student Organization</span></p>
       </div>
     </div>
     <div style="width: 50%; text-align: right;">
       <div class="signature right-align" style="margin-top: 0.3cm; text-align: right;">
-  <p><span class="signature-line" style="display: inline-block; min-width: 200px; border-bottom: 1px solid black; padding-bottom: 2px; text-align: center;"><strong>{{ form.dean_name }}</strong></span></p>
+  <p><span class="signature-line" style="display: inline-block; min-width: 200px; border-bottom: 1px solid black; padding-bottom: 2px; text-align: center;"><strong>{{ [form.dean_prefix, form.dean_name, form.dean_suffix].filter(Boolean).join(' ') }}</strong></span></p>
   <p style="margin: 0; padding: 0;"><span class="title-text" style="display: block; width: 200px; margin-left: 120px; text-align: center; white-space: nowrap; font-size: 11pt;">Dean/Assoc. Dean of College</span></p>
       </div>
     </div>
@@ -292,12 +296,24 @@ const submit = () => {
       <!-- Left Column -->
       <div>
         <label class="block font-bold">Adviser Name</label>
-        <input 
-          v-model="form.adviser_name" 
-          @input="form.adviser_name = $event.target.value.toUpperCase()"
-          class="border p-2 w-full" 
-          style="text-transform: uppercase;" 
-          required>
+        <div class="flex gap-1">
+          <input 
+            v-model="form.adviser_prefix" 
+            class="border p-2 w-12 text-xs" 
+            placeholder="Pre"
+            maxlength="6">
+          <input 
+            v-model="form.adviser_name" 
+            @input="form.adviser_name = $event.target.value.toUpperCase()"
+            class="border p-2 flex-1" 
+            style="text-transform: uppercase;" 
+            required>
+          <input 
+            v-model="form.adviser_suffix" 
+            class="border p-2 w-14 text-xs" 
+            placeholder="Suf"
+            maxlength="8">
+        </div>
         <p v-if="errors.adviser_name" class="text-red-500 text-sm mt-1">{{ errors.adviser_name }}</p>
       </div>
       <!-- Right Column -->
@@ -308,11 +324,23 @@ const submit = () => {
       <!-- Left Column -->
       <div>
         <label class="block font-bold">Dean Name</label>
-        <input 
-          v-model="form.dean_name" 
-          @input="form.dean_name = $event.target.value.toUpperCase()"
-          class="border p-2 w-full" 
-          style="text-transform: uppercase;">
+        <div class="flex gap-1">
+          <input 
+            v-model="form.dean_prefix" 
+            class="border p-2 w-12 text-xs" 
+            placeholder="Pre"
+            maxlength="6">
+          <input 
+            v-model="form.dean_name" 
+            @input="form.dean_name = $event.target.value.toUpperCase()"
+            class="border p-2 flex-1" 
+            style="text-transform: uppercase;">
+          <input 
+            v-model="form.dean_suffix" 
+            class="border p-2 w-14 text-xs" 
+            placeholder="Suf"
+            maxlength="8">
+        </div>
         <p v-if="errors.dean_name" class="text-red-500 text-sm mt-1">{{ errors.dean_name }}</p>
       </div>
     </div>

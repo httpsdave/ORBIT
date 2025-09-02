@@ -425,13 +425,20 @@ const statsCards = computed(() => [
 function exportAdvisersToCSV() {
     if (!props.advisersData.length) return;
     const headers = ['Organization', 'Adviser', 'Second Adviser', 'Members Count', 'Officers Count'];
-    const rows = props.advisersData.map(row => [
-        `"${row.organization || ''}"`,
-        `"${row.adviser_name || ''}"`,
-        `"${row.second_adviser || ''}"`,
-        row.members_count ?? '',
-        row.officers_count ?? ''
-    ]);
+    const rows = props.advisersData.map(row => {
+        // Combine adviser name with prefix and suffix
+        const adviserFullName = [row.adviser_prefix, row.adviser_name, row.adviser_suffix]
+            .filter(Boolean)
+            .join(' ') || row.adviser_name || '';
+        
+        return [
+            `"${row.organization || ''}"`,
+            `"${adviserFullName}"`,
+            `"${row.second_adviser || ''}"`,
+            row.members_count ?? '',
+            row.officers_count ?? ''
+        ];
+    });
     const csvContent = [headers, ...rows].map(e => e.join(',')).join('\n');
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
@@ -617,7 +624,9 @@ function exportAdvisersToCSV() {
                                                 {{ row.organization }}
                                             </div>
                                         </td>
-                                        <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 dark:text-gray-300 hidden sm:table-cell">{{ row.adviser_name || '—' }}</td>
+                                        <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 dark:text-gray-300 hidden sm:table-cell">
+                                            {{ [row.adviser_prefix, row.adviser_name, row.adviser_suffix].filter(Boolean).join(' ') || row.adviser_name || '—' }}
+                                        </td>
                                         <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 dark:text-gray-300 hidden md:table-cell">{{ row.second_adviser || '—' }}</td>
                                         <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 dark:text-gray-300 text-center">{{ row.members_count ?? '—' }}</td>
                                         <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 dark:text-gray-300 text-center hidden sm:table-cell">{{ row.officers_count ?? '—' }}</td>
