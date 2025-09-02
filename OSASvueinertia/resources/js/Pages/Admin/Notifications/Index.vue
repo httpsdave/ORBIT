@@ -161,6 +161,62 @@ input[type="checkbox"]:indeterminate {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+/* Extra small screens breakpoint */
+@media (max-width: 374px) {
+  /* Ensure containers don't overflow */
+  .notification-card {
+    margin-left: 0;
+    margin-right: 0;
+  }
+  
+  /* Reduce padding on very small screens */
+  .notification-card-content {
+    padding: 0.5rem;
+  }
+  
+  /* Stack elements more tightly */
+  .notification-metadata {
+    gap: 0.25rem;
+  }
+  
+  /* Make badges smaller */
+  .notification-badge {
+    padding: 0.125rem 0.375rem;
+    font-size: 0.625rem;
+  }
+}
+
+/* Handle xs breakpoint for flexbox */
+@media (min-width: 375px) {
+  .xs\:flex-row {
+    flex-direction: row;
+  }
+  
+  .xs\:justify-between {
+    justify-content: space-between;
+  }
+  
+  .xs\:items-start {
+    align-items: flex-start;
+  }
+  
+  .xs\:items-center {
+    align-items: center;
+  }
+  
+  .xs\:w-auto {
+    width: auto;
+  }
+  
+  .xs\:inline {
+    display: inline;
+  }
+  
+  .xs\:hidden {
+    display: none;
+  }
+}
 </style>
 
 <template>
@@ -176,36 +232,45 @@ input[type="checkbox"]:indeterminate {
     </div>
     
     <div class="py-4 sm:py-6">
-      <div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 xl:px-8">
+      <div class="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 xl:px-8">
         <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
-          <div class="p-4 sm:p-6">
-            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 sm:mb-8">
-              <div class="flex items-center gap-4">
+          <div class="p-3 sm:p-6">
+            <div class="flex flex-col gap-3 sm:gap-4 mb-4 sm:mb-8">
+              <!-- Header with title and create button -->
+              <div class="flex flex-col xs:flex-row xs:justify-between xs:items-start gap-3">
                 <h2 class="text-lg sm:text-xl font-medium text-gray-800 dark:text-gray-200">Manage Notifications</h2>
-                <div v-if="hasSelectedNotifications" class="flex items-center gap-2">
-                  <span class="text-sm text-gray-600 dark:text-gray-400">
-                    {{ selectedNotifications.length }} selected
-                  </span>
-                  <button
-                    @click="confirmBulkDelete"
-                    class="inline-flex items-center px-3 py-1.5 bg-red-500 border border-transparent rounded-md font-medium text-xs text-white uppercase tracking-wider hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition duration-150 ease-in-out"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                    Delete Selected
-                  </button>
-                </div>
+                <Link
+                  :href="route('admin.notifications.create')"
+                  class="inline-flex items-center justify-center px-3 py-2 bg-blue-500 border border-transparent rounded-md font-medium text-xs text-white uppercase tracking-wider hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition duration-150 ease-in-out w-full xs:w-auto"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                  </svg>
+                  <span class="hidden xs:inline">Create Notification</span>
+                  <span class="xs:hidden">Create</span>
+                </Link>
               </div>
-              <Link
-                :href="route('admin.notifications.create')"
-                class="inline-flex items-center justify-center px-4 py-2 bg-blue-500 border border-transparent rounded-md font-medium text-xs text-white uppercase tracking-wider hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition duration-150 ease-in-out w-full sm:w-auto"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                </svg>
-                Create Notification
-              </Link>
+              
+              <!-- Selection info and bulk delete -->
+              <div v-if="hasSelectedNotifications" class="flex flex-col xs:flex-row xs:items-center gap-2 p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                <div class="flex items-center gap-2 flex-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600 dark:text-blue-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span class="text-sm font-medium text-blue-800 dark:text-blue-200">
+                    {{ selectedNotifications.length }} notification{{ selectedNotifications.length !== 1 ? 's' : '' }} selected
+                  </span>
+                </div>
+                <button
+                  @click="confirmBulkDelete"
+                  class="inline-flex items-center justify-center px-3 py-1.5 bg-red-500 border border-transparent rounded-md font-medium text-xs text-white uppercase tracking-wider hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition duration-150 ease-in-out w-full xs:w-auto"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                  Delete Selected
+                </button>
+              </div>
             </div>
 
             <!-- Responsive Notifications List -->
@@ -358,9 +423,9 @@ input[type="checkbox"]:indeterminate {
 
             <!-- Mobile/Tablet Responsive Cards -->
             <div class="md:hidden">
-              <!-- Mobile selection header -->
-              <div v-if="notifications.data.length > 0" class="flex items-center justify-between mb-3 p-2.5 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                <div class="flex items-center gap-2.5">
+              <!-- Mobile selection header - Only show select all when no items are selected -->
+              <div v-if="notifications.data.length > 0 && !hasSelectedNotifications" class="flex items-center justify-between mb-3 p-2 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                <div class="flex items-center gap-2">
                   <input
                     type="checkbox"
                     :checked="isAllSelected"
@@ -370,22 +435,12 @@ input[type="checkbox"]:indeterminate {
                     class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                   />
                   <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    {{ selectedNotifications.length > 0 ? `${selectedNotifications.length} selected` : 'Select all' }}
+                    Select all
                   </span>
                 </div>
-                <button
-                  v-if="hasSelectedNotifications"
-                  @click="confirmBulkDelete"
-                  class="inline-flex items-center px-2.5 py-1.5 bg-red-500 border border-transparent rounded-md font-medium text-xs text-white uppercase tracking-wider hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition duration-150 ease-in-out"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
-                  Delete
-                </button>
               </div>
 
-              <div class="flex flex-col gap-3">
+              <div class="flex flex-col gap-2">
                 <div v-if="notifications.data.length === 0" class="text-center text-gray-500 dark:text-gray-400 py-8">
                   <div class="flex flex-col items-center justify-center space-y-2">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -394,8 +449,9 @@ input[type="checkbox"]:indeterminate {
                     <span class="text-sm">No notifications found</span>
                   </div>
                 </div>
-                <div v-for="notification in notifications.data" :key="notification.id" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 p-3 hover:shadow-md transition-shadow duration-200">
-                  <div class="flex items-start gap-2.5">
+                <div v-for="notification in notifications.data" :key="notification.id" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 p-2.5 hover:shadow-md transition-shadow duration-200">
+                  <!-- Main content row -->
+                  <div class="flex items-start gap-2">
                     <input
                       type="checkbox"
                       :checked="selectedNotifications.includes(notification.id)"
@@ -403,35 +459,45 @@ input[type="checkbox"]:indeterminate {
                       class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mt-0.5 flex-shrink-0"
                       @click.stop
                     />
-                    <div class="flex-1 min-w-0">
-                      <div class="flex items-start justify-between gap-2 cursor-pointer" @click="showNotificationPopup(notification)">
-                        <div class="flex-1 min-w-0">
-                          <div class="text-sm font-semibold text-gray-900 dark:text-gray-100 leading-tight">{{ notification.title }}</div>
-                          <div class="text-xs text-gray-500 dark:text-gray-400 mt-0.5 line-clamp-2">{{ notification.message }}</div>
-                        </div>
-                        <div class="flex flex-col items-end gap-1 flex-shrink-0">
-                          <span class="px-2 py-0.5 inline-flex text-xs leading-4 font-medium rounded-full" :class="getBadgeClass(notification.type)">
-                            {{ formatType(notification.type) }}
-                          </span>
-                          <button @click.stop="toggleActive(notification)" class="group relative flex items-center">
-                            <span 
-                              class="w-6 h-3 flex items-center flex-shrink-0 p-0.5 rounded-full duration-200 ease-in-out"
-                              :class="{ 'bg-blue-500': notification.is_active, 'bg-gray-200': !notification.is_active }"
-                            >
-                              <span 
-                                class="bg-white w-2 h-2 rounded-full shadow-sm transform duration-200 ease-in-out"
-                                :class="{ 'translate-x-3': notification.is_active, 'translate-x-0': !notification.is_active }"
-                              ></span>
-                            </span>
-                          </button>
-                        </div>
+                    <div class="flex-1 min-w-0 cursor-pointer" @click="showNotificationPopup(notification)">
+                      <!-- Title and badge row -->
+                      <div class="flex items-start justify-between gap-2 mb-1">
+                        <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100 leading-tight flex-1 min-w-0 pr-1">{{ notification.title }}</h3>
+                        <span class="px-1.5 py-0.5 inline-flex text-xs leading-3 font-medium rounded-full flex-shrink-0" :class="getBadgeClass(notification.type)">
+                          {{ formatType(notification.type) }}
+                        </span>
                       </div>
-                      <div class="flex flex-wrap gap-1 text-xs text-gray-600 dark:text-gray-400 mt-2">
-                        <span class="bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded">{{ notification.target_audience }}</span>
-                        <span class="bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded" :class="notification.is_active ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-gray-500'">{{ notification.is_active ? 'Active' : 'Inactive' }}</span>
-                        <span class="bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded">{{ notification.created_at }}</span>
+                      
+                      <!-- Message -->
+                      <p class="text-xs text-gray-500 dark:text-gray-400 mb-2 line-clamp-2">{{ notification.message }}</p>
+                      
+                      <!-- Metadata row -->
+                      <div class="flex flex-wrap gap-1 mb-2">
+                        <span class="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-1.5 py-0.5 rounded text-xs">{{ notification.target_audience }}</span>
+                        <span class="bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded text-xs" :class="notification.is_active ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-gray-500'">{{ notification.is_active ? 'Active' : 'Inactive' }}</span>
+                        <span class="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-1.5 py-0.5 rounded text-xs">{{ notification.created_at }}</span>
                       </div>
-                      <div class="text-xs text-blue-600 dark:text-blue-400 mt-1.5 opacity-75">Tap to view full message</div>
+                      
+                      <!-- Action hint -->
+                      <div class="text-xs text-blue-600 dark:text-blue-400 opacity-75">Tap to view full message</div>
+                    </div>
+                  </div>
+                  
+                  <!-- Status toggle row -->
+                  <div class="flex items-center justify-end mt-2 pt-2 border-t border-gray-100 dark:border-gray-700">
+                    <div class="flex items-center gap-1">
+                      <span class="text-xs text-gray-500 dark:text-gray-400">Status:</span>
+                      <button @click.stop="toggleActive(notification)" class="group relative flex items-center">
+                        <span 
+                          class="w-6 h-3 flex items-center flex-shrink-0 p-0.5 rounded-full duration-200 ease-in-out"
+                          :class="{ 'bg-blue-500': notification.is_active, 'bg-gray-200 dark:bg-gray-600': !notification.is_active }"
+                        >
+                          <span 
+                            class="bg-white w-2 h-2 rounded-full shadow-sm transform duration-200 ease-in-out"
+                            :class="{ 'translate-x-3': notification.is_active, 'translate-x-0': !notification.is_active }"
+                          ></span>
+                        </span>
+                      </button>
                     </div>
                   </div>
                 </div>
