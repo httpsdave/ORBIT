@@ -517,7 +517,7 @@
     <div class="noted-section" style="bottom: {{ ($secondLine || $thirdLine) ? '275px' : '315px' }}; left: 0;">
             <p style="margin-bottom: 20px;"><strong>Noted:</strong></p>
             <div>
-                <p style="margin-left:65px;"><span class="underline" style="min-width:180px;"><strong>{{ $application->dean_name ?? '_______________________________' }}</strong></span></p>
+                <p style="margin-left:65px;"><span class="underline" style="min-width:180px;"><strong>{{ $application->dean_name ?? '' }}</strong></span></p>
                 <p style="margin-left:65px;"><strong>Dean/Assoc. Dean of College</strong></p>
             </div>
         </div>

@@ -142,9 +142,7 @@ const validateForm = () => {
     errors.value.form_date = 'Form date is required';
   }
   
-  if (!form.dean_name.trim()) {
-    errors.value.dean_name = 'Dean name is required';
-  }
+  // Dean name is now optional
   
   if (!form.coordinator_name.trim()) {
     errors.value.coordinator_name = 'Coordinator name is required';
@@ -358,7 +356,7 @@ const submit = () => {
       <div class="mb-8" style="text-align:left;">
   <div class="noted-label mb-1" style="font-size: 1rem; font-weight: bold; margin-bottom: 10px;">Noted:</div>
         <div class="noted-signature-block" style="width: 350px; margin-left: 65px;">
-          <span class="signature-line" style="min-width: 180px; border-bottom: 1px solid #000; display: inline-block; margin-left: 0; font-size: 12pt; font-family: 'Times New Roman', serif; font-weight: bold; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ form.dean_name }}</span>
+          <span class="signature-line" style="min-width: 180px; border-bottom: 1px solid #000; display: inline-block; margin-left: 0; font-size: 12pt; font-family: 'Times New Roman', serif; font-weight: bold; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ form.dean_name || '' }}</span>
           <p class="mb-0 text-xs text-center" style="font-size: 11pt; font-family: 'Times New Roman', serif; font-weight: bold; margin-top: 2px; font-weight: bold;margin-left:-175px">Dean/Assoc. Dean of College</p>
         </div>
       </div>
@@ -526,7 +524,6 @@ const submit = () => {
             @input="form.dean_name = $event.target.value.toUpperCase().slice(0, 54)"
             class="border p-2 w-full" 
             style="text-transform: uppercase;" 
-            required 
             maxlength="54">
           <p v-if="errors.dean_name" class="text-red-500 text-sm mt-1">{{ errors.dean_name }}</p>
         </div>

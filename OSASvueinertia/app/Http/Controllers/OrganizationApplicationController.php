@@ -159,6 +159,7 @@ class OrganizationApplicationController extends Controller
                 'form_date' => 'required|date',
                 'academic_year_start' => 'required|string|max:10',
                 'academic_year_end' => 'required|string|max:10',
+                'dean_name' => 'nullable|string|max:255',
                 
             ]);
         }  elseif ($request->form_type === 'LSPU-OSAS-SF-004') {
@@ -498,6 +499,7 @@ class OrganizationApplicationController extends Controller
                 'form_date' => 'required|date',
                 'academic_year_start' => 'required|string|max:10',
                 'academic_year_end' => 'required|string|max:10',
+                'dean_name' => 'nullable|string|max:255',
                 'director_name' => 'required|string|max:255',
                 'application_date' => 'nullable|date',
             ]);
