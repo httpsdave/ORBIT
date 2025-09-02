@@ -58,17 +58,27 @@ const formattedDate = computed(() => {
   });
 });
 
-// Computed properties for combined names with prefix/suffix
-const combinedAdviserName = computed(() => {
-  const prefix = form.adviser_prefix ? `${form.adviser_prefix} ` : '';
-  const suffix = form.adviser_suffix ? `, ${form.adviser_suffix}` : '';
-  return `${prefix}${form.adviser_name}${suffix}`.trim();
+// Computed properties for displaying combined names with prefix/suffix
+const displayAdviserName = computed(() => {
+  let name = form.adviser_name || '';
+  if (form.adviser_prefix) {
+    name = form.adviser_prefix + ' ' + name;
+  }
+  if (form.adviser_suffix) {
+    name = name + ', ' + form.adviser_suffix;
+  }
+  return name;
 });
 
-const combinedDeanName = computed(() => {
-  const prefix = form.dean_prefix ? `${form.dean_prefix} ` : '';
-  const suffix = form.dean_suffix ? `, ${form.dean_suffix}` : '';
-  return `${prefix}${form.dean_name}${suffix}`.trim();
+const displayDeanName = computed(() => {
+  let name = form.dean_name || '';
+  if (form.dean_prefix) {
+    name = form.dean_prefix + ' ' + name;
+  }
+  if (form.dean_suffix) {
+    name = name + ', ' + form.dean_suffix;
+  }
+  return name;
 });
 
 const form = useForm({
@@ -275,19 +285,17 @@ const submit = () => {
   </div>
     </div>
 
-    <div class="section text-left">
+        <div class="section text-left">
   <p style="font-size:11pt; font-weight:bold; margin-bottom:10px;"><strong>NOTED:</strong></p>
   <div class="signature" style="margin-bottom:20px;">
-    <p><span class="signature-line" style="min-width:220px; font-size:11pt;"><strong>{{ combinedAdviserName }}</strong></span></p>
+    <p><span class="signature-line" style="min-width:220px; font-size:11pt;"><strong>{{ displayAdviserName }}</strong></span></p>
     <p><span class="title-under-signature title-right-adjust" style="font-size:11pt;margin-left:5px"><strong>Adviser/s, Student Organization</strong></span></p>
   </div>
   <div class="signature" style="margin-bottom:30px;">
-    <p><span class="signature-line" style="min-width:305px; font-size:11pt;"><strong>{{ combinedDeanName }}</strong></span></p>
+    <p><span class="signature-line" style="min-width:305px; font-size:11pt;"><strong>{{ displayDeanName }}</strong></span></p>
     <p><span class="title-under-signature" style="font-size:11pt;"><strong>Dean/Assoc. Dean, College of</strong> <span class="signature-line signature-line-inline" style="min-width:120px; font-size:11pt;"><strong>{{ form.college }}</strong></span></span></p>
   </div>
-    </div>
-
-    <div class="section text-center">
+    </div>    <div class="section text-center">
   <p style="margin-left:-380px; font-size:11pt; font-weight:bold; margin-bottom:10px;">Recommending Approval:</p>
   <div class="signature" style="margin-bottom:30px;">
     <p><span class="signature-line" style="min-width:270px; font-size:11pt; font-weight:bold;"><strong>{{ form.coordinator_name }}</strong></span></p>
@@ -414,7 +422,7 @@ const submit = () => {
                   <div class="flex gap-1 items-center">
                     <input 
                       v-model="form.adviser_prefix" 
-                      class="border p-2 w-12 text-xs"
+                      class="border p-2 w-12 text-xs" 
                       placeholder="Pre"
                       maxlength="6">
                     <input 
@@ -424,7 +432,7 @@ const submit = () => {
                       style="text-transform: uppercase;">
                     <input 
                       v-model="form.adviser_suffix" 
-                      class="border p-2 w-14 text-xs"
+                      class="border p-2 w-14 text-xs" 
                       placeholder="Suf"
                       maxlength="8">
                   </div>
@@ -443,7 +451,7 @@ const submit = () => {
                   <div class="flex gap-1 items-center">
                     <input 
                       v-model="form.dean_prefix" 
-                      class="border p-2 w-12 text-xs"
+                      class="border p-2 w-12 text-xs" 
                       placeholder="Pre"
                       maxlength="6">
                     <input 
@@ -453,7 +461,7 @@ const submit = () => {
                       style="text-transform: uppercase;">
                     <input 
                       v-model="form.dean_suffix" 
-                      class="border p-2 w-14 text-xs"
+                      class="border p-2 w-14 text-xs" 
                       placeholder="Suf"
                       maxlength="8">
                   </div>
