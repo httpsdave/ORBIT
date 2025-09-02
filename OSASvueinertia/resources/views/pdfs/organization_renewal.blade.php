@@ -330,12 +330,22 @@
         <div class="section left-align">
             <p><strong>NOTED:</strong></p>
             <div class="signature">
-                <p><span class="signature-line" style="min-width:220px;"><strong>{{ $application->adviser_name }}</strong></span></p>
+                @php
+                    $adviserPrefix = $application->adviser_prefix ? $application->adviser_prefix . ' ' : '';
+                    $adviserSuffix = $application->adviser_suffix ? ', ' . $application->adviser_suffix : '';
+                    $combinedAdviserName = $adviserPrefix . $application->adviser_name . $adviserSuffix;
+                @endphp
+                <p><span class="signature-line" style="min-width:220px;"><strong>{{ $combinedAdviserName }}</strong></span></p>
                 <p><span class="title-under-signature title-right-adjust"><strong>Adviser/s, Student Organization</strong></span></p>
             </div>
             
             <div class="signature">
-                <p><span class="signature-line" style="min-width:305px;"><strong>{{ $application->dean_name }}</strong></span></p>
+                @php
+                    $deanPrefix = $application->dean_prefix ? $application->dean_prefix . ' ' : '';
+                    $deanSuffix = $application->dean_suffix ? ', ' . $application->dean_suffix : '';
+                    $combinedDeanName = $deanPrefix . $application->dean_name . $deanSuffix;
+                @endphp
+                <p><span class="signature-line" style="min-width:305px;"><strong>{{ $combinedDeanName }}</strong></span></p>
                 <p><span class="title-under-signature"><strong>Dean/Assoc. Dean, College of</strong> <span class="signature-line signature-line-inline" style="min-width:120px;"><strong>{{ $application->college ?? '' }}</strong></span></span></p>
             </div>
         </div>
