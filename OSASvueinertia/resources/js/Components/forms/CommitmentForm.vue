@@ -83,6 +83,29 @@ const formattedDate = computed(() => {
   });
 });
 
+// Computed properties for displaying combined names with prefix/suffix
+const displayAdviserName = computed(() => {
+  let name = form.adviser_name || '';
+  if (form.adviser_prefix) {
+    name = form.adviser_prefix + ' ' + name;
+  }
+  if (form.adviser_suffix) {
+    name = name + ', ' + form.adviser_suffix;
+  }
+  return name;
+});
+
+const displayDeanName = computed(() => {
+  let name = form.dean_name || '';
+  if (form.dean_prefix) {
+    name = form.dean_prefix + ' ' + name;
+  }
+  if (form.dean_suffix) {
+    name = name + ', ' + form.dean_suffix;
+  }
+  return name;
+});
+
 const today = (() => {
   const d = new Date();
   const yyyy = d.getFullYear();
@@ -97,12 +120,16 @@ const form = useForm({
   // president_name removed for Commitment Form
   application_date: props.initialFormData.application_date || '',
   adviser_name: props.initialFormData.adviser_name?.toUpperCase() || '',
+  adviser_prefix: props.initialFormData.adviser_prefix || '',
+  adviser_suffix: props.initialFormData.adviser_suffix || '',
   adviser_college:props.initialFormData.adviser_college || '',
   adviser_rank:props.initialFormData.adviser_rank || '',
   adviser_address:props.initialFormData.adviser_address || '',
   adviser_contact:props.initialFormData.adviser_contact || '',
   form_date: today,
   dean_name: props.initialFormData.dean_name?.toUpperCase() || '',
+  dean_prefix: props.initialFormData.dean_prefix || '',
+  dean_suffix: props.initialFormData.dean_suffix || '',
   coordinator_name: props.initialFormData.coordinator_name?.toUpperCase() || '',
   director_name: props.initialFormData.director_name?.toUpperCase() || '',
   academic_year_start: currentYear.value,
@@ -248,7 +275,7 @@ const submit = () => {
       <div class="sig-row">
         <span class="sig-label">Name:</span>
         <span class="sig-line sig-name" style="width:230px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-          {{ form.adviser_name }}
+          {{ displayAdviserName }}
         </span>
       </div>
       <div class="sig-row"><span class="sig-label">Signature:</span><span class="sig-line sig-signature">&nbsp;</span></div>
@@ -356,7 +383,7 @@ const submit = () => {
       <div class="mb-8" style="text-align:left;">
   <div class="noted-label mb-1" style="font-size: 1rem; font-weight: bold; margin-bottom: 10px;">Noted:</div>
         <div class="noted-signature-block" style="width: 350px; margin-left: 65px;">
-          <span class="signature-line" style="min-width: 180px; border-bottom: 1px solid #000; display: inline-block; margin-left: 0; font-size: 12pt; font-family: 'Times New Roman', serif; font-weight: bold; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ form.dean_name || '' }}</span>
+          <span class="signature-line" style="min-width: 180px; border-bottom: 1px solid #000; display: inline-block; margin-left: 0; font-size: 12pt; font-family: 'Times New Roman', serif; font-weight: bold; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ displayDeanName || '' }}</span>
           <p class="mb-0 text-xs text-center" style="font-size: 11pt; font-family: 'Times New Roman', serif; font-weight: bold; margin-top: 2px; font-weight: bold;margin-left:-175px">Dean/Assoc. Dean of College</p>
         </div>
       </div>
@@ -431,13 +458,25 @@ const submit = () => {
         <!-- Left Column -->
         <div>
           <label class="block font-bold">Adviser Name</label>
-          <input 
-            v-model="form.adviser_name" 
-            @input="form.adviser_name = $event.target.value.toUpperCase().slice(0, 32)"
-            class="border p-2 w-full" 
-            style="text-transform: uppercase;" 
-            required 
-            maxlength="32">
+          <div class="flex gap-1 items-center">
+            <input 
+              v-model="form.adviser_prefix" 
+              class="border p-2 w-12 text-xs" 
+              placeholder="Pre"
+              maxlength="6">
+            <input 
+              v-model="form.adviser_name" 
+              @input="form.adviser_name = $event.target.value.toUpperCase().slice(0, 32)"
+              class="border p-2 flex-1" 
+              style="text-transform: uppercase;" 
+              required 
+              maxlength="32">
+            <input 
+              v-model="form.adviser_suffix" 
+              class="border p-2 w-14 text-xs" 
+              placeholder="Suf"
+              maxlength="8">
+          </div>
           <p v-if="errors.adviser_name" class="text-red-500 text-sm mt-1">{{ errors.adviser_name }}</p>
         </div>
         <!-- Right Column -->
@@ -519,12 +558,24 @@ const submit = () => {
         <!-- Left Column -->
         <div>
           <label class="block font-bold">Dean Name</label>
-          <input 
-            v-model="form.dean_name" 
-            @input="form.dean_name = $event.target.value.toUpperCase().slice(0, 54)"
-            class="border p-2 w-full" 
-            style="text-transform: uppercase;" 
-            maxlength="54">
+          <div class="flex gap-1 items-center">
+            <input 
+              v-model="form.dean_prefix" 
+              class="border p-2 w-12 text-xs" 
+              placeholder="Pre"
+              maxlength="6">
+            <input 
+              v-model="form.dean_name" 
+              @input="form.dean_name = $event.target.value.toUpperCase().slice(0, 54)"
+              class="border p-2 flex-1" 
+              style="text-transform: uppercase;" 
+              maxlength="54">
+            <input 
+              v-model="form.dean_suffix" 
+              class="border p-2 w-14 text-xs" 
+              placeholder="Suf"
+              maxlength="8">
+          </div>
           <p v-if="errors.dean_name" class="text-red-500 text-sm mt-1">{{ errors.dean_name }}</p>
         </div>
       </div>

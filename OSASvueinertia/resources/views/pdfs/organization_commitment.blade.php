@@ -335,18 +335,19 @@
             $firstLineCollege = $college;
         }
 
-        $adviserName = $application->adviser_name ?? '';
+        // Define variables for adviser name with prefix/suffix
+        $adviserFullName = trim((isset($application->adviser_prefix) && $application->adviser_prefix ? $application->adviser_prefix . ' ' : '') . ($application->adviser_name ?? '') . (isset($application->adviser_suffix) && $application->adviser_suffix ? ', ' . $application->adviser_suffix : ''));
         $firstLineAdviserName = '';
         $secondLineAdviserName = '';
-        if (mb_strlen($adviserName) > 24) {
-            $breakPos = mb_strrpos(mb_substr($adviserName, 0, 24), ' ');
+        if (mb_strlen($adviserFullName) > 24) {
+            $breakPos = mb_strrpos(mb_substr($adviserFullName, 0, 24), ' ');
             if ($breakPos === false) {
                 $breakPos = 24;
             }
-            $firstLineAdviserName = trim(mb_substr($adviserName, 0, $breakPos));
-            $secondLineAdviserName = trim(mb_substr($adviserName, $breakPos));
+            $firstLineAdviserName = trim(mb_substr($adviserFullName, 0, $breakPos));
+            $secondLineAdviserName = trim(mb_substr($adviserFullName, $breakPos));
         } else {
-            $firstLineAdviserName = $adviserName;
+            $firstLineAdviserName = $adviserFullName;
         }
     @endphp
 
@@ -517,7 +518,7 @@
     <div class="noted-section" style="bottom: {{ ($secondLine || $thirdLine) ? '275px' : '315px' }}; left: 0;">
             <p style="margin-bottom: 20px;"><strong>Noted:</strong></p>
             <div>
-                <p style="margin-left:65px;"><span class="underline" style="min-width:180px;"><strong>{{ $application->dean_name ?? '' }}</strong></span></p>
+                <p style="margin-left:65px;"><span class="underline" style="min-width:180px;"><strong>{{ trim((isset($application->dean_prefix) && $application->dean_prefix ? $application->dean_prefix . ' ' : '') . ($application->dean_name ?? '') . (isset($application->dean_suffix) && $application->dean_suffix ? ', ' . $application->dean_suffix : '')) }}</strong></span></p>
                 <p style="margin-left:65px;"><strong>Dean/Assoc. Dean of College</strong></p>
             </div>
         </div>
