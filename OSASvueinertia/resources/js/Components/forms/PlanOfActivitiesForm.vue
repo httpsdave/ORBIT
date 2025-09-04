@@ -1101,7 +1101,7 @@ nextTick(() => {
               placeholder="Suf"
               maxlength="15">
           </div>
-          <div class="text-xs text-gray-600 mb-1">Preview: {{ displayAdviserName }}</div>
+          
           <p v-if="errors.adviser_name" class="text-red-500 text-sm mt-1">{{ errors.adviser_name }}</p>
         </div>
 
@@ -1129,7 +1129,7 @@ nextTick(() => {
               placeholder="Suf"
               maxlength="15">
           </div>
-          <div class="text-xs text-gray-600 mb-1">Preview: {{ displayDeanName }}</div>
+          
           <p v-if="errors.dean_name" class="text-red-500 text-sm mt-1">{{ errors.dean_name }}</p>
         </div>
       </div>
