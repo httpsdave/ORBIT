@@ -544,7 +544,21 @@
                 <td style="width: 50%; vertical-align: top; text-align: center; padding-top: 0;">
                     <div style="width: 200px; margin: 0 auto; margin-left: 35px;">
                         <p style="margin-bottom: 0;">
-                            <span class="date-signature-line" style="display: block; min-width: 200px; text-align: center;"><strong>{{ $application->adviser_name ?? '' }}</strong></span>
+                            @php
+                                $adviserNameParts = [];
+                                if (isset($application->adviser_prefix) && !empty(trim($application->adviser_prefix))) {
+                                    $adviserNameParts[] = trim($application->adviser_prefix);
+                                }
+                                if (isset($application->adviser_name) && !empty(trim($application->adviser_name))) {
+                                    $adviserNameParts[] = trim($application->adviser_name);
+                                }
+                                $fullAdviserName = implode(' ', $adviserNameParts);
+                                if (isset($application->adviser_suffix) && !empty(trim($application->adviser_suffix))) {
+                                    $fullAdviserName .= ', ' . trim($application->adviser_suffix);
+                                }
+                                $fontSize = strlen($fullAdviserName) > 30 ? '11px' : (strlen($fullAdviserName) > 20 ? '12px' : '13px');
+                            @endphp
+                            <span class="date-signature-line" style="display: block; min-width: 200px; text-align: center; font-size: {{ $fontSize }};"><strong>{{ $fullAdviserName }}</strong></span>
                         </p>
                         <p style="margin-top: 2px; text-align: center;">Organization Adviser</p>
                     </div>
@@ -563,7 +577,21 @@
         </table>
         <div class="dean-signature center-align" style="width: 50% !important; margin-top: 3px; text-align: center !important;">
             <p style="margin-bottom: 0; font-weight: bold !important; margin-left: 10px !important; text-align: left !important; margin-top: -5px;">Noted:</p>
-            <p style="margin-bottom: 0; text-align: center !important; margin-top: -3px;"><span class="date-signature-line" style="display: inline-block; min-width: 180px;"><strong>{{ $application->dean_name ?? '' }}</strong></span></p>
+            @php
+                $deanNameParts = [];
+                if (isset($application->dean_prefix) && !empty(trim($application->dean_prefix))) {
+                    $deanNameParts[] = trim($application->dean_prefix);
+                }
+                if (isset($application->dean_name) && !empty(trim($application->dean_name))) {
+                    $deanNameParts[] = trim($application->dean_name);
+                }
+                $fullDeanName = implode(' ', $deanNameParts);
+                if (isset($application->dean_suffix) && !empty(trim($application->dean_suffix))) {
+                    $fullDeanName .= ', ' . trim($application->dean_suffix);
+                }
+                $deanFontSize = strlen($fullDeanName) > 30 ? '11px' : (strlen($fullDeanName) > 20 ? '12px' : '13px');
+            @endphp
+            <p style="margin-bottom: 0; text-align: center !important; margin-top: -3px;"><span class="date-signature-line" style="display: inline-block; min-width: 180px; font-size: {{ $deanFontSize }};"><strong>{{ $fullDeanName }}</strong></span></p>
             <p style="margin-top: 3px; font-weight: normal; margin-left: 0 !important; text-align: center !important;">Dean/Assoc. Dean of College</p>
         </div>
 
@@ -772,7 +800,21 @@
                     <td style="width: 50%; vertical-align: top; text-align: center; padding-top: 0;">
                         <div style="width: 200px; margin: 0 auto; margin-left: 10px;">
                             <p style="margin-bottom: 0;">
-                                <span class="date-signature-line" style="display: block; min-width: 200px; text-align: center;"><strong>{{ $application->adviser_name ?? '' }}</strong></span>
+                                @php
+                                    $adviserNameParts2 = [];
+                                    if (isset($application->adviser_prefix) && !empty(trim($application->adviser_prefix))) {
+                                        $adviserNameParts2[] = trim($application->adviser_prefix);
+                                    }
+                                    if (isset($application->adviser_name) && !empty(trim($application->adviser_name))) {
+                                        $adviserNameParts2[] = trim($application->adviser_name);
+                                    }
+                                    $fullAdviserName2 = implode(' ', $adviserNameParts2);
+                                    if (isset($application->adviser_suffix) && !empty(trim($application->adviser_suffix))) {
+                                        $fullAdviserName2 .= ', ' . trim($application->adviser_suffix);
+                                    }
+                                    $fontSize2 = strlen($fullAdviserName2) > 30 ? '11px' : (strlen($fullAdviserName2) > 20 ? '12px' : '13px');
+                                @endphp
+                                <span class="date-signature-line" style="display: block; min-width: 200px; text-align: center; font-size: {{ $fontSize2 }};"><strong>{{ $fullAdviserName2 }}</strong></span>
                             </p>
                             <p style="margin-top: 2px; text-align: center; font-weight: normal;">Organization Adviser</p>
                         </div>
@@ -791,7 +833,21 @@
             </table>
             <div class="dean-signature center-align" style="width: 50% !important; margin-top: 3px; text-align: center !important;">
                 <p style="margin-bottom: 0; font-weight: bold !important; margin-left: 10px !important; text-align: left !important; margin-top: -5px;">Noted:</p>
-                <p style="margin-bottom: 0; text-align: center !important; margin-top: -3px;"><span class="date-signature-line" style="display: inline-block; min-width: 180px;"><strong>{{ $application->dean_name ?? '' }}</strong></span></p>
+                @php
+                    $deanNameParts2 = [];
+                    if (isset($application->dean_prefix) && !empty(trim($application->dean_prefix))) {
+                        $deanNameParts2[] = trim($application->dean_prefix);
+                    }
+                    if (isset($application->dean_name) && !empty(trim($application->dean_name))) {
+                        $deanNameParts2[] = trim($application->dean_name);
+                    }
+                    $fullDeanName2 = implode(' ', $deanNameParts2);
+                    if (isset($application->dean_suffix) && !empty(trim($application->dean_suffix))) {
+                        $fullDeanName2 .= ', ' . trim($application->dean_suffix);
+                    }
+                    $deanFontSize2 = strlen($fullDeanName2) > 30 ? '11px' : (strlen($fullDeanName2) > 20 ? '12px' : '13px');
+                @endphp
+                <p style="margin-bottom: 0; text-align: center !important; margin-top: -3px;"><span class="date-signature-line" style="display: inline-block; min-width: 180px; font-size: {{ $deanFontSize2 }};"><strong>{{ $fullDeanName2 }}</strong></span></p>
                 <p style="margin-top: 3px; font-weight: normal; margin-left: 0 !important; text-align: center !important;">Dean/Assoc. Dean of College</p>
             </div>
 
