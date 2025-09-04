@@ -161,7 +161,7 @@
         table th:nth-child(2), table td:nth-child(2) { width: 16%; } /* ACTIVITIES */
         table th:nth-child(3), table td:nth-child(3) { width: 24%; } /* BRIEF DESCRIPTION */
         table th:nth-child(4), table td:nth-child(4) { width: 16%; } /* PERSONS INVOLVED */
-        table th:nth-child(5), table td:nth-child(5) { width: 12%; } /* TARGET DATE */
+    table th:nth-child(5), table td:nth-child(5) { width: 13%; min-width: 80px; } /* TARGET DATE */
         table th:nth-child(6), table td:nth-child(6) { width: 14%; } /* BUDGET */
 
         /* Remove forced height and optimize for content */
@@ -312,7 +312,22 @@
                     <td>{!! $activity->name !!}</td>
                     <td>{!! $activity->description !!}</td>
                     <td>{!! $activity->persons_involved !!}</td>
-                    <td>{{ \Carbon\Carbon::parse($activity->target_date)->format('F d, Y') }}</td>
+                    <td>
+                        @php
+                            if (empty($activity->target_date)) {
+                                echo '';
+                            } else {
+                                try {
+                                    // Try to parse as a date
+                                    $date = \Carbon\Carbon::parse($activity->target_date);
+                                    echo $date->format('F d, Y');
+                                } catch (\Exception $e) {
+                                    // If parsing fails, display the original text (e.g., "September 2025")
+                                    echo $activity->target_date;
+                                }
+                            }
+                        @endphp
+                    </td>
                     <td>{{ $activity->budget ?? '' }}</td>
                 </tr>
             </table>
