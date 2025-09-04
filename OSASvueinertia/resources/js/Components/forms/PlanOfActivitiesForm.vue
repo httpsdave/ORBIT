@@ -30,6 +30,29 @@ const nextYear = computed(() => {
   return (new Date().getFullYear() + 1).toString().slice(-2);
 });
 
+// Computed properties for displaying combined names with prefix/suffix
+const displayAdviserName = computed(() => {
+  let name = form.adviser_name || '';
+  if (form.adviser_prefix) {
+    name = form.adviser_prefix + ' ' + name;
+  }
+  if (form.adviser_suffix) {
+    name = name + ', ' + form.adviser_suffix;
+  }
+  return name;
+});
+
+const displayDeanName = computed(() => {
+  let name = form.dean_name || '';
+  if (form.dean_prefix) {
+    name = form.dean_prefix + ' ' + name;
+  }
+  if (form.dean_suffix) {
+    name = name + ', ' + form.dean_suffix;
+  }
+  return name;
+});
+
 // Rich text editor state
 const showToolbar = ref(false);
 const toolbarPosition = ref({ x: 0, y: 0 });
@@ -68,7 +91,11 @@ const form = useForm({
   secretary_name: props.initialFormData.secretary_name?.toUpperCase() || '',
   // Removed application_date for Plan of Activities
   adviser_name: props.initialFormData.adviser_name?.toUpperCase() || '',
+  adviser_prefix: props.initialFormData.adviser_prefix || '',
+  adviser_suffix: props.initialFormData.adviser_suffix || '',
   dean_name: props.initialFormData.dean_name?.toUpperCase() || '',
+  dean_prefix: props.initialFormData.dean_prefix || '',
+  dean_suffix: props.initialFormData.dean_suffix || '',
   coordinator_name: props.initialFormData.coordinator_name?.toUpperCase() || '',
   director_name: props.initialFormData.director_name?.toUpperCase() || '',
   activities: initializeActivities(),
@@ -117,7 +144,11 @@ watch(() => props.initialFormData, (newData) => {
   if (!form.president_name) form.president_name = newData.president_name?.toUpperCase() || '';
   if (!form.secretary_name) form.secretary_name = newData.secretary_name?.toUpperCase() || '';
   if (!form.adviser_name) form.adviser_name = newData.adviser_name?.toUpperCase() || '';
+  if (!form.adviser_prefix) form.adviser_prefix = newData.adviser_prefix || '';
+  if (!form.adviser_suffix) form.adviser_suffix = newData.adviser_suffix || '';
   if (!form.dean_name) form.dean_name = newData.dean_name?.toUpperCase() || '';
+  if (!form.dean_prefix) form.dean_prefix = newData.dean_prefix || '';
+  if (!form.dean_suffix) form.dean_suffix = newData.dean_suffix || '';
   if (!form.coordinator_name) form.coordinator_name = newData.coordinator_name?.toUpperCase() || '';
   if (!form.director_name) form.director_name = newData.director_name?.toUpperCase() || '';
   
@@ -914,7 +945,7 @@ nextTick(() => {
       <!-- Second signature row with Faculty Adviser -->
       <div class="text-left mb-6" style="width: 45%;">
         <div class="border-b border-black min-w-[200px] inline-block text-center pb-1 text-[11pt]" style="font-family:'Times New Roman',serif;">
-          {{ form.adviser_name }}
+          {{ displayAdviserName }}
         </div>
         <div class="text-[11pt] mt-1" style="font-family:'Times New Roman',serif; margin-left: 25px">Organization Adviser(s)</div>
       </div>
@@ -922,7 +953,7 @@ nextTick(() => {
       <!-- Third signature row with Dean -->
       <div class="text-left mb-6" style="width: 45%;">
         <div class="border-b border-black min-w-[200px] inline-block text-center pb-1 text-[11pt]" style="font-family:'Times New Roman',serif;">
-          {{ form.dean_name }}
+          {{ displayDeanName }}
         </div>
         <div class="text-[11pt] mt-1" style="font-family:'Times New Roman',serif;margin-left: 45px">Dean/Assoc. Dean</div>
       </div>
@@ -1051,13 +1082,26 @@ nextTick(() => {
 
         <!-- Left Column -->
         <div>
-          <label class="block font-bold">Adviser Name</label>
-          <input 
-            v-model="form.adviser_name" 
-            @input="form.adviser_name = $event.target.value.toUpperCase()"
-            class="border p-2 w-full" 
-            style="text-transform: uppercase;" 
-            required>
+          <label class="block font-bold mb-2">Adviser Name</label>
+          <div class="flex gap-1 mb-1">
+            <input 
+              v-model="form.adviser_prefix" 
+              class="border p-2 w-12 text-xs" 
+              placeholder="Pre"
+              maxlength="10">
+            <input 
+              v-model="form.adviser_name" 
+              @input="form.adviser_name = $event.target.value.toUpperCase()"
+              class="border p-2 flex-1" 
+              style="text-transform: uppercase;" 
+              required>
+            <input 
+              v-model="form.adviser_suffix" 
+              class="border p-2 w-14 text-xs" 
+              placeholder="Suf"
+              maxlength="15">
+          </div>
+          <div class="text-xs text-gray-600 mb-1">Preview: {{ displayAdviserName }}</div>
           <p v-if="errors.adviser_name" class="text-red-500 text-sm mt-1">{{ errors.adviser_name }}</p>
         </div>
 
@@ -1066,13 +1110,26 @@ nextTick(() => {
 
         <!-- Left Column -->
         <div>
-          <label class="block font-bold">Dean Name</label>
-          <input 
-            v-model="form.dean_name" 
-            @input="form.dean_name = $event.target.value.toUpperCase()"
-            class="border p-2 w-full" 
-            style="text-transform: uppercase;" 
-            required>
+          <label class="block font-bold mb-2">Dean Name</label>
+          <div class="flex gap-1 mb-1">
+            <input 
+              v-model="form.dean_prefix" 
+              class="border p-2 w-12 text-xs" 
+              placeholder="Pre"
+              maxlength="10">
+            <input 
+              v-model="form.dean_name" 
+              @input="form.dean_name = $event.target.value.toUpperCase()"
+              class="border p-2 flex-1" 
+              style="text-transform: uppercase;" 
+              required>
+            <input 
+              v-model="form.dean_suffix" 
+              class="border p-2 w-14 text-xs" 
+              placeholder="Suf"
+              maxlength="15">
+          </div>
+          <div class="text-xs text-gray-600 mb-1">Preview: {{ displayDeanName }}</div>
           <p v-if="errors.dean_name" class="text-red-500 text-sm mt-1">{{ errors.dean_name }}</p>
         </div>
       </div>
@@ -1125,14 +1182,49 @@ nextTick(() => {
                     <!-- Application Date field removed for Plan of Activities -->
 
                     <div>
-                        <label class="block font-bold">Adviser Name</label>
-                        <input v-model="form.adviser_name" class="border p-2 w-full" required>
+                        <label class="block font-bold mb-2">Adviser Name</label>
+                        <div class="flex gap-1 mb-1">
+                            <input 
+                                v-model="form.adviser_prefix" 
+                                class="border p-2 w-12 text-xs" 
+                                placeholder="Pre"
+                                maxlength="10">
+                            <input 
+                                v-model="form.adviser_name" 
+                                @input="form.adviser_name = $event.target.value.toUpperCase()"
+                                class="border p-2 flex-1" 
+                                style="text-transform: uppercase;" 
+                                required>
+                            <input 
+                                v-model="form.adviser_suffix" 
+                                class="border p-2 w-14 text-xs" 
+                                placeholder="Suf"
+                                maxlength="15">
+                        </div>
+                        <div class="text-xs text-gray-600 mb-1">Preview: {{ displayAdviserName }}</div>
                         <p v-if="errors.adviser_name" class="text-red-500 text-sm mt-1">{{ errors.adviser_name }}</p>
                     </div>
 
                     <div>
-                        <label class="block font-bold">Dean Name</label>
-                        <input v-model="form.dean_name" class="border p-2 w-full">
+                        <label class="block font-bold mb-2">Dean Name</label>
+                        <div class="flex gap-1 mb-1">
+                            <input 
+                                v-model="form.dean_prefix" 
+                                class="border p-2 w-12 text-xs" 
+                                placeholder="Pre"
+                                maxlength="10">
+                            <input 
+                                v-model="form.dean_name" 
+                                @input="form.dean_name = $event.target.value.toUpperCase()"
+                                class="border p-2 flex-1" 
+                                style="text-transform: uppercase;">
+                            <input 
+                                v-model="form.dean_suffix" 
+                                class="border p-2 w-14 text-xs" 
+                                placeholder="Suf"
+                                maxlength="15">
+                        </div>
+                        <div class="text-xs text-gray-600 mb-1">Preview: {{ displayDeanName }}</div>
                         <p v-if="errors.dean_name" class="text-red-500 text-sm mt-1">{{ errors.dean_name }}</p>
                     </div>
 

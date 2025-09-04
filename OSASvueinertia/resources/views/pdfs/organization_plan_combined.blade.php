@@ -338,7 +338,7 @@
             <!-- Second signature row with Faculty Adviser -->
             <div class="signature-container clearfix">
                 <div style="width: 100%; text-align: left;">
-                    <div class="signature-line" style="margin-bottom:0px; white-space:nowrap; min-width:200px; display:inline-block; text-align: center;margin-left: 35px;"><strong>{{ $application->adviser_name ?? 'N/A' }}</strong></div>
+                    <div class="signature-line" style="margin-bottom:0px; white-space:nowrap; min-width:200px; display:inline-block; text-align: center;margin-left: 35px; font-size: {{ strlen(trim((isset($application->adviser_prefix) && $application->adviser_prefix ? $application->adviser_prefix . ' ' : '') . ($application->adviser_name ?? '') . (isset($application->adviser_suffix) && $application->adviser_suffix ? ', ' . $application->adviser_suffix : ''))) > 25 ? '10pt' : '11pt' }}; word-wrap: break-word; overflow-wrap: break-word;"><strong>{{ trim((isset($application->adviser_prefix) && $application->adviser_prefix ? $application->adviser_prefix . ' ' : '') . ($application->adviser_name ?? 'N/A') . (isset($application->adviser_suffix) && $application->adviser_suffix ? ', ' . $application->adviser_suffix : '')) }}</strong></div>
                     <p style="margin-top:2px; text-align: left; width: 180px;margin-left:75px">Organization Adviser(s)</p>
                 </div>
             </div>
@@ -346,7 +346,7 @@
             <!-- Third signature row with Dean -->
             <div class="signature-container clearfix" style="margin-top:5px;">
                 <div style="width: 100%; text-align: left;">
-                    <div class="signature-line" style="margin-bottom:0px; white-space:nowrap; min-width:200px; display:inline-block; text-align: center;margin-left: 35px;"><strong>{!! $application->dean_name ?: '&nbsp;' !!}</strong></div>
+                    <div class="signature-line" style="margin-bottom:0px; white-space:nowrap; min-width:200px; display:inline-block; text-align: center;margin-left: 35px; font-size: {{ strlen(trim((isset($application->dean_prefix) && $application->dean_prefix ? $application->dean_prefix . ' ' : '') . ($application->dean_name ?? '') . (isset($application->dean_suffix) && $application->dean_suffix ? ', ' . $application->dean_suffix : ''))) > 25 ? '10pt' : '11pt' }}; word-wrap: break-word; overflow-wrap: break-word;"><strong>{{ trim((isset($application->dean_prefix) && $application->dean_prefix ? $application->dean_prefix . ' ' : '') . ($application->dean_name ?? '') . (isset($application->dean_suffix) && $application->dean_suffix ? ', ' . $application->dean_suffix : '')) }}</strong></div>
                     <p style="margin-top:2px; text-align: left; width: 180px;margin-left: 85px;">Dean/Assoc. Dean</p>
                 </div>
             </div>
