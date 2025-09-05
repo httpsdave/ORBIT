@@ -548,7 +548,7 @@ const submit = () => {
                 </td>
                 <td class="align-top text-center w-1/2 p-0" style="vertical-align:top; text-align:center;">
                   <div style="width:200px; margin:0 auto; margin-left:110px;">
-                    <span class="border-b border-black min-w-[150px] inline-block text-center"><strong>{{ form.second_adviser }}</strong></span>
+                    <span class="border-b border-black min-w-[150px] inline-block text-center"><strong>{{ displaySecondAdviserName }}</strong></span>
                     <div class="text-center">Organization Adviser</div>
                   </div>
                   <div class="text-left mt-1" style="padding-left:110px;">Date: <span class="border-b border-black min-w-[140px] inline-block text-center"><strong>{{ currentDate }}</strong></span></div>
