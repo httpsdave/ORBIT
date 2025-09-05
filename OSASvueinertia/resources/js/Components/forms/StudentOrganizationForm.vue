@@ -158,7 +158,7 @@ const submit = () => {
   <div class="section justified" style="margin-bottom: 0.3cm; text-align: justify;">
     <p>Sir/Madam:</p>
   <div style="height: 0.3cm;"></div>
-    <p class="indented" style="text-indent: 1.27cm;"><span style="word-spacing: 15px;">I have the honor to apply for recognition/renewal of the organization</span> <u>{{ form.organization_name }}</u>, to be duly recognized by Laguna State Polytechnic University.</p>
+  <p class="indented" style="text-indent: 1.27cm;"><span style="word-spacing: 15px;">I have the honor to apply for recognition/renewal of the organization</span> <u><strong>{{ form.organization_name }}</strong></u>, to be duly recognized by Laguna State Polytechnic University.</p>
   <div style="height: 0.15cm;"></div>
     <p class="indented" style="text-indent: 1.27cm;">In compliance with CHED Memo Order No. 9s. 2013, Subj.: Enhanced Policies & Guidelines on Student Affairs and Services (Article VIII-Student Development, Section 19. Student Organizations and Activities), I am submitting for proper action the following requirements for recognition and accreditation, to wit:</p>
   </div>
