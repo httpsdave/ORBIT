@@ -581,7 +581,7 @@
                                 }
                                 $secondAdviserFontSize = strlen($fullSecondAdviserName) > 30 ? '11px' : (strlen($fullSecondAdviserName) > 20 ? '12px' : '13px');
                             @endphp
-                                <span class="date-signature-line" style="display: block; min-width: 200px; text-align: center; font-size: {{ $secondAdviserFontSize }};"><strong>{{ $fullSecondAdviserName ?: '' }}</strong></span>
+                                <span class="date-signature-line" style="display: block; min-width: 200px; text-align: center; font-size: {{ $secondAdviserFontSize }}; height: 1.2em;"><strong>{!! $fullSecondAdviserName ?: '&nbsp;' !!}</strong></span>
                         </p>
                         <p style="margin-top: 2px; text-align: center;">Organization Adviser</p>
                     </div>
@@ -851,7 +851,7 @@
                                     }
                                     $secondAdviserFontSize2 = strlen($fullSecondAdviserName2) > 30 ? '11px' : (strlen($fullSecondAdviserName2) > 20 ? '12px' : '13px');
                                 @endphp
-                                    <span class="date-signature-line" style="display: block; min-width: 200px; text-align: center; font-size: {{ $secondAdviserFontSize2 }};"><strong>{{ $fullSecondAdviserName2 ?: 'Sample Organization Adviser' }}</strong></span>
+                                    <span class="date-signature-line" style="display: block; min-width: 200px; text-align: center; font-size: {{ $secondAdviserFontSize2 }}; height: 1.2em;"><strong>{!! $fullSecondAdviserName2 ?: '&nbsp;' !!}</strong></span>
                             </p>
                             <p style="margin-top: 2px; text-align: center; font-weight: normal;">Organization Adviser</p>
                         </div>
