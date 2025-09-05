@@ -331,9 +331,7 @@ const validateForm = () => {
     errors.value.adviser_name = 'Faculty adviser name is required';
   }
   
-  if (!form.dean_name.trim()) {
-    errors.value.dean_name = 'Dean/Assoc. Dean name is required';
-  }
+  // Dean name is now optional - no validation required
   
   if (!form.director_name.trim()) {
     errors.value.director_name = 'Director/Chairperson name is required';
