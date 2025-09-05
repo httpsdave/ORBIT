@@ -202,6 +202,8 @@ class OrganizationApplicationController extends Controller
                 'college' => 'nullable|string|max:255',
                 'students' => 'required|array|min:1',
                 'students.*.student_name' => 'required|string|max:255',
+                'students.*.course' => 'required|string|max:255',
+                'students.*.year_section' => 'required|string|max:255',
                 'students.*.course_year_section' => 'required|string|max:255',
                 'students.*.position_rank' => 'nullable|string|max:255',
                 'students.*.is_bonafide' => 'nullable|boolean',
@@ -405,8 +407,19 @@ class OrganizationApplicationController extends Controller
         if ($application->form_type === 'LSPU-OSAS-SF-006') {
             // Convert studentCertifications to students array for frontend compatibility
             $application->students = $application->studentCertifications->map(function($cert) {
+                // Split course_year_section into separate course and year_section fields
+                $course = '';
+                $year_section = '';
+                if ($cert->course_year_section) {
+                    $parts = explode(', ', $cert->course_year_section, 2);
+                    $course = $parts[0] ?? '';
+                    $year_section = $parts[1] ?? '';
+                }
+                
                 return [
                     'student_name' => $cert->student_name,
+                    'course' => $course,
+                    'year_section' => $year_section,
                     'course_year_section' => $cert->course_year_section,
                     'position_rank' => $cert->position_rank,
                     'is_bonafide' => (bool) $cert->is_bonafide,
@@ -540,6 +553,8 @@ class OrganizationApplicationController extends Controller
                 'college' => 'nullable|string|max:255',
                 'students' => 'required|array|min:1',
                 'students.*.student_name' => 'required|string|max:255',
+                'students.*.course' => 'required|string|max:255',
+                'students.*.year_section' => 'required|string|max:255',
                 'students.*.course_year_section' => 'required|string|max:255',
                 'students.*.position_rank' => 'nullable|string|max:255',
                 'students.*.is_bonafide' => 'nullable|boolean',

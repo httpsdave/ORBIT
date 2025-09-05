@@ -72,6 +72,8 @@ const studentsPerPage = 1; // 1 student per page since each certification is a f
 const addStudent = () => {
   form.students.push({
     student_name: '',
+    course: '',
+    year_section: '',
     course_year_section: '',
     position_rank: '',
     college: form.college || '',
@@ -120,16 +122,19 @@ const handleCSVUpload = (event) => {
             dataRows.forEach((row, index) => {
                 const columns = row.split(',').map(col => col.trim().replace(/"/g, ''));
                 
-                // Extract columns: Student Name, Course/Year Section, Position/Rank
+                // Extract columns: Student Name, Course, Year Section, Position/Rank
                 const studentName = columns[0] || '';
-                const courseYearSection = columns[1] || '';
-                const positionRank = columns[2] || '';
+                const course = columns[1] || '';
+                const yearSection = columns[2] || '';
+                const positionRank = columns[3] || '';
                 
           // Add student if at least one field has data
-          if (studentName || courseYearSection) {
+          if (studentName || course || yearSection) {
             form.students.push({
               student_name: studentName.toUpperCase(),
-              course_year_section: courseYearSection.toUpperCase(),
+              course: course.toUpperCase(),
+              year_section: yearSection.toUpperCase(),
+              course_year_section: course && yearSection ? `${course.toUpperCase()}, ${yearSection.toUpperCase()}` : (course || yearSection).toUpperCase(),
               position_rank: positionRank.toUpperCase(),
               certification_date: form.certification_date, // Always include certification_date
             });
@@ -220,6 +225,16 @@ const prevPage = () => {
     }
 };
 
+// Function to update course_year_section when course or year_section changes
+const updateCourseYearSection = (studentIndex) => {
+  const student = form.students[studentIndex];
+  if (student.course && student.year_section) {
+    student.course_year_section = `${student.course}, ${student.year_section}`;
+  } else {
+    student.course_year_section = student.course || student.year_section || '';
+  }
+};
+
 const form = useForm({
   form_type: 'LSPU-OSAS-SF-006',
   organization_name: props.initialFormData.organization_name?.toUpperCase() || '',
@@ -238,6 +253,8 @@ const form = useForm({
   students: (props.initialFormData.students || []).map(student => ({
     ...student,
     student_name: student.student_name?.toUpperCase() || '',
+    course: student.course?.toUpperCase() || '',
+    year_section: student.year_section?.toUpperCase() || '',
     course_year_section: student.course_year_section?.toUpperCase() || '',
     position_rank: student.position_rank?.toUpperCase() || '',
     certification_date: student.certification_date || new Date().toISOString().slice(0, 10), // Ensure each student has certification_date
@@ -273,8 +290,11 @@ const validateForm = () => {
     if (!student.student_name.trim()) {
       errors.value[`student_${index}_name`] = 'Student Name is required';
     }
-    if (!student.course_year_section.trim()) {
-      errors.value[`student_${index}_course`] = 'Course/Year and Section is required';
+    if (!student.course.trim()) {
+      errors.value[`student_${index}_course`] = 'Course is required';
+    }
+    if (!student.year_section.trim()) {
+      errors.value[`student_${index}_year_section`] = 'Year and Section is required';
     }
     // college is optional (can be "None")
   });
@@ -294,6 +314,7 @@ const submit = () => {
     ...form.data(),
     students: form.students.map(student => ({
       ...student,
+      course_year_section: student.course && student.year_section ? `${student.course}, ${student.year_section}` : (student.course || student.year_section || ''),
       organization_name: form.organization_name,
       college: form.college,
       certification_date: form.certification_date, // Always set to current date from form
@@ -560,7 +581,7 @@ const submit = () => {
                 <p class="font-semibold text-blue-800 mb-1">📋 CSV Format Requirements:</p>
                 <ul class="text-blue-700 list-disc list-inside space-y-1">
                     <li>First row should contain column headers (will be ignored)</li>
-                    <li>Columns must be in this order: <strong>Student Name, Course/Year & Section, Position/Rank</strong></li>
+                    <li>Columns must be in this order: <strong>Student Name, Course, Year & Section, Position/Rank</strong></li>
                     <li>Additional columns will be ignored</li>
                     <li>File must be in CSV format (.csv extension)</li>
                 </ul>
@@ -607,14 +628,25 @@ const submit = () => {
           </div>
 
                     <div>
-                        <label class="block font-bold">course, year and section</label>
+                        <label class="block font-bold">Course</label>
                         <input 
-                          v-model="student.course_year_section" 
-                          @input="student.course_year_section = $event.target.value.toUpperCase()"
+                          v-model="student.course" 
+                          @input="student.course = $event.target.value.toUpperCase(); updateCourseYearSection(startIndex + idx)"
                           class="border p-2 w-full" 
                           style="text-transform: uppercase;" 
                           required>
                         <p v-if="errors[`student_${startIndex + idx}_course`]" class="text-red-500 text-sm mt-1">{{ errors[`student_${startIndex + idx}_course`] }}</p>
+                    </div>
+
+                    <div>
+                        <label class="block font-bold">Year and Section</label>
+                        <input 
+                          v-model="student.year_section" 
+                          @input="student.year_section = $event.target.value.toUpperCase(); updateCourseYearSection(startIndex + idx)"
+                          class="border p-2 w-full" 
+                          style="text-transform: uppercase;" 
+                          required>
+                        <p v-if="errors[`student_${startIndex + idx}_year_section`]" class="text-red-500 text-sm mt-1">{{ errors[`student_${startIndex + idx}_year_section`] }}</p>
                     </div>
 
                     <div>
