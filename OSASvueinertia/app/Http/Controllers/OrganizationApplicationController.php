@@ -188,6 +188,8 @@ class OrganizationApplicationController extends Controller
                 'academic_year_start' => 'required|string|max:10',
                 'academic_year_end' => 'required|string|max:10',
                 'second_adviser' => 'nullable|string|max:255',
+                'second_adviser_prefix' => 'nullable|string|max:10',
+                'second_adviser_suffix' => 'nullable|string|max:15',
                 'director_name' => 'required|string|max:255',
                 'members' => 'required|array|min:1',
                 'members.*.student_name' => 'required|string|max:255',
@@ -527,6 +529,8 @@ class OrganizationApplicationController extends Controller
                 'academic_year_start' => 'required|string|max:10',
                 'academic_year_end' => 'required|string|max:10',
                 'second_adviser' => 'nullable|string|max:255',
+                'second_adviser_prefix' => 'nullable|string|max:10',
+                'second_adviser_suffix' => 'nullable|string|max:15',
                 'director_name' => 'required|string|max:255',
             ]);
             

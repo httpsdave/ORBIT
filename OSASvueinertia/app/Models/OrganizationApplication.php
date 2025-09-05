@@ -49,6 +49,8 @@ class OrganizationApplication extends Model
         // New fields for the list of members form
         'semester',
         'second_adviser',
+        'second_adviser_prefix',
+        'second_adviser_suffix',
 
          // Student Activity Attendance Sheet fields
          'activity_name',

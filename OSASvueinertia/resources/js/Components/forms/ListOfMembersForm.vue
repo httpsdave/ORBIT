@@ -48,6 +48,17 @@ const displayDeanName = computed(() => {
   return name;
 });
 
+const displaySecondAdviserName = computed(() => {
+  let name = form.second_adviser || '';
+  if (form.second_adviser_prefix) {
+    name = form.second_adviser_prefix + ' ' + name;
+  }
+  if (form.second_adviser_suffix) {
+    name = name + ', ' + form.second_adviser_suffix;
+  }
+  return name;
+});
+
 // Add errors ref object
 const errors = ref({});
 
@@ -246,6 +257,8 @@ const form = useForm({
   adviser_prefix: props.initialFormData.adviser_prefix || '',
   adviser_suffix: props.initialFormData.adviser_suffix || '',
   second_adviser: props.initialFormData.second_adviser?.toUpperCase() || '',
+  second_adviser_prefix: props.initialFormData.second_adviser_prefix || '',
+  second_adviser_suffix: props.initialFormData.second_adviser_suffix || '',
   dean_name: props.initialFormData.dean_name?.toUpperCase() || '',
   dean_prefix: props.initialFormData.dean_prefix || '',
   dean_suffix: props.initialFormData.dean_suffix || '',
@@ -654,11 +667,23 @@ const submit = () => {
   <div v-if="errors.adviser_name" class="text-red-500 text-sm mt-1">{{ errors.adviser_name }}</div>
 
   <label class="block font-bold mt-4">Secondary Organization Adviser (Optional)</label>
-  <input 
-    v-model="form.second_adviser" 
-    @input="form.second_adviser = $event.target.value.toUpperCase()"
-    class="border p-2 w-full" 
-    style="text-transform: uppercase;">
+  <div class="flex gap-1 mb-1">
+    <input 
+      v-model="form.second_adviser_prefix" 
+      class="border p-2 w-12 text-xs" 
+      placeholder="Pre"
+      maxlength="10">
+    <input 
+      v-model="form.second_adviser" 
+      @input="form.second_adviser = $event.target.value.toUpperCase()"
+      class="border p-2 flex-1" 
+      style="text-transform: uppercase;">
+    <input 
+      v-model="form.second_adviser_suffix" 
+      class="border p-2 w-14 text-xs" 
+      placeholder="Suf"
+      maxlength="15">
+  </div>
 
         <label class="block font-bold mt-4 mb-2">Dean/Assoc. Dean Name</label>
         <div class="flex gap-1 mb-1">

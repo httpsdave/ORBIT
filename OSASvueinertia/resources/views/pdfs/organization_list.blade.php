@@ -567,7 +567,21 @@
                 <td style="width: 50%; vertical-align: top; text-align: center; padding-top: 0;">
                     <div style="width: 200px; margin: 0 auto; margin-left: 110px;">
                         <p style="margin-bottom: 0;">
-                                <span class="date-signature-line" style="display: block; min-width: 200px; text-align: center;"><strong>{{ $application->second_adviser ?? 'Sample Data' }}</strong></span>
+                            @php
+                                $secondAdviserNameParts = [];
+                                if (isset($application->second_adviser_prefix) && !empty(trim($application->second_adviser_prefix))) {
+                                    $secondAdviserNameParts[] = trim($application->second_adviser_prefix);
+                                }
+                                if (isset($application->second_adviser) && !empty(trim($application->second_adviser))) {
+                                    $secondAdviserNameParts[] = trim($application->second_adviser);
+                                }
+                                $fullSecondAdviserName = implode(' ', $secondAdviserNameParts);
+                                if (isset($application->second_adviser_suffix) && !empty(trim($application->second_adviser_suffix))) {
+                                    $fullSecondAdviserName .= ', ' . trim($application->second_adviser_suffix);
+                                }
+                                $secondAdviserFontSize = strlen($fullSecondAdviserName) > 30 ? '11px' : (strlen($fullSecondAdviserName) > 20 ? '12px' : '13px');
+                            @endphp
+                                <span class="date-signature-line" style="display: block; min-width: 200px; text-align: center; font-size: {{ $secondAdviserFontSize }};"><strong>{{ $fullSecondAdviserName ?: '' }}</strong></span>
                         </p>
                         <p style="margin-top: 2px; text-align: center;">Organization Adviser</p>
                     </div>
@@ -823,7 +837,21 @@
                     <td style="width: 50%; vertical-align: top; text-align: center; padding-top: 0;">
                         <div style="width: 200px; margin: 0 auto; margin-left: 110px;">
                             <p style="margin-bottom: 0;">
-                                    <span class="date-signature-line" style="display: block; min-width: 200px; text-align: center;"><strong>{{ $application->second_adviser ?? 'Sample Organization Adviser' }}</strong></span>
+                                @php
+                                    $secondAdviserNameParts2 = [];
+                                    if (isset($application->second_adviser_prefix) && !empty(trim($application->second_adviser_prefix))) {
+                                        $secondAdviserNameParts2[] = trim($application->second_adviser_prefix);
+                                    }
+                                    if (isset($application->second_adviser) && !empty(trim($application->second_adviser))) {
+                                        $secondAdviserNameParts2[] = trim($application->second_adviser);
+                                    }
+                                    $fullSecondAdviserName2 = implode(' ', $secondAdviserNameParts2);
+                                    if (isset($application->second_adviser_suffix) && !empty(trim($application->second_adviser_suffix))) {
+                                        $fullSecondAdviserName2 .= ', ' . trim($application->second_adviser_suffix);
+                                    }
+                                    $secondAdviserFontSize2 = strlen($fullSecondAdviserName2) > 30 ? '11px' : (strlen($fullSecondAdviserName2) > 20 ? '12px' : '13px');
+                                @endphp
+                                    <span class="date-signature-line" style="display: block; min-width: 200px; text-align: center; font-size: {{ $secondAdviserFontSize2 }};"><strong>{{ $fullSecondAdviserName2 ?: 'Sample Organization Adviser' }}</strong></span>
                             </p>
                             <p style="margin-top: 2px; text-align: center; font-weight: normal;">Organization Adviser</p>
                         </div>
