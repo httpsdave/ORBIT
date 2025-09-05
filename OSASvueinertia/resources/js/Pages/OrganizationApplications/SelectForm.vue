@@ -56,6 +56,9 @@ const handleFormSelection = (formId) => {
           </svg>
           Back to Applications
         </button>
+        <div class="mt-4 text-xs text-gray-500 dark:text-gray-400">
+          For best viewing experience, use a device with a larger screen or set your browser to desktop view.
+        </div>
       </div>
     </div>
   </div>
