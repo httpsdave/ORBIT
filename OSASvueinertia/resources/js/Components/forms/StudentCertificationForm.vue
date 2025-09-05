@@ -385,20 +385,18 @@ const submit = () => {
           </div>
         </span> from the College of <span class="signature-line" style="min-width:445px; border-bottom: 1px solid black; display: inline-block; margin-top: 20px;text-align:center; font-weight:bold;">{{ form.college }}</span> is a bonafide LSPU Student, not
       </div>
-          <br>
-          <span style="display:inline-block; width:100%; height:0.5em;"></span>
-  <span style="text-indent:6em;word-spacing: 17px">under academic probation, not under disciplinary probation, and the elected/appointed</span>
-          <br>
-          <span style="display:inline-block; width:100%; height:0.5em;"></span>
-          <div style="display: flex; align-items: flex-start; margin-top: 10px;">
+          <div style="margin-top: 0.2em;"></div>
+          <span style="text-indent:6em;word-spacing: 17px">under academic probation, not under disciplinary probation, and the elected/appointed</span>
+          <div style="height:0.2em;"></div>
+          <div style="display: flex; align-items: flex-start; margin-top: 2px;">
             <div style="flex: 1; min-width: 230px;">
               <span style="display: block; min-width: 230px; border-bottom: 1px solid black; text-align: center; font-weight:bold;">{{ student.position_rank }}</span>
-              <span style="display: block; text-align: center; font-size: 10pt; margin-top: 2px; width: 120px;margin-left:50px">(position/rank)</span>
+              <span style="display: block; text-align: center; font-size: 10pt; margin-top: 0.5px; width: 120px;margin-left:50px">(position/rank)</span>
             </div>
             <span style="margin: 0 10px;">of</span>
             <div style="flex: 1; min-width: 315px; text-align: right;">
               <span style="display: block; min-width: 315px; border-bottom: 1px solid black; text-align: center; font-weight:bold;">{{ form.organization_name }}</span>
-              <span style="display: block; text-align: right; font-size: 10pt; margin-top: 2px; width: 150px;margin-left:30px">(organization)</span>
+              <span style="display: block; text-align: right; font-size: 10pt; margin-top: 0.5px; width: 150px;margin-left:30px">(organization)</span>
             </div>
             <span style="margin-left: 10px;">.</span>
           </div>
