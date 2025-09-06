@@ -84,13 +84,26 @@
         }
         
         .rating-table th {
-            background-color: #f5f5f5;
+            background-color: white;
             font-weight: bold;
+        }
+        
+        .rating-table th:first-child {
+            border-right: none;
+        }
+        
+        .rating-table th.question-col {
+            border-left: none;
         }
         
         .rating-table .question-col {
             text-align: left;
             width: 60%;
+            border-left: none;
+        }
+        
+        .rating-table td:first-child {
+            border-right: none;
         }
         
         .rating-scale {
