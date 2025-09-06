@@ -5,39 +5,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Evaluation Sheet</title>
     <style>
+        /* Set A4 paper size for print */
         @page {
-            margin: 0.75in;
             size: A4;
+            margin-top: 0.5cm;
+            margin-bottom: 1.0cm;
+            margin-left: 2.54cm;
+            margin-right: 2.54cm;
         }
-        
+
         body {
             font-family: 'Calibri', sans-serif;
             font-size: 11pt;
             line-height: 1.2;
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
         
         .header {
             text-align: center;
-            margin-bottom: 20px;
+            font-size: 11pt;
+            margin: 0 0 2px 0;
+            padding-top: 0.5cm;
         }
         
-        .header img.logo {
-            width: 80px;
-            height: auto;
-            float: left;
-            margin-right: 20px;
-        }
-        
-        .header .university-name {
-            max-width: 300px;
+        .university-name {
+            max-width: 45%;
             height: auto;
             margin: 4px 0;
+            display: inline-block;
         }
         
-        .header-text {
-            font-size: 11pt;
+        .logo {
+            position: absolute;
+            top: -0.5cm;
+            left: -2cm;
+            width: 250px;
+            height: auto;
         }
         
         .title {
@@ -112,13 +120,11 @@
     <!-- Header -->
     <div class="header">
         <img src="{{ public_path('images/lspu-logo.png') }}" alt="LSPU Logo" class="logo">
-        <div class="header-text">Republic of the Philippines</div>
-        <img src="{{ public_path('images/lspu-name.png') }}" alt="Laguna State Polytechnic University" class="university-name">
-        <div class="header-text">Province of Laguna</div>
+        <span style="font-size:10pt;">Republic of the Philippines</span><br>
+        <img src="{{ public_path('images/lspu-name.png') }}" alt="Laguna State Polytechnic University" class="university-name"><br>
+        <span style="font-size:10pt;">Province of Laguna</span><br>
+        <br>
     </div>
-    
-    <div style="clear: both;"></div>
-    
     <div class="title">Evaluation Sheet for all Programs/Activities</div>
     
     <!-- Form Fields -->
