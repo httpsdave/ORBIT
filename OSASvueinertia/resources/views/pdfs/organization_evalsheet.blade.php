@@ -125,21 +125,21 @@
         <span style="font-size:10pt;">Province of Laguna</span><br>
         <br>
     </div>
-    <div class="title">Evaluation Sheet for all Programs/Activities</div>
+    <div class="title" style="text-align: center; font-size: 16px; font-weight: bold; margin: 20px 0 30px 0;">Evaluation Sheet for all Programs/Activities</div>
     
     <!-- Form Fields -->
     <div class="form-section">
-        <div class="form-row">
-            <span class="bold">Title of the Activity:</span> <span class="underline"></span>
+        <div class="form-row" style="margin-bottom: 12px;">
+            <span class="bold">Title of the Activity:</span> <span style="border-bottom: 1px solid black; display: inline-block; width: calc(100% - 160px); margin-left: 8px;"></span>
         </div>
-        <div class="form-row">
-            <span class="bold">Venue:</span> <span class="underline"></span>
+        <div class="form-row" style="margin-bottom: 12px;">
+            <span class="bold">Venue:</span> <span style="border-bottom: 1px solid black; display: inline-block; width: calc(100% - 70px); margin-left: 8px;"></span>
         </div>
-        <div class="form-row">
-            <span class="bold">Date:</span> <span class="underline"></span>
+        <div class="form-row" style="margin-bottom: 12px;">
+            <span class="bold">Date:</span> <span style="border-bottom: 1px solid black; display: inline-block; width: calc(100% - 55px); margin-left: 8px;"></span>
         </div>
-        <div class="form-row">
-            <span class="bold">Time:</span> <span class="underline"></span>
+        <div class="form-row" style="margin-bottom: 12px;">
+            <span class="bold">Time:</span> <span style="border-bottom: 1px solid black; display: inline-block; width: calc(100% - 55px); margin-left: 8px;"></span>
         </div>
     </div>
     
