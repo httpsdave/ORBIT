@@ -149,13 +149,28 @@
     
     <!-- Rating Scale -->
     <div class="rating-scale">
-        <div class="bold">Rating Scale:</div>
-        <div style="margin-left: 40px;">
-            <div><span style="margin-right: 40px;">Excellent</span> 5</div>
-            <div><span style="margin-right: 20px;">Very Satisfactory</span> 4</div>
-            <div><span style="margin-right: 35px;">Satisfactory</span> 3</div>
-            <div><span style="margin-right: 25px;">Fairly Satisfactory</span> 2</div>
-            <div><span style="margin-right: 25px;">Not Satisfactory</span> 1</div>
+        <div style="font-weight:normal;">Rating Scale:</div>
+        <div style="margin-left: 120px;">
+            <div style="display: flex; justify-content: flex-start;">
+                <span style="min-width: 120px; display: inline-block;">Excellent</span>
+                <span style="min-width: 20px; display: inline-block; text-align: right;">5</span>
+            </div>
+            <div style="display: flex; justify-content: flex-start;">
+                <span style="min-width: 120px; display: inline-block;">Very Satisfactory</span>
+                <span style="min-width: 20px; display: inline-block; text-align: right;">4</span>
+            </div>
+            <div style="display: flex; justify-content: flex-start;">
+                <span style="min-width: 120px; display: inline-block;">Satisfactory</span>
+                <span style="min-width: 20px; display: inline-block; text-align: right;">3</span>
+            </div>
+            <div style="display: flex; justify-content: flex-start;">
+                <span style="min-width: 120px; display: inline-block;">Fairly Satisfactory</span>
+                <span style="min-width: 20px; display: inline-block; text-align: right;">2</span>
+            </div>
+            <div style="display: flex; justify-content: flex-start;">
+                <span style="min-width: 120px; display: inline-block;">Not Satisfactory</span>
+                <span style="min-width: 20px; display: inline-block; text-align: right;">1</span>
+            </div>
         </div>
     </div>
     
