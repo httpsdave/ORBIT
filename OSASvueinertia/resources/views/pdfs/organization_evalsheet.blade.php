@@ -150,7 +150,7 @@
     <!-- Rating Scale -->
     <div class="rating-scale">
         <div style="font-weight:normal;">Rating Scale:</div>
-        <div style="margin-left: 120px;">
+        <div style="margin-left: 120px; margin-top: 35px;">
             <div style="display: flex; justify-content: flex-start;">
                 <span style="min-width: 120px; display: inline-block;">Excellent</span>
                 <span style="min-width: 35px; display: inline-block; text-align: right;">5</span>
