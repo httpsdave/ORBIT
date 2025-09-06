@@ -341,9 +341,15 @@
     </table>
     
     <!-- Comments Section -->
-    <div class="comments-section">
+    <div class="comments-section" style="margin-top: 35px;">
         <div class="bold">Comments & Suggestions:</div>
-        <div class="comments-lines"></div>
+        <div style="margin-top: 10px;">
+            <div style="border-bottom: 1px solid black; height: 15px; margin-bottom: 2px;"></div>
+            <div style="border-bottom: 1px solid black; height: 15px; margin-bottom: 2px;"></div>
+            <div style="border-bottom: 1px solid black; height: 15px; margin-bottom: 2px;"></div>
+            <div style="border-bottom: 1px solid black; height: 15px; margin-bottom: 2px;"></div>
+            <div style="border-bottom: 1px solid black; height: 15px;"></div>
+        </div>
     </div>
     
 </body>
