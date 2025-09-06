@@ -158,7 +158,7 @@
     </div>
     
     <div style="margin: 20px 0;">
-        <span style="font-size:10pt;">Direction: Please put a check (√) at the following statements with the corresponding rating scale.</span>
+        <span style="font-size:10pt;">Direction: Please put a check (<span style="font-family: 'DejaVu Sans', sans-serif;">&#10003;</span>) at the following statements with the corresponding rating scale.</span>
     </div>
     
     <!-- Rating Scale -->
