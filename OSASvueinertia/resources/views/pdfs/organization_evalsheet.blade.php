@@ -129,22 +129,22 @@
     
     <!-- Form Fields -->
     <div class="form-section">
-        <div class="form-row" style="margin-bottom: 12px;">
+        <div class="form-row" style="margin-bottom: 7px;">
             <span class="bold">Title of the Activity:</span> <span style="border-bottom: 1px solid black; display: inline-block; width: calc(100% - 160px); margin-left: 8px;"></span>
         </div>
-        <div class="form-row" style="margin-bottom: 12px;">
+        <div class="form-row" style="margin-bottom: 7px;">
             <span class="bold">Venue:</span> <span style="border-bottom: 1px solid black; display: inline-block; width: calc(100% - 70px); margin-left: 8px;"></span>
         </div>
-        <div class="form-row" style="margin-bottom: 12px;">
+        <div class="form-row" style="margin-bottom: 7px;">
             <span class="bold">Date:</span> <span style="border-bottom: 1px solid black; display: inline-block; width: calc(100% - 55px); margin-left: 8px;"></span>
         </div>
-        <div class="form-row" style="margin-bottom: 12px;">
+        <div class="form-row" style="margin-bottom: 7px;">
             <span class="bold">Time:</span> <span style="border-bottom: 1px solid black; display: inline-block; width: calc(100% - 55px); margin-left: 8px;"></span>
         </div>
     </div>
     
     <div style="margin: 20px 0;">
-        <span class="bold">Direction: Please put a check (√) at the following statements with the corresponding rating scale.</span>
+        <span style="font-size:10pt;">Direction: Please put a check (√) at the following statements with the corresponding rating scale.</span>
     </div>
     
     <!-- Rating Scale -->
