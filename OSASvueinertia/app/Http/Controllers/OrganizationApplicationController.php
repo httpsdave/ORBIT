@@ -1249,6 +1249,7 @@ class OrganizationApplicationController extends Controller
             'LSPU-OSAS-SF-007' => 'pdfs.organization_officers',
             'LSPU-OSAS-SF-009' => 'pdfs.organization_attendance',
             'LSPU-OSAS-SF-EVAL' => 'pdfs.organization_evaluation',
+            'LSPU-OSAS-SF-EVALSHEET' => 'pdfs.organization_evalsheet',
         ];
 
         if (!isset($templateMap[$form_type])) {
@@ -1458,6 +1459,11 @@ class OrganizationApplicationController extends Controller
                     'form_type' => 'LSPU-OSAS-SF-EVAL',
                     'ratings' => ['5.0','4.5','4.0','3.5','3.0','2.5','2.0','1.5','1.0','4.2','3.8','2.7','4.9','3.3','2.1'],
                     'comments_suggestions' => 'Sample Data',
+                ],
+            ],
+            'LSPU-OSAS-SF-EVALSHEET' => [
+                'application' => (object)[
+                    'form_type' => 'LSPU-OSAS-SF-EVALSHEET',
                 ],
             ],
         ];
