@@ -42,7 +42,7 @@ const updateWindowWidth = () => {
 
 // Slideshow images
 const slideshowImages = [
-    '/images/LSPU1.jpg',
+    '/images/LSPU9.jpg',
     '/images/LSPU2.jpg',
     '/images/LSPU3.jpg',
     '/images/LSPU6.jpg',

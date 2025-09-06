@@ -33,7 +33,7 @@ const gradientInterval = ref(null);
 
 // Slideshow images matching login page
 const slideshowImages = [
-    '/images/LSPU1.jpg',
+    '/images/LSPU9.jpg',
     '/images/LSPU2.jpg',
     '/images/LSPU3.jpg',
     '/images/LSPU6.jpg',
