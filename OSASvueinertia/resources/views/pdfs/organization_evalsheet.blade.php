@@ -78,9 +78,10 @@
         .rating-table th,
         .rating-table td {
             border: 1px solid black;
-            padding: 8px;
+            padding: 2px 4px;
             text-align: center;
             vertical-align: middle;
+            font-size: 10pt;
         }
         
         .rating-table th {
@@ -202,7 +203,7 @@
         </thead>
         <tbody>
             <tr>
-                <td class="bold">1.</td>
+                <td>1.</td>
                 <td class="question-col">The activity is well planned and organized.</td>
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
@@ -211,7 +212,7 @@
                 <td>&nbsp;</td>
             </tr>
             <tr>
-                <td class="bold">2.</td>
+                <td>2.</td>
                 <td class="question-col">The time allocation for various activity adequate.</td>
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
@@ -220,7 +221,7 @@
                 <td>&nbsp;</td>
             </tr>
             <tr>
-                <td class="bold">3.</td>
+                <td>3.</td>
                 <td class="question-col">There is a smooth interpersonal relationship among the participants.</td>
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
@@ -229,7 +230,7 @@
                 <td>&nbsp;</td>
             </tr>
             <tr>
-                <td class="bold">4.</td>
+                <td>4.</td>
                 <td class="question-col">The trust and unity among the participants are prevalent.</td>
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
@@ -238,7 +239,7 @@
                 <td>&nbsp;</td>
             </tr>
             <tr>
-                <td class="bold">5.</td>
+                <td>5.</td>
                 <td class="question-col">The objectives of those activity are attained.</td>
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
@@ -247,7 +248,7 @@
                 <td>&nbsp;</td>
             </tr>
             <tr>
-                <td class="bold">6.</td>
+                <td>6.</td>
                 <td class="question-col">The session/activities are congruent with objectives.</td>
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
@@ -256,7 +257,7 @@
                 <td>&nbsp;</td>
             </tr>
             <tr>
-                <td class="bold">7.</td>
+                <td>7.</td>
                 <td class="question-col">The venue is conductive for the activities.</td>
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
@@ -265,7 +266,7 @@
                 <td>&nbsp;</td>
             </tr>
             <tr>
-                <td class="bold">8.</td>
+                <td>8.</td>
                 <td class="question-col">The activity venue is clean, orderly and properly ventilated.</td>
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
@@ -274,7 +275,7 @@
                 <td>&nbsp;</td>
             </tr>
             <tr>
-                <td class="bold">9.</td>
+                <td>9.</td>
                 <td class="question-col">The resource speakers/facilitator/s are competent.</td>
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
@@ -283,7 +284,7 @@
                 <td>&nbsp;</td>
             </tr>
             <tr>
-                <td class="bold">10.</td>
+                <td>10.</td>
                 <td class="question-col">The resource speakers are orderly in preparation.</td>
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
@@ -292,7 +293,7 @@
                 <td>&nbsp;</td>
             </tr>
             <tr>
-                <td class="bold">11.</td>
+                <td>11.</td>
                 <td class="question-col">The resource speaker has successfully met the expectations and needs of the participants.</td>
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
@@ -301,7 +302,7 @@
                 <td>&nbsp;</td>
             </tr>
             <tr>
-                <td class="bold">12.</td>
+                <td>12.</td>
                 <td class="question-col">The speaker/s manifest rapport with the participants.</td>
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
@@ -310,7 +311,7 @@
                 <td>&nbsp;</td>
             </tr>
             <tr>
-                <td class="bold">13.</td>
+                <td>13.</td>
                 <td class="question-col">The various activity/ies is/are interesting and enjoyable.</td>
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
@@ -319,7 +320,7 @@
                 <td>&nbsp;</td>
             </tr>
             <tr>
-                <td class="bold">14.</td>
+                <td>14.</td>
                 <td class="question-col">The officers are professional in dealing with the participants.</td>
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
@@ -328,7 +329,7 @@
                 <td>&nbsp;</td>
             </tr>
             <tr>
-                <td class="bold">15.</td>
+                <td>15.</td>
                 <td class="question-col">The officers and other participants are prompt and enthusiastic enough in attending the training.</td>
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
