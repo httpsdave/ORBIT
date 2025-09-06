@@ -218,7 +218,7 @@ onBeforeUnmount(() => {
                     
                     <!-- Subtitle -->
                     <p class="text-sm sm:text-base md:text-lg leading-relaxed" :class="isDarkMode ? 'text-gray-300' : 'text-gray-200'">
-                        Sign in to access your account and manage your organization activities.
+                        Sign in to access your account and manage your organizational records and activities.
                     </p>
                 </div>
                 
