@@ -745,6 +745,7 @@ const confirmClearData = () => {
         v-if="filteredApplications.length > 0" 
         :applications="filteredApplications" 
         :isAdmin="isAdmin"
+        :isPreviewModalOpen="showPreviewModal"
         @openStatusModal="openStatusModal"
         @deleteApplication="deleteApplication"
         @uploadDocument="handleDocumentUpload"

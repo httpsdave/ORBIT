@@ -5,6 +5,7 @@ import FileUploadModal from '@/Components/FileUploadModal.vue';
 const props = defineProps({
   applications: Array,
   isAdmin: Boolean,
+  isPreviewModalOpen: Boolean,
 });
 
 const emit = defineEmits(['openStatusModal', 'deleteApplication', 'uploadDocument', 'submitLink', 'refreshData', 'confirmDeleteDocument']);
@@ -156,6 +157,11 @@ const getPdfRoute = (app, action = 'download') => {
 
 // Toggle action dropdown
 const toggleDropdown = (app, event) => {
+  // Prevent dropdown actions when preview modal is open
+  if (props.isPreviewModalOpen) {
+    return;
+  }
+  
   if (window.innerWidth < 640) { // Mobile: show inline dropdown
     if (activeMobileDropdownId.value === app.id) {
       activeMobileDropdownId.value = null;
@@ -576,6 +582,17 @@ watch(showLinkConfirmationModal, (val) => {
   }
 });
 
+// Close dropdowns when preview modal opens
+watch(() => props.isPreviewModalOpen, (newVal) => {
+  if (newVal) {
+    // Close any open dropdowns when preview modal opens
+    activeDropdownApp.value = null;
+    activeMobileDropdownId.value = null;
+    dropdownButtonEl.value = null;
+    removeDropdownListeners();
+  }
+});
+
 </script>
 
 <template>
@@ -642,15 +659,21 @@ watch(showLinkConfirmationModal, (val) => {
           <button
             @click.stop="toggleDropdown(app, $event)"
             :aria-label="'Actions for ' + formTypeToName(app.form_type)"
-            class="relative inline-flex items-center justify-center rounded-full p-2 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-400 transition group"
+            :class="[
+              'relative inline-flex items-center justify-center rounded-full p-2 transition group',
+              props.isPreviewModalOpen 
+                ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed' 
+                : 'text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-400'
+            ]"
             :data-dropdown-trigger="app.id"
+            :disabled="props.isPreviewModalOpen"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
               <circle cx="10" cy="4" r="2.2"/>
               <circle cx="10" cy="10" r="2.2"/>
               <circle cx="10" cy="16" r="2.2"/>
             </svg>
-            <span class="absolute left-1/2 -bottom-8 transform -translate-x-1/2 bg-gray-800 dark:bg-gray-700 text-white dark:text-gray-200 text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity duration-300 whitespace-nowrap z-50">
+            <span v-if="!props.isPreviewModalOpen" class="absolute left-1/2 -bottom-8 transform -translate-x-1/2 bg-gray-800 dark:bg-gray-700 text-white dark:text-gray-200 text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity duration-300 whitespace-nowrap z-50">
               Actions
             </span>
           </button>
@@ -772,14 +795,20 @@ watch(showLinkConfirmationModal, (val) => {
           <button
             @click.stop="toggleDropdown(app, $event)"
             :aria-label="'Actions for ' + formTypeToName(app.form_type)"
-            class="relative inline-flex items-center justify-center rounded-full p-2 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-400 transition group"
+            :class="[
+              'relative inline-flex items-center justify-center rounded-full p-2 transition group',
+              props.isPreviewModalOpen 
+                ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed' 
+                : 'text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-400'
+            ]"
+            :disabled="props.isPreviewModalOpen"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
               <circle cx="10" cy="4" r="2.2"/>
               <circle cx="10" cy="10" r="2.2"/>
               <circle cx="10" cy="16" r="2.2"/>
             </svg>
-            <span class="absolute left-1/2 -bottom-8 transform -translate-x-1/2 bg-gray-800 dark:bg-gray-700 text-white dark:text-gray-200 text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity duration-300 whitespace-nowrap z-50">
+            <span v-if="!props.isPreviewModalOpen" class="absolute left-1/2 -bottom-8 transform -translate-x-1/2 bg-gray-800 dark:bg-gray-700 text-white dark:text-gray-200 text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity duration-300 whitespace-nowrap z-50">
               Actions
             </span>
           </button>
