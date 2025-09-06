@@ -1419,25 +1419,25 @@ class OrganizationApplicationController extends Controller
             'LSPU-OSAS-SF-009' => [
                 'application' => (object)[
                     'organization_name' => 'Sample Data',
-                    'activity_name' => 'Sample Data',
-                    'activity_date' => now(),
+                    'activity_name' => '',
+                    'activity_date' => '',
                     'president_name' => 'Sample Data',
                     'adviser_name' => 'Sample Data',
                     'dean_name' => 'Sample Data',
                     'coordinator_name' => 'Sample Data',
-                    'college' => 'Sample Data',
+                    'college' => '',
                     'application_date' => now(),
                     'form_type' => 'LSPU-OSAS-SF-009',
                 ],
                 'attendees' => [
                     (object)[
-                        'name' => 'Sample Data',
-                        'course_year_section' => 'Sample Data',
+                        'name' => '',
+                        'course_year_section' => '',
                         'signature' => null,
                     ],
                     (object)[
-                        'name' => 'Sample Data',
-                        'course_year_section' => 'Sample Data',
+                        'name' => '',
+                        'course_year_section' => '',
                         'signature' => null,
                     ],
                 ],
