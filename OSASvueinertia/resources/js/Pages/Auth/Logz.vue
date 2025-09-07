@@ -488,4 +488,22 @@ button:hover:not(:disabled) {
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 300ms;
 }
+
+/* Fix autofill styling to maintain consistent appearance */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: white !important;
+  background-color: transparent !important;
+  box-shadow: inset 0 0 20px 20px rgba(255, 255, 255, 0.1) !important;
+  transition: background-color 5000s ease-in-out 0s !important;
+}
+
+/* For Firefox */
+input:-moz-autofill {
+  background-color: transparent !important;
+  color: white !important;
+}
 </style>
