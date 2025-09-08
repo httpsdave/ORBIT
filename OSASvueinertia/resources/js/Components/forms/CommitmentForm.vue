@@ -668,7 +668,7 @@ const submit = () => {
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label class="block font-bold">Adviser Name</label>
-              <div class="flex gap-1 items-center">
+              <div class="flex items-center gap-2 md:gap-3">
                 <input 
                   v-model="currentAdviser.adviser_prefix" 
                   class="border p-2 w-12 text-xs" 
@@ -677,7 +677,7 @@ const submit = () => {
                 <input 
                   v-model="currentAdviser.adviser_name" 
                   @input="currentAdviser.adviser_name = $event.target.value.toUpperCase().slice(0, 32)"
-                  class="border p-2 flex-1" 
+                  class="border p-2 flex-1 min-w-0" 
                   style="text-transform: uppercase;" 
                   required 
                   maxlength="32">
@@ -685,7 +685,8 @@ const submit = () => {
                   v-model="currentAdviser.adviser_suffix" 
                   class="border p-2 w-14 text-xs" 
                   placeholder="Suf"
-                  maxlength="8">
+                  maxlength="8"
+                  style="margin-right:8px;">
               </div>
               <p v-if="errors[`adviser_${currentPage - 1}_name`]" class="text-red-500 text-sm mt-1">{{ errors[`adviser_${currentPage - 1}_name`] }}</p>
             </div>
