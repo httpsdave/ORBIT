@@ -42,6 +42,7 @@ class OrganizationApplication extends Model
         'adviser_address',
         'adviser_contact',
         'form_date',
+        'advisers', // Support for multiple advisers in JSON format
 
         // New fields for the plan of activities form
         'secretary_name',
@@ -82,6 +83,7 @@ class OrganizationApplication extends Model
         'is_archived' => 'boolean',
         'archived_at' => 'datetime',
         'ratings' => 'array',
+        'advisers' => 'array', // Cast advisers to array for easy JSON handling
     ];
 
     public function activities()

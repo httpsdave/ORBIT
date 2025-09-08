@@ -279,77 +279,114 @@
             display: inline;
             word-break: break-word;
         }
+
+        /* Page break for multiple commitment forms */
+        .page-break {
+            page-break-before: always;
+        }
+
+        .commitment-page {
+            min-height: 100vh;
+            position: relative;
+        }
     </style>
 </head>
 <body>
     @php
-        // Define variables for address line breaks at the start to make them available globally
-        $address = $application->adviser_address ?? '';
-        $firstLine = '';
-        $secondLine = '';
-        $thirdLine = '';
-        if (mb_strlen($address) > 25) {
-            $breakPos1 = mb_strrpos(mb_substr($address, 0, 25), ' ');
-            if ($breakPos1 === false) {
-                $breakPos1 = 25;
-            }
-            $firstLine = trim(mb_substr($address, 0, $breakPos1));
-            $remaining = trim(mb_substr($address, $breakPos1));
-            if (mb_strlen($remaining) > 42) {
-                $breakPos2 = mb_strrpos(mb_substr($remaining, 0, 42), ' ');
-                if ($breakPos2 === false) {
-                    $breakPos2 = 42;
-                }
-                $secondLine = trim(mb_substr($remaining, 0, $breakPos2));
-                $thirdLine = trim(mb_substr($remaining, $breakPos2));
-            } else {
-                $secondLine = $remaining;
-            }
-        } else {
-            $firstLine = $address;
+        // For commitment form, we'll support up to 2 advisers
+        $advisers = $application->advisers ?? [];
+        
+        // If no advisers array exists, create one from the old single adviser fields
+        if (empty($advisers)) {
+            $advisers = [[
+                'adviser_name' => $application->adviser_name ?? '',
+                'adviser_prefix' => $application->adviser_prefix ?? '',
+                'adviser_suffix' => $application->adviser_suffix ?? '',
+                'adviser_college' => $application->adviser_college ?? '',
+                'adviser_rank' => $application->adviser_rank ?? '',
+                'adviser_address' => $application->adviser_address ?? '',
+                'adviser_contact' => $application->adviser_contact ?? '',
+            ]];
         }
-
-        // Define variables for college line breaks
-        $college = $application->adviser_college ?? '';
-        $firstLineCollege = '';
-        $secondLineCollege = '';
-        $thirdLineCollege = '';
-        if (mb_strlen($college) > 25) {
-            $breakPos1 = mb_strrpos(mb_substr($college, 0, 25), ' ');
-            if ($breakPos1 === false) {
-                $breakPos1 = 25;
-            }
-            $firstLineCollege = trim(mb_substr($college, 0, $breakPos1));
-            $remaining = trim(mb_substr($college, $breakPos1));
-            if (mb_strlen($remaining) > 42) {
-                $breakPos2 = mb_strrpos(mb_substr($remaining, 0, 42), ' ');
-                if ($breakPos2 === false) {
-                    $breakPos2 = 42;
-                }
-                $secondLineCollege = trim(mb_substr($remaining, 0, $breakPos2));
-                $thirdLineCollege = trim(mb_substr($remaining, $breakPos2));
-            } else {
-                $secondLineCollege = $remaining;
-            }
-        } else {
-            $firstLineCollege = $college;
-        }
-
-        // Define variables for adviser name with prefix/suffix
-        $adviserFullName = trim((isset($application->adviser_prefix) && $application->adviser_prefix ? $application->adviser_prefix . ' ' : '') . ($application->adviser_name ?? '') . (isset($application->adviser_suffix) && $application->adviser_suffix ? ', ' . $application->adviser_suffix : ''));
-        $firstLineAdviserName = '';
-        $secondLineAdviserName = '';
-        if (mb_strlen($adviserFullName) > 24) {
-            $breakPos = mb_strrpos(mb_substr($adviserFullName, 0, 24), ' ');
-            if ($breakPos === false) {
-                $breakPos = 24;
-            }
-            $firstLineAdviserName = trim(mb_substr($adviserFullName, 0, $breakPos));
-            $secondLineAdviserName = trim(mb_substr($adviserFullName, $breakPos));
-        } else {
-            $firstLineAdviserName = $adviserFullName;
-        }
+        
+        // Limit to maximum 2 advisers
+        $advisers = array_slice($advisers, 0, 2);
     @endphp
+
+    @foreach($advisers as $index => $adviser)
+        @if($index > 0)
+            <div class="page-break"></div>
+        @endif
+        
+        <div class="commitment-page">
+            @php
+                // Define variables for address line breaks for current adviser
+                $address = $adviser['adviser_address'] ?? '';
+                $firstLine = '';
+                $secondLine = '';
+                $thirdLine = '';
+                if (mb_strlen($address) > 25) {
+                    $breakPos1 = mb_strrpos(mb_substr($address, 0, 25), ' ');
+                    if ($breakPos1 === false) {
+                        $breakPos1 = 25;
+                    }
+                    $firstLine = trim(mb_substr($address, 0, $breakPos1));
+                    $remaining = trim(mb_substr($address, $breakPos1));
+                    if (mb_strlen($remaining) > 42) {
+                        $breakPos2 = mb_strrpos(mb_substr($remaining, 0, 42), ' ');
+                        if ($breakPos2 === false) {
+                            $breakPos2 = 42;
+                        }
+                        $secondLine = trim(mb_substr($remaining, 0, $breakPos2));
+                        $thirdLine = trim(mb_substr($remaining, $breakPos2));
+                    } else {
+                        $secondLine = $remaining;
+                    }
+                } else {
+                    $firstLine = $address;
+                }
+
+                // Define variables for college line breaks for current adviser
+                $college = $adviser['adviser_college'] ?? '';
+                $firstLineCollege = '';
+                $secondLineCollege = '';
+                $thirdLineCollege = '';
+                if (mb_strlen($college) > 35) {
+                    $breakPos1 = mb_strrpos(mb_substr($college, 0, 35), ' ');
+                    if ($breakPos1 === false) {
+                        $breakPos1 = 35;
+                    }
+                    $firstLineCollege = trim(mb_substr($college, 0, $breakPos1));
+                    $remaining = trim(mb_substr($college, $breakPos1));
+                    if (mb_strlen($remaining) > 42) {
+                        $breakPos2 = mb_strrpos(mb_substr($remaining, 0, 42), ' ');
+                        if ($breakPos2 === false) {
+                            $breakPos2 = 42;
+                        }
+                        $secondLineCollege = trim(mb_substr($remaining, 0, $breakPos2));
+                        $thirdLineCollege = trim(mb_substr($remaining, $breakPos2));
+                    } else {
+                        $secondLineCollege = $remaining;
+                    }
+                } else {
+                    $firstLineCollege = $college;
+                }
+
+                // Define variables for adviser name with prefix/suffix for current adviser
+                $adviserFullName = trim((isset($adviser['adviser_prefix']) && $adviser['adviser_prefix'] ? $adviser['adviser_prefix'] . ' ' : '') . ($adviser['adviser_name'] ?? '') . (isset($adviser['adviser_suffix']) && $adviser['adviser_suffix'] ? ', ' . $adviser['adviser_suffix'] : ''));
+                $firstLineAdviserName = '';
+                $secondLineAdviserName = '';
+                if (mb_strlen($adviserFullName) > 24) {
+                    $breakPos = mb_strrpos(mb_substr($adviserFullName, 0, 24), ' ');
+                    if ($breakPos === false) {
+                        $breakPos = 24;
+                    }
+                    $firstLineAdviserName = trim(mb_substr($adviserFullName, 0, $breakPos));
+                    $secondLineAdviserName = trim(mb_substr($adviserFullName, $breakPos));
+                } else {
+                    $firstLineAdviserName = $adviserFullName;
+                }
+            @endphp
 
     <div class="header">
         <img src="{{ public_path('images/lspu-logo.png') }}" alt="LSPU Logo" class="logo">
@@ -406,107 +443,55 @@
             @endif
             <div class="signature-field">
                 <span class="signature-label">Signature:</span>
-                <span class="signature-value sig-signature">{{ $application->adviser_signature ?? '' }}</span>
+                <span class="signature-value sig-signature">{{ $adviser['adviser_signature'] ?? '' }}</span>
             </div>
-                                        @php
-                                            $college = $application->adviser_college ?? '';
-                                            $firstLineCollege = '';
-                                            $secondLineCollege = '';
-                                            $thirdLineCollege = '';
-                                            if (mb_strlen($college) > 32) {
-                                                $breakPos1 = mb_strrpos(mb_substr($college, 0, 32), ' ');
-                                                if ($breakPos1 === false) {
-                                                    $breakPos1 = 32;
-                                                }
-                                                $firstLineCollege = trim(mb_substr($college, 0, $breakPos1));
-                                                $remaining = trim(mb_substr($college, $breakPos1));
-                                                if (mb_strlen($remaining) > 42) {
-                                                    $breakPos2 = mb_strrpos(mb_substr($remaining, 0, 42), ' ');
-                                                    if ($breakPos2 === false) {
-                                                        $breakPos2 = 42;
-                                                    }
-                                                    $secondLineCollege = trim(mb_substr($remaining, 0, $breakPos2));
-                                                    $thirdLineCollege = trim(mb_substr($remaining, $breakPos2));
-                                                } else {
-                                                    $secondLineCollege = $remaining;
-                                                }
-                                            } else {
-                                                $firstLineCollege = $college;
-                                            }
-                                        @endphp
-                                        <div class="signature-field">
-                                            <span class="signature-label">College:</span>
-                                            <span class="signature-value sig-college">
-                                                <strong>{{ $firstLineCollege }}</strong>
-                                            </span>
-                                        </div>
-                                        @if($secondLineCollege)
-                                        <div class="signature-field" style="margin-left: 0;">
-                                            <span class="signature-value sig-college" style="margin-left: 0; padding-left: 0;">
-                                                <strong>{{ $secondLineCollege }}</strong>
-                                            </span>
-                                        </div>
-                                        @endif
-                                        @if($thirdLineCollege)
-                                        <div class="signature-field" style="margin-left: 0;">
-                                            <span class="signature-value sig-college" style="margin-left: 0; padding-left: 0;">
-                                                <strong>{{ $thirdLineCollege }}</strong>
-                                            </span>
-                                        </div>
-                                        @endif
+            <div class="signature-field">
+                <span class="signature-label">College:</span>
+                <span class="signature-value sig-college">
+                    <strong>{{ $firstLineCollege }}</strong>
+                </span>
+            </div>
+            @if($secondLineCollege)
+            <div class="signature-field" style="margin-left: 0;">
+                <span class="signature-value sig-college" style="margin-left: 0; padding-left: 0;">
+                    <strong>{{ $secondLineCollege }}</strong>
+                </span>
+            </div>
+            @endif
+            @if($thirdLineCollege)
+            <div class="signature-field" style="margin-left: 0;">
+                <span class="signature-value sig-college" style="margin-left: 0; padding-left: 0;">
+                    <strong>{{ $thirdLineCollege }}</strong>
+                </span>
+            </div>
+            @endif
             <div class="signature-field">
                 <span class="signature-label">Academic Rank:</span>
-                <span class="signature-value sig-rank"><strong>{{ $application->adviser_rank ?? '' }}</strong></span>
+                <span class="signature-value sig-rank"><strong>{{ $adviser['adviser_rank'] ?? '' }}</strong></span>
             </div>
-                                        @php
-                                            $address = $application->adviser_address ?? '';
-                                            $firstLine = '';
-                                            $secondLine = '';
-                                            $thirdLine = '';
-                                            if (mb_strlen($address) > 25) {
-                                                $breakPos1 = mb_strrpos(mb_substr($address, 0, 25), ' ');
-                                                if ($breakPos1 === false) {
-                                                    $breakPos1 = 25;
-                                                }
-                                                $firstLine = trim(mb_substr($address, 0, $breakPos1));
-                                                $remaining = trim(mb_substr($address, $breakPos1));
-                                                if (mb_strlen($remaining) > 42) {
-                                                    $breakPos2 = mb_strrpos(mb_substr($remaining, 0, 42), ' ');
-                                                    if ($breakPos2 === false) {
-                                                        $breakPos2 = 42;
-                                                    }
-                                                    $secondLine = trim(mb_substr($remaining, 0, $breakPos2));
-                                                    $thirdLine = trim(mb_substr($remaining, $breakPos2));
-                                                } else {
-                                                    $secondLine = $remaining;
-                                                }
-                                            } else {
-                                                $firstLine = $address;
-                                            }
-                                        @endphp
-                                        <div class="signature-field">
-                                            <span class="signature-label">Home Address:</span>
-                                            <span class="signature-value sig-address">
-                                                <strong>{{ $firstLine }}</strong>
-                                            </span>
-                                        </div>
-                                        @if($secondLine)
-                                        <div class="signature-field" style="margin-left: 0;">
-                                            <span class="signature-value sig-address" style="margin-left: 0; padding-left: 0;">
-                                                <strong>{{ $secondLine }}</strong>
-                                            </span>
-                                        </div>
-                                        @endif
-                                        @if($thirdLine)
-                                        <div class="signature-field" style="margin-left: 0;">
-                                            <span class="signature-value sig-address" style="margin-left: 0; padding-left: 0;">
-                                                <strong>{{ $thirdLine }}</strong>
-                                            </span>
-                                        </div>
-                                        @endif
+            <div class="signature-field">
+                <span class="signature-label">Home Address:</span>
+                <span class="signature-value sig-address">
+                    <strong>{{ $firstLine }}</strong>
+                </span>
+            </div>
+            @if($secondLine)
+            <div class="signature-field" style="margin-left: 0;">
+                <span class="signature-value sig-address" style="margin-left: 0; padding-left: 0;">
+                    <strong>{{ $secondLine }}</strong>
+                </span>
+            </div>
+            @endif
+            @if($thirdLine)
+            <div class="signature-field" style="margin-left: 0;">
+                <span class="signature-value sig-address" style="margin-left: 0; padding-left: 0;">
+                    <strong>{{ $thirdLine }}</strong>
+                </span>
+            </div>
+            @endif
             <div class="signature-field">
                 <span class="signature-label">Contact Number(s):</span>
-                <span class="signature-value sig-contact"><strong>{{ $application->adviser_contact ?? '' }}</strong></span>
+                <span class="signature-value sig-contact"><strong>{{ $adviser['adviser_contact'] ?? '' }}</strong></span>
             </div>
             <div class="signature-field">
                 <span class="signature-label">Date:</span>
@@ -536,14 +521,18 @@
                 <p><strong><span class="underline" style="min-width:380px;">{{ $application->director_name ?? '_______________________________' }}</span></strong></p>
                 <p><strong>Director/Chairperson, Office of Student Affairs and Services</strong></p>
             </div>
-        </div>
+        </div> <!-- End signature-section -->
+        
+    </div> <!-- End content -->
 
     <div class="footer">
         <div class="footer-left">LSPU-OSAS-SF-003</div>
         <div class="footer-center">Rev. 1</div>
         <div class="footer-right">09 November 2020</div>
     </div>
-    </div>
+        
+    </div> <!-- End commitment-page -->
+    @endforeach
 
 </body>
 </html>

@@ -127,9 +127,6 @@ class OrganizationApplicationController extends Controller
             'organization_name' => 'required|string|max:255',
             // president_name is nullable for specific forms: SF-003, SF-005, SF-006, SF-007, SF-009, SF-EVAL
             'president_name' => in_array($request->form_type, ['LSPU-OSAS-SF-003', 'LSPU-OSAS-SF-005', 'LSPU-OSAS-SF-006', 'LSPU-OSAS-SF-007', 'LSPU-OSAS-SF-009', 'LSPU-OSAS-SF-EVAL']) ? 'nullable|string|max:255' : 'required|string|max:255',
-            'adviser_name' => 'required|string|max:255',
-            'adviser_prefix' => 'nullable|string|max:50',
-            'adviser_suffix' => 'nullable|string|max:50',
             'dean_name' => in_array($request->form_type, ['LSPU-OSAS-SF-001', 'LSPU-OSAS-SF-002', 'LSPU-OSAS-SF-004', 'LSPU-OSAS-SF-005', 'LSPU-OSAS-SF-006', 'LSPU-OSAS-SF-007', 'LSPU-OSAS-SF-EVAL']) ? 'nullable|string|max:255' : 'required|string|max:255',
             'dean_prefix' => 'nullable|string|max:50',
             'dean_suffix' => 'nullable|string|max:50',
@@ -137,6 +134,15 @@ class OrganizationApplicationController extends Controller
             'status' => 'string|in:Pending,Approved,Disapproved',
             'signed_document' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240', // Add validation for signed document
         ];
+        
+        // Add adviser fields for non-commitment forms
+        if ($request->form_type !== 'LSPU-OSAS-SF-003') {
+            $validationRules = array_merge($validationRules, [
+                'adviser_name' => 'required|string|max:255',
+                'adviser_prefix' => 'nullable|string|max:50',
+                'adviser_suffix' => 'nullable|string|max:50',
+            ]);
+        }
         
         // Add form-specific validation rules
         if ($request->form_type === 'LSPU-OSAS-SF-001') {
@@ -153,18 +159,21 @@ class OrganizationApplicationController extends Controller
                 'director_name' => 'required|string|max:255',
             ]);
         } elseif ($request->form_type === 'LSPU-OSAS-SF-003') {
-            // Commitment form specific validation
+            // Commitment form specific validation - supports multi-adviser structure
             $validationRules = array_merge($validationRules, [
-                'adviser_signature' => 'nullable|string|max:255',
-                'adviser_college' => 'nullable|string|max:255',
-                'adviser_rank' => 'nullable|string|max:255',
-                'adviser_address' => 'required|string|max:255',
-                'adviser_contact' => 'required|string|max:255',
                 'form_date' => 'required|date',
                 'academic_year_start' => 'required|string|max:10',
                 'academic_year_end' => 'required|string|max:10',
                 'dean_name' => 'nullable|string|max:255',
-                
+                'advisers' => 'required|array|min:1|max:2',
+                'advisers.*.adviser_name' => 'required|string|max:255',
+                'advisers.*.adviser_prefix' => 'nullable|string|max:50',
+                'advisers.*.adviser_suffix' => 'nullable|string|max:50',
+                'advisers.*.adviser_signature' => 'nullable|string|max:255',
+                'advisers.*.adviser_college' => 'nullable|string|max:255',
+                'advisers.*.adviser_rank' => 'nullable|string|max:255',
+                'advisers.*.adviser_address' => 'required|string|max:255',
+                'advisers.*.adviser_contact' => 'required|string|max:255',
             ]);
         }  elseif ($request->form_type === 'LSPU-OSAS-SF-004') {
             $validationRules = array_merge($validationRules, [
@@ -403,6 +412,42 @@ class OrganizationApplicationController extends Controller
         // Eager load all possible related models for editing
         $application->load('activities', 'members', 'officers', 'attendees', 'studentCertifications');
         
+        // Special handling for CommitmentForm to convert single adviser to advisers array
+        if ($application->form_type === 'LSPU-OSAS-SF-003') {
+            // If advisers data doesn't exist as JSON, create it from single adviser fields
+            if (!isset($application->advisers) || empty($application->advisers)) {
+                $application->advisers = [[
+                    'adviser_name' => $application->adviser_name ?? '',
+                    'adviser_prefix' => $application->adviser_prefix ?? '',
+                    'adviser_suffix' => $application->adviser_suffix ?? '',
+                    'adviser_signature' => $application->adviser_signature ?? '',
+                    'adviser_college' => $application->adviser_college ?? '',
+                    'adviser_rank' => $application->adviser_rank ?? '',
+                    'adviser_address' => $application->adviser_address ?? '',
+                    'adviser_contact' => $application->adviser_contact ?? '',
+                ]];
+            } else {
+                // If advisers is stored as JSON string, decode it
+                if (is_string($application->advisers)) {
+                    $application->advisers = json_decode($application->advisers, true) ?: [];
+                }
+            }
+            
+            // Ensure we have at least one adviser with valid data
+            if (empty($application->advisers)) {
+                $application->advisers = [[
+                    'adviser_name' => '',
+                    'adviser_prefix' => '',
+                    'adviser_suffix' => '',
+                    'adviser_signature' => '',
+                    'adviser_college' => '',
+                    'adviser_rank' => '',
+                    'adviser_address' => '',
+                    'adviser_contact' => '',
+                ]];
+            }
+        }
+        
         // Explicitly handle studentCertifications for StudentCertificationForm
         if ($application->form_type === 'LSPU-OSAS-SF-006') {
             // Convert studentCertifications to students array for frontend compatibility
@@ -489,15 +534,21 @@ class OrganizationApplicationController extends Controller
             'organization_name' => 'required|string|max:255',
             // president_name is nullable for specific forms: SF-003, SF-005, SF-006, SF-007, SF-009, SF-EVAL
             'president_name' => in_array($application->form_type, ['LSPU-OSAS-SF-003', 'LSPU-OSAS-SF-005', 'LSPU-OSAS-SF-006', 'LSPU-OSAS-SF-007', 'LSPU-OSAS-SF-009', 'LSPU-OSAS-SF-EVAL']) ? 'nullable|string|max:255' : 'required|string|max:255',
-            'adviser_name' => $application->form_type === 'LSPU-OSAS-SF-EVAL' ? 'nullable|string|max:255' : 'required|string|max:255',
-            'adviser_prefix' => 'nullable|string|max:50',
-            'adviser_suffix' => 'nullable|string|max:50',
             'dean_name' => in_array($application->form_type, ['LSPU-OSAS-SF-001', 'LSPU-OSAS-SF-002', 'LSPU-OSAS-SF-004', 'LSPU-OSAS-SF-005', 'LSPU-OSAS-SF-006', 'LSPU-OSAS-SF-007', 'LSPU-OSAS-SF-EVAL']) ? 'nullable|string|max:255' : 'required|string|max:255',
             'dean_prefix' => 'nullable|string|max:50',
             'dean_suffix' => 'nullable|string|max:50',
             'coordinator_name' => ($application->form_type === 'LSPU-OSAS-SF-006' || $application->form_type === 'LSPU-OSAS-SF-EVAL') ? 'nullable|string|max:255' : 'required|string|max:255',
             'signed_document' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
         ];
+        
+        // Add adviser fields for non-commitment forms
+        if ($application->form_type !== 'LSPU-OSAS-SF-003') {
+            $validationRules = array_merge($validationRules, [
+                'adviser_name' => $application->form_type === 'LSPU-OSAS-SF-EVAL' ? 'nullable|string|max:255' : 'required|string|max:255',
+                'adviser_prefix' => 'nullable|string|max:50',
+                'adviser_suffix' => 'nullable|string|max:50',
+            ]);
+        }
         
         // Add form-specific validation rules based on form type
         if ($application->form_type === 'LSPU-OSAS-SF-001') {
@@ -514,17 +565,21 @@ class OrganizationApplicationController extends Controller
             ]);
         } elseif ($application->form_type === 'LSPU-OSAS-SF-003') {
             $validationRules = array_merge($validationRules, [
-                'adviser_signature' => 'nullable|string|max:255',
-                'adviser_college' => 'nullable|string|max:255',
-                'adviser_rank' => 'nullable|string|max:255',
-                'adviser_address' => 'required|string|max:255',
-                'adviser_contact' => 'required|string|max:255',
                 'form_date' => 'required|date',
                 'academic_year_start' => 'required|string|max:10',
                 'academic_year_end' => 'required|string|max:10',
                 'dean_name' => 'nullable|string|max:255',
                 'director_name' => 'required|string|max:255',
                 'application_date' => 'nullable|date',
+                'advisers' => 'required|array|min:1|max:2',
+                'advisers.*.adviser_name' => 'required|string|max:255',
+                'advisers.*.adviser_prefix' => 'nullable|string|max:50',
+                'advisers.*.adviser_suffix' => 'nullable|string|max:50',
+                'advisers.*.adviser_signature' => 'nullable|string|max:255',
+                'advisers.*.adviser_college' => 'nullable|string|max:255',
+                'advisers.*.adviser_rank' => 'nullable|string|max:255',
+                'advisers.*.adviser_address' => 'required|string|max:255',
+                'advisers.*.adviser_contact' => 'required|string|max:255',
             ]);
         } elseif ($application->form_type === 'LSPU-OSAS-SF-004') {
             $validationRules = array_merge($validationRules, [
@@ -626,7 +681,18 @@ class OrganizationApplicationController extends Controller
         }
 
         // Validate the request data
-        $validatedData = $request->validate($validationRules);
+        try {
+            $validatedData = $request->validate($validationRules);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            if ($application->form_type === 'LSPU-OSAS-SF-003') {
+                \Log::error('CommitmentForm Validation Failed', [
+                    'application_id' => $application->id,
+                    'errors' => $e->errors(),
+                    'request_data' => $request->all()
+                ]);
+            }
+            throw $e;
+        }
         
         // Defensive: ensure *_report_path fields are null if not set
         foreach ([
@@ -676,6 +742,11 @@ class OrganizationApplicationController extends Controller
         FormDataService::saveFormData($validatedData);
         
         // Handle form-specific related data updates
+        if ($application->form_type === 'LSPU-OSAS-SF-003' && $request->has('advisers')) {
+            // For commitment form, the advisers data is already saved as part of the main update
+            // No additional relationship handling needed as advisers is stored as JSON
+        }
+        
         if ($application->form_type === 'LSPU-OSAS-SF-004' && $request->has('activities')) {
             // Delete existing activities
             $application->activities()->delete();
