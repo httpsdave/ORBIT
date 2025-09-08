@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Notifications\CustomPasswordResetNotification;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
@@ -101,9 +102,17 @@ class User extends Authenticatable
      */
     public function getProfilePhotoUrlAttribute()
     {
-        return $this->profile_photo_path
-            ? asset('storage/' . $this->profile_photo_path)
-            : null;
+        if (!$this->profile_photo_path) {
+            return null;
+        }
+        
+        // Check if file exists before generating URL
+        if (Storage::disk('public')->exists($this->profile_photo_path)) {
+            return Storage::disk('public')->url($this->profile_photo_path);
+        }
+        
+        // If file doesn't exist, return null to show default avatar
+        return null;
     }
 
     public function latestApplication()

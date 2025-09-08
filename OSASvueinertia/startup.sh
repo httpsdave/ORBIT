@@ -119,6 +119,10 @@ else
     # Create storage symlink
     echo "Creating storage symlink..."
     php artisan storage:link 2>/dev/null || echo "Storage link already exists"
+    
+    # Clean up missing profile photos
+    echo "Cleaning up missing profile photos..."
+    php artisan users:clean-missing-photos
 fi
 
 # Test configuration before caching
