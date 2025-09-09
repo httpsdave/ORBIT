@@ -491,38 +491,46 @@ const submit = () => {
 
     <!-- CSV Import Modal -->
     <Modal :show="showCsvModal" @close="closeCsvModal">
-      <div class="p-6">
-        <div class="flex items-center mb-4">
-          <div :class="[
-            'flex-shrink-0 w-10 h-10 mx-auto rounded-full flex items-center justify-center',
-            csvModalType === 'success' ? 'bg-green-100' : 'bg-red-100'
-          ]">
-            <svg v-if="csvModalType === 'success'" class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-            </svg>
-            <svg v-else class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-          </div>
-          <div class="ml-4">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 sm:p-6 w-full max-w-xs sm:max-w-md max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center">
+            <div :class="[
+              'flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center mr-3',
+              csvModalType === 'success' ? 'bg-green-100 dark:bg-green-900' : 'bg-red-100 dark:bg-red-900'
+            ]">
+              <svg v-if="csvModalType === 'success'" class="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              <svg v-else class="w-5 h-5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </div>
             <h3 :class="[
-              'text-lg font-medium',
-              csvModalType === 'success' ? 'text-green-900' : 'text-red-900'
+              'text-lg font-semibold',
+              csvModalType === 'success' ? 'text-green-900 dark:text-green-100' : 'text-red-900 dark:text-red-100'
             ]">{{ csvModalTitle }}</h3>
           </div>
+          <button @click="closeCsvModal" class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
-        <div class="mb-4">
-          <p class="text-sm text-gray-600">{{ csvModalMessage }}</p>
+        <div class="mb-6">
+          <p class="text-sm text-gray-600 dark:text-gray-400">{{ csvModalMessage }}</p>
         </div>
         <div class="flex justify-end">
           <button 
             @click="closeCsvModal"
             :class="[
-              'px-4 py-2 text-white rounded hover:opacity-90 transition-opacity',
-              csvModalType === 'success' ? 'bg-green-600' : 'bg-red-600'
+              'inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-xl shadow-sm transition-all duration-300 relative overflow-hidden group',
+              csvModalType === 'success' 
+                ? 'bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800' 
+                : 'bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800'
             ]"
           >
-            Close
+            <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
+            <span class="relative z-10">Close</span>
           </button>
         </div>
       </div>
