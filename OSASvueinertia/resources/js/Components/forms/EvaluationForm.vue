@@ -279,6 +279,18 @@ const onRatingKeyPress = (e, i) => {
 <template>
   <div class="mt-6 form-content">
     <div class="header text-center relative mb-6">
+      <!-- Back Button positioned above LSPU logo -->
+      <div style="position: absolute; top: -0.8cm; left: -2cm; z-index: 10;">
+        <a href="/applications/select-form"
+           class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-sm font-medium text-white rounded-xl shadow-md hover:shadow-blue-300/30 hover:from-blue-400 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:from-blue-600 active:to-blue-700 transition-all duration-300 relative overflow-hidden group"
+           style="font-family: system-ui, -apple-system, sans-serif;">
+          <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+          Back
+        </a>
+      </div>
       <img src="/images/lspu-logo.png" alt="LSPU Logo" class="absolute top-[-0.5cm] left-[-2cm] w-[250px] h-auto">
       <p class="text-sm font-bold mb-0">Republic of the Philippines</p>
       <p class="text-base font-bold university-name mb-0">Laguna State Polytechnic University</p>
