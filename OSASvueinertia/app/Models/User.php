@@ -24,6 +24,7 @@ class User extends Authenticatable
         'description',
         'last_name_change_at',
         'status',
+        'social_links',
     ];
 
     protected $appends = ['profile_photo_url'];
@@ -37,6 +38,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
         'last_name_change_at' => 'datetime',
+        'social_links' => 'array',
     ];
 
     public function role()

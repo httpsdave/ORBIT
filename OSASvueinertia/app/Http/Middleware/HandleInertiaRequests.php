@@ -52,6 +52,7 @@ class HandleInertiaRequests extends Middleware
                     'role' => $user->role,  // Make sure this includes the role relationship
                     'profile_photo_url' => $user->profile_photo_url,
                     'description' => $user->description, // Added description field
+                    'social_links' => $user->social_links, // Added social_links field
                     'coordinator_name' => SystemSetting::getCoordinatorName(), // Get from system settings
                     'director_name' => SystemSetting::getDirectorName(), // Get from system settings
                     'last_name_change_at' => $user->last_name_change_at,

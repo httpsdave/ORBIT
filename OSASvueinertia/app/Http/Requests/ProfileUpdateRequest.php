@@ -30,6 +30,11 @@ class ProfileUpdateRequest extends FormRequest
         // Description field validation
         $rules['description'] = ['nullable', 'string', 'max:1000'];
 
+        // Social links validation - optional but if provided, validate structure
+        $rules['social_links'] = ['nullable', 'array'];
+        $rules['social_links.*.platform'] = ['nullable', 'string', 'max:50'];
+        $rules['social_links.*.url'] = ['nullable', 'url', 'max:255'];
+
         if ($isAdmin) {
             $rules['name'] = ['required', 'string', 'max:255'];
             $rules['email'] = [

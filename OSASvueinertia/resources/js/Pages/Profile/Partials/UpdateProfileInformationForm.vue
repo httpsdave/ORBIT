@@ -18,6 +18,9 @@ defineProps({
 
 const user = usePage().props.auth.user;
 console.log('User data:', user);
+console.log('User social_links:', user.social_links);
+console.log('Type of social_links:', typeof user.social_links);
+console.log('Is array:', Array.isArray(user.social_links));
 
 // Add for name change restriction
 const lastNameChangeAt = user.last_name_change_at ? new Date(user.last_name_change_at) : null;
@@ -61,10 +64,29 @@ const form = useForm({
     email: user.email,
     profile_photo: null,
     description: user.description || '',
+    social_links: user.social_links && Array.isArray(user.social_links) && user.social_links.length > 0 
+        ? [...user.social_links] 
+        : [{ platform: '', url: '' }],
 });
 
 const photoPreview = ref(user.profile_photo_url);
 const removeProfilePhoto = ref(false);
+
+// Social links management
+const addSocialLink = () => {
+    form.social_links.push({ platform: '', url: '' });
+};
+
+const removeSocialLink = (index) => {
+    if (form.social_links.length > 1) {
+        form.social_links.splice(index, 1);
+    }
+};
+
+const popularPlatforms = [
+    'Facebook', 'Twitter', 'Instagram', 'LinkedIn', 'YouTube', 'TikTok', 
+    'Discord', 'Telegram', 'WhatsApp', 'Website', 'GitHub', 'Other'
+];
 
 function handlePhotoChange(e) {
     const file = e.target.files[0];
@@ -86,15 +108,28 @@ function submit() {
         data.remove_profile_photo = true;
         data.profile_photo = null;
     }
+    
+    // Filter out empty social links before submission
+    data.social_links = form.social_links.filter(link => 
+        link.platform && link.platform.trim() !== '' && 
+        link.url && link.url.trim() !== ''
+    );
+    
+    console.log('Submitting profile data:', data);
+    
     form.post(route('profile.update'), {
         data,
         preserveScroll: true,
         forceFormData: true,
         onSuccess: () => {
+            console.log('Profile update successful');
             removeProfilePhoto.value = false;
             photoPreview.value = usePage().props.auth.user.profile_photo_url;
             router.reload({ only: ['auth'] });
             isEditingProfile.value = false; // Return to disabled state after save
+        },
+        onError: (errors) => {
+            console.log('Profile update errors:', errors);
         },
         _method: 'patch',
     });
@@ -107,6 +142,13 @@ const originalDescription = ref(user.description || '');
 onMounted(() => {
     form.description = user.description || '';
     originalDescription.value = user.description || '';
+    // Ensure social_links are properly initialized
+    if (!user.social_links || !Array.isArray(user.social_links) || user.social_links.length === 0) {
+        form.social_links = [{ platform: '', url: '' }];
+    } else {
+        // Deep copy to avoid reactivity issues
+        form.social_links = user.social_links.map(link => ({ ...link }));
+    }
 });
 
 watch(
@@ -114,6 +156,18 @@ watch(
   (newVal) => {
     form.description = newVal || '';
     originalDescription.value = newVal || '';
+  }
+);
+
+watch(
+  () => user.social_links,
+  (newVal) => {
+    if (!newVal || !Array.isArray(newVal) || newVal.length === 0) {
+        form.social_links = [{ platform: '', url: '' }];
+    } else {
+        // Deep copy to avoid reactivity issues
+        form.social_links = newVal.map(link => ({ ...link }));
+    }
   }
 );
 
@@ -156,6 +210,12 @@ function cancelEditProfile() {
     form.name = user.name;
     form.email = user.email;
     form.description = user.description || '';
+    // Reset social_links to original user data or default empty link
+    if (user.social_links && Array.isArray(user.social_links) && user.social_links.length > 0) {
+        form.social_links = user.social_links.map(link => ({ ...link }));
+    } else {
+        form.social_links = [{ platform: '', url: '' }];
+    }
     photoPreview.value = user.profile_photo_url;
     removeProfilePhoto.value = false;
 }
@@ -362,6 +422,76 @@ function cancelSave() {
                     </div>
                 </div>
                 <InputError class="mt-2" :message="form.errors.profile_photo" />
+            </div>
+
+            <!-- Social Links Section -->
+            <div>
+                <InputLabel value="Social Links" class="text-gray-700 dark:text-gray-300 font-medium" />
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">Add your social media links or website URLs (optional).</p>
+                
+                <div class="space-y-3">
+                    <div v-for="(link, index) in form.social_links" :key="index" 
+                         class="p-4 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Link {{ index + 1 }}</span>
+                            <button
+                                v-if="form.social_links.length > 1 && isEditingProfile"
+                                type="button"
+                                @click="removeSocialLink(index)"
+                                class="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 p-1 rounded-full hover:bg-red-50 dark:hover:bg-red-900/30 transition-all duration-200"
+                                title="Remove this link"
+                            >
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </button>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <InputLabel :for="`platform-${index}`" value="Platform" class="text-xs text-gray-600 dark:text-gray-400" />
+                                <select
+                                    :id="`platform-${index}`"
+                                    v-model="link.platform"
+                                    :disabled="!isEditingProfile"
+                                    :class="!isEditingProfile ? 'bg-gray-100 dark:bg-gray-600 text-gray-400 dark:text-gray-500 cursor-not-allowed' : ''"
+                                    class="mt-1 block w-full border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 rounded-md shadow-sm dark:bg-gray-700 dark:text-gray-300"
+                                >
+                                    <option value="">Select Platform</option>
+                                    <option v-for="platform in popularPlatforms" :key="platform" :value="platform">{{ platform }}</option>
+                                </select>
+                                <InputError class="mt-1" :message="form.errors[`social_links.${index}.platform`]" />
+                            </div>
+                            
+                            <div>
+                                <InputLabel :for="`url-${index}`" value="URL" class="text-xs text-gray-600 dark:text-gray-400" />
+                                <TextInput
+                                    :id="`url-${index}`"
+                                    type="url"
+                                    v-model="link.url"
+                                    :disabled="!isEditingProfile"
+                                    :class="!isEditingProfile ? 'bg-gray-100 dark:bg-gray-600 text-gray-400 dark:text-gray-500 cursor-not-allowed select-none pointer-events-none' : ''"
+                                    class="mt-1 block w-full border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 rounded-md shadow-sm dark:bg-gray-700 dark:text-gray-300"
+                                    placeholder="https://..."
+                                />
+                                <InputError class="mt-1" :message="form.errors[`social_links.${index}.url`]" />
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button
+                        v-if="isEditingProfile"
+                        type="button"
+                        @click="addSocialLink"
+                        class="inline-flex items-center justify-center w-full px-3 py-2 bg-white dark:bg-gray-600 border-2 border-dashed border-gray-300 dark:border-gray-500 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-300 hover:border-blue-400 hover:text-blue-600 dark:hover:border-blue-400 dark:hover:text-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200"
+                    >
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                        Add Another Link
+                    </button>
+                </div>
+                <InputError class="mt-2" :message="form.errors.social_links" />
             </div>
             <Modal :show="showConfirmModal" @close="cancelSave">
                 <div class="p-6 flex flex-col items-center justify-center min-h-[180px] bg-white dark:bg-gray-800">
