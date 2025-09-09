@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { useForm } from '@inertiajs/vue3';
-// REMOVE: import StatusBanner from '@/Components/StatusBanner.vue';
+import Modal from '@/Components/Modal.vue';
 
 const props = defineProps({
   initialFormData: {
@@ -62,6 +62,19 @@ const displaySecondAdviserName = computed(() => {
 // Add errors ref object
 const errors = ref({});
 
+// CSV modal states
+const showCsvModal = ref(false);
+const csvModalTitle = ref('');
+const csvModalMessage = ref('');
+const csvModalType = ref('success'); // 'success' or 'error'
+
+const closeCsvModal = () => {
+  showCsvModal.value = false;
+  csvModalTitle.value = '';
+  csvModalMessage.value = '';
+  csvModalType.value = 'success';
+};
+
 // Add pagination state
 const currentPage = ref(1);
 const membersPerPage = 8; // 4 rows × 2 columns per page, matching PDF
@@ -84,7 +97,10 @@ const handleCSVUpload = (event) => {
 
     // Validate file type
     if (file.type !== 'text/csv' && !file.name.endsWith('.csv')) {
-        alert('Please upload a CSV file only.');
+        csvModalTitle.value = 'Invalid File Type';
+        csvModalMessage.value = 'Please upload a CSV file only.';
+        csvModalType.value = 'error';
+        showCsvModal.value = true;
         return;
     }
 
@@ -98,7 +114,10 @@ const handleCSVUpload = (event) => {
             const dataRows = lines.slice(1).filter(line => line.trim() !== '');
             
             if (dataRows.length === 0) {
-                alert('No data found in CSV file.');
+                csvModalTitle.value = 'No Data Found';
+                csvModalMessage.value = 'No data found in CSV file.';
+                csvModalType.value = 'error';
+                showCsvModal.value = true;
                 return;
             }
 
@@ -129,11 +148,17 @@ const handleCSVUpload = (event) => {
             // Reset to first page after upload
             currentPage.value = 1;
             
-            alert(`Successfully imported ${form.members.length} members from CSV file.`);
+            csvModalTitle.value = 'Import Successful';
+            csvModalMessage.value = `Successfully imported ${form.members.length} members from CSV file.`;
+            csvModalType.value = 'success';
+            showCsvModal.value = true;
             
         } catch (error) {
             console.error('Error parsing CSV:', error);
-            alert('Error reading CSV file. Please check the file format.');
+            csvModalTitle.value = 'Import Error';
+            csvModalMessage.value = 'Error reading CSV file. Please check the file format.';
+            csvModalType.value = 'error';
+            showCsvModal.value = true;
         }
     };
     
@@ -896,6 +921,45 @@ const submit = () => {
             <button type="submit" @click="submit" class="bg-green-500 text-white px-4 py-2 rounded">Submit</button>
         </div>
     </div>
+
+    <!-- CSV Import Modal -->
+    <Modal :show="showCsvModal" @close="closeCsvModal">
+      <div class="p-6">
+        <div class="flex items-center mb-4">
+          <div :class="[
+            'flex-shrink-0 w-10 h-10 mx-auto rounded-full flex items-center justify-center',
+            csvModalType === 'success' ? 'bg-green-100' : 'bg-red-100'
+          ]">
+            <svg v-if="csvModalType === 'success'" class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <svg v-else class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </div>
+          <div class="ml-4">
+            <h3 :class="[
+              'text-lg font-medium',
+              csvModalType === 'success' ? 'text-green-900' : 'text-red-900'
+            ]">{{ csvModalTitle }}</h3>
+          </div>
+        </div>
+        <div class="mb-4">
+          <p class="text-sm text-gray-600">{{ csvModalMessage }}</p>
+        </div>
+        <div class="flex justify-end">
+          <button 
+            @click="closeCsvModal"
+            :class="[
+              'px-4 py-2 text-white rounded hover:opacity-90 transition-opacity',
+              csvModalType === 'success' ? 'bg-green-600' : 'bg-red-600'
+            ]"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </Modal>
 
 
 </div>
