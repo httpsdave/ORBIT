@@ -637,6 +637,28 @@ const handleClickOutside = (event) => {
   }
 };
 
+// Function to focus contenteditable element when clicking anywhere in the cell
+const focusContentEditable = (event, fieldId) => {
+  // Prevent if the click target is already the contenteditable div
+  if (event.target.hasAttribute('contenteditable')) {
+    return;
+  }
+  
+  // Find the contenteditable element and focus it
+  const contentEditableElement = document.querySelector(`[data-field="${fieldId}"]`);
+  if (contentEditableElement) {
+    contentEditableElement.focus();
+    
+    // Place cursor at the end of content
+    const range = document.createRange();
+    const selection = window.getSelection();
+    range.selectNodeContents(contentEditableElement);
+    range.collapse(false);
+    selection.removeAllRanges();
+    selection.addRange(range);
+  }
+};
+
 function limitTo2Digits(event) {
   event.target.value = event.target.value.replace(/[^0-9]/g, '').slice(0, 2);
 }
@@ -810,7 +832,7 @@ nextTick(() => {
           </thead>
           <tbody>
             <tr v-for="(activity, idx) in currentPageActivities" :key="startIndex + idx" style="height: 150px;">
-              <td class="border align-top" style="min-height:150px;padding:8px;vertical-align:top;">
+              <td class="border align-top cursor-text" style="min-height:150px;padding:8px;vertical-align:top;" @click="focusContentEditable($event, `objective-${startIndex + idx}`)">
                 <div 
                   :data-field="`objective-${startIndex + idx}`"
                   contenteditable="true"
@@ -827,7 +849,7 @@ nextTick(() => {
                   </span>
                 </div>
               </td>
-              <td class="border align-top" style="min-height:150px;padding:8px;vertical-align:top;">
+              <td class="border align-top cursor-text" style="min-height:150px;padding:8px;vertical-align:top;" @click="focusContentEditable($event, `name-${startIndex + idx}`)">
                 <div 
                   :data-field="`name-${startIndex + idx}`"
                   contenteditable="true"
@@ -844,7 +866,7 @@ nextTick(() => {
                   </span>
                 </div>
               </td>
-              <td class="border align-top" style="min-height:150px;padding:8px;vertical-align:top;">
+              <td class="border align-top cursor-text" style="min-height:150px;padding:8px;vertical-align:top;" @click="focusContentEditable($event, `description-${startIndex + idx}`)">
                 <div 
                   :data-field="`description-${startIndex + idx}`"
                   contenteditable="true"
@@ -861,7 +883,7 @@ nextTick(() => {
                   </span>
                 </div>
               </td>
-              <td class="border align-top" style="min-height:150px;padding:8px;vertical-align:top;">
+              <td class="border align-top cursor-text" style="min-height:150px;padding:8px;vertical-align:top;" @click="focusContentEditable($event, `persons_involved-${startIndex + idx}`)">
                 <div 
                   :data-field="`persons_involved-${startIndex + idx}`"
                   contenteditable="true"
