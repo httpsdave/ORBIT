@@ -20,7 +20,6 @@ const user = usePage().props.auth.user;
 console.log('User data:', user);
 console.log('User social_links:', user.social_links);
 console.log('Type of social_links:', typeof user.social_links);
-console.log('Is array:', Array.isArray(user.social_links));
 
 // Add for name change restriction
 const lastNameChangeAt = user.last_name_change_at ? new Date(user.last_name_change_at) : null;
@@ -72,21 +71,76 @@ const form = useForm({
 const photoPreview = ref(user.profile_photo_url);
 const removeProfilePhoto = ref(false);
 
-// Social links management
-const addSocialLink = () => {
-    form.social_links.push({ platform: '', url: '' });
+// Helper function to get URL for a specific platform
+const getSocialUrl = (platform) => {
+    if (!platform || !form.social_links || !Array.isArray(form.social_links)) {
+        return '';
+    }
+    const link = form.social_links.find(link => 
+        link && 
+        link.platform && 
+        typeof link.platform === 'string' && 
+        link.platform.toLowerCase() === platform.toLowerCase()
+    );
+    return link && link.url ? link.url : '';
 };
 
-const removeSocialLink = (index) => {
-    if (form.social_links.length > 1) {
-        form.social_links.splice(index, 1);
+// Helper function to set URL for a specific platform
+const setSocialUrl = (platform, url) => {
+    if (!platform || !form.social_links || !Array.isArray(form.social_links)) {
+        return;
+    }
+    
+    const existingIndex = form.social_links.findIndex(link => 
+        link && 
+        link.platform && 
+        typeof link.platform === 'string' && 
+        link.platform.toLowerCase() === platform.toLowerCase()
+    );
+    
+    if (existingIndex !== -1) {
+        if (url && url.trim() !== '') {
+            form.social_links[existingIndex].url = url;
+        } else {
+            // Remove the link if URL is empty
+            form.social_links.splice(existingIndex, 1);
+        }
+    } else if (url && url.trim() !== '') {
+        // Add new link if URL is provided
+        form.social_links.push({ platform: platform, url: url });
+    }
+    
+    // Ensure we always have at least one empty link for the original UI compatibility
+    if (form.social_links.length === 0) {
+        form.social_links.push({ platform: '', url: '' });
     }
 };
 
-const popularPlatforms = [
-    'Facebook', 'Twitter', 'Instagram', 'LinkedIn', 'YouTube', 'TikTok', 
-    'Discord', 'Telegram', 'WhatsApp', 'Website', 'GitHub', 'Other'
-];
+// Social links modal management
+const showSocialModal = ref(false);
+const currentPlatform = ref('');
+const currentUrl = ref('');
+
+function openSocialModal(platform) {
+    currentPlatform.value = platform;
+    currentUrl.value = getSocialUrl(platform);
+    showSocialModal.value = true;
+}
+
+function saveSocialLink() {
+    setSocialUrl(currentPlatform.value, currentUrl.value);
+    showSocialModal.value = false;
+}
+
+function removeSocialLink() {
+    setSocialUrl(currentPlatform.value, '');
+    showSocialModal.value = false;
+}
+
+function cancelSocialModal() {
+    showSocialModal.value = false;
+    currentUrl.value = '';
+}
 
 function handlePhotoChange(e) {
     const file = e.target.files[0];
@@ -278,8 +332,8 @@ function cancelSave() {
             </div>
         </div>
 
-        <form @submit.prevent="submit" class="space-y-6">
-            <div class="grid md:grid-cols-2 gap-6">
+                <form @submit.prevent="submit" class="space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
                 <div>
                     <InputLabel for="name" value="Name" class="text-gray-700 dark:text-gray-300 font-medium" />
                     <TextInput
@@ -295,12 +349,7 @@ function cancelSave() {
                     />
                     <InputError class="mt-2" :message="form.errors.name" />
                     <div v-if="!isAdmin && !canChangeName" class="text-xs text-red-500 dark:text-red-400 mt-1">
-                        <span v-if="daysLeft > 0 || hoursLeft > 0">
-                            You can change your name in <span class="font-semibold">{{ daysLeft }}</span> day<span v-if="daysLeft !== 1">s</span>
-                            <span v-if="hoursLeft > 0"> and <span class="font-semibold">{{ hoursLeft }}</span> hour<span v-if="hoursLeft !== 1">s</span></span>.
-                        </span>
-                        <br/>
-                        Next allowed change: <span class="font-semibold">{{ nextAllowedDate ? nextAllowedDate.toLocaleDateString() : '' }}</span>
+                        Name can only be changed once every 14 days. {{ daysLeft > 0 ? `${daysLeft} days and ${hoursLeft} hours remaining.` : 'You can change your name now.' }}
                     </div>
                 </div>
 
@@ -311,8 +360,8 @@ function cancelSave() {
                         type="email"
                         class="mt-1 block w-full border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 rounded-md shadow-sm dark:bg-gray-700 dark:text-gray-300"
                         v-model="form.email"
-                        :disabled="!isAdmin || !isEditingProfile"
-                        :class="(!isAdmin || !isEditingProfile) ? 'bg-gray-100 dark:bg-gray-600 text-gray-400 dark:text-gray-500 cursor-not-allowed select-none pointer-events-none' : ''"
+                        :disabled="!isEditingProfile"
+                        :class="!isEditingProfile ? 'bg-gray-100 dark:bg-gray-600 text-gray-400 dark:text-gray-500 cursor-not-allowed select-none pointer-events-none' : ''"
                         required
                         autocomplete="email"
                     />
@@ -427,98 +476,200 @@ function cancelSave() {
             <!-- Social Links Section -->
             <div>
                 <InputLabel value="Social Links" class="text-gray-700 dark:text-gray-300 font-medium" />
-                <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">Add your social media links or website URLs (optional).</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Click on the icons to add or edit your social media links.</p>
                 
-                <div class="space-y-3">
-                    <div v-for="(link, index) in form.social_links" :key="index" 
-                         class="p-4 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700">
-                        <div class="flex items-center justify-between mb-3">
-                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Link {{ index + 1 }}</span>
-                            <button
-                                v-if="form.social_links.length > 1 && isEditingProfile"
-                                type="button"
-                                @click="removeSocialLink(index)"
-                                class="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 p-1 rounded-full hover:bg-red-50 dark:hover:bg-red-900/30 transition-all duration-200"
-                                title="Remove this link"
-                            >
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                </svg>
-                            </button>
-                        </div>
-                        
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <div>
-                                <InputLabel :for="`platform-${index}`" value="Platform" class="text-xs text-gray-600 dark:text-gray-400" />
-                                <select
-                                    :id="`platform-${index}`"
-                                    v-model="link.platform"
-                                    :disabled="!isEditingProfile"
-                                    :class="!isEditingProfile ? 'bg-gray-100 dark:bg-gray-600 text-gray-400 dark:text-gray-500 cursor-not-allowed' : ''"
-                                    class="mt-1 block w-full border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 rounded-md shadow-sm dark:bg-gray-700 dark:text-gray-300"
-                                >
-                                    <option value="">Select Platform</option>
-                                    <option v-for="platform in popularPlatforms" :key="platform" :value="platform">{{ platform }}</option>
-                                </select>
-                                <InputError class="mt-1" :message="form.errors[`social_links.${index}.platform`]" />
-                            </div>
-                            
-                            <div>
-                                <InputLabel :for="`url-${index}`" value="URL" class="text-xs text-gray-600 dark:text-gray-400" />
-                                <TextInput
-                                    :id="`url-${index}`"
-                                    type="url"
-                                    v-model="link.url"
-                                    :disabled="!isEditingProfile"
-                                    :class="!isEditingProfile ? 'bg-gray-100 dark:bg-gray-600 text-gray-400 dark:text-gray-500 cursor-not-allowed select-none pointer-events-none' : ''"
-                                    class="mt-1 block w-full border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 rounded-md shadow-sm dark:bg-gray-700 dark:text-gray-300"
-                                    placeholder="https://..."
-                                />
-                                <InputError class="mt-1" :message="form.errors[`social_links.${index}.url`]" />
-                            </div>
-                        </div>
-                    </div>
-                    
+                <div class="flex flex-wrap items-center justify-center gap-3 sm:gap-4 p-4 sm:p-6 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+                    <!-- Facebook -->
                     <button
-                        v-if="isEditingProfile"
                         type="button"
-                        @click="addSocialLink"
-                        class="inline-flex items-center justify-center w-full px-3 py-2 bg-white dark:bg-gray-600 border-2 border-dashed border-gray-300 dark:border-gray-500 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-300 hover:border-blue-400 hover:text-blue-600 dark:hover:border-blue-400 dark:hover:text-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200"
+                        @click="openSocialModal('facebook')"
+                        :disabled="!isEditingProfile"
+                        :class="[
+                            'relative group p-2 sm:p-3 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex-shrink-0',
+                            getSocialUrl('facebook') ? 'bg-blue-600 text-white shadow-lg' : 'bg-white dark:bg-gray-600 text-gray-400 dark:text-gray-300 shadow-md hover:shadow-lg',
+                            !isEditingProfile ? 'opacity-50 cursor-not-allowed' : 'hover:scale-110'
+                        ]"
+                        title="Facebook"
                     >
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
                         </svg>
-                        Add Another Link
+                        <div v-if="getSocialUrl('facebook')" class="absolute -top-0.5 -right-0.5 sm:-top-1 sm:-right-1 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-green-500 rounded-full border-2 border-white dark:border-gray-700"></div>
+                    </button>
+
+                    <!-- X (Twitter) -->
+                    <button
+                        type="button"
+                        @click="openSocialModal('twitter')"
+                        :disabled="!isEditingProfile"
+                        :class="[
+                            'relative group p-2 sm:p-3 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex-shrink-0',
+                            getSocialUrl('twitter') ? 'bg-black text-white shadow-lg' : 'bg-white dark:bg-gray-600 text-gray-400 dark:text-gray-300 shadow-md hover:shadow-lg',
+                            !isEditingProfile ? 'opacity-50 cursor-not-allowed' : 'hover:scale-110'
+                        ]"
+                        title="X (Twitter)"
+                    >
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                        </svg>
+                        <div v-if="getSocialUrl('twitter')" class="absolute -top-0.5 -right-0.5 sm:-top-1 sm:-right-1 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-green-500 rounded-full border-2 border-white dark:border-gray-700"></div>
+                    </button>
+
+                    <!-- Instagram -->
+                    <button
+                        type="button"
+                        @click="openSocialModal('instagram')"
+                        :disabled="!isEditingProfile"
+                        :class="[
+                            'relative group p-2 sm:p-3 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex-shrink-0',
+                            getSocialUrl('instagram') ? 'bg-gradient-to-br from-purple-600 to-pink-500 text-white shadow-lg' : 'bg-white dark:bg-gray-600 text-gray-400 dark:text-gray-300 shadow-md hover:shadow-lg',
+                            !isEditingProfile ? 'opacity-50 cursor-not-allowed' : 'hover:scale-110'
+                        ]"
+                        title="Instagram"
+                    >
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                        </svg>
+                        <div v-if="getSocialUrl('instagram')" class="absolute -top-0.5 -right-0.5 sm:-top-1 sm:-right-1 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-green-500 rounded-full border-2 border-white dark:border-gray-700"></div>
+                    </button>
+
+                    <!-- LinkedIn -->
+                    <button
+                        type="button"
+                        @click="openSocialModal('linkedin')"
+                        :disabled="!isEditingProfile"
+                        :class="[
+                            'relative group p-2 sm:p-3 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex-shrink-0',
+                            getSocialUrl('linkedin') ? 'bg-blue-700 text-white shadow-lg' : 'bg-white dark:bg-gray-600 text-gray-400 dark:text-gray-300 shadow-md hover:shadow-lg',
+                            !isEditingProfile ? 'opacity-50 cursor-not-allowed' : 'hover:scale-110'
+                        ]"
+                        title="LinkedIn"
+                    >
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                        </svg>
+                        <div v-if="getSocialUrl('linkedin')" class="absolute -top-0.5 -right-0.5 sm:-top-1 sm:-right-1 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-green-500 rounded-full border-2 border-white dark:border-gray-700"></div>
+                    </button>
+
+                    <!-- Other/External Link -->
+                    <button
+                        type="button"
+                        @click="openSocialModal('other')"
+                        :disabled="!isEditingProfile"
+                        :class="[
+                            'relative group p-2 sm:p-3 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex-shrink-0',
+                            getSocialUrl('other') ? 'bg-gray-800 dark:bg-gray-200 text-white dark:text-gray-800 shadow-lg' : 'bg-white dark:bg-gray-600 text-gray-400 dark:text-gray-300 shadow-md hover:shadow-lg',
+                            !isEditingProfile ? 'opacity-50 cursor-not-allowed' : 'hover:scale-110'
+                        ]"
+                        title="Other Link"
+                    >
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                        </svg>
+                        <div v-if="getSocialUrl('other')" class="absolute -top-0.5 -right-0.5 sm:-top-1 sm:-right-1 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-green-500 rounded-full border-2 border-white dark:border-gray-700"></div>
                     </button>
                 </div>
-                <InputError class="mt-2" :message="form.errors.social_links" />
+                
+                <!-- Display active links when not editing -->
+                <div v-if="!isEditingProfile && (getSocialUrl('facebook') || getSocialUrl('twitter') || getSocialUrl('instagram') || getSocialUrl('linkedin') || getSocialUrl('other'))" class="mt-4 space-y-2">
+                    <p class="text-sm font-medium text-gray-700 dark:text-gray-300">Active Links:</p>
+                    <div class="space-y-1 text-sm text-gray-600 dark:text-gray-400">
+                        <div v-if="getSocialUrl('facebook')" class="flex items-start space-x-2">
+                            <span class="w-16 sm:w-20 flex-shrink-0 font-medium">Facebook:</span>
+                            <a :href="getSocialUrl('facebook')" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline break-all">{{ getSocialUrl('facebook') }}</a>
+                        </div>
+                        <div v-if="getSocialUrl('twitter')" class="flex items-start space-x-2">
+                            <span class="w-16 sm:w-20 flex-shrink-0 font-medium">X (Twitter):</span>
+                            <a :href="getSocialUrl('twitter')" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline break-all">{{ getSocialUrl('twitter') }}</a>
+                        </div>
+                        <div v-if="getSocialUrl('instagram')" class="flex items-start space-x-2">
+                            <span class="w-16 sm:w-20 flex-shrink-0 font-medium">Instagram:</span>
+                            <a :href="getSocialUrl('instagram')" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline break-all">{{ getSocialUrl('instagram') }}</a>
+                        </div>
+                        <div v-if="getSocialUrl('linkedin')" class="flex items-start space-x-2">
+                            <span class="w-16 sm:w-20 flex-shrink-0 font-medium">LinkedIn:</span>
+                            <a :href="getSocialUrl('linkedin')" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline break-all">{{ getSocialUrl('linkedin') }}</a>
+                        </div>
+                        <div v-if="getSocialUrl('other')" class="flex items-start space-x-2">
+                            <span class="w-16 sm:w-20 flex-shrink-0 font-medium">Other:</span>
+                            <a :href="getSocialUrl('other')" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline break-all">{{ getSocialUrl('other') }}</a>
+                        </div>
+                    </div>
+                </div>
             </div>
             <Modal :show="showConfirmModal" @close="cancelSave">
-                <div class="p-6 flex flex-col items-center justify-center min-h-[180px] bg-white dark:bg-gray-800">
+                <div class="p-4 sm:p-6 flex flex-col items-center justify-center min-h-[180px] bg-white dark:bg-gray-800 max-w-md mx-auto">
                     <h2 class="text-lg font-semibold mb-4 text-center text-gray-900 dark:text-gray-100">Confirm Changes</h2>
-                    <p class="mb-6 text-center text-gray-700 dark:text-gray-300">Are you sure you want to save these changes to your profile?</p>
-                    <p v-if="!isAdmin" class="mb-4 text-sm text-blue-500 dark:text-blue-400 text-center">
+                    <p class="mb-6 text-center text-gray-700 dark:text-gray-300 text-sm sm:text-base px-2">Are you sure you want to save these changes to your profile?</p>
+                    <p v-if="!isAdmin" class="mb-4 text-sm text-blue-500 dark:text-blue-400 text-center px-2">
                         Note: You can only change your name once every 14 days.
                     </p>
-                    <div class="flex justify-center gap-2 w-full">
+                    <div class="flex flex-col sm:flex-row justify-center gap-2 sm:gap-3 w-full">
                         <button @click="cancelSave" type="button"
-                            class="inline-flex items-center justify-center px-4 py-2 bg-gray-200 dark:bg-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-xl shadow-md hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group">
+                            class="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 bg-gray-200 dark:bg-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-xl shadow-md hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group">
                             <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
                             Cancel
                         </button>
                         <button @click="confirmSave" type="button"
-                            class="inline-flex items-center justify-center px-4 py-2 bg-blue-500 dark:bg-blue-600 text-sm font-medium text-white rounded-xl shadow-md hover:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group">
+                            class="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 bg-blue-500 dark:bg-blue-600 text-sm font-medium text-white rounded-xl shadow-md hover:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group">
                             <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
                             Yes, Save
                         </button>
                     </div>
                 </div>
             </Modal>
-            <div class="flex items-center pt-4 border-t border-gray-100 dark:border-gray-700">
+
+            <!-- Social Links Modal -->
+                        <!-- Social Links Modal -->
+            <Modal :show="showSocialModal" @close="cancelSocialModal">
+                <div class="p-4 sm:p-6 bg-white dark:bg-gray-800 max-w-md mx-auto">
+                    <h2 class="text-lg font-semibold mb-4 text-center text-gray-900 dark:text-gray-100 capitalize">
+                        Edit {{ currentPlatform }} Link
+                    </h2>
+                    
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            URL
+                        </label>
+                        <input
+                            v-model="currentUrl"
+                            type="url"
+                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-gray-100 text-sm"
+                            :placeholder="`Enter your ${currentPlatform} URL`"
+                        />
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row justify-between gap-2 sm:gap-3">
+                        <button
+                            type="button"
+                            @click="saveSocialLink"
+                            class="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+                        >
+                            Save
+                        </button>
+                        <button
+                            v-if="getSocialUrl(currentPlatform)"
+                            type="button"
+                            @click="removeSocialLink"
+                            class="w-full sm:w-auto px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors"
+                        >
+                            Remove
+                        </button>
+                        <button
+                            type="button"
+                            @click="cancelSocialModal"
+                            class="w-full sm:w-auto px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-md hover:bg-gray-400 dark:hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </Modal>
+            <div class="flex flex-col sm:flex-row items-center pt-4 border-t border-gray-100 dark:border-gray-700 gap-2 sm:gap-0">
                 <PrimaryButton 
                     v-if="isEditingProfile"
                     :disabled="form.processing"
-                    class="bg-blue-500 hover:bg-blue-600 focus:bg-blue-600"
+                    class="w-full sm:w-auto bg-blue-500 hover:bg-blue-600 focus:bg-blue-600"
                     @click.prevent="handleSaveClick"
                 >
                     Save Changes
@@ -527,7 +678,7 @@ function cancelSave() {
                     v-if="isEditingProfile"
                     type="button"
                     @click="cancelEditProfile"
-                    class="inline-flex items-center justify-center px-4 py-2 bg-gray-200 text-sm font-medium text-gray-700 rounded-xl shadow-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group ml-2"
+                    class="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 bg-gray-200 text-sm font-medium text-gray-700 rounded-xl shadow-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group sm:ml-2"
                 >
                     <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
                     Cancel
@@ -536,6 +687,7 @@ function cancelSave() {
                     v-if="!isEditingProfile"
                     @click="startEditProfile"
                     type="button"
+                    class="w-full sm:w-auto"
                 >
                     Edit Profile
                 </PrimaryButton>
@@ -547,7 +699,7 @@ function cancelSave() {
                 >
                     <p
                         v-if="form.recentlySuccessful"
-                        class="ml-4 text-sm text-green-500 flex items-center"
+                        class="ml-0 sm:ml-4 mt-2 sm:mt-0 text-sm text-green-500 flex items-center"
                     >
                         <svg class="w-4 h-4 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
