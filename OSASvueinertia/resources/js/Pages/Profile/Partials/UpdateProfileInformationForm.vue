@@ -292,13 +292,7 @@ function cancelSave() {
 </script>
 
 <template>
-    <section class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-100 dark:border-gray-700">
-        <!-- Specific section description with colored accent -->
-        <div class="border-l-4 border-blue-500 pl-3 mb-6">
-            <p class="text-sm text-gray-600 dark:text-gray-400">
-                Manage your personal details, profile photo, and organization description. <span v-if="isAdmin">As an admin, you can also update your name and email address.</span>
-            </p>
-        </div>
+    <section>
         <!-- Status bar for verification status -->
         <div 
             v-if="mustVerifyEmail && user.email_verified_at === null"
