@@ -112,6 +112,11 @@ class OrganizationApplication extends Model
         return $this->hasMany(Attendee::class);
     }
 
+    public function activityReports()
+    {
+        return $this->hasMany(ActivityReport::class);
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);
