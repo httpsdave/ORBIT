@@ -1868,9 +1868,9 @@ class OrganizationApplicationController extends Controller
     }
 
     /**
-     * Download a report file
+     * Download or view a report file
      */
-    public function downloadReport(OrganizationApplication $application, $reportId)
+    public function downloadReport(OrganizationApplication $application, $reportId, Request $request)
     {
         // Ensure this is a Plan of Activities form
         if ($application->form_type !== 'LSPU-OSAS-SF-004') {
@@ -1887,6 +1887,12 @@ class OrganizationApplicationController extends Controller
         // Check if file exists
         if (!$report->file_path || !Storage::exists($report->file_path)) {
             abort(404, 'File not found.');
+        }
+
+        // If action=view, return file for viewing in browser
+        if ($request->query('action') === 'view') {
+            $filePath = Storage::path($report->file_path);
+            return response()->file($filePath);
         }
 
         return Storage::download($report->file_path, $report->original_filename);

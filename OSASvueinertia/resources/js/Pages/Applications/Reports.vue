@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { Head, router, usePage } from '@inertiajs/vue3'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
 import StatusBanner from '@/Components/StatusBanner.vue'
@@ -21,6 +21,13 @@ const fileInputs = ref({}) // Store file input refs
 const selectedFiles = ref({}) // Track selected files for each input
 const dragStates = ref({}) // Track drag states for each drop zone
 
+// Actions dropdown state
+const activeDropdownReport = ref(null)
+const dropdownPosition = ref({ top: 0, left: 0 })
+const dropdownButtonEl = ref(null)
+const dropdownRef = ref(null)
+const dropdownDirection = ref('down') // 'down' or 'up'
+
 // Success/error messages using StatusBanner
 const showMessage = ref(false)
 const message = ref('')
@@ -41,7 +48,7 @@ const showMessageWithType = (text, type = 'success') => {
   }, 5000)
 }
 
-// Check for flash messages from Laravel
+// Check for flash messages from Laravel and add dropdown listeners
 onMounted(() => {
   if (page.props.flash?.success) {
     showMessageWithType(page.props.flash.success, 'success')
@@ -49,6 +56,9 @@ onMounted(() => {
   if (page.props.flash?.error) {
     showMessageWithType(page.props.flash.error, 'error')
   }
+  
+  // Add dropdown event listeners
+  document.addEventListener('click', closeDropdowns)
 })
 
 // Generate activity pages data
@@ -152,6 +162,23 @@ const downloadReport = (report) => {
   if (report.file_path) {
     window.open(`/applications/${props.application.id}/reports/${report.id}/download`, '_blank')
   }
+}
+
+const viewReport = (report) => {
+  if (report.file_path) {
+    // Open report for viewing (not downloading) in new tab
+    window.open(`/applications/${props.application.id}/reports/${report.id}/download?action=view`, '_blank')
+  }
+}
+
+const handleReportContainerClick = (report, event) => {
+  // Don't trigger if clicking on dropdown button or its children
+  if (event.target.closest('.dropdown-container')) {
+    return
+  }
+  
+  // View the report
+  viewReport(report)
 }
 
 const getStatusBadgeClass = (status) => {
@@ -263,6 +290,105 @@ const formatFileSize = (bytes) => {
   const i = Math.floor(Math.log(bytes) / Math.log(k))
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
 }
+
+// Dropdown functionality
+const toggleDropdown = (report, event) => {
+  if (activeDropdownReport.value && activeDropdownReport.value.id === report.id) {
+    activeDropdownReport.value = null
+    dropdownButtonEl.value = null
+    removeDropdownListeners()
+  } else {
+    activeDropdownReport.value = report
+    dropdownButtonEl.value = event.currentTarget
+    updateDropdownPosition()
+    addDropdownListeners()
+  }
+}
+
+async function updateDropdownPosition() {
+  if (!dropdownButtonEl.value) return
+  const rect = dropdownButtonEl.value.getBoundingClientRect()
+  let dropdownWidth = 192 // Fixed width for w-48 (192px)
+  let left = rect.right - dropdownWidth + 8 // Move closer to button by adding 8px offset
+  if (left + dropdownWidth > window.innerWidth) left = window.innerWidth - dropdownWidth - 16
+  if (left < 16) left = 16
+
+  await nextTick()
+  let dropdownHeight = dropdownRef.value ? dropdownRef.value.offsetHeight : 320
+
+  const spaceBelow = window.innerHeight - rect.bottom
+  const spaceAbove = rect.top
+
+  let top
+  if (spaceBelow >= dropdownHeight + 16) {
+    top = rect.bottom + 2 // Reduced gap from 6px to 2px
+    dropdownDirection.value = 'down'
+  } else if (spaceAbove >= dropdownHeight + 16) {
+    top = rect.top - dropdownHeight - 2 // Reduced gap from 6px to 2px
+    dropdownDirection.value = 'up'
+  } else if (spaceBelow >= spaceAbove) {
+    top = rect.bottom + 2
+    dropdownDirection.value = 'down'
+  } else {
+    top = Math.max(8, rect.top - dropdownHeight - 2)
+    dropdownDirection.value = 'up'
+  }
+
+  dropdownPosition.value = { top, left }
+}
+
+function addDropdownListeners() {
+  window.addEventListener('scroll', updateDropdownPosition, true)
+  window.addEventListener('resize', updateDropdownPosition)
+}
+
+function removeDropdownListeners() {
+  window.removeEventListener('scroll', updateDropdownPosition, true)
+  window.removeEventListener('resize', updateDropdownPosition)
+}
+
+const closeDropdowns = (event) => {
+  if (!event.target.closest('.dropdown-container')) {
+    activeDropdownReport.value = null
+  }
+}
+
+// Dropdown action handlers
+const viewReportFromDropdown = () => {
+  if (activeDropdownReport.value) {
+    downloadReport(activeDropdownReport.value)
+    activeDropdownReport.value = null
+  }
+}
+
+const deleteReportFromDropdown = () => {
+  if (activeDropdownReport.value) {
+    // Find the report type and page number from the active dropdown report
+    let reportType = null
+    let pageNumber = null
+    
+    // Search through activity pages to find this report
+    for (const page of activityPages.value) {
+      for (const [type, report] of Object.entries(page.reports)) {
+        if (report && report.id === activeDropdownReport.value.id) {
+          reportType = type
+          pageNumber = page.pageNumber
+          break
+        }
+      }
+      if (reportType) break
+    }
+    
+    deleteReport(activeDropdownReport.value.id, pageNumber, reportType)
+    activeDropdownReport.value = null
+  }
+}
+
+// Add mounted and unmounted lifecycle hooks
+onUnmounted(() => {
+  document.removeEventListener('click', closeDropdowns)
+  removeDropdownListeners()
+})
 </script>
 
 <template>
@@ -331,7 +457,12 @@ const formatFileSize = (bytes) => {
                 <div
                   v-for="(reportTypeName, reportType) in reportTypes"
                   :key="reportType"
-                  class="border border-gray-200 dark:border-gray-700 rounded-xl p-4 lg:p-5 bg-gray-50 dark:bg-gray-900/50 hover:bg-gray-100 dark:hover:bg-gray-900/70 transition-colors duration-200"
+                  :class="[
+                    'border border-gray-200 dark:border-gray-700 rounded-xl p-4 lg:p-5 bg-gray-50 dark:bg-gray-900/50 transition-colors duration-200',
+                    page.reports[reportType] 
+                      ? 'hover:bg-gray-100 dark:hover:bg-gray-900/70 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-md' 
+                      : 'hover:bg-gray-100 dark:hover:bg-gray-900/70'
+                  ]"
                 >
                   <div class="flex items-center justify-between mb-3">
                     <h3 class="font-medium text-gray-900 dark:text-gray-100 text-sm lg:text-base truncate pr-2">{{ reportTypeName }}</h3>
@@ -347,35 +478,41 @@ const formatFileSize = (bytes) => {
                   </div>
 
                   <!-- If report exists -->
-                  <div v-if="page.reports[reportType]" class="space-y-3">
-                    <div class="text-sm text-gray-600 dark:text-gray-400">
-                      <p class="truncate"><strong>File:</strong> {{ page.reports[reportType].original_filename }}</p>
-                      <p><strong>Submitted:</strong> {{ new Date(page.reports[reportType].submitted_at).toLocaleDateString() }}</p>
-                      <div v-if="page.reports[reportType].feedback" class="mt-2 p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded text-yellow-800 dark:text-yellow-200">
-                        <p class="break-words"><strong>Feedback:</strong> {{ page.reports[reportType].feedback }}</p>
+                  <div 
+                    v-if="page.reports[reportType]" 
+                    class="space-y-3 cursor-pointer"
+                    :title="'Click to view ' + page.reports[reportType].original_filename"
+                    @click="handleReportContainerClick(page.reports[reportType], $event)"
+                  >
+                    <div class="flex items-center justify-between">
+                      <div class="text-sm text-gray-600 dark:text-gray-400 flex-1">
+                        <p class="truncate"><strong>File:</strong> {{ page.reports[reportType].original_filename }}</p>
+                        <p><strong>Submitted:</strong> {{ new Date(page.reports[reportType].submitted_at).toLocaleDateString() }}</p>
+                        <div v-if="page.reports[reportType].feedback" class="mt-2 p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded text-yellow-800 dark:text-yellow-200">
+                          <p class="break-words"><strong>Feedback:</strong> {{ page.reports[reportType].feedback }}</p>
+                        </div>
+                        <!-- Visual indicator for clickability -->
+                        <div class="mt-2 flex items-center text-xs text-blue-600 dark:text-blue-400 opacity-75">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                          </svg>
+                          Click to view
+                        </div>
                       </div>
-                    </div>
-                    
-                    <div class="flex flex-col sm:flex-row gap-2">
-                      <button
-                        @click="downloadReport(page.reports[reportType])"
-                        class="flex-1 inline-flex items-center justify-center px-3 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-sm font-medium text-white rounded-xl shadow-md hover:shadow-blue-300/30 hover:from-blue-400 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 active:from-blue-600 active:to-blue-700 transition-all duration-300 relative overflow-hidden group"
-                      >
-                        <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white dark:bg-gray-800 rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                        View
-                      </button>
-                      <button
-                        @click="deleteReport(page.reports[reportType].id, page.pageNumber, reportType)"
-                        class="flex-shrink-0 inline-flex items-center justify-center px-3 py-2 bg-gradient-to-r from-red-500 to-red-600 text-sm font-medium text-white rounded-xl shadow-md hover:shadow-red-300/30 hover:from-red-400 hover:to-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 active:from-red-600 active:to-red-700 transition-all duration-300 relative overflow-hidden group"
-                      >
-                        <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white dark:bg-gray-800 rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                      </button>
+                      
+                      <!-- Actions Dropdown Button -->
+                      <div class="relative dropdown-container ml-3">
+                        <button
+                          @click="toggleDropdown(page.reports[reportType], $event)"
+                          :data-dropdown-trigger="page.reports[reportType].id"
+                          class="flex items-center justify-center w-8 h-8 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+                        >
+                          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                          </svg>
+                        </button>
+                      </div>
                     </div>
                   </div>
 
@@ -497,13 +634,50 @@ const formatFileSize = (bytes) => {
       @confirm="confirmDelete"
       @cancel="cancelDelete"
     />
+
+    <!-- Render the dropdown only once, outside the table -->
+    <Teleport to="body">
+      <div 
+        ref="dropdownRef"
+        v-if="activeDropdownReport"
+        class="fixed z-50 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 w-48"
+        :style="{ top: `${dropdownPosition.top}px`, left: `${dropdownPosition.left}px`, visibility: activeDropdownReport ? 'visible' : 'hidden' }"
+        @click.stop
+      >
+        <!-- Download Report -->
+        <button 
+          @click="viewReportFromDropdown()"
+          class="w-full text-left px-3 py-1.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200 font-medium"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600 dark:text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+          </svg>
+          Download Report
+        </button>
+        <!-- Delete Report -->
+        <button 
+          @click="deleteReportFromDropdown()"
+          class="w-full text-left px-3 py-1.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 flex items-center gap-2 transition duration-200 border-t border-gray-100 dark:border-gray-600 mt-1 pt-1 font-medium"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+          </svg>
+          Delete Report
+        </button>
+      </div>
+    </Teleport>
   </AuthenticatedLayout>
 </template>
 
 <style scoped>
 /* Enhanced drag and drop styling */
 .drag-active {
-  @apply border-blue-400 bg-blue-50 dark:bg-blue-900/20;
+  border-color: #60a5fa;
+  background-color: #dbeafe;
+}
+
+.dark .drag-active {
+  background-color: rgba(59, 130, 246, 0.2);
 }
 
 /* Smooth transitions for all interactive elements */
@@ -523,7 +697,14 @@ const formatFileSize = (bytes) => {
 
 /* File preview card styling */
 .file-preview {
-  @apply bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg;
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+}
+
+.dark .file-preview {
+  background-color: #1f2937;
+  border-color: #374151;
 }
 
 /* Upload button enhanced styling */
