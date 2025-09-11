@@ -1899,6 +1899,48 @@ class OrganizationApplicationController extends Controller
     }
 
     /**
+     * Update a report (replace the file)
+     */
+    public function updateReport(Request $request, OrganizationApplication $application, $reportId)
+    {
+        // Ensure this is a Plan of Activities form
+        if ($application->form_type !== 'LSPU-OSAS-SF-004') {
+            abort(404, 'Reports are only available for Plan of Activities submissions.');
+        }
+
+        // Ensure user owns this application or is admin
+        if (!auth()->user()->isAdmin() && $application->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized access to this application.');
+        }
+
+        $report = $application->activityReports()->findOrFail($reportId);
+
+        // Validate the uploaded file
+        $request->validate([
+            'report_file' => 'required|file|mimes:pdf|max:20480', // 20MB in KB
+        ]);
+
+        // Delete the old file from storage if it exists
+        if ($report->file_path && Storage::exists($report->file_path)) {
+            Storage::delete($report->file_path);
+        }
+
+        // Store the new file
+        $file = $request->file('report_file');
+        $filename = time() . '_' . $file->getClientOriginalName();
+        $path = $file->storeAs('activity_reports', $filename);
+
+        // Update the report record
+        $report->update([
+            'file_path' => $path,
+            'original_filename' => $file->getClientOriginalName(),
+            'submitted_at' => now(),
+        ]);
+
+        return redirect()->back()->with('success', 'Report updated successfully!');
+    }
+
+    /**
      * Delete a report
      */
     public function deleteReport(OrganizationApplication $application, $reportId)

@@ -21,6 +21,10 @@ const fileInputs = ref({}) // Store file input refs
 const selectedFiles = ref({}) // Track selected files for each input
 const dragStates = ref({}) // Track drag states for each drop zone
 
+// Edit report state
+const editingReport = ref(null) // Track which report is being edited
+const editingFiles = ref({}) // Track selected files for editing
+
 // Actions dropdown state
 const activeDropdownReport = ref(null)
 const dropdownPosition = ref({ top: 0, left: 0 })
@@ -174,6 +178,11 @@ const viewReport = (report) => {
 const handleReportContainerClick = (report, event) => {
   // Don't trigger if clicking on dropdown button or its children
   if (event.target.closest('.dropdown-container')) {
+    return
+  }
+  
+  // Don't trigger if we're currently editing this report
+  if (editingReport.value && editingReport.value.id === report.id) {
     return
   }
   
@@ -384,6 +393,119 @@ const deleteReportFromDropdown = () => {
   }
 }
 
+const editReportFromDropdown = () => {
+  if (activeDropdownReport.value) {
+    // If already editing another report, show message and return
+    if (editingReport.value) {
+      showMessageWithType('Please finish editing the current report before editing another one.', 'error')
+      activeDropdownReport.value = null
+      removeDropdownListeners()
+      return
+    }
+    
+    // Find the report type and page number from the active dropdown report
+    let reportType = null
+    let pageNumber = null
+    
+    // Search through activity pages to find this report
+    for (const page of activityPages.value) {
+      for (const [type, report] of Object.entries(page.reports)) {
+        if (report && report.id === activeDropdownReport.value.id) {
+          reportType = type
+          pageNumber = page.pageNumber
+          break
+        }
+      }
+      if (reportType) break
+    }
+    
+    if (reportType && pageNumber) {
+      // Set the editing state
+      editingReport.value = {
+        id: activeDropdownReport.value.id,
+        pageNumber: pageNumber,
+        reportType: reportType
+      }
+    }
+    
+    // Close dropdown
+    activeDropdownReport.value = null
+    removeDropdownListeners()
+  }
+}
+
+const cancelEdit = () => {
+  editingReport.value = null
+  // Clear any selected editing files
+  Object.keys(editingFiles.value).forEach(key => {
+    editingFiles.value[key] = null
+  })
+}
+
+const handleEditFileSelect = (event, activityPageNumber, reportType) => {
+  const file = event.target.files[0]
+  const editKey = `${activityPageNumber}-${reportType}`
+  
+  if (file) {
+    if (validateFile(file)) {
+      editingFiles.value[editKey] = file
+    } else {
+      // Clear the input if file is invalid
+      event.target.value = ''
+    }
+  } else {
+    editingFiles.value[editKey] = null
+  }
+}
+
+const updateReport = async (reportId, activityPageNumber, reportType) => {
+  const editKey = `${activityPageNumber}-${reportType}`
+  const file = editingFiles.value[editKey]
+  
+  if (!file) {
+    showMessageWithType('Please select a file to replace the current report.', 'error')
+    return
+  }
+
+  // Validate file type (only PDF)
+  if (file.type !== 'application/pdf') {
+    showMessageWithType('Please upload a PDF document only.', 'error')
+    return
+  }
+
+  // Validate file size (20MB)
+  if (file.size > 20 * 1024 * 1024) {
+    showMessageWithType('File size must be less than 20MB.', 'error')
+    return
+  }
+
+  uploading.value = true
+  uploadingFor.value = editKey
+
+  const formData = new FormData()
+  formData.append('report_file', file)
+  formData.append('_method', 'PUT') // Laravel method spoofing for PUT request
+
+  // Use Inertia router for form submission with proper CSRF handling
+  router.post(`/applications/${props.application.id}/reports/${reportId}`, formData, {
+    onSuccess: () => {
+      // Clear the editing state
+      editingReport.value = null
+      editingFiles.value[editKey] = null
+      showMessageWithType('Report updated successfully!', 'success')
+    },
+    onError: (errors) => {
+      console.error('Update errors:', errors)
+      const errorMessage = errors.message || errors.error || Object.values(errors)[0] || 'Update failed. Please try again.'
+      showMessageWithType(errorMessage, 'error')
+    },
+    onFinish: () => {
+      uploading.value = false
+      uploadingFor.value = null
+    }
+  })
+}
+
 // Add mounted and unmounted lifecycle hooks
 onUnmounted(() => {
   document.removeEventListener('click', closeDropdowns)
@@ -478,40 +600,99 @@ onUnmounted(() => {
                   </div>
 
                   <!-- If report exists -->
-                  <div 
-                    v-if="page.reports[reportType]" 
-                    class="space-y-3 cursor-pointer"
-                    :title="'Click to view ' + page.reports[reportType].original_filename"
-                    @click="handleReportContainerClick(page.reports[reportType], $event)"
-                  >
-                    <div class="flex items-center justify-between">
-                      <div class="text-sm text-gray-600 dark:text-gray-400 flex-1">
-                        <p class="truncate"><strong>File:</strong> {{ page.reports[reportType].original_filename }}</p>
-                        <p><strong>Submitted:</strong> {{ new Date(page.reports[reportType].submitted_at).toLocaleDateString() }}</p>
-                        <div v-if="page.reports[reportType].feedback" class="mt-2 p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded text-yellow-800 dark:text-yellow-200">
-                          <p class="break-words"><strong>Feedback:</strong> {{ page.reports[reportType].feedback }}</p>
-                        </div>
-                        <!-- Visual indicator for clickability -->
-                        <div class="mt-2 flex items-center text-xs text-blue-600 dark:text-blue-400 opacity-75">
-                          <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                          </svg>
-                          Click to view
-                        </div>
+                  <div v-if="page.reports[reportType]" class="space-y-3">
+                    <!-- Editing Mode -->
+                    <div 
+                      v-if="editingReport && editingReport.id === page.reports[reportType].id"
+                      class="space-y-3 border-2 border-amber-300 dark:border-amber-600 rounded-lg p-3 bg-amber-50 dark:bg-amber-900/20"
+                    >
+                      <div class="flex items-center gap-2 text-amber-700 dark:text-amber-300 text-sm font-medium">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                        </svg>
+                        Editing Report
                       </div>
                       
-                      <!-- Actions Dropdown Button -->
-                      <div class="relative dropdown-container ml-3">
+                      <div class="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                        <p class="truncate"><strong>Current File:</strong> {{ page.reports[reportType].original_filename }}</p>
+                        <p><strong>Submitted:</strong> {{ new Date(page.reports[reportType].submitted_at).toLocaleDateString() }}</p>
+                      </div>
+
+                      <!-- File Upload for Edit -->
+                      <div class="border-2 border-dashed border-amber-300 dark:border-amber-600 rounded-xl p-4 bg-white dark:bg-gray-800">
+                        <input
+                          type="file"
+                          accept=".pdf"
+                          class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100"
+                          @change="handleEditFileSelect($event, page.pageNumber, reportType)"
+                        />
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                          PDF files only (Max 20MB) - This will replace the current report
+                        </p>
+                      </div>
+
+                      <!-- Edit Actions -->
+                      <div class="flex gap-2">
                         <button
-                          @click="toggleDropdown(page.reports[reportType], $event)"
-                          :data-dropdown-trigger="page.reports[reportType].id"
-                          class="flex items-center justify-center w-8 h-8 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+                          v-if="editingFiles[`${page.pageNumber}-${reportType}`]"
+                          @click="updateReport(page.reports[reportType].id, page.pageNumber, reportType)"
+                          :disabled="uploading && uploadingFor === `${page.pageNumber}-${reportType}`"
+                          class="inline-flex items-center justify-center px-3 py-2 bg-gradient-to-r from-amber-500 to-amber-600 text-xs font-medium text-white rounded-lg shadow-md hover:shadow-amber-300/30 hover:from-amber-400 hover:to-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 active:from-amber-600 active:to-amber-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
                         >
-                          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                          <svg v-if="uploading && uploadingFor === `${page.pageNumber}-${reportType}`" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                           </svg>
+                          <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                          </svg>
+                          {{ uploading && uploadingFor === `${page.pageNumber}-${reportType}` ? 'Updating...' : 'Update Report' }}
                         </button>
+                        <button
+                          @click="cancelEdit()"
+                          class="inline-flex items-center justify-center px-3 py-2 bg-gray-500 hover:bg-gray-600 text-xs font-medium text-white rounded-lg transition-colors duration-200"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Normal View Mode -->
+                    <div 
+                      v-else
+                      class="cursor-pointer"
+                      :title="'Click to view ' + page.reports[reportType].original_filename"
+                      @click="handleReportContainerClick(page.reports[reportType], $event)"
+                    >
+                      <div class="flex items-center justify-between">
+                        <div class="text-sm text-gray-600 dark:text-gray-400 flex-1">
+                          <p class="truncate"><strong>File:</strong> {{ page.reports[reportType].original_filename }}</p>
+                          <p><strong>Submitted:</strong> {{ new Date(page.reports[reportType].submitted_at).toLocaleDateString() }}</p>
+                          <div v-if="page.reports[reportType].feedback" class="mt-2 p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded text-yellow-800 dark:text-yellow-200">
+                            <p class="break-words"><strong>Feedback:</strong> {{ page.reports[reportType].feedback }}</p>
+                          </div>
+                          <!-- Visual indicator for clickability -->
+                          <div class="mt-2 flex items-center text-xs text-blue-600 dark:text-blue-400 opacity-75">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                            Click to view
+                          </div>
+                        </div>
+                        
+                        <!-- Actions Dropdown Button -->
+                        <div class="relative dropdown-container ml-3">
+                          <button
+                            @click="toggleDropdown(page.reports[reportType], $event)"
+                            :data-dropdown-trigger="page.reports[reportType].id"
+                            class="flex items-center justify-center w-8 h-8 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+                          >
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                              <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                            </svg>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -653,6 +834,16 @@ onUnmounted(() => {
             <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
           </svg>
           Download Report
+        </button>
+        <!-- Edit Report -->
+        <button 
+          @click="editReportFromDropdown()"
+          class="w-full text-left px-3 py-1.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200 font-medium"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-500 dark:text-amber-400" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+          </svg>
+          Edit Report
         </button>
         <!-- Delete Report -->
         <button 
