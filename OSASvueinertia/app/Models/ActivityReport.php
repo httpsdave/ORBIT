@@ -63,6 +63,8 @@ class ActivityReport extends Model
             'LSPU-OSAS-SF-FINANCIAL' => 'Financial Report',
             'LSPU-OSAS-SF-NARRATIVE' => 'Narrative Report',
             'LSPU-OSAS-SF-ACCOMPLISHMENT' => 'Accomplishment Report',
+            'LSPU-OSAS-SF-EVAL' => 'Evaluation Summary',
+            'LSPU-OSAS-SF-009' => 'Activity Attendance Sheet',
             default => $this->report_type
         };
     }

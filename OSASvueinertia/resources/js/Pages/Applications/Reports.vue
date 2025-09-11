@@ -327,7 +327,7 @@ const formatFileSize = (bytes) => {
               </div>
 
               <!-- Reports Grid for this Activity -->
-              <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
+              <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5 gap-4 lg:gap-6">
                 <div
                   v-for="(reportTypeName, reportType) in reportTypes"
                   :key="reportType"

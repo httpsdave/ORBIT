@@ -1803,6 +1803,8 @@ class OrganizationApplicationController extends Controller
                 'LSPU-OSAS-SF-FINANCIAL' => 'Financial Report',
                 'LSPU-OSAS-SF-NARRATIVE' => 'Narrative Report',
                 'LSPU-OSAS-SF-ACCOMPLISHMENT' => 'Accomplishment Report',
+                'LSPU-OSAS-SF-EVAL' => 'Evaluation Summary',
+                'LSPU-OSAS-SF-009' => 'Activity Attendance Sheet',
             ]
         ]);
     }
@@ -1824,8 +1826,8 @@ class OrganizationApplicationController extends Controller
 
         $request->validate([
             'activity_page_number' => 'required|integer|min:1',
-            'report_type' => 'required|in:LSPU-OSAS-SF-FINANCIAL,LSPU-OSAS-SF-NARRATIVE,LSPU-OSAS-SF-ACCOMPLISHMENT',
-            'report_file' => 'required|file|mimes:pdf,doc,docx|max:10240', // 10MB max
+            'report_type' => 'required|in:LSPU-OSAS-SF-FINANCIAL,LSPU-OSAS-SF-NARRATIVE,LSPU-OSAS-SF-ACCOMPLISHMENT,LSPU-OSAS-SF-EVAL,LSPU-OSAS-SF-009',
+            'report_file' => 'required|file|mimes:pdf|max:20480', // 20MB max, PDF only
         ]);
 
         // Check if report already exists for this activity page and type
