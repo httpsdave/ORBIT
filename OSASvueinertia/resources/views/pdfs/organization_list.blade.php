@@ -420,7 +420,16 @@
                                     <td class="info-cell">
                                         <div class="member-info underline">
                                             @if($leftMember && $leftMember->student_name && $leftMember->student_name !== 'Sample Data')
-                                                <span class="filled-text">{{ $leftMember->student_name }}</span>
+                                                @php
+                                                    if (strlen($leftMember->student_name) > 27) {
+                                                        $studentNameFontSize = '8pt';
+                                                    } elseif (strlen($leftMember->student_name) > 22) {
+                                                        $studentNameFontSize = '9pt';
+                                                    } else {
+                                                        $studentNameFontSize = '11pt';
+                                                    }
+                                                @endphp
+                                                <span class="filled-text" style="font-size: {{ $studentNameFontSize }};">{{ $leftMember->student_name }}</span>
                                             @endif
                                         </div>
                                         <div class="member-info underline">
@@ -485,9 +494,18 @@
                                     </td>
                                     <td class="info-cell">
                                         <div class="member-info underline">
-                                            @if($rightMember && $rightMember->student_name && $rightMember->student_name !== 'Sample Data')
-                                                <span class="filled-text">{{ $rightMember->student_name }}</span>
-                                            @endif
+                                                @if($rightMember && $rightMember->student_name && $rightMember->student_name !== 'Sample Data')
+                                                    @php
+                                                        if (strlen($rightMember->student_name) > 27) {
+                                                            $studentNameFontSize = '8pt';
+                                                        } elseif (strlen($rightMember->student_name) > 22) {
+                                                            $studentNameFontSize = '9pt';
+                                                        } else {
+                                                            $studentNameFontSize = '11pt';
+                                                        }
+                                                    @endphp
+                                                    <span class="filled-text" style="font-size: {{ $studentNameFontSize }};">{{ $rightMember->student_name }}</span>
+                                                @endif
                                         </div>
                                         <div class="member-info underline">
                                             @if($rightMember && $rightMember->student_number && $rightMember->student_number !== '0322-1234' && $rightMember->student_number !== '0322-5678')
@@ -690,7 +708,16 @@
                                         <td class="info-cell">
                                             <div class="member-info underline">
                                                 @if($leftMember && $leftMember->student_name)
-                                                    <span class="filled-text">{{ $leftMember->student_name }}</span>
+                                                    @php
+                                                        if (strlen($leftMember->student_name) > 27) {
+                                                            $studentNameFontSize = '8pt';
+                                                        } elseif (strlen($leftMember->student_name) > 22) {
+                                                            $studentNameFontSize = '9pt';
+                                                        } else {
+                                                            $studentNameFontSize = '11pt';
+                                                        }
+                                                    @endphp
+                                                    <span class="filled-text" style="font-size: {{ $studentNameFontSize }};">{{ $leftMember->student_name }}</span>
                                                 @endif
                                             </div>
                                             <div class="member-info underline">
@@ -756,7 +783,16 @@
                                         <td class="info-cell">
                                             <div class="member-info underline">
                                                 @if($rightMember && $rightMember->student_name)
-                                                    <span class="filled-text">{{ $rightMember->student_name }}</span>
+                                                    @php
+                                                        if (strlen($rightMember->student_name) > 27) {
+                                                            $studentNameFontSize = '8pt';
+                                                        } elseif (strlen($rightMember->student_name) > 22) {
+                                                            $studentNameFontSize = '9pt';
+                                                        } else {
+                                                            $studentNameFontSize = '11pt';
+                                                        }
+                                                    @endphp
+                                                    <span class="filled-text" style="font-size: {{ $studentNameFontSize }};">{{ $rightMember->student_name }}</span>
                                                 @endif
                                             </div>
                                             <div class="member-info underline">
