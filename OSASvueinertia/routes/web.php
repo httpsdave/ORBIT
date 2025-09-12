@@ -193,6 +193,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/applications/{application}/reports/{report}/download', [OrganizationApplicationController::class, 'downloadReport'])->name('applications.reports.download');
     Route::put('/applications/{application}/reports/{report}', [OrganizationApplicationController::class, 'updateReport'])->name('applications.reports.update');
     Route::delete('/applications/{application}/reports/{report}', [OrganizationApplicationController::class, 'deleteReport'])->name('applications.reports.delete');
+    Route::put('/applications/{application}/reports/{report}/status', [OrganizationApplicationController::class, 'updateReportStatus'])->name('applications.reports.update-status');
 
     // User dashboard route with admin redirect
     Route::get('/dashboard', function () {

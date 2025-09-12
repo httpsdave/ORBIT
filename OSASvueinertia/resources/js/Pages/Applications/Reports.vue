@@ -3,6 +3,7 @@ import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { Head, router, usePage } from '@inertiajs/vue3'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
 import StatusBanner from '@/Components/StatusBanner.vue'
+import StatusModal from '@/Components/StatusModal.vue'
 import ConfirmationModal from '@/Components/ConfirmationModal.vue'
 
 const props = defineProps({
@@ -10,7 +11,11 @@ const props = defineProps({
   activityCount: Number,
   reports: Array,
   reportsByPageAndType: Object,
-  reportTypes: Object
+  reportTypes: Object,
+  isAdmin: {
+    type: Boolean,
+    default: false
+  }
 })
 
 const page = usePage()
@@ -40,6 +45,10 @@ const messageType = ref('') // 'success' or 'error'
 // Confirmation modal state
 const showDeleteModal = ref(false)
 const deleteTarget = ref(null)
+
+// Status modal state
+const showStatusModal = ref(false)
+const selectedReport = ref(null)
 
 const showMessageWithType = (text, type = 'success') => {
   message.value = text
@@ -434,6 +443,50 @@ const editReportFromDropdown = () => {
   }
 }
 
+const handleAction = (action) => {
+  if (action === 'update-status') {
+    // Structure the report data to match what StatusModal expects (like an application object)
+    selectedReport.value = {
+      ...activeDropdownReport.value,
+      organization_name: `Activity Report - ${activeDropdownReport.value.original_filename}`,
+      status: activeDropdownReport.value.status ? 
+        (activeDropdownReport.value.status.charAt(0).toUpperCase() + activeDropdownReport.value.status.slice(1)) : 
+        'Pending'
+    }
+    showStatusModal.value = true
+  }
+  
+  // Close dropdown
+  activeDropdownReport.value = null
+  removeDropdownListeners()
+}
+
+const updateStatus = async (statusData) => {
+  try {
+    // Convert from capitalized to lowercase for backend
+    const statusMapping = {
+      'Pending': 'pending',
+      'Approved': 'approved', 
+      'Disapproved': 'disapproved'
+    }
+    
+    await router.put(`/applications/${props.application.id}/reports/${selectedReport.value.id}/status`, {
+      status: statusMapping[statusData.status] || statusData.status.toLowerCase(),
+      feedback: statusData.feedback || ''
+    })
+    
+    showMessageWithType(`Report status updated to ${statusData.status}`, 'success')
+    showStatusModal.value = false
+    selectedReport.value = null
+    
+    // Refresh the page to show updated data
+    router.reload({ only: ['activityPages'] })
+  } catch (error) {
+    console.error('Error updating report status:', error)
+    showMessageWithType('Failed to update report status', 'error')
+  }
+}
+
 const cancelEdit = () => {
   editingReport.value = null
   // Clear any selected editing files
@@ -816,6 +869,16 @@ onUnmounted(() => {
       @cancel="cancelDelete"
     />
 
+    <!-- Status Modal -->
+    <StatusModal
+      :show-modal="showStatusModal"
+      :application="selectedReport"
+      :is-admin="isAdmin"
+      :is-submitting="uploading"
+      @update-status="updateStatus"
+      @close="showStatusModal = false; selectedReport = null"
+    />
+
     <!-- Render the dropdown only once, outside the table -->
     <Teleport to="body">
       <div 
@@ -825,6 +888,18 @@ onUnmounted(() => {
         :style="{ top: `${dropdownPosition.top}px`, left: `${dropdownPosition.left}px`, visibility: activeDropdownReport ? 'visible' : 'hidden' }"
         @click.stop
       >
+        <!-- Admin-only Status Update Option -->
+        <button 
+          v-if="isAdmin"
+          @click="handleAction('update-status')"
+          class="w-full text-left px-3 py-1.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-600 dark:text-purple-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3-9a1 1 0 10-2 0v4a1 1 0 102 0V9z" clip-rule="evenodd" />
+            <path d="M10 6a1 1 0 100 2 1 1 0 000-2z" />
+          </svg>
+          Update Status
+        </button>
         <!-- Download Report -->
         <button 
           @click="viewReportFromDropdown()"

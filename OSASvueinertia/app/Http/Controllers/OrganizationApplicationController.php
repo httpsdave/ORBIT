@@ -1059,6 +1059,43 @@ class OrganizationApplicationController extends Controller
 }
 
     /**
+     * Update the status of an activity report
+     */
+    public function updateReportStatus(Request $request, OrganizationApplication $application, ActivityReport $report)
+    {
+        // Ensure only admins can update status
+        if (!auth()->user()->isAdmin()) {
+            if ($request->expectsJson()) {
+                return response()->json(['error' => 'Unauthorized. Only administrators can update report status.'], 403);
+            }
+            return redirect()->back()->with('error', 'Unauthorized. Only administrators can update report status.');
+        }
+
+        // Validate the request
+        $validated = $request->validate([
+            'status' => 'required|string|in:pending,approved,disapproved',
+            'feedback' => 'nullable|string|max:1000',
+        ]);
+
+        // Update the report
+        $report->status = $validated['status'];
+        $report->feedback = !empty($validated['feedback']) ? $validated['feedback'] : null;
+        $report->reviewed_by = auth()->id();
+        $report->reviewed_at = now();
+        $report->save();
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Report status updated successfully',
+                'report' => $report->fresh()
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Report status updated successfully');
+    }
+
+    /**
      * Save feedback for an application (API endpoint for SPA)
      */
     public function saveFeedback(Request $request, OrganizationApplication $application)
@@ -1805,7 +1842,8 @@ class OrganizationApplicationController extends Controller
                 'LSPU-OSAS-SF-ACCOMPLISHMENT' => 'Accomplishment Report',
                 'LSPU-OSAS-SF-EVAL' => 'Evaluation Summary',
                 'LSPU-OSAS-SF-009' => 'Activity Attendance Sheet',
-            ]
+            ],
+            'isAdmin' => auth()->user()->isAdmin()
         ]);
     }
 

@@ -17,11 +17,14 @@ class ActivityReport extends Model
         'original_filename',
         'status',
         'feedback',
+        'reviewed_by',
+        'reviewed_at',
         'submitted_at'
     ];
 
     protected $casts = [
         'submitted_at' => 'datetime',
+        'reviewed_at' => 'datetime',
     ];
 
     /**
@@ -30,6 +33,14 @@ class ActivityReport extends Model
     public function organizationApplication()
     {
         return $this->belongsTo(OrganizationApplication::class);
+    }
+
+    /**
+     * Get the user who reviewed this report.
+     */
+    public function reviewedBy()
+    {
+        return $this->belongsTo(User::class, 'reviewed_by');
     }
 
     /**
