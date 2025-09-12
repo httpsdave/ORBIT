@@ -701,8 +701,13 @@ const confirmClearData = () => {
             class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
           >
             <option value="">All Organizations</option>
-            <option v-for="option in organizationOptions" :key="option.value" :value="option.value">
-              {{ option.label }}
+            <option 
+              v-for="option in organizationOptions" 
+              :key="option.value" 
+              :value="option.value"
+              :title="option.label.length > 25 ? option.label : undefined"
+            >
+              {{ option.label.length > 25 ? option.label.substring(0, 25) + '...' : option.label }}
             </option>
           </select>
         </div>
@@ -733,8 +738,8 @@ const confirmClearData = () => {
         <span v-if="formTypeFilter" class="px-2 py-1 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 rounded-md text-xs truncate max-w-xs">
           Form: {{ formTypeFilter }}
         </span>
-        <span v-if="organizationFilter" class="px-2 py-1 bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 rounded-md text-xs truncate max-w-xs">
-          Organization: {{ organizationOptions.find(opt => opt.value === organizationFilter)?.label }}
+        <span v-if="organizationFilter" class="px-2 py-1 bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 rounded-md text-xs truncate max-w-xs" :title="organizationOptions.find(opt => opt.value === organizationFilter)?.label && organizationOptions.find(opt => opt.value === organizationFilter)?.label.length > 20 ? `Organization: ${organizationOptions.find(opt => opt.value === organizationFilter)?.label}` : undefined">
+          Organization: {{ organizationOptions.find(opt => opt.value === organizationFilter)?.label && organizationOptions.find(opt => opt.value === organizationFilter)?.label.length > 20 ? organizationOptions.find(opt => opt.value === organizationFilter)?.label.substring(0, 20) + '...' : organizationOptions.find(opt => opt.value === organizationFilter)?.label }}
         </span>
       </div>
     </div>

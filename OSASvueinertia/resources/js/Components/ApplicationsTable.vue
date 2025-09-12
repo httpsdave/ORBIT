@@ -638,7 +638,7 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
           </span>
         </div>
         <div class="flex flex-wrap gap-2 text-xs text-gray-500 dark:text-gray-400 font-medium">
-          <span v-if="isAdmin"><span class="font-semibold text-gray-700 dark:text-gray-200">Org:</span> {{ app.user.name }}</span>
+          <span v-if="isAdmin" :title="app.user.name.length > 20 ? `Organization: ${app.user.name}` : undefined"><span class="font-semibold text-gray-700 dark:text-gray-200">Org:</span> {{ app.user.name.length > 20 ? app.user.name.substring(0, 20) + '...' : app.user.name }}</span>
           <span><span class="font-semibold text-gray-700 dark:text-gray-200">Submitted:</span> {{ formatDate(app.created_at) }}</span>
         </div>
         <div class="flex flex-wrap gap-2 text-xs mt-1">
@@ -782,9 +782,9 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
           <div class="min-w-0 flex-1">
             <div class="font-medium text-base text-gray-900 dark:text-gray-100 truncate">
               {{ formTypeToName(app.form_type) }}
-              <span v-if="isAdmin" class="inline-flex items-center">
+              <span v-if="isAdmin" class="inline-flex items-center" :title="app.user.name.length > 25 ? ` ${app.user.name}` : undefined">
                 <svg class="mx-1 text-gray-400 dark:text-gray-500" width="10" height="10" viewBox="0 0 10 10" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style="display:inline"><polygon points="0,0 10,5 0,10"/></svg>
-                {{ app.user.name }}
+                {{ app.user.name.length > 25 ? app.user.name.substring(0, 25) + '...' : app.user.name }}
               </span>
             </div>
             <div class="text-sm text-gray-500 dark:text-gray-400 font-medium truncate">{{ app.form_type }}</div>
