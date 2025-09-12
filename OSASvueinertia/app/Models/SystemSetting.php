@@ -63,4 +63,20 @@ class SystemSetting extends Model
     {
         return static::set('director_name', $value, 'Default director name for forms');
     }
+
+    /**
+     * Check if image uploads are allowed
+     */
+    public static function allowImageUploads()
+    {
+        return (bool) static::get('allow_image_uploads', true);
+    }
+
+    /**
+     * Set image upload setting
+     */
+    public static function setAllowImageUploads($value)
+    {
+        return static::set('allow_image_uploads', $value ? '1' : '0', 'Allow image uploads in List of Members and List of Officers forms');
+    }
 }

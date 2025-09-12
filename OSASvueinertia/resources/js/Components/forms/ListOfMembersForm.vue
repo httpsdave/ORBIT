@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { useForm } from '@inertiajs/vue3';
+import { usePage } from '@inertiajs/vue3';
 import Modal from '@/Components/Modal.vue';
 
 const props = defineProps({
@@ -15,6 +16,12 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['submitted', 'error']);
+
+// Get current user data including system settings
+const page = usePage();
+const allowImageUploads = computed(() => {
+  return page.props.auth.user?.allow_image_uploads !== false;
+});
 
 // Compute current year and next year for placeholders
 const currentYear = computed(() => {
@@ -496,7 +503,7 @@ const submit = () => {
             <div v-for="rowIndex in 4" :key="`left-${rowIndex}`" class="flex mb-8" style="gap:8px;">
               <div v-if="startIndex + (rowIndex - 1) < form.members.length" class="w-full flex" style="gap:8px;">
                 <div class="photo-box border border-black w-[96px] h-[96px] flex items-center justify-center text-xs flex-shrink-0">
-                  <img v-if="getPhotoPreview(form.members[startIndex + (rowIndex - 1)])"
+                  <img v-if="allowImageUploads && getPhotoPreview(form.members[startIndex + (rowIndex - 1)])"
                        :src="getPhotoPreview(form.members[startIndex + (rowIndex - 1)])"
                        alt="Member Photo"
                        class="w-[94px] h-[94px] object-cover">
@@ -532,7 +539,7 @@ const submit = () => {
             <div v-for="rowIndex in 4" :key="`right-${rowIndex}`" class="flex mb-8" style="gap:8px;">
               <div v-if="startIndex + (rowIndex - 1) + 4 < form.members.length" class="w-full flex" style="gap:8px;">
                 <div class="photo-box border border-black w-[96px] h-[96px] flex items-center justify-center text-xs flex-shrink-0">
-                  <img v-if="getPhotoPreview(form.members[startIndex + (rowIndex - 1) + 4])"
+                  <img v-if="allowImageUploads && getPhotoPreview(form.members[startIndex + (rowIndex - 1) + 4])"
                        :src="getPhotoPreview(form.members[startIndex + (rowIndex - 1) + 4])"
                        alt="Member Photo"
                        class="w-[94px] h-[94px] object-cover">
@@ -866,7 +873,7 @@ const submit = () => {
                         <div v-if="errors[`member_${startIndex + idx}_course`]" class="text-red-500 text-sm mt-1">{{ errors[`member_${startIndex + idx}_course`] }}</div>
                     </div>
 
-                    <div>
+                    <div v-if="allowImageUploads">
                         <label class="block font-bold">1x1 Photo</label>
                         <input type="file" @change="event => handlePhotoUpload(event, startIndex + idx)" class="border p-2 w-full" accept="image/*">
                         <div v-if="getPhotoPreview(member)" class="mt-2">

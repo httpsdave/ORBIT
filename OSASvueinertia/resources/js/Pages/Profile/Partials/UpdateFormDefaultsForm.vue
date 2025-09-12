@@ -11,12 +11,14 @@ const user = usePage().props.auth.user;
 const form = useForm({
     coordinator_name: user.coordinator_name || '',
     director_name: user.director_name || '',
+    allow_image_uploads: user.allow_image_uploads !== undefined ? user.allow_image_uploads : true,
 });
 
 const isEditing = ref(false);
 const originalDefaults = ref({
     coordinator_name: user.coordinator_name || '',
     director_name: user.director_name || '',
+    allow_image_uploads: user.allow_image_uploads !== undefined ? user.allow_image_uploads : true,
 });
 
 // Watch for changes in user data and update form values
@@ -25,9 +27,11 @@ watch(() => user, (newUser) => {
     if (newUser) {
         form.coordinator_name = newUser.coordinator_name || '';
         form.director_name = newUser.director_name || '';
+        form.allow_image_uploads = newUser.allow_image_uploads !== undefined ? newUser.allow_image_uploads : true;
         originalDefaults.value = {
             coordinator_name: newUser.coordinator_name || '',
             director_name: newUser.director_name || '',
+            allow_image_uploads: newUser.allow_image_uploads !== undefined ? newUser.allow_image_uploads : true,
         };
         isEditing.value = false;
     }
@@ -40,6 +44,7 @@ function startEdit() {
 function cancelEdit() {
     form.coordinator_name = originalDefaults.value.coordinator_name;
     form.director_name = originalDefaults.value.director_name;
+    form.allow_image_uploads = originalDefaults.value.allow_image_uploads;
     isEditing.value = false;
     form.clearErrors();
 }
@@ -84,6 +89,48 @@ function submit() {
                     placeholder="Enter director/chairperson name"
                 />
                 <InputError class="mt-2" :message="form.errors.director_name" />
+            </div>
+        </div>
+
+        <!-- Image Upload Settings -->
+        <div class="border-t border-gray-200 dark:border-gray-600 pt-6">
+            <h4 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Form Settings</h4>
+            
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex-1">
+                        <InputLabel for="allow_image_uploads" value="Allow Image Uploads" class="text-gray-700 dark:text-gray-300 font-medium" />
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                            Enable or disable image upload functionality in List of Members and List of Officers forms
+                        </p>
+                    </div>
+                    <div class="ml-4">
+                        <div class="relative inline-flex items-center">
+                            <input 
+                                id="allow_image_uploads"
+                                type="checkbox" 
+                                v-model="form.allow_image_uploads"
+                                :disabled="!isEditing"
+                                class="sr-only"
+                            />
+                            <label 
+                                for="allow_image_uploads" 
+                                :class="[
+                                    'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2',
+                                    form.allow_image_uploads ? 'bg-amber-500' : 'bg-gray-200',
+                                    !isEditing ? 'opacity-50 cursor-not-allowed' : ''
+                                ]"
+                            >
+                                <span 
+                                    :class="[
+                                        'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
+                                        form.allow_image_uploads ? 'translate-x-5' : 'translate-x-0'
+                                    ]"
+                                ></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 

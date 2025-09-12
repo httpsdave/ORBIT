@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { useForm } from '@inertiajs/vue3';
+import { usePage } from '@inertiajs/vue3';
 import Modal from '@/Components/Modal.vue';
 
 const props = defineProps({
@@ -12,6 +13,12 @@ const props = defineProps({
     type: Boolean,
     default: false
   }
+});
+
+// Get current user data including system settings
+const page = usePage();
+const allowImageUploads = computed(() => {
+  return page.props.auth.user?.allow_image_uploads !== false;
 });
 
 // Compute current year and next year for placeholders
@@ -393,7 +400,7 @@ const submit = () => {
       <!-- Officers list with pagination -->
       <div v-for="(officer, index) in currentPageOfficers" :key="startIndex + index" class="officer-row mb-8 clearfix">
         <div class="photo-box border border-black float-left mr-4 flex items-center justify-center text-xs">
-          <img v-if="getPhotoPreview(officer)" 
+          <img v-if="allowImageUploads && getPhotoPreview(officer)" 
                :src="getPhotoPreview(officer)" 
                alt="Officer Photo" 
                class="w-full h-full object-cover">
@@ -619,7 +626,7 @@ const submit = () => {
                     <div v-if="errors[`officer_${startIndex + idx}_student_number`]" class="text-red-500 text-sm mt-1">{{ errors[`officer_${startIndex + idx}_student_number`] }}</div>
                 </div>
 
-                <div>
+                <div v-if="allowImageUploads">
                     <label class="block font-bold">2x2 Photo</label>
                     <input type="file" @change="event => handlePhotoUpload(event, startIndex + idx, 'officers')" class="border p-2 w-full" accept="image/*">
                     <div v-if="getPhotoPreview(officer)" class="mt-2">

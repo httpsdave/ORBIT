@@ -95,11 +95,13 @@ class ProfileController extends Controller
         $validated = $request->validate([
             'coordinator_name' => 'nullable|string|max:255',
             'director_name' => 'nullable|string|max:255',
+            'allow_image_uploads' => 'boolean',
         ]);
 
         // Save to system settings instead of user model
         SystemSetting::setCoordinatorName($validated['coordinator_name'] ?? '');
         SystemSetting::setDirectorName($validated['director_name'] ?? '');
+        SystemSetting::setAllowImageUploads($validated['allow_image_uploads'] ?? true);
 
         return Redirect::route('profile.edit')->with('status', 'form-defaults-updated');
     }

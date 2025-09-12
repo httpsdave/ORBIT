@@ -55,6 +55,7 @@ class HandleInertiaRequests extends Middleware
                     'social_links' => $user->social_links, // Added social_links field
                     'coordinator_name' => SystemSetting::getCoordinatorName(), // Get from system settings
                     'director_name' => SystemSetting::getDirectorName(), // Get from system settings
+                    'allow_image_uploads' => SystemSetting::allowImageUploads(), // Get from system settings
                     'last_name_change_at' => $user->last_name_change_at,
                     'email_verified_at' => $user->email_verified_at,
                 ] : null,
