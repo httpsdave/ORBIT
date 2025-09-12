@@ -200,13 +200,12 @@ const handleReportContainerClick = (report, event) => {
 }
 
 const getStatusBadgeClass = (status) => {
-  switch (status) {
+  switch (status?.toLowerCase()) {
     case 'pending':
       return 'bg-gray-100 text-gray-800'
-    case 'submitted':
-      return 'bg-blue-100 text-blue-800'
     case 'approved':
       return 'bg-green-100 text-green-800'
+    case 'disapproved':
     case 'rejected':
       return 'bg-red-100 text-red-800'
     default:
@@ -446,12 +445,19 @@ const editReportFromDropdown = () => {
 const handleAction = (action) => {
   if (action === 'update-status') {
     // Structure the report data to match what StatusModal expects (like an application object)
+    // Convert lowercase status to capitalized for display
+    let displayStatus = 'Pending'
+    if (activeDropdownReport.value.status) {
+      const status = activeDropdownReport.value.status.toLowerCase()
+      if (status === 'approved') displayStatus = 'Approved'
+      else if (status === 'disapproved' || status === 'rejected') displayStatus = 'Disapproved'
+      else displayStatus = 'Pending'
+    }
+    
     selectedReport.value = {
       ...activeDropdownReport.value,
       organization_name: `Activity Report - ${activeDropdownReport.value.original_filename}`,
-      status: activeDropdownReport.value.status ? 
-        (activeDropdownReport.value.status.charAt(0).toUpperCase() + activeDropdownReport.value.status.slice(1)) : 
-        'Pending'
+      status: displayStatus
     }
     showStatusModal.value = true
   }
@@ -463,15 +469,8 @@ const handleAction = (action) => {
 
 const updateStatus = async (statusData) => {
   try {
-    // Convert from capitalized to lowercase for backend
-    const statusMapping = {
-      'Pending': 'pending',
-      'Approved': 'approved', 
-      'Disapproved': 'disapproved'
-    }
-    
     await router.put(`/applications/${props.application.id}/reports/${selectedReport.value.id}/status`, {
-      status: statusMapping[statusData.status] || statusData.status.toLowerCase(),
+      status: statusData.status,
       feedback: statusData.feedback || ''
     })
     

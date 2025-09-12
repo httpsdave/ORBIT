@@ -48,7 +48,7 @@ class ActivityReport extends Model
      */
     public function isSubmitted()
     {
-        return $this->status !== 'pending' && !is_null($this->submitted_at);
+        return !in_array($this->status, ['Pending', 'pending']) && !is_null($this->submitted_at);
     }
 
     /**
@@ -56,11 +56,10 @@ class ActivityReport extends Model
      */
     public function getStatusColorAttribute()
     {
-        return match($this->status) {
+        return match(strtolower($this->status)) {
             'pending' => 'text-gray-500 bg-gray-100',
-            'submitted' => 'text-blue-600 bg-blue-100',
             'approved' => 'text-green-600 bg-green-100',
-            'rejected' => 'text-red-600 bg-red-100',
+            'disapproved', 'rejected' => 'text-red-600 bg-red-100',
             default => 'text-gray-500 bg-gray-100'
         };
     }

@@ -1073,7 +1073,7 @@ class OrganizationApplicationController extends Controller
 
         // Validate the request
         $validated = $request->validate([
-            'status' => 'required|string|in:pending,approved,disapproved',
+            'status' => 'required|string|in:Pending,Approved,Disapproved',
             'feedback' => 'nullable|string|max:1000',
         ]);
 
