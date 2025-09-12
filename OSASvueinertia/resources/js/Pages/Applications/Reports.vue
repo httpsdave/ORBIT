@@ -202,12 +202,12 @@ const handleReportContainerClick = (report, event) => {
 const getStatusBadgeClass = (status) => {
   switch (status?.toLowerCase()) {
     case 'pending':
-      return 'bg-gray-100 text-gray-800'
+      return 'bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300';
     case 'approved':
-      return 'bg-green-100 text-green-800'
+      return 'bg-green-100 text-green-800';
     case 'disapproved':
     case 'rejected':
-      return 'bg-red-100 text-red-800'
+      return 'bg-red-100 text-red-800';
     default:
       return 'bg-gray-100 text-gray-800'
   }
@@ -830,7 +830,7 @@ onUnmounted(() => {
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
                       <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                        <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
                       </svg>
                       <span class="truncate">{{ uploading && uploadingFor === `${page.pageNumber}-${reportType}` ? 'Uploading...' : 'Upload Report' }}</span>
                     </button>
