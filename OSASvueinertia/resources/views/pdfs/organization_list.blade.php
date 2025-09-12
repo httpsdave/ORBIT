@@ -558,7 +558,7 @@
                                 }
                                 $fontSize = strlen($fullAdviserName) > 30 ? '11px' : (strlen($fullAdviserName) > 20 ? '12px' : '13px');
                             @endphp
-                            <span class="date-signature-line" style="display: block; min-width: 200px; text-align: center; font-size: {{ $fontSize }};"><strong>{{ $fullAdviserName }}</strong></span>
+                            <span class="date-signature-line" style="display: block; min-width: 200px; text-align: center; font-size: 12pt;"><strong>{{ $fullAdviserName }}</strong></span>
                         </p>
                         <p style="margin-top: 2px; text-align: center;">Organization Adviser</p>
                     </div>
@@ -581,7 +581,7 @@
                                 }
                                 $secondAdviserFontSize = strlen($fullSecondAdviserName) > 30 ? '11px' : (strlen($fullSecondAdviserName) > 20 ? '12px' : '13px');
                             @endphp
-                                <span class="date-signature-line" style="display: block; min-width: 200px; text-align: center; font-size: {{ $secondAdviserFontSize }}; height: 1.2em;"><strong>{!! $fullSecondAdviserName ?: '&nbsp;' !!}</strong></span>
+                                <span class="date-signature-line" style="display: block; min-width: 200px; text-align: center; font-size: 12pt; height: 1.2em;"><strong>{!! $fullSecondAdviserName ?: '&nbsp;' !!}</strong></span>
                         </p>
                         <p style="margin-top: 2px; text-align: center;">Organization Adviser</p>
                     </div>
@@ -605,7 +605,7 @@
                 }
                 $deanFontSize = strlen($fullDeanName) > 30 ? '11px' : (strlen($fullDeanName) > 20 ? '12px' : '13px');
             @endphp
-            <p style="margin-bottom: 0; text-align: center !important; margin-top: -3px;"><span class="date-signature-line" style="display: inline-block; min-width: 180px; font-size: {{ $deanFontSize }};"><strong>{{ $fullDeanName }}</strong></span></p>
+            <p style="margin-bottom: 0; text-align: center !important; margin-top: -3px;"><span class="date-signature-line" style="display: inline-block; min-width: 180px; font-size: 12pt;"><strong>{{ $fullDeanName }}</strong></span></p>
             <p style="margin-top: 3px; font-weight: normal; margin-left: 0 !important; text-align: center !important;">Dean/Assoc. Dean of College</p>
         </div>
 
@@ -828,7 +828,7 @@
                                     }
                                     $fontSize2 = strlen($fullAdviserName2) > 30 ? '11px' : (strlen($fullAdviserName2) > 20 ? '12px' : '13px');
                                 @endphp
-                                <span class="date-signature-line" style="display: block; min-width: 200px; text-align: center; font-size: {{ $fontSize2 }};"><strong>{{ $fullAdviserName2 }}</strong></span>
+                                <span class="date-signature-line" style="display: block; min-width: 200px; text-align: center; font-size: 12pt;"><strong>{{ $fullAdviserName2 }}</strong></span>
                             </p>
                             <p style="margin-top: 2px; text-align: center; font-weight: normal;">Organization Adviser</p>
                         </div>
@@ -851,7 +851,7 @@
                                     }
                                     $secondAdviserFontSize2 = strlen($fullSecondAdviserName2) > 30 ? '11px' : (strlen($fullSecondAdviserName2) > 20 ? '12px' : '13px');
                                 @endphp
-                                    <span class="date-signature-line" style="display: block; min-width: 200px; text-align: center; font-size: {{ $secondAdviserFontSize2 }}; height: 1.2em;"><strong>{!! $fullSecondAdviserName2 ?: '&nbsp;' !!}</strong></span>
+                                    <span class="date-signature-line" style="display: block; min-width: 200px; text-align: center; font-size: 12pt; height: 1.2em;"><strong>{!! $fullSecondAdviserName2 ?: '&nbsp;' !!}</strong></span>
                             </p>
                             <p style="margin-top: 2px; text-align: center; font-weight: normal;">Organization Adviser</p>
                         </div>
@@ -875,7 +875,7 @@
                     }
                     $deanFontSize2 = strlen($fullDeanName2) > 30 ? '11px' : (strlen($fullDeanName2) > 20 ? '12px' : '13px');
                 @endphp
-                <p style="margin-bottom: 0; text-align: center !important; margin-top: -3px;"><span class="date-signature-line" style="display: inline-block; min-width: 180px; font-size: {{ $deanFontSize2 }};"><strong>{{ $fullDeanName2 }}</strong></span></p>
+                <p style="margin-bottom: 0; text-align: center !important; margin-top: -3px;"><span class="date-signature-line" style="display: inline-block; min-width: 180px; font-size: 12pt;"><strong>{{ $fullDeanName2 }}</strong></span></p>
                 <p style="margin-top: 3px; font-weight: normal; margin-left: 0 !important; text-align: center !important;">Dean/Assoc. Dean of College</p>
             </div>
 
