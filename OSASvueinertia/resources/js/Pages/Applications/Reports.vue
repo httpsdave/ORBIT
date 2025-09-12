@@ -489,6 +489,8 @@ const handleAction = (action) => {
       status: displayStatus
     }
     showStatusModal.value = true
+  } else if (action === 'view-feedback') {
+    viewFeedback(activeDropdownReport.value)
   }
   
   // Close dropdown
@@ -508,11 +510,33 @@ const updateStatus = async (statusData) => {
     selectedReport.value = null
     
     // Refresh the page to show updated data
-    router.reload({ only: ['activityPages'] })
+    router.reload()
   } catch (error) {
     console.error('Error updating report status:', error)
     showMessageWithType('Failed to update report status', 'error')
   }
+}
+
+// Add new method for viewing feedback
+const viewFeedback = (report) => {
+  // Close any open dropdowns
+  activeDropdownReport.value = null
+  removeDropdownListeners()
+  
+  // Navigate to the feedback view page (like ApplicationsTable.vue)
+  router.visit(`/applications/${props.application.id}/reports/${report.id}/feedback`)
+}
+
+// Helper function to properly check if feedback exists
+const hasFeedback = (report) => {
+  if (!report || !report.feedback) return false
+  
+  // Check if feedback is a string and has content after trimming
+  if (typeof report.feedback === 'string') {
+    return report.feedback.trim().length > 0
+  }
+  
+  return false
 }
 
 const cancelEdit = () => {
@@ -956,6 +980,17 @@ watch(showStatusModal, (val) => {
             <path fill-rule="evenodd" d="M8 10a4 4 0 00-3.446 6.032l-1.261 1.26a1 1 0 101.415 1.415l1.261-1.261A4 4 0 006 10z" clip-rule="evenodd" />
           </svg>
           View Report
+        </button>
+        <!-- View Feedback -->
+        <button 
+          v-if="hasFeedback(activeDropdownReport)"
+          @click="handleAction('view-feedback')"
+          class="w-full text-left px-3 py-1.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200 font-medium"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-600 dark:text-purple-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd" />
+          </svg>
+          View Feedback
         </button>
         <!-- Edit Report -->
         <button 

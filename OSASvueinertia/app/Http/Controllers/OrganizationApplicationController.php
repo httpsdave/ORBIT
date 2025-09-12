@@ -1092,7 +1092,17 @@ class OrganizationApplicationController extends Controller
             ]);
         }
 
-        return redirect()->back()->with('success', 'Report status updated successfully');
+        // For Inertia requests, return the same page with updated data
+        if ($request->header('X-Inertia')) {
+            return back()->with([
+                'success' => 'Report status updated successfully',
+                'report' => $report->fresh(),
+            ]);
+        }
+
+        // Redirect back to reports page with success message
+        return redirect()->route('applications.reports', $application)
+            ->with('success', 'Report status updated successfully');
     }
 
     /**
@@ -2082,5 +2092,28 @@ class OrganizationApplicationController extends Controller
             return redirect()->back()
                 ->with('error', 'Failed to delete report. Please try again.');
         }
+    }
+
+    /**
+     * Show the report feedback view page
+     */
+    public function showReportFeedback(OrganizationApplication $application, ActivityReport $report)
+    {
+        // Ensure user owns this application or is admin
+        if (!auth()->user()->isAdmin() && $application->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized access to this application.');
+        }
+
+        // Ensure this report belongs to this application
+        if ($report->organization_application_id !== $application->id) {
+            abort(404, 'Report not found for this application.');
+        }
+
+        return Inertia::render('ReportFeedbackView', [
+            'application' => $application,
+            'report' => $report,
+            'backUrl' => route('applications.reports', $application),
+            'isAdmin' => auth()->user()->isAdmin(),
+        ]);
     }
 }
