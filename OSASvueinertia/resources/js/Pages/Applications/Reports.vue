@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { Head, router, usePage } from '@inertiajs/vue3'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
 import StatusBanner from '@/Components/StatusBanner.vue'
@@ -49,6 +49,10 @@ const deleteTarget = ref(null)
 // Status modal state
 const showStatusModal = ref(false)
 const selectedReport = ref(null)
+
+// Preview modal state
+const showPreviewModal = ref(false)
+const previewReport = ref(null)
 
 const showMessageWithType = (text, type = 'success') => {
   message.value = text
@@ -179,8 +183,16 @@ const downloadReport = (report) => {
 
 const viewReport = (report) => {
   if (report.file_path) {
-    // Open report for viewing (not downloading) in new tab
-    window.open(`/applications/${props.application.id}/reports/${report.id}/download?action=view`, '_blank')
+    // Device detection for mobile vs desktop
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 640;
+    
+    if (isMobile) {
+      // Open report in new tab for mobile
+      window.open(`/applications/${props.application.id}/reports/${report.id}/download?action=view`, '_blank')
+    } else {
+      // Use modal for desktop
+      openPreviewModal(report)
+    }
   }
 }
 
@@ -370,10 +382,27 @@ const closeDropdowns = (event) => {
   }
 }
 
+// Preview modal functions
+const openPreviewModal = (report) => {
+  previewReport.value = report
+  showPreviewModal.value = true
+}
+
+const closePreviewModal = () => {
+  showPreviewModal.value = false
+  previewReport.value = null
+}
+
+const openPreviewInNewWindow = () => {
+  if (previewReport.value && previewReport.value.file_path) {
+    window.open(`/applications/${props.application.id}/reports/${previewReport.value.id}/download?action=view`, '_blank')
+  }
+}
+
 // Dropdown action handlers
 const viewReportFromDropdown = () => {
   if (activeDropdownReport.value) {
-    downloadReport(activeDropdownReport.value)
+    viewReport(activeDropdownReport.value)
     activeDropdownReport.value = null
   }
 }
@@ -562,6 +591,24 @@ const updateReport = async (reportId, activityPageNumber, reportType) => {
 onUnmounted(() => {
   document.removeEventListener('click', closeDropdowns)
   removeDropdownListeners()
+})
+
+// Watch for modal open/close to lock body scroll
+watch(showPreviewModal, (val) => {
+  if (val) {
+    document.body.classList.add('overflow-hidden')
+  } else {
+    document.body.classList.remove('overflow-hidden')
+  }
+})
+
+// Watch for status modal open/close to lock body scroll
+watch(showStatusModal, (val) => {
+  if (val) {
+    document.body.classList.add('overflow-hidden')
+  } else {
+    document.body.classList.remove('overflow-hidden')
+  }
 })
 </script>
 
@@ -899,15 +946,16 @@ onUnmounted(() => {
           </svg>
           Update Status
         </button>
-        <!-- Download Report -->
+        <!-- View Report -->
         <button 
           @click="viewReportFromDropdown()"
           class="w-full text-left px-3 py-1.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200 font-medium"
         >
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600 dark:text-blue-400" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+            <path fill-rule="evenodd" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" clip-rule="evenodd" />
+            <path fill-rule="evenodd" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" clip-rule="evenodd" />
           </svg>
-          Download Report
+          View Report
         </button>
         <!-- Edit Report -->
         <button 
@@ -931,6 +979,65 @@ onUnmounted(() => {
         </button>
       </div>
     </Teleport>
+
+    <!-- PDF Preview Modal -->
+    <transition name="fade">
+      <div v-if="showPreviewModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60" @click="closePreviewModal">
+        <div
+          class="relative bg-transparent shadow-2xl flex flex-col w-[95vw] max-w-4xl md:w-[70vw] md:max-w-3xl lg:w-[60vw] lg:max-w-4xl xl:w-[50vw] xl:max-w-5xl h-[75vh] md:h-[85vh] lg:h-[90vh] xl:h-[95vh] max-h-[95vh] overflow-hidden border border-transparent"
+          @click.stop
+        >
+          <!-- Close Button: floating at top-right, outside header -->
+          <button
+            @click="closePreviewModal"
+            class="absolute top-4 right-4 flex items-center justify-center text-white hover:text-gray-200 focus:outline-none transition z-20 opacity-90"
+            title="Close Preview"
+            aria-label="Close Preview"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+          <!-- Header -->
+          <div class="flex items-center justify-between px-4 py-3 pr-16 bg-transparent relative">
+            <div class="font-semibold text-gray-200 text-base truncate opacity-90">
+              {{ previewReport ? `${previewReport.report_type} Report - ${previewReport.original_filename}` : 'Report Preview' }}
+            </div>
+            <div class="flex items-center gap-2">
+              <button
+                v-if="previewReport"
+                @click="openPreviewInNewWindow"
+                class="inline-flex items-center justify-center px-4 py-2 bg-blue-500 text-sm font-medium text-white rounded-xl shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group"
+                title="Open in New Window"
+                aria-label="Open in New Window"
+              >
+                <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 3h7v7m0 0L10 21l-7-7 11-11z" />
+                </svg>
+                New Window
+              </button>
+            </div>
+          </div>
+          <!-- PDF Iframe -->
+          <div class="flex-1 w-full h-full flex items-center justify-center bg-gray-100">
+            <iframe
+              v-if="previewReport && previewReport.file_path"
+              :src="`/applications/${props.application.id}/reports/${previewReport.id}/download?action=view`"
+              class="w-full h-full border-0 bg-white"
+              style="min-height: 300px;"
+              allowfullscreen
+            ></iframe>
+            <div v-else class="text-gray-500 text-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto mb-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <p class="text-lg">No report file available</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </transition>
   </AuthenticatedLayout>
 </template>
 
@@ -1000,5 +1107,16 @@ onUnmounted(() => {
 
 .drag-zone-active {
   animation: pulse-blue 1.5s ease-in-out infinite;
+}
+
+/* Fade transition for modals */
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.2s;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+}
+.fade-enter-to, .fade-leave-from {
+  opacity: 1;
 }
 </style>
