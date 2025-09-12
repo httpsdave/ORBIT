@@ -1852,57 +1852,95 @@ class OrganizationApplicationController extends Controller
      */
     public function storeReport(Request $request, OrganizationApplication $application)
     {
-        // Ensure this is a Plan of Activities form
-        if ($application->form_type !== 'LSPU-OSAS-SF-004') {
-            abort(404, 'Reports are only available for Plan of Activities submissions.');
-        }
+        try {
+            \Log::info('Report upload started', [
+                'application_id' => $application->id,
+                'user_id' => auth()->id(),
+                'form_type' => $application->form_type,
+                'request_data' => $request->except(['report_file'])
+            ]);
 
-        // Ensure user owns this application or is admin
-        if (!auth()->user()->isAdmin() && $application->user_id !== auth()->id()) {
-            abort(403, 'Unauthorized access to this application.');
-        }
-
-        $request->validate([
-            'activity_page_number' => 'required|integer|min:1',
-            'report_type' => 'required|in:LSPU-OSAS-SF-FINANCIAL,LSPU-OSAS-SF-NARRATIVE,LSPU-OSAS-SF-ACCOMPLISHMENT,LSPU-OSAS-SF-EVAL,LSPU-OSAS-SF-009',
-            'report_file' => 'required|file|mimes:pdf|max:20480', // 20MB max, PDF only
-        ]);
-
-        // Check if report already exists for this activity page and type
-        $existingReport = $application->activityReports()
-            ->where('activity_page_number', $request->activity_page_number)
-            ->where('report_type', $request->report_type)
-            ->first();
-
-        if ($existingReport) {
-            // Delete old file if it exists
-            if ($existingReport->file_path && Storage::exists($existingReport->file_path)) {
-                Storage::delete($existingReport->file_path);
+            // Ensure this is a Plan of Activities form
+            if ($application->form_type !== 'LSPU-OSAS-SF-004') {
+                abort(404, 'Reports are only available for Plan of Activities submissions.');
             }
-        }
 
-        // Store the uploaded file
-        $file = $request->file('report_file');
-        $filename = time() . '_' . $file->getClientOriginalName();
-        $filePath = $file->storeAs('activity_reports', $filename, 'public');
+            // Ensure user owns this application or is admin
+            if (!auth()->user()->isAdmin() && $application->user_id !== auth()->id()) {
+                abort(403, 'Unauthorized access to this application.');
+            }
 
-        // Create or update the report
-        $report = $application->activityReports()->updateOrCreate(
-            [
+            $request->validate([
+                'activity_page_number' => 'required|integer|min:1',
+                'report_type' => 'required|in:LSPU-OSAS-SF-FINANCIAL,LSPU-OSAS-SF-NARRATIVE,LSPU-OSAS-SF-ACCOMPLISHMENT,LSPU-OSAS-SF-EVAL,LSPU-OSAS-SF-009',
+                'report_file' => 'required|file|mimes:pdf|max:20480', // 20MB max, PDF only
+            ]);
+
+            \Log::info('Validation passed', [
+                'application_id' => $application->id,
                 'activity_page_number' => $request->activity_page_number,
-                'report_type' => $request->report_type,
-            ],
-            [
-                'file_path' => $filePath,
-                'original_filename' => $file->getClientOriginalName(),
-                'status' => 'submitted',
-                'submitted_at' => now(),
-            ]
-        );
+                'report_type' => $request->report_type
+            ]);
 
-        // Redirect back to reports page with success message
-        return redirect()->route('applications.reports', $application)
-            ->with('success', 'Report uploaded successfully!');
+            // Check if report already exists for this activity page and type
+            $existingReport = $application->activityReports()
+                ->where('activity_page_number', $request->activity_page_number)
+                ->where('report_type', $request->report_type)
+                ->first();
+
+            if ($existingReport) {
+                // Delete old file if it exists - use the same disk consistently
+                if ($existingReport->file_path && Storage::disk('local')->exists($existingReport->file_path)) {
+                    Storage::disk('local')->delete($existingReport->file_path);
+                }
+            }
+
+            // Store the uploaded file - use local disk consistently for production
+            $file = $request->file('report_file');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $filePath = $file->storeAs('activity_reports', $filename, 'local');
+
+            \Log::info('File stored successfully', [
+                'application_id' => $application->id,
+                'file_path' => $filePath,
+                'original_filename' => $file->getClientOriginalName()
+            ]);
+
+            // Create or update the report
+            $report = $application->activityReports()->updateOrCreate(
+                [
+                    'activity_page_number' => $request->activity_page_number,
+                    'report_type' => $request->report_type,
+                ],
+                [
+                    'file_path' => $filePath,
+                    'original_filename' => $file->getClientOriginalName(),
+                    'status' => 'Pending', // Use new enum value
+                    'submitted_at' => now(),
+                ]
+            );
+
+            \Log::info('Report record created/updated', [
+                'application_id' => $application->id,
+                'report_id' => $report->id
+            ]);
+
+            // Redirect back to reports page with success message
+            return redirect()->route('applications.reports', $application)
+                ->with('success', 'Report uploaded successfully!');
+                
+        } catch (\Exception $e) {
+            \Log::error('Report upload failed: ' . $e->getMessage(), [
+                'application_id' => $application->id,
+                'user_id' => auth()->id(),
+                'error' => $e->getTraceAsString(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile()
+            ]);
+            
+            return redirect()->back()
+                ->with('error', 'Failed to upload report. Please try again.');
+        }
     }
 
     /**
@@ -1910,30 +1948,42 @@ class OrganizationApplicationController extends Controller
      */
     public function downloadReport(OrganizationApplication $application, $reportId, Request $request)
     {
-        // Ensure this is a Plan of Activities form
-        if ($application->form_type !== 'LSPU-OSAS-SF-004') {
-            abort(404, 'Reports are only available for Plan of Activities submissions.');
+        try {
+            // Ensure this is a Plan of Activities form
+            if ($application->form_type !== 'LSPU-OSAS-SF-004') {
+                abort(404, 'Reports are only available for Plan of Activities submissions.');
+            }
+
+            // Ensure user owns this application or is admin
+            if (!auth()->user()->isAdmin() && $application->user_id !== auth()->id()) {
+                abort(403, 'Unauthorized access to this application.');
+            }
+
+            $report = $application->activityReports()->findOrFail($reportId);
+
+            // Check if file exists - use local disk consistently
+            if (!$report->file_path || !Storage::disk('local')->exists($report->file_path)) {
+                abort(404, 'File not found.');
+            }
+
+            // If action=view, return file for viewing in browser
+            if ($request->query('action') === 'view') {
+                $filePath = Storage::disk('local')->path($report->file_path);
+                return response()->file($filePath);
+            }
+
+            return Storage::disk('local')->download($report->file_path, $report->original_filename);
+            
+        } catch (\Exception $e) {
+            \Log::error('Report download failed: ' . $e->getMessage(), [
+                'application_id' => $application->id,
+                'report_id' => $reportId,
+                'user_id' => auth()->id(),
+                'error' => $e->getTraceAsString()
+            ]);
+            
+            abort(404, 'File not found or could not be accessed.');
         }
-
-        // Ensure user owns this application or is admin
-        if (!auth()->user()->isAdmin() && $application->user_id !== auth()->id()) {
-            abort(403, 'Unauthorized access to this application.');
-        }
-
-        $report = $application->activityReports()->findOrFail($reportId);
-
-        // Check if file exists
-        if (!$report->file_path || !Storage::exists($report->file_path)) {
-            abort(404, 'File not found.');
-        }
-
-        // If action=view, return file for viewing in browser
-        if ($request->query('action') === 'view') {
-            $filePath = Storage::path($report->file_path);
-            return response()->file($filePath);
-        }
-
-        return Storage::download($report->file_path, $report->original_filename);
     }
 
     /**
@@ -1941,41 +1991,54 @@ class OrganizationApplicationController extends Controller
      */
     public function updateReport(Request $request, OrganizationApplication $application, $reportId)
     {
-        // Ensure this is a Plan of Activities form
-        if ($application->form_type !== 'LSPU-OSAS-SF-004') {
-            abort(404, 'Reports are only available for Plan of Activities submissions.');
+        try {
+            // Ensure this is a Plan of Activities form
+            if ($application->form_type !== 'LSPU-OSAS-SF-004') {
+                abort(404, 'Reports are only available for Plan of Activities submissions.');
+            }
+
+            // Ensure user owns this application or is admin
+            if (!auth()->user()->isAdmin() && $application->user_id !== auth()->id()) {
+                abort(403, 'Unauthorized access to this application.');
+            }
+
+            $report = $application->activityReports()->findOrFail($reportId);
+
+            // Validate the uploaded file
+            $request->validate([
+                'report_file' => 'required|file|mimes:pdf|max:20480', // 20MB in KB
+            ]);
+
+            // Delete the old file from storage if it exists - use local disk consistently
+            if ($report->file_path && Storage::disk('local')->exists($report->file_path)) {
+                Storage::disk('local')->delete($report->file_path);
+            }
+
+            // Store the new file - use local disk consistently
+            $file = $request->file('report_file');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $path = $file->storeAs('activity_reports', $filename, 'local');
+
+            // Update the report record
+            $report->update([
+                'file_path' => $path,
+                'original_filename' => $file->getClientOriginalName(),
+                'submitted_at' => now(),
+            ]);
+
+            return redirect()->back()->with('success', 'Report updated successfully!');
+            
+        } catch (\Exception $e) {
+            \Log::error('Report update failed: ' . $e->getMessage(), [
+                'application_id' => $application->id,
+                'report_id' => $reportId,
+                'user_id' => auth()->id(),
+                'error' => $e->getTraceAsString()
+            ]);
+            
+            return redirect()->back()
+                ->with('error', 'Failed to update report. Please try again.');
         }
-
-        // Ensure user owns this application or is admin
-        if (!auth()->user()->isAdmin() && $application->user_id !== auth()->id()) {
-            abort(403, 'Unauthorized access to this application.');
-        }
-
-        $report = $application->activityReports()->findOrFail($reportId);
-
-        // Validate the uploaded file
-        $request->validate([
-            'report_file' => 'required|file|mimes:pdf|max:20480', // 20MB in KB
-        ]);
-
-        // Delete the old file from storage if it exists
-        if ($report->file_path && Storage::exists($report->file_path)) {
-            Storage::delete($report->file_path);
-        }
-
-        // Store the new file
-        $file = $request->file('report_file');
-        $filename = time() . '_' . $file->getClientOriginalName();
-        $path = $file->storeAs('activity_reports', $filename);
-
-        // Update the report record
-        $report->update([
-            'file_path' => $path,
-            'original_filename' => $file->getClientOriginalName(),
-            'submitted_at' => now(),
-        ]);
-
-        return redirect()->back()->with('success', 'Report updated successfully!');
     }
 
     /**
@@ -1983,28 +2046,41 @@ class OrganizationApplicationController extends Controller
      */
     public function deleteReport(OrganizationApplication $application, $reportId)
     {
-        // Ensure this is a Plan of Activities form
-        if ($application->form_type !== 'LSPU-OSAS-SF-004') {
-            abort(404, 'Reports are only available for Plan of Activities submissions.');
+        try {
+            // Ensure this is a Plan of Activities form
+            if ($application->form_type !== 'LSPU-OSAS-SF-004') {
+                abort(404, 'Reports are only available for Plan of Activities submissions.');
+            }
+
+            // Ensure user owns this application or is admin
+            if (!auth()->user()->isAdmin() && $application->user_id !== auth()->id()) {
+                abort(403, 'Unauthorized access to this application.');
+            }
+
+            $report = $application->activityReports()->findOrFail($reportId);
+
+            // Delete the file from storage - use local disk consistently
+            if ($report->file_path && Storage::disk('local')->exists($report->file_path)) {
+                Storage::disk('local')->delete($report->file_path);
+            }
+
+            // Delete the report record
+            $report->delete();
+
+            // Redirect back to reports page with success message
+            return redirect()->route('applications.reports', $application)
+                ->with('success', 'Report deleted successfully!');
+                
+        } catch (\Exception $e) {
+            \Log::error('Report deletion failed: ' . $e->getMessage(), [
+                'application_id' => $application->id,
+                'report_id' => $reportId,
+                'user_id' => auth()->id(),
+                'error' => $e->getTraceAsString()
+            ]);
+            
+            return redirect()->back()
+                ->with('error', 'Failed to delete report. Please try again.');
         }
-
-        // Ensure user owns this application or is admin
-        if (!auth()->user()->isAdmin() && $application->user_id !== auth()->id()) {
-            abort(403, 'Unauthorized access to this application.');
-        }
-
-        $report = $application->activityReports()->findOrFail($reportId);
-
-        // Delete the file from storage
-        if ($report->file_path && Storage::exists($report->file_path)) {
-            Storage::delete($report->file_path);
-        }
-
-        // Delete the report record
-        $report->delete();
-
-        // Redirect back to reports page with success message
-        return redirect()->route('applications.reports', $application)
-            ->with('success', 'Report deleted successfully!');
     }
 }
