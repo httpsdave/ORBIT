@@ -212,6 +212,28 @@ const removeMember = (index) => {
     form.members.splice(index, 1);
 };
 
+// Add function to clear all members
+const clearAllMembers = () => {
+    // Clean up all photo preview URLs
+    form.members.forEach(member => {
+        if (member.photo_preview) {
+            URL.revokeObjectURL(member.photo_preview);
+        }
+    });
+    
+    // Keep only the first member but clear its fields
+    form.members = [{
+        student_name: '',
+        student_number: '',
+        course_year_section: '',
+        photo_path: null,
+        photo_preview: null
+    }];
+    
+    // Reset to first page
+    currentPage.value = 1;
+};
+
 // Add a function to remove a member's photo
 const removeMemberPhoto = (index) => {
     // Clean up object URL if it exists
@@ -835,6 +857,13 @@ const submit = () => {
                             class="hidden"
                         >
                     </div>
+                    <!-- Clear All Members -->
+                    <button 
+                        @click="clearAllMembers" 
+                        type="button" 
+                        class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition-colors flex items-center gap-1">
+                        🗑️ Clear All
+                    </button>
                 </div>
             </div>
 

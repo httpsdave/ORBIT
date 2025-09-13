@@ -18,13 +18,13 @@
             <button
               type="button"
               @click="openUserSelectionModalForNewOrg"
-              class="flex items-center justify-center px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 shadow-sm text-sm font-medium w-full sm:w-auto"
+              class="flex items-center justify-center px-3 sm:px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 shadow-sm text-sm w-full sm:w-auto"
             >
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
               </svg>
-              <span class="hidden sm:inline">Add New Organization</span>
-              <span class="sm:hidden">Add Organization</span>
+              <span class="hidden xs:inline">Add New Organization</span>
+              <span class="xs:hidden">Add Organization</span>
             </button>
           </div>
         
