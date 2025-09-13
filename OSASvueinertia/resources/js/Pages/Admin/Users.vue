@@ -146,10 +146,10 @@ const deleteUser = () => {
             </h2>
         </template>
 
-        <div class="py-3 sm:py-6 md:py-12">
-            <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
-                    <div class="p-3 sm:p-4 lg:p-6">
+        <div class="py-3 sm:py-6 md:py-12 w-full">
+            <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 w-full">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg min-w-0 w-full">
+                    <div class="p-3 sm:p-4 lg:p-6 w-full">
                         <div class="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-gray-100 dark:border-gray-700">
                             <div>
                                 <h3 class="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100">
@@ -170,49 +170,49 @@ const deleteUser = () => {
                         </div>
                         
                         <!-- Mobile Card View (hidden on desktop) -->
-                        <div class="block md:hidden space-y-2 sm:space-y-3">
-                            <div v-for="user in users" :key="`mobile-${user.id}`" class="bg-white dark:bg-gray-700 rounded-lg p-3 border border-gray-200 dark:border-gray-600 shadow-sm hover:shadow-md transition-shadow duration-200">
+                        <div class="block md:hidden space-y-3">
+                            <div v-for="user in users" :key="`mobile-${user.id}`" class="bg-white dark:bg-gray-700 rounded-lg p-3 border border-gray-200 dark:border-gray-600 shadow-sm">
                                 <div class="flex items-start justify-between mb-3">
-                                    <div class="flex items-center space-x-2.5 flex-1 min-w-0">
+                                    <div class="flex items-center space-x-3 flex-1 min-w-0">
                                         <template v-if="user.profile_photo_url">
                                             <img
                                                 :src="user.profile_photo_url"
                                                 alt="Avatar"
-                                                class="w-9 h-9 xs:w-10 xs:h-10 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-blue-200 shadow-sm flex-shrink-0"
+                                                class="w-10 h-10 rounded-full object-cover border-2 border-blue-200 shadow-sm flex-shrink-0"
                                             />
                                         </template>
                                         <template v-else>
                                             <div
-                                                class="w-9 h-9 xs:w-10 xs:h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-blue-500 to-green-400 flex items-center justify-center text-white font-medium shadow-inner flex-shrink-0 text-xs xs:text-sm"
+                                                class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-green-400 flex items-center justify-center text-white font-medium shadow-inner flex-shrink-0 text-sm"
                                             >
                                                 {{ user.name.charAt(0).toUpperCase() }}
                                             </div>
                                         </template>
                                         <div class="min-w-0 flex-1">
-                                            <h4 class="font-medium text-gray-900 dark:text-gray-100 text-sm xs:text-base truncate">{{ user.name }}</h4>
-                                            <p class="text-xs xs:text-sm text-gray-500 dark:text-gray-400 truncate">{{ user.email }}</p>
+                                            <h4 class="font-medium text-gray-900 dark:text-gray-100 text-sm truncate">{{ user.name }}</h4>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400 break-words">{{ user.email }}</p>
                                         </div>
                                     </div>
-                                    <span class="px-1.5 xs:px-2 py-1 inline-flex text-xs leading-4 font-semibold rounded-full flex-shrink-0 ml-2"
+                                    <span class="px-2 py-1 text-xs font-semibold rounded-full flex-shrink-0"
                                           :class="user.role.slug === 'admin' ? 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200' : 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'">
-                                        <span class="xs:hidden">{{ user.role.name.charAt(0) }}</span>
-                                        <span class="hidden xs:inline">{{ user.role.name }}</span>
+                                        {{ user.role.name }}
                                     </span>
                                 </div>
-                                <div class="flex justify-end space-x-1.5 xs:space-x-2 pt-2 border-t border-gray-100 dark:border-gray-600">
+                                <div class="flex justify-end space-x-2 pt-2 border-t border-gray-100 dark:border-gray-600">
                                     <button 
                                         @click="confirmUserEdit(user)" 
-                                        class="flex items-center px-2 xs:px-3 py-1.5 text-xs font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors duration-150"
+                                        class="flex items-center px-3 py-1.5 text-xs font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg"
                                     >
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 xs:mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                         </svg>
-                                        <span class="hidden xs:inline">Edit</span>
+                                        Edit
                                     </button>
                                     <button 
                                         @click="confirmUserDeletion(user)" 
-                                        class="flex items-center px-2 xs:px-3 py-1.5 text-xs font-medium text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors duration-150"
+                                        class="flex items-center px-3 py-1.5 text-xs font-medium text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg"
                                         v-if="user.id !== $page.props.auth.user.id"
+                                    >
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 xs:mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />

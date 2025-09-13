@@ -360,7 +360,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="flex min-h-screen bg-gray-50 dark:bg-gray-900 relative">
+  <div class="flex min-h-screen bg-gray-50 dark:bg-gray-900 relative overflow-x-hidden w-full">
     <!-- Fixed header for both desktop and mobile that spans the entire width -->
     <header class="fixed top-0 left-0 right-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm z-40 h-16">
       <div class="px-3 sm:px-4 md:px-6 h-full flex items-center justify-between">
@@ -637,13 +637,13 @@ onUnmounted(() => {
     <!-- Main Content - with additional top padding to account for the fixed header -->
     <div 
         :class="[
-          'flex-1 flex flex-col pt-16',
+          'flex-1 flex flex-col pt-16 overflow-x-hidden w-full min-w-0',
           // Push content only when expanded via toggle button
           (sidebarExpanded && expandedViaToggle) ? 'md:ml-64' : 'md:ml-20'
         ]"
       >
       <!-- Page Content -->
-      <main class="flex-1 bg-gray-50 dark:bg-gray-900 relative p-4 sm:p-6 pb-8">
+      <main class="flex-1 bg-gray-50 dark:bg-gray-900 relative p-4 sm:p-6 pb-8 overflow-x-hidden w-full min-w-0">
         <!-- Content provided via slot -->
         <slot></slot>
       </main>
