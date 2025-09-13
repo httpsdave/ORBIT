@@ -102,9 +102,9 @@ const downloadCSVTemplate = () => {
     // Create CSV content with headers and sample data
     const csvContent = [
         'Student Name,Student Number,Course- Year & Section,Do Not Fill beyond this point',
-        'First Name, M.I., Last Name,0325-0001,BSCS-4IS1,',
-        'First Name, M.I., Last Name,0325-0002,BSCS-4IS2,',
-        'First Name, M.I., Last Name,0325-0003,BSCS-4GAV1,',
+        'First Name M.I. Last Name,0325-0001,BSCS-4IS1,',
+        'First Name M.I. Last Name,0325-0002,BSCS-4IS2,',
+        'First Name M.I. Last Name,0325-0003,BSCS-4GAV1,',
         ',,,'
     ].join('\n');
     
