@@ -424,7 +424,7 @@
                                             @if($leftMember && $leftMember->student_name && $leftMember->student_name !== 'Sample Data')
                                                 @php
                                                     if (strlen($leftMember->student_name) > 27) {
-                                                        $studentNameFontSize = '8pt';
+                                                        $studentNameFontSize = '9pt';
                                                     } elseif (strlen($leftMember->student_name) > 22) {
                                                         $studentNameFontSize = '9pt';
                                                     } else {
@@ -499,7 +499,7 @@
                                                 @if($rightMember && $rightMember->student_name && $rightMember->student_name !== 'Sample Data')
                                                     @php
                                                         if (strlen($rightMember->student_name) > 27) {
-                                                            $studentNameFontSize = '8pt';
+                                                            $studentNameFontSize = '9pt';
                                                         } elseif (strlen($rightMember->student_name) > 22) {
                                                             $studentNameFontSize = '9pt';
                                                         } else {
@@ -712,7 +712,7 @@
                                                 @if($leftMember && $leftMember->student_name)
                                                     @php
                                                         if (strlen($leftMember->student_name) > 27) {
-                                                            $studentNameFontSize = '8pt';
+                                                            $studentNameFontSize = '9pt';
                                                         } elseif (strlen($leftMember->student_name) > 22) {
                                                             $studentNameFontSize = '9pt';
                                                         } else {
@@ -787,7 +787,7 @@
                                                 @if($rightMember && $rightMember->student_name)
                                                     @php
                                                         if (strlen($rightMember->student_name) > 27) {
-                                                            $studentNameFontSize = '8pt';
+                                                            $studentNameFontSize = '9pt';
                                                         } elseif (strlen($rightMember->student_name) > 22) {
                                                             $studentNameFontSize = '9pt';
                                                         } else {
