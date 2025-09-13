@@ -93,6 +93,28 @@ const removeOfficer = (index) => {
     form.officers.splice(index, 1);
 };
 
+// Add function to clear all officers
+const clearAllOfficers = () => {
+    // Clean up all photo preview URLs
+    form.officers.forEach(officer => {
+        if (officer.photo_preview) {
+            URL.revokeObjectURL(officer.photo_preview);
+        }
+    });
+    
+    // Keep only the first officer but clear its fields
+    form.officers = [{
+        student_name: '',
+        position: '',
+        student_number: '',
+        photo_path: null,
+        photo_preview: null
+    }];
+    
+    // Reset to first page
+    currentPage.value = 1;
+};
+
 // Add a function to remove an officer's photo
 const removeOfficerPhoto = (index) => {
     // Clean up object URL if it exists
@@ -587,6 +609,13 @@ const submit = () => {
                 class="hidden"
               >
             </div>
+            <!-- Clear All Officers -->
+            <button 
+              @click="clearAllOfficers" 
+              type="button" 
+              class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition-colors flex items-center gap-1">
+              🗑️ Clear All
+            </button>
           </div>
         </div>
 

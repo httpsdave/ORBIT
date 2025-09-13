@@ -156,6 +156,19 @@ const removeAttendee = (index) => {
     form.attendees.splice(index, 1);
 };
 
+// Add function to clear all attendees
+const clearAllAttendees = () => {
+    // Keep only the first attendee but clear its fields
+    form.attendees = [{
+        name: '',
+        course_year_section: '',
+        signature: null
+    }];
+    
+    // Reset to first page
+    currentPage.value = 1;
+};
+
 // Add validateForm function
 const validateForm = () => {
   // Clear previous errors
@@ -443,6 +456,13 @@ const submit = () => {
           accept=".csv,text/csv" 
           class="hidden"
         >
+        <!-- Clear All Attendees -->
+        <button 
+          @click="clearAllAttendees" 
+          type="button" 
+          class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition-colors flex items-center gap-1">
+          🗑️ Clear All
+        </button>
       </div>
         </div>
         <!-- CSV Format Instructions -->

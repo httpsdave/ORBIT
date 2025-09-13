@@ -103,6 +103,23 @@ const removeStudent = (index) => {
     form.students.splice(index, 1);
 };
 
+// Add function to clear all students
+const clearAllStudents = () => {
+    // Keep only the first student but clear its fields
+    form.students = [{
+        student_name: '',
+        course: '',
+        year_section: '',
+        course_year_section: '',
+        position_rank: '',
+        college: form.college || '',
+        certification_date: form.certification_date,
+    }];
+    
+    // Reset to first page
+    currentPage.value = 1;
+};
+
 // CSV template download functionality
 const downloadCSVTemplate = () => {
   // Create CSV content with headers and sample data
@@ -637,6 +654,13 @@ const submit = () => {
               class="hidden"
             >
           </div>
+          <!-- Clear All Students -->
+          <button 
+            @click="clearAllStudents" 
+            type="button" 
+            class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition-colors flex items-center gap-1">
+            🗑️ Clear All
+          </button>
                 </div>
             </div>
 
