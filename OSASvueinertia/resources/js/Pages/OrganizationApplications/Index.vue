@@ -133,7 +133,28 @@ const statusOptions = computed(() => {
 
 const formTypeOptions = computed(() => {
   const types = [...new Set(props.applications.map(app => app.form_type))];
-  return types.map(type => ({ value: type, label: type }));
+  // Sort by numeric part if present, otherwise put at end
+  const sortedTypes = types.slice().sort((a, b) => {
+    const numA = a.match(/-(\d{3})$/)?.[1];
+    const numB = b.match(/-(\d{3})$/)?.[1];
+    if (numA && numB) {
+      return parseInt(numA) - parseInt(numB);
+    } else if (numA) {
+      return -1;
+    } else if (numB) {
+      return 1;
+    } else {
+      return a.localeCompare(b);
+    }
+  });
+  return sortedTypes.map(type => {
+    const template = formTemplates.find(t => t.type === type);
+    return { 
+      value: type, 
+      label: template?.label || type,
+      formType: type // Keep the original form type for tooltip
+    };
+  });
 });
 
 const organizationOptions = computed(() => {
@@ -687,7 +708,12 @@ const confirmClearData = () => {
             class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
           >
             <option value="">All Types</option>
-            <option v-for="option in formTypeOptions" :key="option.value" :value="option.value">
+            <option 
+              v-for="option in formTypeOptions" 
+              :key="option.value" 
+              :value="option.value"
+              :title="option.formType"
+            >
               {{ option.label }}
             </option>
           </select>
@@ -735,8 +761,8 @@ const confirmClearData = () => {
         <span v-if="statusFilter" class="px-2 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-md text-xs">
           Status: {{ statusFilter }}
         </span>
-        <span v-if="formTypeFilter" class="px-2 py-1 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 rounded-md text-xs truncate max-w-xs">
-          Form: {{ formTypeFilter }}
+        <span v-if="formTypeFilter" class="px-2 py-1 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 rounded-md text-xs truncate max-w-xs" :title="`Form Type: ${formTypeFilter}`">
+          Form: {{ formTemplates.find(f => f.type === formTypeFilter)?.label || formTypeFilter }}
         </span>
         <span v-if="organizationFilter" class="px-2 py-1 bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 rounded-md text-xs truncate max-w-xs" :title="organizationOptions.find(opt => opt.value === organizationFilter)?.label && organizationOptions.find(opt => opt.value === organizationFilter)?.label.length > 20 ? `Organization: ${organizationOptions.find(opt => opt.value === organizationFilter)?.label}` : undefined">
           Organization: {{ organizationOptions.find(opt => opt.value === organizationFilter)?.label && organizationOptions.find(opt => opt.value === organizationFilter)?.label.length > 20 ? organizationOptions.find(opt => opt.value === organizationFilter)?.label.substring(0, 20) + '...' : organizationOptions.find(opt => opt.value === organizationFilter)?.label }}
