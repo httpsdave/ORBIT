@@ -484,7 +484,7 @@ function exportAdvisersToCSV() {
                     </div>
                     <div class="ml-4">
                         <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-200">{{ greeting }}, {{ userName || 'Administrator' }}!</h2>
-                        <p class="mt-1 text-gray-600 dark:text-gray-400">Welcome to Orbit. Here's an overview of your system.</p>
+                        <p class="mt-1 text-gray-600 dark:text-gray-400">Welcome to ORBIT. Here's an overview of your system.</p>
                     </div>
                 </div>
             </div>

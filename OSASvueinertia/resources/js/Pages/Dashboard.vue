@@ -215,7 +215,7 @@ const activeTab = ref('applications');
                 </div>
                 <div class="text-center sm:text-left">
                   <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 dark:text-gray-200">{{ greeting }}, {{ $page.props.auth?.user?.name || 'User' }}!</h2>
-                  <p class="mt-1 text-sm sm:text-base text-gray-600 dark:text-gray-400">Welcome to orbit. Here's your latest activity and important updates.</p>
+                  <p class="mt-1 text-sm sm:text-base text-gray-600 dark:text-gray-400">Welcome to ORBIT. Here's your latest activity and important updates.</p>
                 </div>
               </div>
             </div>
