@@ -673,7 +673,7 @@ const confirmClearData = () => {
           type="text"
           v-model="searchQuery"
           class="block w-full pl-12 pr-12 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 transition duration-150 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
-          :placeholder="isAdmin ? 'Search submissions by organization, president, form type, or status...' : 'Search submissions by form type or status...'"
+          :placeholder="isAdmin ? 'Search submissions by organization, form type, or status...' : 'Search submissions by form type or status...'"
         />
         <div v-if="searchQuery" class="absolute inset-y-0 right-0 pr-4 flex items-center">
           <button @click="clearSearch" class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300">
