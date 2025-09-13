@@ -97,6 +97,30 @@ const addMember = () => {
     });
 };
 
+// CSV template download functionality
+const downloadCSVTemplate = () => {
+    // Create CSV content with headers and sample data
+    const csvContent = [
+        'Student Name,Student Number,Course- Year & Section,Do Not Fill beyond this point',
+        'First Name, M.I., Last Name,0325-0001,BSCS-4IS1,',
+        'First Name, M.I., Last Name,0325-0002,BSCS-4IS2,',
+        'First Name, M.I., Last Name,0325-0003,BSCS-4GAV1,',
+        ',,,'
+    ].join('\n');
+    
+    // Create blob and download
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'members_template.csv');
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+};
+
 // CSV upload functionality
 const handleCSVUpload = (event) => {
     const file = event.target.files[0];
@@ -791,6 +815,13 @@ const submit = () => {
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-lg font-bold">Members</h3>
                 <div class="flex gap-2">
+                    <!-- Download CSV Template -->
+                    <button 
+                        @click="downloadCSVTemplate" 
+                        type="button" 
+                        class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition-colors flex items-center gap-1">
+                        📥 Download Template
+                    </button>
                     <!-- CSV Upload -->
                     <div class="flex items-center">
                         <label for="csv-upload" class="bg-green-500 text-white px-3 py-1 rounded cursor-pointer hover:bg-green-600 transition-colors">
