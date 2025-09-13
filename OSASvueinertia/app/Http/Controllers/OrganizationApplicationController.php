@@ -1027,8 +1027,14 @@ class OrganizationApplicationController extends Controller
     
     $application->status = $validated['status'];  // Use validated data
     
-    // Always update feedback field - set to null if empty, otherwise set to the provided value
-    $application->feedback = !empty($validated['feedback']) ? $validated['feedback'] : null;
+    // Set feedback with default message for Approved status if no custom feedback provided
+    if (!empty($validated['feedback'])) {
+        $application->feedback = $validated['feedback'];
+    } elseif (strtolower($validated['status']) === 'approved') {
+        $application->feedback = 'Goodjob! thank you for your submission. Keep it up.';
+    } else {
+        $application->feedback = null;
+    }
     
     $application->reviewed_by = auth()->id();
     $application->reviewed_at = now();
@@ -1037,14 +1043,14 @@ class OrganizationApplicationController extends Controller
 
     // Create notifications based on what changed
     $statusChanged = $oldStatus !== $validated['status'];
-    $feedbackChanged = !empty($validated['feedback']) && $oldFeedback !== $validated['feedback'];
+    $feedbackChanged = $application->feedback !== $oldFeedback;
     
     if ($statusChanged) {
         // Status changed - create status change notification (includes feedback if provided)
-        $this->createStatusChangeNotification($application, $validated['status'], $validated['feedback'] ?? null);
+        $this->createStatusChangeNotification($application, $validated['status'], $application->feedback);
     } elseif ($feedbackChanged) {
         // Only feedback changed - create feedback notification
-        $this->createFeedbackNotification($application, $validated['feedback']);
+        $this->createFeedbackNotification($application, $application->feedback);
     }
 
     if ($request->expectsJson()) {
@@ -1077,9 +1083,15 @@ class OrganizationApplicationController extends Controller
             'feedback' => 'nullable|string|max:1000',
         ]);
 
-        // Update the report
+        // Update the report with default feedback for Approved status if no custom feedback provided
         $report->status = $validated['status'];
-        $report->feedback = !empty($validated['feedback']) ? $validated['feedback'] : null;
+        if (!empty($validated['feedback'])) {
+            $report->feedback = $validated['feedback'];
+        } elseif (strtolower($validated['status']) === 'approved') {
+            $report->feedback = 'Goodjob! thank you for your submission. Keep it up.';
+        } else {
+            $report->feedback = null;
+        }
         $report->reviewed_by = auth()->id();
         $report->reviewed_at = now();
         $report->save();

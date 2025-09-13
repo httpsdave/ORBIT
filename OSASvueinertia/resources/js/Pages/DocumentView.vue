@@ -199,7 +199,7 @@
                 v-model="feedbackText"
                 rows="4"
                 class="w-full rounded-lg border border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 transition duration-200 p-3 text-sm resize-none"
-                placeholder="Enter feedback to the organization..."
+                :placeholder="selectedStatus === 'Approved' ? 'Goodjob! thank you for your submission. Keep it up.' : 'Enter feedback to the organization...'"
               ></textarea>
               <button
                 @click="updateStatus"
