@@ -1,34 +1,36 @@
 <template>
   <!-- Combined Today's and Upcoming Events panel -->
-  <div :class="isAdmin ? 'md:col-span-1' : 'md:col-span-2'" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 p-5">
-    <h2 class="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-300">
+  <div :class="isAdmin ? 'md:col-span-1' : 'md:col-span-2'" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 p-5 min-w-0">
+    <h2 class="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-300 break-words">
       {{ todaysEvents.length > 0 ? "Today's Events" : "Upcoming Events" }}
     </h2>
     
     <!-- Today's Events (if any) -->
-    <ul v-if="todaysEvents.length > 0" class="divide-y divide-gray-100 dark:divide-gray-700 mb-6">
+    <ul v-if="todaysEvents.length > 0" class="divide-y divide-gray-100 dark:divide-gray-700 mb-6 min-w-0">
       <li v-for="event in todaysEvents" :key="'today-' + event.id" class="py-4">
-        <div class="flex items-start space-x-4">
+        <div class="flex items-start space-x-4 min-w-0">
           <div class="flex-shrink-0 bg-green-50 dark:bg-green-900 rounded-lg p-3 text-center border-l-4 border-green-500">
             <span class="text-sm font-medium text-green-500 dark:text-green-400">{{ formatDate(event.start_date, 'MMM') }}</span>
             <p class="text-xl font-bold text-gray-800 dark:text-gray-100">{{ formatDate(event.start_date, 'DD') }}</p>
             <span class="text-xs text-green-400">TODAY</span>
           </div>
-          <div class="flex-1 min-w-0">
-            <p class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{{ event.title }}</p>
-            <div class="flex items-center mt-1 text-xs text-gray-500 dark:text-gray-400">
-              <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="flex-1 min-w-0 overflow-hidden">
+            <p class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate break-words">{{ event.title }}</p>
+            <div class="flex items-center mt-1 text-xs text-gray-500 dark:text-gray-400 min-w-0">
+              <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              {{ formatDate(event.start_date, 'h:mm A') }}
-              <span v-if="event.end_date && formatDate(event.start_date, 'YYYY-MM-DD') !== formatDate(event.end_date, 'YYYY-MM-DD')">
-                - {{ formatDate(event.end_date, 'MMM DD, h:mm A') }}
-              </span>
-              <span v-else-if="event.end_date">
-                - {{ formatDate(event.end_date, 'h:mm A') }}
+              <span class="truncate">
+                {{ formatDate(event.start_date, 'h:mm A') }}
+                <span v-if="event.end_date && formatDate(event.start_date, 'YYYY-MM-DD') !== formatDate(event.end_date, 'YYYY-MM-DD')">
+                  - {{ formatDate(event.end_date, 'MMM DD, h:mm A') }}
+                </span>
+                <span v-else-if="event.end_date">
+                  - {{ formatDate(event.end_date, 'h:mm A') }}
+                </span>
               </span>
             </div>
-            <p v-if="event.description" class="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">{{ event.description }}</p>
+            <p v-if="event.description" class="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2 break-words overflow-hidden">{{ event.description }}</p>
           </div>
           <!-- Admin/User action buttons -->
           <div v-if="isAdmin" class="flex-shrink-0 flex space-x-1">
@@ -62,32 +64,34 @@
     
     <!-- Upcoming Events Section -->
     <div v-if="todaysEvents.length > 0" class="border-t dark:border-gray-700 pt-4">
-      <h3 class="text-md font-medium mb-3 text-gray-600 dark:text-gray-400">Upcoming Events</h3>
+      <h3 class="text-md font-medium mb-3 text-gray-600 dark:text-gray-400 break-words">Upcoming Events</h3>
     </div>
     
-    <ul class="divide-y divide-gray-100 dark:divide-gray-700">
+    <ul class="divide-y divide-gray-100 dark:divide-gray-700 min-w-0">
       <li v-for="event in upcomingEventsFiltered" :key="event.id" class="py-3">
-        <div class="flex items-start space-x-3">
+        <div class="flex items-start space-x-3 min-w-0">
           <div class="flex-shrink-0 bg-blue-50 dark:bg-blue-900 rounded-md p-2 text-center border-l-3 border-blue-500">
             <span class="text-xs font-medium text-blue-500 dark:text-blue-400">{{ formatDate(event.start_date, 'MMM') }}</span>
             <p class="text-lg font-bold text-gray-800 dark:text-gray-100">{{ formatDate(event.start_date, 'DD') }}</p>
             <span class="text-xs text-blue-400">{{ formatDate(event.start_date, 'ddd') }}</span>
           </div>
-          <div class="flex-1 min-w-0">
-            <p class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{{ event.title }}</p>
-            <div class="flex items-center mt-1 text-xs text-gray-500 dark:text-gray-400">
-              <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="flex-1 min-w-0 overflow-hidden">
+            <p class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate break-words">{{ event.title }}</p>
+            <div class="flex items-center mt-1 text-xs text-gray-500 dark:text-gray-400 min-w-0">
+              <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              {{ formatDate(event.start_date, 'h:mm A') }}
-              <span v-if="event.end_date && formatDate(event.start_date, 'YYYY-MM-DD') !== formatDate(event.end_date, 'YYYY-MM-DD')">
-                - {{ formatDate(event.end_date, 'MMM DD, h:mm A') }}
-              </span>
-              <span v-else-if="event.end_date">
-                - {{ formatDate(event.end_date, 'h:mm A') }}
+              <span class="truncate">
+                {{ formatDate(event.start_date, 'h:mm A') }}
+                <span v-if="event.end_date && formatDate(event.start_date, 'YYYY-MM-DD') !== formatDate(event.end_date, 'YYYY-MM-DD')">
+                  - {{ formatDate(event.end_date, 'MMM DD, h:mm A') }}
+                </span>
+                <span v-else-if="event.end_date">
+                  - {{ formatDate(event.end_date, 'h:mm A') }}
+                </span>
               </span>
             </div>
-            <p v-if="event.description" class="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">{{ event.description }}</p>
+            <p v-if="event.description" class="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2 break-words overflow-hidden">{{ event.description }}</p>
           </div>
           <!-- Admin/User action buttons -->
           <div v-if="isAdmin" class="flex-shrink-0 flex space-x-1">
@@ -182,3 +186,19 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.break-words {
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+</style>
