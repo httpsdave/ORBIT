@@ -65,6 +65,7 @@ const showMessageWithType = (text, type = 'success') => {
   }, 5000)
 }
 
+/* Clamp long feedback to 3 lines to prevent overflow */
 // Check for flash messages from Laravel and add dropdown listeners
 onMounted(() => {
   if (page.props.flash?.success) {
@@ -787,13 +788,11 @@ watch(showStatusModal, (val) => {
                       :title="'Click to view ' + page.reports[reportType].original_filename"
                       @click="handleReportContainerClick(page.reports[reportType], $event)"
                     >
-                      <div class="flex items-center justify-between">
-                        <div class="text-sm text-gray-600 dark:text-gray-400 flex-1">
+                      <div class="flex items-center justify-between min-w-0">
+                        <div class="text-sm text-gray-600 dark:text-gray-400 flex-1 min-w-0">
                           <p class="truncate"><strong>File:</strong> {{ page.reports[reportType].original_filename }}</p>
                           <p><strong>Submitted:</strong> {{ new Date(page.reports[reportType].submitted_at).toLocaleDateString() }}</p>
-                          <div v-if="page.reports[reportType].feedback" class="mt-2 p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded text-yellow-800 dark:text-yellow-200">
-                            <p class="break-words"><strong>Feedback:</strong> {{ page.reports[reportType].feedback }}</p>
-                          </div>
+                          <!-- Feedback is handled on the Report Feedback page; inline display removed -->
                           <!-- Visual indicator for clickability -->
                           <div class="mt-2 flex items-center text-xs text-blue-600 dark:text-blue-400 opacity-75">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -805,7 +804,7 @@ watch(showStatusModal, (val) => {
                         </div>
                         
                         <!-- Actions Dropdown Button -->
-                        <div class="relative dropdown-container ml-3">
+                        <div class="relative dropdown-container ml-3 flex-shrink-0">
                           <button
                             @click="toggleDropdown(page.reports[reportType], $event)"
                             :data-dropdown-trigger="page.reports[reportType].id"
@@ -1154,4 +1153,17 @@ watch(showStatusModal, (val) => {
 .fade-enter-to, .fade-leave-from {
   opacity: 1;
 }
+
+/* Clamp long feedback to 3 lines to prevent overflow */
+.report-feedback p {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  line-clamp: 3;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+  margin: 0;
+}
+
 </style>
