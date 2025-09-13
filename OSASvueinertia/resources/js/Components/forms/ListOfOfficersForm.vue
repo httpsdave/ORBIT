@@ -39,6 +39,29 @@ const csvModalTitle = ref('');
 const csvModalMessage = ref('');
 const csvModalType = ref('success'); // 'success' or 'error'
 
+// CSV template download functionality
+const downloadCSVTemplate = () => {
+  // Create CSV content with headers and sample data
+  const csvContent = [
+    'Officer Name,Position,Student Number,Do not fill beyond this point',
+    'First Name M.I. Last Name,President,0325-001,',
+    'First Name M.I. Last Name,Vice President,0322-002,',
+    'First Name M.I. Last Name,Treasurer,0324-003,',
+    ',,,'
+  ].join('\n');
+  // Create blob and download
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  link.setAttribute('href', url);
+  link.setAttribute('download', 'officers_template.csv');
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+};
+
 const closeCsvModal = () => {
   showCsvModal.value = false;
   csvModalTitle.value = '';
@@ -544,6 +567,13 @@ const submit = () => {
         <div class="flex justify-between items-center mb-4">
           <h3 class="text-lg font-bold">Officers</h3>
           <div class="flex gap-2">
+            <!-- Download CSV Template Button -->
+            <button 
+                @click="downloadCSVTemplate" 
+                type="button" 
+                class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition-colors flex items-center gap-1">
+                📥 Download Template
+            </button>
             <!-- CSV Upload -->
             <div class="flex items-center">
               <label for="csv-upload" class="bg-green-500 text-white px-3 py-1 rounded cursor-pointer hover:bg-green-600 transition-colors">
@@ -565,7 +595,7 @@ const submit = () => {
           <p class="font-semibold text-blue-800 mb-1">📋 CSV Format Requirements:</p>
           <ul class="text-blue-700 list-disc list-inside space-y-1">
             <li>First row should contain column headers (will be ignored)</li>
-            <li>Columns must be in this order: <strong>Name, Position, Student I.D. No.</strong></li>
+            <li>Columns must be in this order: <strong>Officer Name, Position, Student Number</strong></li>
             <li>Additional columns will be ignored</li>
             <li>File must be in CSV format (.csv extension)</li>
           </ul>
