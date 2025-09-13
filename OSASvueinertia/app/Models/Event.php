@@ -19,6 +19,7 @@ class Event extends Model
         'start_date',
         'end_date',
         'description',
+        'location',
         'source_document',
         'status',
     ];

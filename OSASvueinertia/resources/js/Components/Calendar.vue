@@ -275,6 +275,10 @@
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
           <textarea v-model="eventForm.description" rows="3" class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 resize-none"></textarea>
         </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Location</label>
+          <input v-model="eventForm.location" type="text" class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" placeholder="Event location (optional)" />
+        </div>
         <div class="pt-4 flex justify-end space-x-3">
           <button 
             @click="cancelEdit" 
@@ -346,6 +350,10 @@
         <div v-if="selectedEvent.description" class="mt-4 bg-gray-50 p-4 rounded-lg max-h-40 overflow-y-auto">
           <p class="text-sm text-gray-600 font-medium mb-2">Description:</p>
           <p class="text-gray-700 whitespace-pre-line break-words overflow-wrap-anywhere">{{selectedEvent.description}}</p>
+        </div>
+        <div v-if="selectedEvent.location" class="mt-4 bg-blue-50 p-4 rounded-lg">
+          <p class="text-sm text-blue-600 font-medium mb-2">Location:</p>
+          <p class="text-gray-700 whitespace-pre-line break-words overflow-wrap-anywhere">{{selectedEvent.location}}</p>
         </div>
         <div v-if="isAdmin" class="flex justify-end space-x-2 mt-4">
           <button @click="editEvent(selectedEvent)" class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-sm font-medium text-white rounded-xl shadow-md hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group">
@@ -1006,7 +1014,8 @@ export default {
       end_date: '',   // New field for end date
       start_time: '',
       end_time: '',
-      description: ''
+      description: '',
+      location: ''
     });
     
     // Filter out expired and cancelled events for display
@@ -1180,7 +1189,8 @@ export default {
         title: eventForm.title,
         start_date: startDate,
         end_date: endDate, // Always include end_date
-        description: eventForm.description
+        description: eventForm.description,
+        location: eventForm.location
       })
         .then(response => {
           // Add the new event to the list
@@ -1243,6 +1253,7 @@ export default {
         eventForm.end_time = '';
       }
       eventForm.description = event.description || '';
+      eventForm.location = event.location || '';
     }
     
     function updateEvent() {
@@ -1258,7 +1269,8 @@ export default {
         title: eventForm.title,
         start_date: startDate,
         end_date: endDate, // Always include end_date
-        description: eventForm.description
+        description: eventForm.description,
+        location: eventForm.location
       })
         .then(response => {
           // Update the event in our local state
@@ -1310,6 +1322,7 @@ export default {
       eventForm.start_time = '';
       eventForm.end_time = '';
       eventForm.description = '';
+      eventForm.location = '';
     }
     
     function deleteEvent(eventId) {
@@ -1563,6 +1576,7 @@ export default {
       eventForm.start_time = '';
       eventForm.end_time = '';
       eventForm.description = '';
+      eventForm.location = '';
     }
 
     function createEventForDate(clickedDate, info) {
@@ -1577,6 +1591,7 @@ export default {
       eventForm.start_time = '';
       eventForm.end_time = '';
       eventForm.description = '';
+      eventForm.location = '';
       
       // Add smooth visual feedback with modern animation
       if (info.dayEl) {
@@ -1609,6 +1624,7 @@ export default {
       eventForm.start_time = '';
       eventForm.end_time = '';
       eventForm.description = '';
+      eventForm.location = '';
       
       console.log(`Event creation initiated for date range: ${startDate} to ${endDate}`);
       
@@ -1740,6 +1756,7 @@ export default {
         eventForm.start_time = '';
         eventForm.end_time = '';
         eventForm.description = '';
+        eventForm.location = '';
         
         console.log(`Event creation initiated for date range: ${startDate} to ${endDate}`);
         
@@ -1870,6 +1887,7 @@ export default {
   eventForm.start_time = data.start_time || '';
   eventForm.end_time = data.end_time || '';
   eventForm.description = data.description || '';
+  eventForm.location = data.location || '';
 }
 
 function exportPastEventsCsv(pastEvents) {
