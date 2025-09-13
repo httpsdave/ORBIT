@@ -1,7 +1,7 @@
 <script setup>
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
@@ -22,10 +22,34 @@ const showingDeleteModal = ref(false);
 const userToDelete = ref(null);
 const userToEdit = ref(null);
 const deleteConfirmation = ref(''); // Add this line
+const searchQuery = ref(''); // Add search functionality
 
 // Password visibility toggles
 const showPassword = ref(false);
 const showConfirmPassword = ref(false);
+
+// Computed property for filtered and sorted users
+const filteredUsers = computed(() => {
+    let filtered = props.users;
+    
+    // Filter by search query
+    if (searchQuery.value) {
+        const query = searchQuery.value.toLowerCase();
+        filtered = filtered.filter(user => 
+            user.name.toLowerCase().includes(query) ||
+            user.email.toLowerCase().includes(query) ||
+            user.role.name.toLowerCase().includes(query)
+        );
+    }
+    
+    // Sort alphabetically by name
+    return filtered.slice().sort((a, b) => a.name.localeCompare(b.name));
+});
+
+// Clear search function
+const clearSearch = () => {
+    searchQuery.value = '';
+};
 
 const form = useForm({
     name: '',
@@ -168,10 +192,34 @@ const deleteUser = () => {
                                 <span class="xs:hidden">Add User</span>
                             </PrimaryButton>
                         </div>
+
+                        <!-- Search Bar -->
+                        <div class="mb-6">
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </div>
+                                <input
+                                    type="text"
+                                    v-model="searchQuery"
+                                    class="block w-full pl-10 pr-10 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 transition duration-150 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+                                    placeholder="Search users by name, email, or role..."
+                                />
+                                <div v-if="searchQuery" class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                    <button @click="clearSearch" class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                         
                         <!-- Mobile Card View (hidden on desktop) -->
                         <div class="block md:hidden space-y-3">
-                            <div v-for="user in users" :key="`mobile-${user.id}`" class="bg-white dark:bg-gray-700 rounded-lg p-3 border border-gray-200 dark:border-gray-600 shadow-sm">
+                            <div v-for="user in filteredUsers" :key="`mobile-${user.id}`" class="bg-white dark:bg-gray-700 rounded-lg p-3 border border-gray-200 dark:border-gray-600 shadow-sm">
                                 <div class="flex items-start justify-between mb-3">
                                     <div class="flex items-center space-x-3 flex-1 min-w-0">
                                         <template v-if="user.profile_photo_url">
@@ -221,8 +269,8 @@ const deleteUser = () => {
                                     </button>
                                 </div>
                             </div>
-                            <div v-if="users.length === 0" class="text-center py-8 text-gray-500 dark:text-gray-400 text-sm">
-                                No users found.
+                            <div v-if="filteredUsers.length === 0" class="text-center py-8 text-gray-500 dark:text-gray-400 text-sm">
+                                {{ searchQuery ? 'No users found matching your search.' : 'No users found.' }}
                             </div>
                         </div>
                         
@@ -238,7 +286,7 @@ const deleteUser = () => {
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                                    <tr v-for="user in users" :key="user.id" class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
+                                    <tr v-for="user in filteredUsers" :key="user.id" class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
                                         <td class="px-3 lg:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
                                             <div class="flex items-center gap-2">
                                                 <template v-if="user.profile_photo_url">
@@ -298,9 +346,9 @@ const deleteUser = () => {
                                             </div>
                                         </td>
                                     </tr>
-                                    <tr v-if="users.length === 0">
+                                    <tr v-if="filteredUsers.length === 0">
                                         <td colspan="4" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
-                                            No users found.
+                                            {{ searchQuery ? 'No users found matching your search.' : 'No users found.' }}
                                         </td>
                                     </tr>
                                 </tbody>
