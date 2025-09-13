@@ -289,6 +289,11 @@ function confirmSave() {
 function cancelSave() {
     showConfirmModal.value = false;
 }
+
+// Disable email input for regular users; admins can edit when in edit mode
+const emailDisabled = computed(() => {
+    return !isAdmin ? true : !isEditingProfile.value;
+});
 </script>
 
 <template>
@@ -354,8 +359,8 @@ function cancelSave() {
                         type="email"
                         class="mt-1 block w-full border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 rounded-md shadow-sm dark:bg-gray-700 dark:text-gray-300"
                         v-model="form.email"
-                        :disabled="!isEditingProfile"
-                        :class="!isEditingProfile ? 'bg-gray-100 dark:bg-gray-600 text-gray-400 dark:text-gray-500 cursor-not-allowed select-none pointer-events-none' : ''"
+                        :disabled="emailDisabled"
+                        :class="emailDisabled ? 'bg-gray-100 dark:bg-gray-600 text-gray-400 dark:text-gray-500 cursor-not-allowed select-none pointer-events-none' : ''"
                         required
                         autocomplete="email"
                     />
