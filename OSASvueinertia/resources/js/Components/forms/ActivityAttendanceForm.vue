@@ -65,6 +65,28 @@ const addAttendee = () => {
     });
 };
 
+// CSV template download functionality
+const downloadCSVTemplate = () => {
+  // Create CSV content with headers and sample data
+  const csvContent = [
+    'Name,Course/Year & Section,Do not fill beyond this point',
+    'First Name M.I. Last Name,BSCS-4IS1,',
+    'First Name M.I. Last Name,BSCS-4IS2,',
+    'First Name M.I. Last Name,BSCS-4GAV1,',
+    ',,',
+  ].join('\n');
+  // Create blob and download
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  link.setAttribute('href', url);
+  link.setAttribute('download', 'activity_attendance_template.csv');
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+};
 // CSV upload functionality
 const handleCSVUpload = (event) => {
     const file = event.target.files[0];
@@ -401,19 +423,27 @@ const submit = () => {
         
         <!-- Member Count Display and CSV Upload -->
         <div class="mb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-            <div class="font-semibold text-sm">👥 Total Attendees: {{ form.attendees.length }}</div>
-            <div class="flex items-center">
-                <label for="csv-upload" class="bg-green-500 text-white px-3 py-1 rounded cursor-pointer hover:bg-green-600 transition-colors">
-                    📄 Upload CSV
-                </label>
-                <input 
-                    id="csv-upload" 
-                    type="file" 
-                    @change="handleCSVUpload" 
-                    accept=".csv,text/csv" 
-                    class="hidden"
-                >
-            </div>
+      <div class="font-semibold text-sm">👥 Total Attendees: {{ form.attendees.length }}</div>
+      <div class="flex items-center gap-2">
+        <!-- Download CSV Template Button -->
+        <button 
+          @click="downloadCSVTemplate" 
+          type="button" 
+          class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition-colors flex items-center gap-1">
+          📥 Download Template
+        </button>
+        <!-- CSV Upload -->
+        <label for="csv-upload" class="bg-green-500 text-white px-3 py-1 rounded cursor-pointer hover:bg-green-600 transition-colors">
+          📄 Upload CSV
+        </label>
+        <input 
+          id="csv-upload" 
+          type="file" 
+          @change="handleCSVUpload" 
+          accept=".csv,text/csv" 
+          class="hidden"
+        >
+      </div>
         </div>
         <!-- CSV Format Instructions -->
         <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded text-sm">
