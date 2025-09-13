@@ -476,8 +476,12 @@ onUnmounted(() => {
                 </div>
               </div>
               <div class="ml-2 hidden sm:block">
-                <div class="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
+                <div class="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300 truncate max-w-32 relative group/name" :title="user?.name || 'User'">
                   {{ user?.name || 'User' }}
+                  <!-- Tooltip for truncated name -->
+                  <span class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-800 dark:bg-gray-700 text-white dark:text-gray-200 text-xs rounded py-1 px-2 opacity-0 group-hover/name:opacity-100 transition-opacity duration-300 whitespace-nowrap z-50 pointer-events-none">
+                    {{ user?.name || 'User' }}
+                  </span>
                 </div>
                 <div v-if="isAdmin" class="text-xs font-medium text-indigo-700 dark:text-indigo-300 bg-indigo-100 dark:bg-indigo-900/50 px-2 py-0.5 rounded-full border border-indigo-200 dark:border-indigo-700">
                   Admin
@@ -500,13 +504,19 @@ onUnmounted(() => {
             <div 
               v-show="isDropdownOpen"
               :class="[
-                'absolute bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden z-50 w-56 mt-2',
+                'absolute bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden z-50 w-56 max-w-xs mt-2',
                 'right-0'
               ]"
             >
               <div class="py-2 px-4 border-b border-gray-100 dark:border-gray-700">
-                <div class="text-sm font-medium text-gray-800 dark:text-gray-200">{{ user?.name || 'User' }}</div>
-                <div class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ user?.email || '' }}</div>
+                <div class="text-sm font-medium text-gray-800 dark:text-gray-200 truncate relative group/dropdown-name" :title="user?.name || 'User'">
+                  {{ user?.name || 'User' }}
+                  <!-- Tooltip for truncated name in dropdown -->
+                  <span class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-900 dark:bg-gray-600 text-white dark:text-gray-200 text-xs rounded py-1 px-2 opacity-0 group-hover/dropdown-name:opacity-100 transition-opacity duration-300 whitespace-nowrap z-50 pointer-events-none">
+                    {{ user?.name || 'User' }}
+                  </span>
+                </div>
+                <div class="text-xs text-gray-500 dark:text-gray-400 truncate" :title="user?.email || ''">{{ user?.email || '' }}</div>
               </div>
               <div class="flex flex-col">
                 <Link 
