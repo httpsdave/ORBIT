@@ -190,6 +190,16 @@ onBeforeUnmount(() => {
                         {{ status }}
                     </div>
                 </div>
+                <!-- Unavailable message -->
+                <div class="mb-4 sm:mb-6 p-3 sm:p-4 bg-red-500 bg-opacity-20 border-l-4 border-red-500 text-red-400 text-xs sm:text-sm font-medium animate-fadeIn backdrop-blur-sm rounded-r-lg">
+                    <div class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 sm:mr-3 flex-shrink-0">
+                            <path d="M18 6L6 18"></path>
+                            <path d="M6 6l12 12"></path>
+                        </svg>
+                        Password reset functionality is currently unavailable due to recent Google privacy updates. Please contact your Administrator for assistance. Thank you for your understanding.
+                    </div>
+                </div>
 
                 <!-- Form -->
                 <form @submit.prevent="submit" class="space-y-4 sm:space-y-6" novalidate>
@@ -222,23 +232,13 @@ onBeforeUnmount(() => {
                     <!-- Action buttons -->
                     <div class="space-y-3 sm:space-y-4">
                         <button
-                            type="submit"
-                            class="w-full text-white font-semibold py-3 sm:py-4 px-4 sm:px-6 rounded-lg transition-all duration-300 flex items-center justify-center relative overflow-hidden group shadow-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-opacity-50 transform hover:scale-105"
-                            :class="[
-                                'bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-400 hover:to-red-500',
-                                { 'opacity-80 cursor-not-allowed transform-none': form.processing || isLoading }
-                            ]"
-                            :disabled="form.processing || isLoading"
+                            type="button"
+                            class="w-full text-white font-semibold py-3 sm:py-4 px-4 sm:px-6 rounded-lg transition-all duration-300 flex items-center justify-center relative overflow-hidden group shadow-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-opacity-50 transform-none opacity-80 cursor-not-allowed"
+                            disabled
                             aria-label="Send Reset Link"
                         >
                             <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
-                            <span v-if="isLoading" class="absolute inset-0 flex items-center justify-center">
-                                <svg class="animate-spin h-4 w-4 sm:h-5 sm:w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                </svg>
-                            </span>
-                            <span :class="{ 'opacity-0': isLoading }" class="flex items-center relative z-10 text-sm sm:text-base">
+                            <span class="flex items-center relative z-10 text-sm sm:text-base">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 sm:mr-3">
                                     <line x1="22" y1="2" x2="11" y2="13"></line>
                                     <polygon points="22,2 15,22 11,13 2,9"></polygon>
