@@ -78,6 +78,92 @@
 
               <!-- Mobile Card View (hidden on large screens and above) -->
               <div class="block xl:hidden space-y-2 sm:space-y-3">
+                <!-- Non-College Affiliated Organizations Section -->
+                <div v-if="nonCollegeOrganizations.length > 0" class="bg-orange-50 dark:bg-orange-900/20 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-orange-200 dark:border-orange-800 shadow-sm hover:shadow-md transition-all duration-200">
+                  <div 
+                    @click="toggleCollege('non-college', $event)"
+                    class="flex justify-between items-center cursor-pointer"
+                  >
+                    <div class="flex items-center flex-1 min-w-0">
+                      <div class="min-w-0 flex-1">
+                        <h4 class="font-semibold text-orange-900 dark:text-orange-100 text-sm sm:text-base lg:text-lg truncate">Non-College Affiliated</h4>
+                        <p class="text-xs sm:text-sm text-orange-700 dark:text-orange-300 truncate">Organizations not yet assigned to a college</p>
+                      </div>
+                    </div>
+                    <div class="flex items-center ml-2 sm:ml-3 flex-shrink-0">
+                      <span class="mr-1.5 sm:mr-2 text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full flex-shrink-0 bg-orange-100 dark:bg-orange-800 text-orange-600 dark:text-orange-200">
+                        {{ nonCollegeOrganizations.length }}
+                      </span>
+                      <svg
+                        :class="{'transform rotate-180': openColleges.includes('non-college')}"
+                        class="w-4 h-4 sm:w-5 sm:h-5 transition-transform text-orange-500 dark:text-orange-400 flex-shrink-0"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                      </svg>
+                    </div>
+                  </div>
+
+                  <!-- Mobile Non-College Organizations List -->
+                  <div v-if="openColleges.includes('non-college')" class="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-orange-200 dark:border-orange-700">
+                    <div class="space-y-2 sm:space-y-3">
+                      <div class="flex flex-col xs:flex-row xs:justify-between xs:items-center mb-2 sm:mb-3 space-y-1 xs:space-y-0">
+                        <span class="text-xs sm:text-sm font-medium text-orange-700 dark:text-orange-300">Organizations ({{ nonCollegeOrganizations.length }})</span>
+                      </div>
+                      <div v-for="user in nonCollegeOrganizations" :key="`mobile-non-college-org-${user.id}`" class="bg-white dark:bg-gray-600 rounded-lg p-2.5 sm:p-3 border border-orange-200 dark:border-orange-500 shadow-sm">
+                        <div class="flex items-center justify-between">
+                          <div class="flex items-center space-x-2 flex-1 min-w-0">
+                            <div v-if="user.profile_photo_url" class="flex-shrink-0 h-7 w-7 sm:h-8 sm:w-8">
+                              <img class="h-7 w-7 sm:h-8 sm:w-8 rounded-full object-cover border border-gray-200 dark:border-gray-500" :src="user.profile_photo_url" alt="" />
+                            </div>
+                            <div v-else class="h-7 w-7 sm:h-8 sm:w-8 bg-gradient-to-br from-orange-500 to-red-400 rounded-full flex items-center justify-center text-white font-medium shadow-inner text-xs flex-shrink-0">
+                              {{ user.name ? user.name.charAt(0).toUpperCase() : 'O' }}
+                            </div>
+                            <div class="min-w-0 flex-1">
+                              <div class="text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                                {{ user.name || 'Unknown Organization' }}
+                              </div>
+                              <div class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ user.email || 'No email' }}</div>
+                            </div>
+                          </div>
+                          <div class="flex items-center space-x-1.5 sm:space-x-2 ml-2 flex-shrink-0">
+                            <!-- Status Toggle -->
+                            <button
+                              @click="toggleUserStatus(user)"
+                              :class="[
+                                'relative inline-flex items-center rounded-full transition-all duration-300 focus:outline-none',
+                                user.status === 'active' ? 'bg-green-200 dark:bg-green-700' : 'bg-gray-200 dark:bg-gray-600',
+                                'h-5 w-8 sm:h-6 sm:w-10'
+                              ]"
+                              :title="`Toggle status to ${user.status === 'active' ? 'inactive' : 'active'}`"
+                            >
+                              <span
+                                :class="[
+                                  'inline-block rounded-full shadow-sm transform transition-all duration-300',
+                                  user.status === 'active' ? 'translate-x-3 sm:translate-x-4 bg-green-600' : 'translate-x-0 bg-gray-400',
+                                  'h-3 w-3 sm:h-4 sm:w-4'
+                                ]"
+                              ></span>
+                            </button>
+                            <!-- Assign to College Button -->
+                            <button
+                              @click="openUserSelectionModalForAssignment(user)"
+                              class="inline-flex items-center justify-center text-blue-500 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors duration-150 p-1 sm:p-1.5 rounded-lg"
+                              title="Assign to College"
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <div v-for="college in colleges" :key="`mobile-${college.id}`" class="bg-gray-50 dark:bg-gray-700 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-gray-200 dark:border-gray-600 shadow-sm hover:shadow-md transition-all duration-200">
                   <div 
                     @click="toggleCollege(college.id, $event)"
@@ -196,6 +282,164 @@
 
               <!-- Desktop Accordion View (hidden on mobile and tablet) -->
               <div class="hidden xl:block space-y-3">
+                <!-- Non-College Affiliated Organizations Section -->
+                <div v-if="nonCollegeOrganizations.length > 0" class="border border-orange-200 dark:border-orange-700 rounded-md overflow-hidden shadow-sm hover:shadow transition-shadow duration-200 bg-orange-50/50 dark:bg-orange-900/10" data-college-accordion>
+                  <div 
+                    @click="toggleCollege('non-college', $event)"
+                    class="flex justify-between items-center p-4 cursor-pointer bg-orange-50 dark:bg-orange-900/20 hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors duration-150"
+                  >
+                    <div class="flex items-center">
+                      <div>
+                        <span class="text-lg font-medium text-orange-900 dark:text-orange-100">Non-College Affiliated</span>
+                        <span class="ml-2 text-sm text-orange-700 dark:text-orange-300">Organizations not yet assigned to a college</span>
+                      </div>
+                    </div>
+                    <div class="flex items-center">
+                      <span class="mr-2 text-sm font-medium px-2 py-1 rounded-full bg-orange-100 dark:bg-orange-800 text-orange-600 dark:text-orange-200">
+                        {{ nonCollegeOrganizations.length }} Organizations
+                      </span>
+                      <svg
+                        :class="{'transform rotate-180': openColleges.includes('non-college')}"
+                        class="w-5 h-5 transition-transform text-orange-500 dark:text-orange-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M19 9l-7 7-7-7"
+                        ></path>
+                      </svg>
+                    </div>
+                  </div>
+
+                  <!-- Non-College Organizations List -->
+                  <div v-if="openColleges.includes('non-college')" 
+                      class="p-4 divide-y divide-orange-100 dark:divide-orange-800 bg-white dark:bg-gray-800 transition-all duration-300 ease-in-out">
+                    <div class="overflow-x-auto -mx-4 sm:-mx-0">
+                      <div class="flex justify-between items-center mb-4 px-6">
+                        <h4 class="text-sm font-medium text-orange-700 dark:text-orange-300">Organizations not assigned to colleges</h4>
+                      </div>
+                      <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <thead class="bg-gray-50 dark:bg-gray-700">
+                          <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                              Organization
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                              Email
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                              Role
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                              Status
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                              Actions
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                          <tr v-for="user in nonCollegeOrganizations" :key="`non-college-${user.id}`" class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                              <div class="flex items-center">
+                                <div v-if="user.profile_photo_url" class="flex-shrink-0 h-10 w-10">
+                                  <img class="h-10 w-10 rounded-full object-cover border border-gray-200 dark:border-gray-600" :src="user.profile_photo_url" alt="" />
+                                </div>
+                                <div v-else class="h-10 w-10 bg-gradient-to-br from-orange-500 to-red-400 rounded-full flex items-center justify-center text-white font-medium shadow-inner">
+                                  {{ user.name ? user.name.charAt(0).toUpperCase() : 'O' }}
+                                </div>
+                                <div class="ml-4">
+                                  <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                    {{ user.name || 'Unknown Organization' }}
+                                  </div>
+                                </div>
+                              </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                              <div class="text-sm text-gray-900 dark:text-gray-100">{{ user.email || 'No email' }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                              <span
+                                :class="[
+                                  'px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full',
+                                  user.role && user.role.slug === 'admin' ? 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200' : 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
+                                ]"
+                              >
+                                {{ user.role ? user.role.name : 'No role' }}
+                              </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                              <!-- Status Toggle Button -->
+                              <button
+                                @click="toggleUserStatus(user)"
+                                :class="[
+                                  'relative inline-flex items-center rounded-full transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800',
+                                  user.status === 'active' ? 'bg-green-200 hover:bg-green-300' : 'bg-gray-200 hover:bg-gray-300',
+                                  'h-6 w-11'
+                                ]"
+                                :title="`Toggle status to ${user.status === 'active' ? 'inactive' : 'active'}`"
+                              >
+                                <!-- Toggle Knob -->
+                                <span
+                                  :class="[
+                                    'inline-block rounded-full shadow-sm transform transition-all duration-300 ease-in-out',
+                                    user.status === 'active' ? 'translate-x-5 bg-green-600' : 'translate-x-0 bg-gray-400',
+                                    'h-4 w-4'
+                                  ]"
+                                >
+                                  <!-- Icon inside the knob -->
+                                  <span class="flex items-center justify-center h-full w-full text-white">
+                                    <!-- Check Icon for Active -->
+                                    <svg
+                                      v-if="user.status === 'active'"
+                                      class="h-2.5 w-2.5"
+                                      fill="currentColor"
+                                      viewBox="0 0 20 20"
+                                    >
+                                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                    
+                                    <!-- X Icon for Inactive -->
+                                    <svg
+                                      v-else
+                                      class="h-2.5 w-2.5"
+                                      fill="currentColor"
+                                      viewBox="0 0 20 20"
+                                    >
+                                      <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                    </svg>
+                                  </span>
+                                </span>
+                              </button>
+                              <!-- Status Label -->
+                              <span class="ml-2 text-xs font-medium" :class="user.status === 'active' ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'">
+                                {{ user.status === 'active' ? 'Active' : 'Inactive' }}
+                              </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                              <button
+                                @click="openUserSelectionModalForAssignment(user)"
+                                class="inline-flex items-center text-blue-500 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors duration-150 mr-4"
+                                title="Assign to College"
+                              >
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                </svg>
+                                Assign
+                              </button>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+
                 <div v-for="college in colleges" :key="college.id" class="border border-gray-200 dark:border-gray-700 rounded-md overflow-hidden shadow-sm hover:shadow transition-shadow duration-200" data-college-accordion>
                   <div 
                     @click="toggleCollege(college.id, $event)"
@@ -389,7 +633,12 @@
         <div class="p-4 sm:p-6">
           <div class="flex items-center justify-between mb-4 sm:mb-5">
             <h2 class="text-base sm:text-lg font-medium text-gray-900 dark:text-gray-100 pr-4">
-              Select Organization to Add to {{ selectedCollegeId ? selectedCollegeName : 'a College' }}
+              <span v-if="selectedUsers.length === 1 && selectedUsers[0]">
+                Assign "{{ selectedUsers[0].name }}" to a College
+              </span>
+              <span v-else>
+                Select Organization to Add to {{ selectedCollegeId ? selectedCollegeName : 'a College' }}
+              </span>
             </h2>
             <button @click="closeUserSelectionModal" class="text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 flex-shrink-0">
               <svg class="h-5 w-5 sm:h-6 sm:w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -398,8 +647,8 @@
             </button>
           </div>
 
-          <!-- Search Input -->
-          <div class="mb-3 sm:mb-4">
+          <!-- Search Input (only show if not assigning a specific user) -->
+          <div v-if="!(selectedUsers.length === 1 && selectedUsers[0])" class="mb-3 sm:mb-4">
             <input
               v-model="searchQuery"
               type="text"
@@ -423,8 +672,25 @@
             </select>
           </div>
 
-          <!-- Users List -->
-          <div class="max-h-64 sm:max-h-96 overflow-y-auto">
+          <!-- Show selected user info if assigning specific user -->
+          <div v-if="selectedUsers.length === 1 && selectedUsers[0]" class="mb-4 p-3 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg">
+            <p class="text-sm text-blue-800 dark:text-blue-200 mb-2">Organization to assign:</p>
+            <div class="flex items-center">
+              <div v-if="selectedUsers[0].profile_photo_url" class="flex-shrink-0 h-10 w-10 mr-3">
+                <img class="h-10 w-10 rounded-full object-cover border border-gray-200 dark:border-gray-600" :src="selectedUsers[0].profile_photo_url" alt="" />
+              </div>
+              <div v-else class="h-10 w-10 bg-gradient-to-br from-orange-500 to-red-400 rounded-full flex items-center justify-center text-white font-medium shadow-inner text-sm mr-3">
+                {{ selectedUsers[0].name ? selectedUsers[0].name.charAt(0).toUpperCase() : 'O' }}
+              </div>
+              <div>
+                <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ selectedUsers[0].name || 'Unknown Organization' }}</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400">{{ selectedUsers[0].email || 'No email' }}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Users List (only show if not assigning a specific user) -->
+          <div v-if="!(selectedUsers.length === 1 && selectedUsers[0])" class="max-h-64 sm:max-h-96 overflow-y-auto">
             <div v-if="filteredUsers.length === 0" class="text-center text-gray-500 dark:text-gray-400 py-6 sm:py-8">
               <p class="text-sm">No organizations found.</p>
             </div>
@@ -482,7 +748,12 @@
               @click="openConfirmModal"
               type="button"
             >
-              Add Selected Organizations
+              <span v-if="selectedUsers.length === 1 && selectedUsers[0]">
+                Assign to College
+              </span>
+              <span v-else>
+                Add Selected Organizations
+              </span>
             </button>
           </div>
         </div>
@@ -625,6 +896,12 @@ export default {
         ((user.name && user.name.toLowerCase().includes(this.searchQuery.toLowerCase())) ||
          (user.email && user.email.toLowerCase().includes(this.searchQuery.toLowerCase())))
       );
+    },
+    nonCollegeOrganizations() {
+      if (!this.users || !Array.isArray(this.users)) {
+        return [];
+      }
+      return this.users.filter(user => !user.college_id);
     }
   },
   mounted() {
@@ -756,7 +1033,9 @@ export default {
       });
     },
     getTotalUsersCount() {
-      return this.colleges.reduce((total, college) => total + college.users.length,0);
+      const collegeUsers = this.colleges.reduce((total, college) => total + college.users.length, 0);
+      const nonCollegeUsers = this.nonCollegeOrganizations.length;
+      return collegeUsers + nonCollegeUsers;
     },
     openUserSelectionModalForNewOrg() {
       this.selectedCollegeId = null;
@@ -771,6 +1050,13 @@ export default {
       this.selectedCollegeName = college ? college.name : '';
       this.searchQuery = '';
       this.selectedUsers = [];
+      this.showUserSelectionModal = true;
+    },
+    openUserSelectionModalForAssignment(user) {
+      this.selectedCollegeId = null;
+      this.selectedCollegeName = 'Select College';
+      this.searchQuery = '';
+      this.selectedUsers = [user]; // Pre-select the user
       this.showUserSelectionModal = true;
     },
     toggleUserStatus(user) {
