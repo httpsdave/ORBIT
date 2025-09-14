@@ -46,10 +46,20 @@ class StudentOrgController extends Controller
             ->where('form_type', 'LSPU-OSAS-SF-007')
             ->orderByDesc('created_at')
             ->first();
+            
+        // Latest approved Student Organization Form (SF-001) or Renewal Form (SF-002)
+        $latestOrgApp = \App\Models\OrganizationApplication::where('user_id', $user->id)
+            ->where('status', 'Approved')
+            ->whereIn('form_type', ['LSPU-OSAS-SF-001', 'LSPU-OSAS-SF-002'])
+            ->orderByDesc('created_at')
+            ->first();
         
         // Get adviser information from the latest available form (prefer members, fallback to officers)
         $adviser_name = $latestMembersApp->adviser_name ?? $latestOfficersApp->adviser_name ?? null;
         $second_adviser = $latestMembersApp->second_adviser ?? $latestOfficersApp->second_adviser ?? null;
+        
+        // Get president name from the latest approved organization/renewal form
+        $president_name = $latestOrgApp->president_name ?? null;
         
         // Get members and officers from the latest approved forms
         $members = $latestMembersApp ? $latestMembersApp->members : collect();
@@ -59,6 +69,7 @@ class StudentOrgController extends Controller
         $organizationDetails = [
             'adviser_name' => $adviser_name,
             'second_adviser' => $second_adviser,
+            'president_name' => $president_name,
             'members_count' => $members->count(),
             'officers_count' => $officers->count(),
             'members' => $members,

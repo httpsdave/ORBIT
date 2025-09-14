@@ -60,6 +60,10 @@
 
                                 <h1 class="text-3xl font-bold mb-2" :class="isDarkMode ? 'text-white' : 'text-gray-900'">{{ studentOrg.name }}</h1>
                                 
+                                <div v-if="studentOrg.email" class="text-xl mb-2" :class="[isDarkMode ? 'text-gray-400' : 'text-gray-500']">
+                                    {{ studentOrg.email }}
+                                </div>
+
                                 <div v-if="studentOrg.acronym" class="text-xl mb-6" :class="isDarkMode ? 'text-gray-400' : 'text-gray-500'">
                                     {{ studentOrg.acronym }}
                                 </div>
@@ -70,11 +74,16 @@
                                         About the Organization
                                     </h2>
                                     <div class="p-6 rounded-lg border" :class="isDarkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-100'">
-                                        <p v-if="studentOrg.description" :class="isDarkMode ? 'text-gray-300' : 'text-gray-700'">
-                                            {{ studentOrg.description }}
-                                        </p>
+                                        <div v-if="organizationDetails.president_name">
+                                            <p class="text-sm font-medium mb-2" :class="isDarkMode ? 'text-gray-400' : 'text-gray-500'">
+                                                Current President:
+                                            </p>
+                                            <p class="text-lg font-semibold" :class="isDarkMode ? 'text-gray-200' : 'text-gray-800'">
+                                                {{ organizationDetails.president_name }}
+                                            </p>
+                                        </div>
                                         <p v-else :class="isDarkMode ? 'text-gray-400' : 'text-gray-500'" class="italic">
-                                            No description available
+                                            No president information available
                                         </p>
                                     </div>
                                 </div>

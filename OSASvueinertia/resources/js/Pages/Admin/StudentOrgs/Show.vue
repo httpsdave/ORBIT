@@ -57,11 +57,16 @@
                             About the Organization
                         </h2>
                         <div class="p-6 rounded-lg border bg-gray-50 dark:bg-gray-700 border-gray-100 dark:border-gray-600">
-                            <p v-if="studentOrg.description" class="text-gray-700 dark:text-gray-300">
-                                {{ studentOrg.description }}
-                            </p>
+                            <div v-if="organizationDetails.president_name">
+                                <p class="text-sm font-medium mb-2 text-gray-500 dark:text-gray-400">
+                                    Current President:
+                                </p>
+                                <p class="text-lg font-semibold text-gray-800 dark:text-gray-200">
+                                    {{ organizationDetails.president_name }}
+                                </p>
+                            </div>
                             <p v-else class="text-gray-500 dark:text-gray-400 italic">
-                                No description available
+                                No president information available
                             </p>
                         </div>
                     </div>
