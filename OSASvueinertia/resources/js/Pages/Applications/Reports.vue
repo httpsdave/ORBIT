@@ -695,6 +695,7 @@ watch(showStatusModal, (val) => {
                 <div v-if="page.activityData" class="text-sm text-gray-600 dark:text-gray-400">
                   <p><strong>Activity:</strong> {{ page.activityData.name || 'Not specified' }}</p>
                   <p><strong>Target Date:</strong> {{ page.activityData.target_date || 'Not specified' }}</p>
+                  <p><strong>Target No. of Participants:</strong> {{ page.activityData.target_participants || 'Not specified' }}</p>
                 </div>
               </div>
 

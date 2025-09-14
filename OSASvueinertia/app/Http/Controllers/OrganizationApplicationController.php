@@ -191,6 +191,7 @@ class OrganizationApplicationController extends Controller
                 'activities.*.persons_involved' => 'required|string|max:255',
                 'activities.*.target_date' => 'required|date',
                 'activities.*.budget' => 'nullable|string|max:255',
+                'activities.*.target_participants' => 'required|integer|min:0|max:99999',
             ]);
         } elseif ($request->form_type === 'LSPU-OSAS-SF-005') {
             $validationRules = array_merge($validationRules, [
@@ -592,6 +593,18 @@ class OrganizationApplicationController extends Controller
             ]);
             
             // Special handling for activities below
+            if ($request->has('activities')) {
+                $validationRules = array_merge($validationRules, [
+                    'activities' => 'required|array|min:1',
+                    'activities.*.objective' => 'required|string|max:255',
+                    'activities.*.name' => 'required|string|max:255',
+                    'activities.*.description' => 'required|string|max:1000',
+                    'activities.*.persons_involved' => 'required|string|max:255',
+                    'activities.*.target_date' => 'required|date',
+                    'activities.*.budget' => 'nullable|string|max:255',
+                    'activities.*.target_participants' => 'required|integer|min:0|max:99999',
+                ]);
+            }
         } elseif ($application->form_type === 'LSPU-OSAS-SF-005') {
             $validationRules = array_merge($validationRules, [
                 'semester' => 'required|string|in:1st,2nd,Summer,Inter',

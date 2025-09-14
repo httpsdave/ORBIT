@@ -15,6 +15,7 @@ class Activity extends Model
         'persons_involved',
         'target_date',
         'budget',
+        'target_participants',
     ];
     protected $casts = [
         'target_date' => 'date:Y-m-d'

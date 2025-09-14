@@ -74,8 +74,10 @@ const initializeActivities = () => {
         name: '',
         description: '',
         persons_involved: '',
-        target_date: '',
-        budget: 0
+          target_date: '',
+          budget: 0,
+          // target participants (integer only)
+          target_participants: ''
       }
     ];
   }
@@ -155,7 +157,8 @@ watch(() => props.initialFormData, (newData) => {
   if (Array.isArray(newData.activities) && (!form.activities || form.activities.length === 0)) {
     form.activities = newData.activities.map(act => ({
       ...act,
-      target_date: formatDateForInput(act.target_date)
+      target_date: formatDateForInput(act.target_date),
+      target_participants: act.target_participants ?? ''
     }));
     // Update contenteditable divs after data changes
     nextTick(() => {
@@ -387,7 +390,8 @@ const addActivity = () => {
         description: '',
         persons_involved: '',
         target_date: '',
-        budget: ''
+        budget: '',
+        target_participants: ''
     });
     // Go to the new activity page
     currentPage.value = totalPages.value;
@@ -552,6 +556,25 @@ const validateForm = () => {
     if (!activity.target_date) {
       errors.value.activities[index].target_date = 'Target date is required';
       isValid = false;
+    }
+
+    // Target participants - required and integer >= 0
+    const tp = activity.target_participants;
+    if (tp === undefined || tp === null || String(tp).trim() === '') {
+      errors.value.activities[index].target_participants = 'Target number of participants is required';
+      isValid = false;
+    } else if (!/^\d+$/.test(String(tp))) {
+      errors.value.activities[index].target_participants = 'Target number of participants must be a whole number';
+      isValid = false;
+    } else {
+      const num = parseInt(String(tp), 10);
+      if (num < 0) {
+        errors.value.activities[index].target_participants = 'Target number of participants must be 0 or greater';
+        isValid = false;
+      } else if (num > 99999) {
+        errors.value.activities[index].target_participants = 'Target number of participants must be less than 100000';
+        isValid = false;
+      }
     }
 
     // Budget is now optional - no validation needed
@@ -937,18 +960,37 @@ nextTick(() => {
       </div>
 
       <!-- Add Activity Button -->
-      <div class="text-center mb-6">
+      <div class="flex items-center justify-center mb-6 gap-2">
         <button type="button" @click="addActivity" class="bg-blue-500 text-white px-3 py-1 rounded text-sm">
           Add Activity
         </button>
+
         <button
           type="button"
           @click="removeActivity(startIndex)"
-          class="bg-red-500 text-white px-3 py-1 rounded text-sm ml-2"
+          class="bg-red-500 text-white px-3 py-1 rounded text-sm"
           :disabled="form.activities.length <= 1"
         >
           Remove Activity
         </button>
+
+        <!-- Target participants input to the right of Remove Activity -->
+        <div class="flex flex-col gap-1 ml-3">
+          <div class="flex items-center gap-2">
+            <label class="text-sm">Target No. of Participants</label>
+            <input
+              type="text"
+              inputmode="numeric"
+              pattern="[0-9]*"
+              class="border p-1 w-24 text-center"
+              v-if="form.activities[startIndex]"
+              v-model="form.activities[startIndex].target_participants"
+              @input="(e) => { e.target.value = e.target.value.replace(/\D+/g, ''); }"
+            />
+            <input v-else class="border p-1 w-24 text-center" disabled />
+          </div>
+          <p v-if="errors.activities && errors.activities[startIndex] && errors.activities[startIndex].target_participants" class="text-red-500 text-xs">{{ errors.activities[startIndex].target_participants }}</p>
+        </div>
       </div>
     </div>
 
