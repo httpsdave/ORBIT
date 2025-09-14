@@ -236,57 +236,69 @@ onBeforeUnmount(() => {
                 <!-- Form -->
                 <form @submit.prevent="submit" class="space-y-4 sm:space-y-6" novalidate>
                     <div>
-                        <label for="email" class="block text-xs sm:text-sm font-medium mb-2 sm:mb-3" :class="isDarkMode ? 'text-gray-300' : 'text-gray-200'">
-                            Email Address
-                        </label>
                         <div class="relative group">
+                            <TextInput
+                                id="email"
+                                type="email"
+                                class="peer pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 text-sm sm:text-base rounded-lg w-full border-0 focus:border-blue-400 focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 transition-all duration-300 bg-white bg-opacity-10 backdrop-blur-sm text-white placeholder-transparent"
+                                v-model="form.email"
+                                placeholder="Email Address"
+                                required
+                                autofocus
+                                autocomplete="username"
+                                aria-label="Email address"
+                            />
+                            <label 
+                                for="email" 
+                                class="floating-label absolute left-10 sm:left-12 top-3 sm:top-4 text-sm sm:text-base text-gray-300 pointer-events-none peer-focus:floating-label-active peer-[:not(:placeholder-shown)]:floating-label-active"
+                                :class="[
+                                    form.email ? 'floating-label-active' : '',
+                                ]"
+                            >
+                                Email Address
+                            </label>
                             <div class="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-focus-within:text-blue-400 transition-colors duration-300" :class="isDarkMode ? 'text-gray-500' : 'text-gray-400'">
                                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                                     <circle cx="12" cy="7" r="4"></circle>
                                 </svg>
                             </div>
-                            <TextInput
-                                id="email"
-                                type="email"
-                                class="pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 text-sm sm:text-base rounded-lg w-full border-0 focus:border-blue-400 focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 transition-all duration-300 bg-white bg-opacity-10 backdrop-blur-sm text-white placeholder-gray-300"
-                                v-model="form.email"
-                                placeholder="Enter your email address"
-                                required
-                                autofocus
-                                autocomplete="username"
-                                aria-label="Email address"
-                            />
                         </div>
                         <InputError class="mt-2 text-red-400 text-sm" :message="form.errors.email" />
                     </div>
 
                     <div>
-                        <label for="password" class="block text-xs sm:text-sm font-medium mb-2 sm:mb-3" :class="isDarkMode ? 'text-gray-300' : 'text-gray-200'">
-                            Password
-                        </label>
                         <div class="relative group">
+                            <TextInput
+                                id="password"
+                                :type="passwordVisible ? 'text' : 'password'"
+                                :class="[
+                                    'peer pl-10 sm:pl-12 pr-10 sm:pr-12 py-3 sm:py-4 text-sm sm:text-base rounded-lg w-full border-0 focus:border-blue-400 focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 transition-all duration-300 backdrop-blur-sm placeholder-transparent',
+                                    isDarkMode 
+                                        ? 'bg-white bg-opacity-10 text-white' 
+                                        : 'bg-gray-800 bg-opacity-80 text-white'
+                                ]"
+                                v-model="form.password"
+                                placeholder="Password"
+                                required
+                                autocomplete="current-password"
+                                aria-label="Password"
+                            />
+                            <label 
+                                for="password" 
+                                class="floating-label absolute left-10 sm:left-12 top-3 sm:top-4 text-sm sm:text-base text-gray-300 pointer-events-none peer-focus:floating-label-active peer-[:not(:placeholder-shown)]:floating-label-active"
+                                :class="[
+                                    form.password ? 'floating-label-active' : '',
+                                ]"
+                            >
+                                Password
+                            </label>
                             <div class="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-focus-within:text-blue-400 transition-colors duration-300" :class="isDarkMode ? 'text-gray-500' : 'text-gray-400'">
                                     <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                                     <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                                 </svg>
                             </div>
-                            <TextInput
-                                id="password"
-                                :type="passwordVisible ? 'text' : 'password'"
-                                :class="[
-                                    'pl-10 sm:pl-12 pr-10 sm:pr-12 py-3 sm:py-4 text-sm sm:text-base rounded-lg w-full border-0 focus:border-blue-400 focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 transition-all duration-300 backdrop-blur-sm',
-                                    isDarkMode 
-                                        ? 'bg-white bg-opacity-10 text-white placeholder-gray-300' 
-                                        : 'bg-gray-800 bg-opacity-80 text-white placeholder-gray-400'
-                                ]"
-                                v-model="form.password"
-                                placeholder="Enter your password"
-                                required
-                                autocomplete="current-password"
-                                aria-label="Password"
-                            />
                             <button 
                                 type="button" 
                                 @click="togglePasswordVisibility" 
@@ -458,6 +470,53 @@ onBeforeUnmount(() => {
 
 .animate-fadeIn {
   animation: fadeIn 0.6s ease-out forwards;
+}
+
+/* Floating label animations */
+.floating-label {
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transform-origin: left top;
+  will-change: transform, color, background-color;
+}
+
+.floating-label-active {
+  transform: translateY(-1.75rem) translateX(-2rem) scale(0.75) !important;
+  color: #60a5fa !important;
+  background-color: rgba(17, 24, 39, 0.9) !important;
+  padding: 0.125rem 0.25rem !important;
+  border-radius: 0.25rem !important;
+  backdrop-filter: blur(4px);
+}
+
+/* Peer-based animations for even smoother transitions */
+.peer:focus ~ .floating-label {
+  transform: translateY(-1.75rem) translateX(-2rem) scale(0.75);
+  color: #60a5fa;
+  background-color: rgba(17, 24, 39, 0.9);
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  backdrop-filter: blur(4px);
+}
+
+.peer:not(:placeholder-shown) ~ .floating-label {
+  transform: translateY(-1.75rem) translateX(-2rem) scale(0.75);
+  color: #60a5fa;
+  background-color: rgba(17, 24, 39, 0.9);
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  backdrop-filter: blur(4px);
+}
+
+/* Responsive adjustments */
+@media (min-width: 640px) {
+  .floating-label-active {
+    transform: translateY(-1.875rem) translateX(-2.5rem) scale(0.75) !important;
+  }
+  
+  .peer:focus ~ .floating-label,
+  .peer:not(:placeholder-shown) ~ .floating-label {
+    transform: translateY(-1.875rem) translateX(-2.5rem) scale(0.75);
+  }
 }
 
 /* Slideshow transition */
