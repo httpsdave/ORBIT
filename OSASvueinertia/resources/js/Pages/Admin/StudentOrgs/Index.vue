@@ -79,24 +79,25 @@
               <!-- Mobile Card View (hidden on large screens and above) -->
               <div class="block xl:hidden space-y-2 sm:space-y-3">
                 <!-- Non-College Affiliated Organizations Section -->
-                <div v-if="nonCollegeOrganizations.length > 0" class="bg-orange-50 dark:bg-orange-900/20 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-orange-200 dark:border-orange-800 shadow-sm hover:shadow-md transition-all duration-200">
+                <div v-if="nonCollegeOrganizations.length > 0" class="bg-gray-50 dark:bg-gray-700 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-gray-200 dark:border-gray-600 shadow-sm hover:shadow-md transition-all duration-200">
                   <div 
                     @click="toggleCollege('non-college', $event)"
                     class="flex justify-between items-center cursor-pointer"
                   >
                     <div class="flex items-center flex-1 min-w-0">
                       <div class="min-w-0 flex-1">
-                        <h4 class="font-semibold text-orange-900 dark:text-orange-100 text-sm sm:text-base lg:text-lg truncate">Non-College Affiliated</h4>
-                        <p class="text-xs sm:text-sm text-orange-700 dark:text-orange-300 truncate">Organizations not yet assigned to a college</p>
+                        <h4 class="font-semibold text-gray-900 dark:text-gray-100 text-sm sm:text-base lg:text-lg truncate">Non-College Affiliated Organizations</h4>
+                        
                       </div>
                     </div>
                     <div class="flex items-center ml-2 sm:ml-3 flex-shrink-0">
-                      <span class="mr-1.5 sm:mr-2 text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full flex-shrink-0 bg-orange-100 dark:bg-orange-800 text-orange-600 dark:text-orange-200">
+                      <span class="mr-1.5 sm:mr-2 text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full flex-shrink-0" 
+                            :class="nonCollegeOrganizations.length > 0 ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-200' : 'bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-400'">
                         {{ nonCollegeOrganizations.length }}
                       </span>
                       <svg
                         :class="{'transform rotate-180': openColleges.includes('non-college')}"
-                        class="w-4 h-4 sm:w-5 sm:h-5 transition-transform text-orange-500 dark:text-orange-400 flex-shrink-0"
+                        class="w-4 h-4 sm:w-5 sm:h-5 transition-transform text-gray-500 dark:text-gray-400 flex-shrink-0"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -107,18 +108,18 @@
                   </div>
 
                   <!-- Mobile Non-College Organizations List -->
-                  <div v-if="openColleges.includes('non-college')" class="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-orange-200 dark:border-orange-700">
+                  <div v-if="openColleges.includes('non-college')" class="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-200 dark:border-gray-600">
                     <div class="space-y-2 sm:space-y-3">
                       <div class="flex flex-col xs:flex-row xs:justify-between xs:items-center mb-2 sm:mb-3 space-y-1 xs:space-y-0">
-                        <span class="text-xs sm:text-sm font-medium text-orange-700 dark:text-orange-300">Organizations ({{ nonCollegeOrganizations.length }})</span>
+                        <span class="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">Organizations ({{ nonCollegeOrganizations.length }})</span>
                       </div>
-                      <div v-for="user in nonCollegeOrganizations" :key="`mobile-non-college-org-${user.id}`" class="bg-white dark:bg-gray-600 rounded-lg p-2.5 sm:p-3 border border-orange-200 dark:border-orange-500 shadow-sm">
+                      <div v-for="user in nonCollegeOrganizations" :key="`mobile-non-college-org-${user.id}`" class="bg-white dark:bg-gray-600 rounded-lg p-2.5 sm:p-3 border border-gray-200 dark:border-gray-500 shadow-sm">
                         <div class="flex items-center justify-between">
                           <div class="flex items-center space-x-2 flex-1 min-w-0">
                             <div v-if="user.profile_photo_url" class="flex-shrink-0 h-7 w-7 sm:h-8 sm:w-8">
                               <img class="h-7 w-7 sm:h-8 sm:w-8 rounded-full object-cover border border-gray-200 dark:border-gray-500" :src="user.profile_photo_url" alt="" />
                             </div>
-                            <div v-else class="h-7 w-7 sm:h-8 sm:w-8 bg-gradient-to-br from-orange-500 to-red-400 rounded-full flex items-center justify-center text-white font-medium shadow-inner text-xs flex-shrink-0">
+                            <div v-else class="h-7 w-7 sm:h-8 sm:w-8 bg-gradient-to-br from-blue-500 to-green-400 rounded-full flex items-center justify-center text-white font-medium shadow-inner text-xs flex-shrink-0">
                               {{ user.name ? user.name.charAt(0).toUpperCase() : 'O' }}
                             </div>
                             <div class="min-w-0 flex-1">
@@ -283,24 +284,25 @@
               <!-- Desktop Accordion View (hidden on mobile and tablet) -->
               <div class="hidden xl:block space-y-3">
                 <!-- Non-College Affiliated Organizations Section -->
-                <div v-if="nonCollegeOrganizations.length > 0" class="border border-orange-200 dark:border-orange-700 rounded-md overflow-hidden shadow-sm hover:shadow transition-shadow duration-200 bg-orange-50/50 dark:bg-orange-900/10" data-college-accordion>
+                <div v-if="nonCollegeOrganizations.length > 0" class="border border-gray-200 dark:border-gray-700 rounded-md overflow-hidden shadow-sm hover:shadow transition-shadow duration-200" data-college-accordion>
                   <div 
                     @click="toggleCollege('non-college', $event)"
-                    class="flex justify-between items-center p-4 cursor-pointer bg-orange-50 dark:bg-orange-900/20 hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors duration-150"
+                    class="flex justify-between items-center p-4 cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-150"
                   >
                     <div class="flex items-center">
                       <div>
-                        <span class="text-lg font-medium text-orange-900 dark:text-orange-100">Non-College Affiliated</span>
-                        <span class="ml-2 text-sm text-orange-700 dark:text-orange-300">Organizations not yet assigned to a college</span>
+                        <span class="text-lg font-medium text-gray-900 dark:text-gray-100">Non-College Affiliated Organizations</span>
+                        
                       </div>
                     </div>
                     <div class="flex items-center">
-                      <span class="mr-2 text-sm font-medium px-2 py-1 rounded-full bg-orange-100 dark:bg-orange-800 text-orange-600 dark:text-orange-200">
+                      <span class="mr-2 text-sm font-medium px-2 py-1 rounded-full" 
+                            :class="nonCollegeOrganizations.length > 0 ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-200' : 'bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-400'">
                         {{ nonCollegeOrganizations.length }} Organizations
                       </span>
                       <svg
                         :class="{'transform rotate-180': openColleges.includes('non-college')}"
-                        class="w-5 h-5 transition-transform text-orange-500 dark:text-orange-400"
+                        class="w-5 h-5 transition-transform text-gray-500 dark:text-gray-400"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -318,10 +320,10 @@
 
                   <!-- Non-College Organizations List -->
                   <div v-if="openColleges.includes('non-college')" 
-                      class="p-4 divide-y divide-orange-100 dark:divide-orange-800 bg-white dark:bg-gray-800 transition-all duration-300 ease-in-out">
+                      class="p-4 divide-y divide-gray-100 dark:divide-gray-700 bg-white dark:bg-gray-800 transition-all duration-300 ease-in-out">
                     <div class="overflow-x-auto -mx-4 sm:-mx-0">
                       <div class="flex justify-between items-center mb-4 px-6">
-                        <h4 class="text-sm font-medium text-orange-700 dark:text-orange-300">Organizations not assigned to colleges</h4>
+                        
                       </div>
                       <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                         <thead class="bg-gray-50 dark:bg-gray-700">
@@ -350,7 +352,7 @@
                                 <div v-if="user.profile_photo_url" class="flex-shrink-0 h-10 w-10">
                                   <img class="h-10 w-10 rounded-full object-cover border border-gray-200 dark:border-gray-600" :src="user.profile_photo_url" alt="" />
                                 </div>
-                                <div v-else class="h-10 w-10 bg-gradient-to-br from-orange-500 to-red-400 rounded-full flex items-center justify-center text-white font-medium shadow-inner">
+                                <div v-else class="h-10 w-10 bg-gradient-to-br from-blue-500 to-green-400 rounded-full flex items-center justify-center text-white font-medium shadow-inner">
                                   {{ user.name ? user.name.charAt(0).toUpperCase() : 'O' }}
                                 </div>
                                 <div class="ml-4">
@@ -679,7 +681,7 @@
               <div v-if="selectedUsers[0].profile_photo_url" class="flex-shrink-0 h-10 w-10 mr-3">
                 <img class="h-10 w-10 rounded-full object-cover border border-gray-200 dark:border-gray-600" :src="selectedUsers[0].profile_photo_url" alt="" />
               </div>
-              <div v-else class="h-10 w-10 bg-gradient-to-br from-orange-500 to-red-400 rounded-full flex items-center justify-center text-white font-medium shadow-inner text-sm mr-3">
+              <div v-else class="h-10 w-10 bg-gradient-to-br from-blue-500 to-green-400 rounded-full flex items-center justify-center text-white font-medium shadow-inner text-sm mr-3">
                 {{ selectedUsers[0].name ? selectedUsers[0].name.charAt(0).toUpperCase() : 'O' }}
               </div>
               <div>
