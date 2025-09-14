@@ -1000,8 +1000,16 @@ export default {
       });
     },
     getTotalUsersCount() {
-      const collegeUsers = this.colleges.reduce((total, college) => total + college.users.length, 0);
-      const nonCollegeUsers = this.nonCollegeOrganizations.length;
+      // Exclude users with the admin role from the total organizations count
+      const isAdmin = (user) => user && user.role && user.role.slug === 'admin';
+
+      const collegeUsers = this.colleges.reduce((total, college) => {
+        if (!college || !Array.isArray(college.users)) return total;
+        return total + college.users.filter(u => !isAdmin(u)).length;
+      }, 0);
+
+      const nonCollegeUsers = this.nonCollegeOrganizations.filter(u => !isAdmin(u)).length;
+
       return collegeUsers + nonCollegeUsers;
     },
     openUserSelectionModalForNewOrg() {
