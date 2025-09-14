@@ -132,7 +132,7 @@
                           <div class="flex items-center space-x-1.5 sm:space-x-2 ml-2 flex-shrink-0">
                             <!-- Improved Status Toggle (mobile) -->
                             <button
-                              @click="toggleUserStatus(user)"
+                              @click.stop="toggleUserStatus(user)"
                               role="switch"
                               :aria-checked="user.status === 'active'"
                               :title="`Toggle status to ${user.status === 'active' ? 'inactive' : 'active'}`"
@@ -244,7 +244,7 @@
                           <div class="flex items-center space-x-1.5 sm:space-x-2 ml-2 flex-shrink-0">
                             <!-- Improved Status Toggle (mobile for colleges) -->
                             <button
-                              @click="toggleUserStatus(user)"
+                              @click.stop="toggleUserStatus(user)"
                               role="switch"
                               :aria-checked="user.status === 'active'"
                               :title="`Toggle status to ${user.status === 'active' ? 'inactive' : 'active'}`"
@@ -387,7 +387,7 @@
                             <td class="px-6 py-4 whitespace-nowrap">
                               <!-- Improved Status Toggle (desktop table) -->
                               <button
-                                @click="toggleUserStatus(user)"
+                                @click.stop="toggleUserStatus(user)"
                                 role="switch"
                                 :aria-checked="user.status === 'active'"
                                 :title="`Toggle status to ${user.status === 'active' ? 'inactive' : 'active'}`"
@@ -551,7 +551,7 @@
                             <td class="px-6 py-4 whitespace-nowrap">
                               <!-- Status Toggle Button -->
                               <button
-                                @click="toggleUserStatus(user)"
+                                @click.stop="toggleUserStatus(user)"
                                 :class="[
                                   'relative inline-flex items-center rounded-full transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800',
                                   user.status === 'active' ? 'bg-green-200 hover:bg-green-300' : 'bg-gray-200 hover:bg-gray-300',
@@ -841,6 +841,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Modal from '@/Components/Modal.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import { useForm } from '@inertiajs/vue3';
+import axios from 'axios';
 
 export default {
   components: {
@@ -1054,21 +1055,28 @@ export default {
       this.showUserSelectionModal = true;
     },
     toggleUserStatus(user) {
-      // Create a form to submit the status toggle
-      const form = useForm({
-        user_id: user.id
-      });
-      
-      form.post(route('admin.student-orgs.toggle-status'), {
-        preserveScroll: true,
-        onSuccess: () => {
-          // Update the user's status locally for immediate feedback
-          user.status = user.status === 'active' ? 'inactive' : 'active';
-        },
-        onError: (errors) => {
-          console.error('Error toggling status:', errors);
-        }
-      });
+      // Optimistic UI: update locally first to avoid dropdown closing / navigation
+      const previousStatus = user.status;
+      const newStatus = previousStatus === 'active' ? 'inactive' : 'active';
+      user.status = newStatus;
+
+      // Send a background request using axios so Inertia doesn't perform a navigation/redirect
+      axios.post(route('admin.student-orgs.toggle-status'), { user_id: user.id })
+        .then((response) => {
+          // If the server returns the authoritative status, apply it
+          if (response.data && response.data.status) {
+            user.status = response.data.status;
+          }
+        })
+        .catch((error) => {
+          console.error('Error toggling status:', error);
+          // Revert on error
+          user.status = previousStatus;
+          // Optional: surface the error to the user
+          if (error.response && error.response.data && error.response.data.message) {
+            alert(error.response.data.message);
+          }
+        });
     }
   }
 };
