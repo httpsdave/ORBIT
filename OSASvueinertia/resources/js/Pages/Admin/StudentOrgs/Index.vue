@@ -140,9 +140,9 @@
                               :class="user.status === 'active' ? 'bg-green-500 hover:bg-green-600 h-6 w-12' : 'bg-gray-200 hover:bg-gray-300 h-6 w-12'"
                             >
                               <span class="sr-only">Toggle organization status</span>
-                              <span
+                                <span
                                 :class="[
-                                  'inline-block bg-white rounded-full shadow transform transition-transform duration-200 flex items-center justify-center',
+                                  'inline-flex bg-white rounded-full shadow transform transition-transform duration-200 items-center justify-center',
                                   user.status === 'active' ? 'translate-x-6' : 'translate-x-0',
                                   'h-5 w-5'
                                 ]"
@@ -252,19 +252,14 @@
                               :class="user.status === 'active' ? 'bg-green-500 hover:bg-green-600 h-6 w-12' : 'bg-gray-200 hover:bg-gray-300 h-6 w-12'"
                             >
                               <span class="sr-only">Toggle organization status</span>
-                              <span
-                                :class="[
-                                  'inline-block bg-white rounded-full shadow transform transition-transform duration-200 flex items-center justify-center',
-                                  user.status === 'active' ? 'translate-x-6' : 'translate-x-0',
-                                  'h-5 w-5'
-                                ]"
+                                <span
+                                  :class="[
+                                    'inline-flex bg-white rounded-full shadow transform transition-transform duration-200 items-center justify-center',
+                                    user.status === 'active' ? 'translate-x-6' : 'translate-x-0',
+                                    'h-5 w-5'
+                                  ]"
                               >
-                                <svg v-if="user.status === 'active'" class="h-3 w-3 text-green-600" viewBox="0 0 20 20" fill="currentColor">
-                                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                                </svg>
-                                <svg v-else class="h-3 w-3 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                                  <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                </svg>
+                                <!-- knob icon intentionally removed -->
                               </span>
                             </button>
                             <button
@@ -397,17 +392,12 @@
                                 <span class="sr-only">Toggle organization status</span>
                                 <span
                                   :class="[
-                                    'inline-block bg-white rounded-full shadow transform transition-transform duration-200 flex items-center justify-center',
+                                    'inline-flex bg-white rounded-full shadow transform transition-transform duration-200 items-center justify-center',
                                     user.status === 'active' ? 'translate-x-7' : 'translate-x-0',
                                     'h-6 w-6'
                                   ]"
                                 >
-                                  <svg v-if="user.status === 'active'" class="h-3.5 w-3.5 text-green-600" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                                  </svg>
-                                  <svg v-else class="h-3.5 w-3.5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                  </svg>
+                                  <!-- knob icon intentionally removed -->
                                 </span>
                               </button>
                               <!-- Status Label -->
@@ -569,25 +559,7 @@
                                 >
                                   <!-- Icon inside the knob -->
                                   <span class="flex items-center justify-center h-full w-full text-white">
-                                    <!-- Check Icon for Active -->
-                                    <svg
-                                      v-if="user.status === 'active'"
-                                      class="h-2.5 w-2.5"
-                                      fill="currentColor"
-                                      viewBox="0 0 20 20"
-                                    >
-                                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                                    </svg>
-                                    
-                                    <!-- X Icon for Inactive -->
-                                    <svg
-                                      v-else
-                                      class="h-2.5 w-2.5"
-                                      fill="currentColor"
-                                      viewBox="0 0 20 20"
-                                    >
-                                      <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                    </svg>
+                                    <!-- knob icon intentionally removed -->
                                   </span>
                                 </span>
                               </button>

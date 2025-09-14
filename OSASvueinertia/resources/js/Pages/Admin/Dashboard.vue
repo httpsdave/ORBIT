@@ -393,6 +393,13 @@ const collegesWithOrgsCount = computed(() => {
     ).length;
 });
 
+// Non-college affiliated organizations count (total orgs minus sum of college orgs)
+const nonAffiliatedCount = computed(() => {
+    const totalCollegeOrgs = (props.collegesData || []).reduce((sum, c) => sum + (c && c.student_orgs_count ? c.student_orgs_count : 0), 0);
+    const total = props.totalStudentOrgs || 0;
+    return Math.max(0, total - totalCollegeOrgs);
+});
+
 // Average orgs per college - keeping for reference but we won't display it
 const avgOrgsPerCollege = computed(() => {
     if (collegesWithOrgsCount.value === 0) return 0;
@@ -408,8 +415,8 @@ const statsCards = computed(() => [
         color: 'blue'
     },
     {
-        title: 'Colleges with Orgs',
-        value: collegesWithOrgsCount.value,
+        title: 'Non-College Affiliated Orgs',
+        value: nonAffiliatedCount.value,
         icon: 'building',
         color: 'green'
     },
