@@ -295,7 +295,7 @@ const submit = () => {
         <input 
           v-model="form.organization_name" 
           @input="form.organization_name = $event.target.value.toUpperCase()"
-          class="border p-2 w-full" 
+          class="border p-2 w-full rounded-md" 
           style="text-transform: uppercase;" 
           required>
         <p v-if="errors.organization_name" class="text-red-500 text-sm mt-1">{{ errors.organization_name }}</p>
@@ -306,7 +306,7 @@ const submit = () => {
         <input 
           type="date" 
           :value="form.application_date" 
-          class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none text-center" 
+          class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none text-center rounded-md" 
           required 
           readonly 
           tabindex="-1" 
@@ -320,7 +320,7 @@ const submit = () => {
         <input 
           v-model="form.president_name" 
           @input="form.president_name = $event.target.value.toUpperCase()"
-          class="border p-2 w-full" 
+          class="border p-2 w-full rounded-md" 
           style="text-transform: uppercase;" 
           required>
         <p v-if="errors.president_name" class="text-red-500 text-sm mt-1">{{ errors.president_name }}</p>
@@ -328,7 +328,7 @@ const submit = () => {
       <!-- Right Column -->
       <div>
         <label class="block font-bold">Coordinator Name</label>
-        <input v-model="form.coordinator_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none; text-transform: uppercase;">
+  <input v-model="form.coordinator_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none rounded-md" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none; text-transform: uppercase;">
       </div>
       <!-- Left Column -->
       <div>
@@ -336,18 +336,18 @@ const submit = () => {
         <div class="flex gap-1">
           <input 
             v-model="form.adviser_prefix" 
-            class="border p-2 w-12 text-xs" 
+            class="border p-2 w-12 text-xs rounded-md" 
             placeholder="Pre"
             maxlength="6">
           <input 
             v-model="form.adviser_name" 
             @input="form.adviser_name = $event.target.value.toUpperCase()"
-            class="border p-2 flex-1" 
+            class="border p-2 flex-1 rounded-md" 
             style="text-transform: uppercase;" 
             required>
           <input 
             v-model="form.adviser_suffix" 
-            class="border p-2 w-14 text-xs" 
+            class="border p-2 w-14 text-xs rounded-md" 
             placeholder="Suf"
             maxlength="8">
         </div>
@@ -356,7 +356,7 @@ const submit = () => {
       <!-- Right Column -->
       <div>
         <label class="block font-bold">Director Name</label>
-        <input v-model="form.director_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none; text-transform: uppercase;">
+  <input v-model="form.director_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none rounded-md" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none; text-transform: uppercase;">
       </div>
       <!-- Left Column -->
       <div>
@@ -364,17 +364,17 @@ const submit = () => {
         <div class="flex gap-1">
           <input 
             v-model="form.dean_prefix" 
-            class="border p-2 w-12 text-xs" 
+            class="border p-2 w-12 text-xs rounded-md" 
             placeholder="Pre"
             maxlength="6">
           <input 
             v-model="form.dean_name" 
             @input="form.dean_name = $event.target.value.toUpperCase()"
-            class="border p-2 flex-1" 
+            class="border p-2 flex-1 rounded-md" 
             style="text-transform: uppercase;">
           <input 
             v-model="form.dean_suffix" 
-            class="border p-2 w-14 text-xs" 
+            class="border p-2 w-14 text-xs rounded-md" 
             placeholder="Suf"
             maxlength="8">
         </div>
