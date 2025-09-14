@@ -411,14 +411,14 @@ const statsCards = computed(() => [
     {
         title: 'Total Organizations',
         value: props.totalStudentOrgs,
-        icon: 'users-group',
-        color: 'blue'
+        icon: 'building',
+        color: 'green'
     },
     {
         title: 'Non-College Affiliated Orgs',
         value: nonAffiliatedCount.value,
-        icon: 'building',
-        color: 'green'
+        icon: 'users-group',
+        color: 'blue'
     },
     {
         title: 'Pending Applications',
