@@ -198,16 +198,20 @@ const viewReport = (report) => {
 }
 
 const handleReportContainerClick = (report, event) => {
-  // Don't trigger if clicking on dropdown button or its children
-  if (event.target.closest('.dropdown-container')) {
+  // If there's no report or no file path, do nothing
+  if (!report || !report.file_path) return
+
+  // If click originated from an interactive element, don't trigger view
+  // This keeps buttons, links, inputs, dropdowns, and file inputs working normally
+  if (event.target.closest('button, a, input, label, textarea, select, .dropdown-container, .upload-button, .file-preview')) {
     return
   }
-  
+
   // Don't trigger if we're currently editing this report
   if (editingReport.value && editingReport.value.id === report.id) {
     return
   }
-  
+
   // View the report
   viewReport(report)
 }
@@ -704,6 +708,7 @@ watch(showStatusModal, (val) => {
                 <div
                   v-for="(reportTypeName, reportType) in reportTypes"
                   :key="reportType"
+                  @click="handleReportContainerClick(page.reports[reportType], $event)"
                   :class="[
                     'border border-gray-200 dark:border-gray-700 rounded-xl p-4 lg:p-5 bg-gray-50 dark:bg-gray-900/50 transition-colors duration-200',
                     page.reports[reportType] 
@@ -954,7 +959,7 @@ watch(showStatusModal, (val) => {
       <div 
         ref="dropdownRef"
         v-if="activeDropdownReport"
-        class="fixed z-50 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 w-48"
+        class="report-dropdown fixed z-50 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 w-48"
         :style="{ top: `${dropdownPosition.top}px`, left: `${dropdownPosition.left}px`, visibility: activeDropdownReport ? 'visible' : 'hidden' }"
         @click.stop
       >
@@ -1165,6 +1170,34 @@ watch(showStatusModal, (val) => {
   text-overflow: ellipsis;
   word-break: break-word;
   margin: 0;
+}
+
+/* Dropdown positioning: avoid animating from (0,0) by not transitioning top/left */
+.report-dropdown {
+  will-change: opacity, transform;
+  transition-property: opacity, transform;
+  transition-duration: 180ms;
+  transition-timing-function: cubic-bezier(0.4,0,0.2,1);
+  /* explicitly prevent transitions on top/left to avoid origin animation */
+}
+
+/* When opening, slightly fade/scale instead of moving from top-left */
+.report-dropdown[style] {
+  transform-origin: top right;
+}
+
+.report-dropdown-enter-active, .report-dropdown-leave-active {
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.report-dropdown-enter-from {
+  opacity: 0;
+  transform: scale(0.98);
+}
+
+.report-dropdown-enter-to {
+  opacity: 1;
+  transform: scale(1);
 }
 
 </style>
