@@ -130,23 +130,25 @@
                             </div>
                           </div>
                           <div class="flex items-center space-x-1.5 sm:space-x-2 ml-2 flex-shrink-0">
-                            <!-- Status Toggle -->
+                            <!-- Improved Status Toggle (mobile) -->
                             <button
                               @click="toggleUserStatus(user)"
-                              :class="[
-                                'relative inline-flex items-center rounded-full transition-all duration-300 focus:outline-none',
-                                user.status === 'active' ? 'bg-green-200 dark:bg-green-700' : 'bg-gray-200 dark:bg-gray-600',
-                                'h-5 w-8 sm:h-6 sm:w-10'
-                              ]"
+                              role="switch"
+                              :aria-checked="user.status === 'active'"
                               :title="`Toggle status to ${user.status === 'active' ? 'inactive' : 'active'}`"
+                              class="relative inline-flex items-center transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-full"
+                              :class="user.status === 'active' ? 'bg-green-500 hover:bg-green-600 h-6 w-12' : 'bg-gray-200 hover:bg-gray-300 h-6 w-12'"
                             >
+                              <span class="sr-only">Toggle organization status</span>
                               <span
                                 :class="[
-                                  'inline-block rounded-full shadow-sm transform transition-all duration-300',
-                                  user.status === 'active' ? 'translate-x-3 sm:translate-x-4 bg-green-600' : 'translate-x-0 bg-gray-400',
-                                  'h-3 w-3 sm:h-4 sm:w-4'
+                                  'inline-block bg-white rounded-full shadow transform transition-transform duration-200 flex items-center justify-center',
+                                  user.status === 'active' ? 'translate-x-6' : 'translate-x-0',
+                                  'h-5 w-5'
                                 ]"
-                              ></span>
+                              >
+                                <!-- icons removed per request: simplified knob -->
+                              </span>
                             </button>
                             <!-- Assign to College Button -->
                             <button
@@ -240,23 +242,30 @@
                             </div>
                           </div>
                           <div class="flex items-center space-x-1.5 sm:space-x-2 ml-2 flex-shrink-0">
-                            <!-- Status Toggle -->
+                            <!-- Improved Status Toggle (mobile for colleges) -->
                             <button
                               @click="toggleUserStatus(user)"
-                              :class="[
-                                'relative inline-flex items-center rounded-full transition-all duration-300 focus:outline-none',
-                                user.status === 'active' ? 'bg-green-200 dark:bg-green-700' : 'bg-gray-200 dark:bg-gray-600',
-                                'h-5 w-8 sm:h-6 sm:w-10'
-                              ]"
+                              role="switch"
+                              :aria-checked="user.status === 'active'"
                               :title="`Toggle status to ${user.status === 'active' ? 'inactive' : 'active'}`"
+                              class="relative inline-flex items-center transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-full"
+                              :class="user.status === 'active' ? 'bg-green-500 hover:bg-green-600 h-6 w-12' : 'bg-gray-200 hover:bg-gray-300 h-6 w-12'"
                             >
+                              <span class="sr-only">Toggle organization status</span>
                               <span
                                 :class="[
-                                  'inline-block rounded-full shadow-sm transform transition-all duration-300',
-                                  user.status === 'active' ? 'translate-x-3 sm:translate-x-4 bg-green-600' : 'translate-x-0 bg-gray-400',
-                                  'h-3 w-3 sm:h-4 sm:w-4'
+                                  'inline-block bg-white rounded-full shadow transform transition-transform duration-200 flex items-center justify-center',
+                                  user.status === 'active' ? 'translate-x-6' : 'translate-x-0',
+                                  'h-5 w-5'
                                 ]"
-                              ></span>
+                              >
+                                <svg v-if="user.status === 'active'" class="h-3 w-3 text-green-600" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                </svg>
+                                <svg v-else class="h-3 w-3 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                </svg>
+                              </span>
                             </button>
                             <button
                               @click="removeUserFromCollege(user.id)"
@@ -376,46 +385,29 @@
                               </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                              <!-- Status Toggle Button -->
+                              <!-- Improved Status Toggle (desktop table) -->
                               <button
                                 @click="toggleUserStatus(user)"
-                                :class="[
-                                  'relative inline-flex items-center rounded-full transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800',
-                                  user.status === 'active' ? 'bg-green-200 hover:bg-green-300' : 'bg-gray-200 hover:bg-gray-300',
-                                  'h-6 w-11'
-                                ]"
+                                role="switch"
+                                :aria-checked="user.status === 'active'"
                                 :title="`Toggle status to ${user.status === 'active' ? 'inactive' : 'active'}`"
+                                class="relative inline-flex items-center transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-full"
+                                :class="user.status === 'active' ? 'bg-green-500 hover:bg-green-600 h-7 w-14' : 'bg-gray-200 hover:bg-gray-300 h-7 w-14'"
                               >
-                                <!-- Toggle Knob -->
+                                <span class="sr-only">Toggle organization status</span>
                                 <span
                                   :class="[
-                                    'inline-block rounded-full shadow-sm transform transition-all duration-300 ease-in-out',
-                                    user.status === 'active' ? 'translate-x-5 bg-green-600' : 'translate-x-0 bg-gray-400',
-                                    'h-4 w-4'
+                                    'inline-block bg-white rounded-full shadow transform transition-transform duration-200 flex items-center justify-center',
+                                    user.status === 'active' ? 'translate-x-7' : 'translate-x-0',
+                                    'h-6 w-6'
                                   ]"
                                 >
-                                  <!-- Icon inside the knob -->
-                                  <span class="flex items-center justify-center h-full w-full text-white">
-                                    <!-- Check Icon for Active -->
-                                    <svg
-                                      v-if="user.status === 'active'"
-                                      class="h-2.5 w-2.5"
-                                      fill="currentColor"
-                                      viewBox="0 0 20 20"
-                                    >
-                                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                                    </svg>
-                                    
-                                    <!-- X Icon for Inactive -->
-                                    <svg
-                                      v-else
-                                      class="h-2.5 w-2.5"
-                                      fill="currentColor"
-                                      viewBox="0 0 20 20"
-                                    >
-                                      <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                    </svg>
-                                  </span>
+                                  <svg v-if="user.status === 'active'" class="h-3.5 w-3.5 text-green-600" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                  </svg>
+                                  <svg v-else class="h-3.5 w-3.5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                  </svg>
                                 </span>
                               </button>
                               <!-- Status Label -->
