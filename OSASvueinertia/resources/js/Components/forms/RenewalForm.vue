@@ -336,7 +336,7 @@ const submit = () => {
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <!-- Left Column -->
               <div>
-                  <label class="block font-bold">Organization Name</label>
+                   <label class="block font-bold">Organization Name (full)</label>
                   <input 
                     v-model="form.organization_name" 
                     @input="form.organization_name = $event.target.value.toUpperCase()"
