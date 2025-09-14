@@ -50,6 +50,22 @@ const openPreviewInNewWindow = () => {
   }
 };
 
+// Back-to-top button state and handler
+const showBackToTop = ref(false);
+const onScroll = () => {
+  try {
+    const y = window.scrollY || window.pageYOffset;
+    showBackToTop.value = y > 300;
+  } catch (e) {
+    // ignore in non-browser environments
+  }
+};
+
+const scrollToTop = (e) => {
+  e?.preventDefault();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
 const props = defineProps({ 
   applications: Array,
   successMessage: String,
@@ -247,8 +263,11 @@ onMounted(() => {
     }
   };
   window.addEventListener('inertia:navigate', handler);
+  // register back-to-top scroll listener
+  window.addEventListener('scroll', onScroll, { passive: true });
   onUnmounted(() => {
     window.removeEventListener('inertia:navigate', handler);
+    window.removeEventListener('scroll', onScroll);
   });
 });
 
@@ -921,6 +940,20 @@ const confirmClearData = () => {
         <span>{{ isAdmin ? 'Archive Management' : 'View Archive' }}</span>
       </a>
     </div>
+
+    <!-- Back to top floating button -->
+    <button
+      v-if="showBackToTop"
+      @click="scrollToTop"
+      aria-label="Back to top"
+      class="fixed z-50 right-6 bottom-8 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 shadow-lg hover:shadow-2xl rounded-full p-3 transition transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      title="Back to top"
+    >
+      <!-- Modern chevron-up icon -->
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <path fill-rule="evenodd" d="M10 5a1 1 0 01.707.293l5 5a1 1 0 01-1.414 1.414L10 7.414 5.707 11.707A1 1 0 014.293 10.293l5-5A1 1 0 0110 5z" clip-rule="evenodd" />
+      </svg>
+    </button>
 
     <!-- Delete Confirmation Modal -->
     <ConfirmationModal
