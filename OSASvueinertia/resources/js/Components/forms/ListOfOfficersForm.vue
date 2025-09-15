@@ -534,7 +534,7 @@ const submit = () => {
           <input 
             v-model="form.organization_name" 
             @input="form.organization_name = $event.target.value.toUpperCase()"
-            class="border p-2 w-full" 
+            class="border p-2 w-full rounded-md" 
             style="text-transform: uppercase;" 
             required>
           <div v-if="errors.organization_name" class="text-red-500 text-sm mt-1">{{ errors.organization_name }}</div>
@@ -546,7 +546,7 @@ const submit = () => {
             <div class="flex items-center space-x-2">
               <input 
                 v-model="form.academic_year_start" 
-                class="border p-2 w-16 bg-gray-200 text-gray-500 select-none pointer-events-none text-center" 
+                class="border p-2 w-16 bg-gray-200 text-gray-500 select-none pointer-events-none text-center rounded-md" 
                 :placeholder="currentYear" 
                 readonly 
                 tabindex="-1" 
@@ -555,7 +555,7 @@ const submit = () => {
               <span class="mx-1">-</span>
               <input 
                 v-model="form.academic_year_end" 
-                class="border p-2 w-16 bg-gray-200 text-gray-500 select-none pointer-events-none text-center" 
+                class="border p-2 w-16 bg-gray-200 text-gray-500 select-none pointer-events-none text-center rounded-md" 
                 :placeholder="nextYear" 
                 readonly 
                 tabindex="-1" 
@@ -574,7 +574,7 @@ const submit = () => {
           <input 
             v-model="form.adviser_name" 
             @input="form.adviser_name = $event.target.value.toUpperCase()"
-            class="border p-2 w-full" 
+            class="border p-2 w-full rounded-md" 
             style="text-transform: uppercase;" 
             required>
           <div v-if="errors.adviser_name" class="text-red-500 text-sm mt-1">{{ errors.adviser_name }}</div>
@@ -582,7 +582,7 @@ const submit = () => {
 
         <div>
           <label class="block font-bold">Coordinator Name</label>
-          <input v-model="form.coordinator_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none; text-transform: uppercase;">
+          <input v-model="form.coordinator_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none rounded-md" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none; text-transform: uppercase;">
         </div>
       </div>
 
@@ -664,7 +664,7 @@ const submit = () => {
                     <input 
                       v-model="officer.student_name" 
                       @input="officer.student_name = $event.target.value.toUpperCase()"
-                      class="border p-2 w-full" 
+                      class="border p-2 w-full rounded-md" 
                       style="text-transform: uppercase;" 
                       required>
                     <div v-if="errors[`officer_${startIndex + idx}_name`]" class="text-red-500 text-sm mt-1">{{ errors[`officer_${startIndex + idx}_name`] }}</div>
@@ -675,7 +675,7 @@ const submit = () => {
                     <input 
                       v-model="officer.position" 
                       @input="officer.position = $event.target.value.toUpperCase()"
-                      class="border p-2 w-full" 
+                      class="border p-2 w-full rounded-md" 
                       style="text-transform: uppercase;" 
                       required>
                     <div v-if="errors[`officer_${startIndex + idx}_position`]" class="text-red-500 text-sm mt-1">{{ errors[`officer_${startIndex + idx}_position`] }}</div>
@@ -683,16 +683,16 @@ const submit = () => {
 
                 <div>
                     <label class="block font-bold">Student I.D. No.</label>
-                    <input v-model="officer.student_number" class="border p-2 w-full" required>
+                    <input v-model="officer.student_number" class="border p-2 w-full rounded-md" required>
                     <div v-if="errors[`officer_${startIndex + idx}_student_number`]" class="text-red-500 text-sm mt-1">{{ errors[`officer_${startIndex + idx}_student_number`] }}</div>
                 </div>
 
                 <div v-if="allowImageUploads">
                     <label class="block font-bold">2x2 Photo</label>
-                    <input type="file" @change="event => handlePhotoUpload(event, startIndex + idx, 'officers')" class="border p-2 w-full" accept="image/*">
+                    <input type="file" @change="event => handlePhotoUpload(event, startIndex + idx, 'officers')" class="border p-2 w-full rounded-md" accept="image/*">
                     <div v-if="getPhotoPreview(officer)" class="mt-2">
                         <div class="flex items-center gap-2">
-                            <img :src="getPhotoPreview(officer)" alt="Preview" class="w-16 h-16 object-cover border">
+                            <img :src="getPhotoPreview(officer)" alt="Preview" class="w-16 h-16 object-cover border rounded-md">
                             <button 
                                 @click="removeOfficerPhoto(startIndex + idx)" 
                                 type="button" 
@@ -861,5 +861,9 @@ button {
   height: auto;
   margin: 4px 0;
   display: inline-block;
+}
+
+.footer {
+  font-family: Calibri, 'Calibri', 'Helvetica Neue', Arial, sans-serif;
 }
 </style>
