@@ -21,6 +21,16 @@ function handleCollegeChange(e) {
     form.college = selected.replace('College of ', '').toUpperCase();
   }
 }
+
+// Handler for individual student college select change
+function handleStudentCollegeChange(e, studentIndex) {
+  const selected = e.target.value;
+  if (selected === 'None') {
+    form.students[studentIndex].college = '';
+  } else {
+    form.students[studentIndex].college = selected.replace('College of ', '').toUpperCase();
+  }
+}
 import { ref, computed } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import Modal from '@/Components/Modal.vue';
@@ -79,6 +89,18 @@ const displayDeanName = computed(() => {
   return name;
 });
 
+// Add computed for student dean names
+const getStudentDeanDisplayName = (student) => {
+  let name = student.dean_name || '';
+  if (student.dean_prefix) {
+    name = student.dean_prefix + ' ' + name;
+  }
+  if (student.dean_suffix) {
+    name = name + ', ' + student.dean_suffix;
+  }
+  return name;
+};
+
 // Add pagination state
 const currentPage = ref(1);
 const studentsPerPage = 1; // 1 student per page since each certification is a full page
@@ -91,8 +113,11 @@ const addStudent = () => {
     year_section: '',
     course_year_section: '',
     position_rank: '',
-    college: form.college || '',
+    college: '',
     certification_date: form.certification_date, // Always include certification_date
+    dean_name: '',
+    dean_prefix: '',
+    dean_suffix: '',
   });
 };
 
@@ -114,8 +139,11 @@ const clearAllStudents = () => {
         year_section: '',
         course_year_section: '',
         position_rank: '',
-        college: form.college || '',
+        college: '',
         certification_date: form.certification_date,
+        dean_name: '',
+        dean_prefix: '',
+        dean_suffix: '',
     }];
     
     // Reset to first page
@@ -197,6 +225,10 @@ const handleCSVUpload = (event) => {
               course_year_section: course && yearSection ? `${course.toUpperCase()}, ${yearSection.toUpperCase()}` : (course || yearSection).toUpperCase(),
               position_rank: positionRank.toUpperCase(),
               certification_date: form.certification_date, // Always include certification_date
+              college: '',
+              dean_name: '',
+              dean_prefix: '',
+              dean_suffix: '',
             });
           }
             });
@@ -309,12 +341,8 @@ const form = useForm({
   adviser_name: props.initialFormData.adviser_name?.toUpperCase() || '',
   adviser_prefix: props.initialFormData.adviser_prefix || '',
   adviser_suffix: props.initialFormData.adviser_suffix || '',
-  dean_name: props.initialFormData.dean_name?.toUpperCase() || '',
-  dean_prefix: props.initialFormData.dean_prefix || '',
-  dean_suffix: props.initialFormData.dean_suffix || '',
   director_name: props.initialFormData.director_name?.toUpperCase() || '',
   coordinator_name: props.initialFormData.coordinator_name?.toUpperCase() || '',
-  college: props.initialFormData.college?.toUpperCase() || '',
   certification_date: new Date().toISOString().slice(0, 10), // Always current date
   students: (props.initialFormData.students || []).map(student => ({
     ...student,
@@ -324,6 +352,10 @@ const form = useForm({
     course_year_section: student.course_year_section?.toUpperCase() || '',
     position_rank: student.position_rank?.toUpperCase() || '',
     certification_date: student.certification_date || new Date().toISOString().slice(0, 10), // Ensure each student has certification_date
+    college: student.college?.toUpperCase() || '',
+    dean_name: student.dean_name?.toUpperCase() || '',
+    dean_prefix: student.dean_prefix || '',
+    dean_suffix: student.dean_suffix || '',
   })),
 });
 
@@ -345,7 +377,7 @@ const validateForm = () => {
     errors.value.adviser_name = 'Faculty Adviser is required';
   }
   
-  // Dean name is now optional
+  // Dean name is now optional at form level (moved to individual students)
 
   if (!form.director_name.trim()) {
     errors.value.director_name = 'Director/Chairperson is required';
@@ -375,14 +407,13 @@ const submit = () => {
     emit('error', 'Please fill in all required fields.');
     return;
   }
-  // Only send student fields that exist, and ensure organization_name and college are included in each student
+  // Only send student fields that exist, and ensure organization_name is included in each student
   const data = {
     ...form.data(),
     students: form.students.map(student => ({
       ...student,
       course_year_section: student.course && student.year_section ? `${student.course}, ${student.year_section}` : (student.course || student.year_section || ''),
       organization_name: form.organization_name,
-      college: form.college,
       certification_date: form.certification_date, // Always set to current date from form
       is_bonafide: 0,
       is_not_academic_probation: 0,
@@ -461,7 +492,7 @@ const submit = () => {
           <div style="text-align: center; font-size: 10pt; margin-top: -5px;">
             <span>(course, year and section)</span>
           </div>
-        </span> from the College of <span class="signature-line" style="min-width:445px; border-bottom: 1px solid black; display: inline-block; margin-top: 20px;text-align:center; font-weight:bold;">{{ form.college }}</span> is a bonafide LSPU Student, not
+        </span> from the College of <span class="signature-line" style="min-width:445px; border-bottom: 1px solid black; display: inline-block; margin-top: 20px;text-align:center; font-weight:bold;">{{ student.college }}</span> is a bonafide LSPU Student, not
       </div>
           <div style="margin-top: 0.2em;"></div>
           <span style="text-indent:6em;word-spacing: 17px">under academic probation, not under disciplinary probation, and the elected/appointed</span>
@@ -491,7 +522,7 @@ const submit = () => {
             </div>
           </div>
           <div style="margin-top:40px; text-align:left; margin-left:-42px;">
-            <span style="display:inline-block; min-width:220px; width:auto; border-bottom:1px solid black; padding-bottom:2px; text-align:center; text-transform: uppercase; font-weight:bold;">{{ displayDeanName }}</span>
+            <span style="display:inline-block; min-width:220px; width:auto; border-bottom:1px solid black; padding-bottom:2px; text-align:center; text-transform: uppercase; font-weight:bold;">{{ getStudentDeanDisplayName(student) }}</span>
             <span style="display:block; text-align:left; margin-left:25px;">Dean/Assoc. Dean of College</span>
           </div>
           <div style="text-align:center; margin-top:40px; margin-left:0;">Noted:</div>
@@ -555,18 +586,6 @@ const submit = () => {
         <h3 class="text-lg font-bold mb-4">Form Details</h3>
         
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div>
-        <label class="block font-bold">College</label>
-        <select 
-          :value="form.college ? collegeOptions.find(option => option.replace('College of ', '').toUpperCase() === form.college) || 'None' : 'None'"
-          @change="handleCollegeChange"
-          class="border p-2 w-full text-black rounded-md"
-        >
-          <option value="" disabled>Select College</option>
-          <option v-for="option in collegeOptions" :key="option" :value="option">{{ option }}</option>
-        </select>
-        <p v-if="errors.college" class="text-red-500 text-sm mt-1">{{ errors.college }}</p>
-      </div>
             <div>
                 <label class="block font-bold">Organization Name</label>
                 <input 
@@ -601,28 +620,6 @@ const submit = () => {
                     maxlength="8">
                 </div>
                 <p v-if="errors.adviser_name" class="text-red-500 text-sm mt-1">{{ errors.adviser_name }}</p>
-            </div>
-
-            <div>
-                <label class="block font-bold">Dean/Assoc. Dean Name</label>
-                <div class="flex gap-1 items-center">
-                  <input 
-                    v-model="form.dean_prefix" 
-                    class="border p-2 w-12 text-xs rounded-md" 
-                    placeholder="Pre"
-                    maxlength="6">
-                  <input 
-                    v-model="form.dean_name" 
-                    @input="form.dean_name = $event.target.value.toUpperCase()"
-                    class="border p-2 flex-1 rounded-md" 
-                    style="text-transform: uppercase;">
-                  <input 
-                    v-model="form.dean_suffix" 
-                    class="border p-2 w-14 text-xs rounded-md" 
-                    placeholder="Suf"
-                    maxlength="8">
-                </div>
-                <p v-if="errors.dean_name" class="text-red-500 text-sm mt-1">{{ errors.dean_name }}</p>
             </div>
 
             <div>
@@ -746,6 +743,39 @@ const submit = () => {
                           @input="student.position_rank = $event.target.value.toUpperCase()"
                           class="border p-2 w-full rounded-md" 
                           style="text-transform: uppercase;">
+                    </div>
+
+                    <div>
+                        <label class="block font-bold">College</label>
+                        <select 
+                          :value="student.college ? collegeOptions.find(option => option.replace('College of ', '').toUpperCase() === student.college) || 'None' : 'None'"
+                          @change="handleStudentCollegeChange($event, startIndex + idx)"
+                          class="border p-2 w-full text-black rounded-md"
+                        >
+                          <option value="" disabled>Select College</option>
+                          <option v-for="option in collegeOptions" :key="option" :value="option">{{ option }}</option>
+                        </select>
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block font-bold">Dean/Assoc. Dean Name</label>
+                        <div class="flex gap-1 items-center">
+                          <input 
+                            v-model="student.dean_prefix" 
+                            class="border p-2 w-12 text-xs rounded-md" 
+                            placeholder="Pre"
+                            maxlength="6">
+                          <input 
+                            v-model="student.dean_name" 
+                            @input="student.dean_name = $event.target.value.toUpperCase()"
+                            class="border p-2 flex-1 rounded-md" 
+                            style="text-transform: uppercase;">
+                          <input 
+                            v-model="student.dean_suffix" 
+                            class="border p-2 w-14 text-xs rounded-md" 
+                            placeholder="Suf"
+                            maxlength="8">
+                        </div>
                     </div>
                     
                     <!-- Student Status fields removed -->

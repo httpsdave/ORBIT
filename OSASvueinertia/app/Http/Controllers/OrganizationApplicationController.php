@@ -210,7 +210,6 @@ class OrganizationApplicationController extends Controller
             ]);
         } elseif ($request->form_type === 'LSPU-OSAS-SF-006') {
             $validationRules = array_merge($validationRules, [
-                'college' => 'nullable|string|max:255',
                 'students' => 'required|array|min:1',
                 'students.*.student_name' => 'required|string|max:255',
                 'students.*.course' => 'required|string|max:255',
@@ -222,6 +221,10 @@ class OrganizationApplicationController extends Controller
                 'students.*.is_not_disciplinary_probation' => 'nullable|boolean',
                 'students.*.has_position' => 'nullable|boolean',
                 'students.*.certification_date' => 'required|date',
+                'students.*.dean_name' => 'nullable|string|max:255',
+                'students.*.dean_prefix' => 'nullable|string|max:50',
+                'students.*.dean_suffix' => 'nullable|string|max:50',
+                'students.*.college' => 'nullable|string|max:255',
                 'coordinator_name' => 'nullable|string|max:255',
             ]);
             
@@ -474,6 +477,10 @@ class OrganizationApplicationController extends Controller
                     'is_not_disciplinary_probation' => (bool) $cert->is_not_disciplinary_probation,
                     'has_position' => (bool) $cert->has_position,
                     'certification_date' => $cert->certification_date ? $cert->certification_date->format('Y-m-d') : '',
+                    'dean_name' => $cert->dean_name ?? '',
+                    'dean_prefix' => $cert->dean_prefix ?? '',
+                    'dean_suffix' => $cert->dean_suffix ?? '',
+                    'college' => $cert->college ?? '',
                 ];
             })->toArray();
         }
@@ -619,7 +626,6 @@ class OrganizationApplicationController extends Controller
             // Special handling for members below
         } elseif ($application->form_type === 'LSPU-OSAS-SF-006') {
             $validationRules = array_merge($validationRules, [
-                'college' => 'nullable|string|max:255',
                 'students' => 'required|array|min:1',
                 'students.*.student_name' => 'required|string|max:255',
                 'students.*.course' => 'required|string|max:255',
@@ -631,6 +637,10 @@ class OrganizationApplicationController extends Controller
                 'students.*.is_not_disciplinary_probation' => 'nullable|boolean',
                 'students.*.has_position' => 'nullable|boolean',
                 'students.*.certification_date' => 'required|date',
+                'students.*.dean_name' => 'nullable|string|max:255',
+                'students.*.dean_prefix' => 'nullable|string|max:50',
+                'students.*.dean_suffix' => 'nullable|string|max:50',
+                'students.*.college' => 'nullable|string|max:255',
             ]);
         } elseif ($application->form_type === 'LSPU-OSAS-SF-007') {
             $validationRules = array_merge($validationRules, [

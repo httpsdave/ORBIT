@@ -19,6 +19,10 @@ class StudentCertification extends Model
         'is_not_disciplinary_probation',
         'has_position',
         'certification_date',
+        'dean_name',
+        'dean_prefix',
+        'dean_suffix',
+        'college',
     ];
 
     protected $casts = [

@@ -379,7 +379,7 @@
                 <div style="text-align: center; font-size: 11pt; margin-top: -5px;">
                     <span style="font-size: 11pt; position: relative; top: 5px;">(course, year and section)</span>
                 </div>
-            </div> from the College of <span class="signature-line" style="min-width:385px; border-bottom: 1px solid black; display: inline-block;margin-top: {{ empty($application->college) ? '30px' : '25px' }}; font-size: {{ strlen($application->college ?? '') > 45 ? '9pt' : '11pt' }}; font-weight: bold; word-wrap: break-word; overflow-wrap: break-word;">{{ $application->college ?? '' }}</span> is a bonafide LSPU Student, not
+            </div> from the College of <span class="signature-line" style="min-width:385px; border-bottom: 1px solid black; display: inline-block;margin-top: {{ empty($certification->college) ? '30px' : '25px' }}; font-size: {{ strlen($certification->college ?? '') > 45 ? '9pt' : '11pt' }}; font-weight: bold; word-wrap: break-word; overflow-wrap: break-word;">{{ $certification->college ?? '' }}</span> is a bonafide LSPU Student, not
             <br><br>
             </div>
             
@@ -416,8 +416,16 @@
                 </div>
                 
                 <!-- Dean signature right under adviser -->
+                @php
+                    $deanFull = trim((isset($certification->dean_prefix) && $certification->dean_prefix ? $certification->dean_prefix . ' ' : '')
+                        . ($certification->dean_name ?? '')
+                        . (isset($certification->dean_suffix) && $certification->dean_suffix ? ', ' . $certification->dean_suffix : ''));
+                    $deanFontSize = strlen($deanFull) > 25 ? '10pt' : '11pt';
+                    // Use a series of non-breaking spaces as placeholder when dean name is empty to preserve layout
+                    $deanDisplay = $deanFull !== '' ? e($deanFull) : '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+                @endphp
                 <div style="margin-top: 30px; text-align: left; margin-left: -50px;">
-                    <div class="signature-name" style="display: inline-block; min-width: 220px; width: auto; border-bottom: 1px solid black; padding-bottom: 2px; text-align: center; font-weight: bold; font-size: {{ strlen(trim((isset($application->dean_prefix) && $application->dean_prefix ? $application->dean_prefix . ' ' : '') . ($application->dean_name ?? '') . (isset($application->dean_suffix) && $application->dean_suffix ? ', ' . $application->dean_suffix : ''))) > 25 ? '10pt' : '11pt' }}; word-wrap: break-word; overflow-wrap: break-word;">{{ trim((isset($application->dean_prefix) && $application->dean_prefix ? $application->dean_prefix . ' ' : '') . ($application->dean_name ?? 'Sample Data') . (isset($application->dean_suffix) && $application->dean_suffix ? ', ' . $application->dean_suffix : '')) }}</div>
+                    <div class="signature-name" style="display: inline-block; min-width: 220px; width: auto; border-bottom: 1px solid black; padding-bottom: 2px; text-align: center; font-weight: bold; font-size: {{ $deanFontSize }}; word-wrap: break-word; overflow-wrap: break-word;">{!! $deanDisplay !!}</div>
                     <div class="signature-title" style="text-align: left;margin-left: 25px;">Dean/Assoc. Dean of College</div>
                 </div>
                 <div style="text-align: center; margin-top: 20px; margin-left: -70px;">Noted:</div>
