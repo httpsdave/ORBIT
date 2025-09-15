@@ -400,7 +400,7 @@ const submit = () => {
                                 <select 
                                     :value="form.college ? ('College of ' + form.college) : 'None'"
                                     @change="handleCollegeChange"
-                                    class="border p-2 w-full text-black"
+                                    class="border p-2 w-full text-black rounded-md"
                                 >
                                     <option value="" disabled>Select College</option>
                                     <option v-for="option in collegeOptions" :key="option" :value="option">{{ option }}</option>
@@ -410,12 +410,12 @@ const submit = () => {
 
             <div>
                 <label class="block font-bold">Activity Name</label>
-                <input v-model="form.activity_name" class="border p-2 w-full">
+                <input v-model="form.activity_name" class="border p-2 w-full rounded-md">
             </div>
 
             <div>
-                <label class="block font-bold">Activity Date</label>
-                <input type="date" v-model="form.activity_date" class="border p-2 w-full">
+          <label class="block font-bold">Activity Date</label>
+            <input type="date" v-model="form.activity_date" class="border p-2 w-full rounded-md">
             </div>
 
             <div>
@@ -423,7 +423,7 @@ const submit = () => {
                 <input 
                   v-model="form.organization_name" 
                   @input="form.organization_name = $event.target.value.toUpperCase()"
-                  class="border p-2 w-full" 
+                  class="border p-2 w-full rounded-md" 
                   style="text-transform: uppercase;" 
                   required>
                 <p v-if="errors.organization_name" class="text-red-500 text-sm mt-1">{{ errors.organization_name }}</p>
@@ -491,12 +491,12 @@ const submit = () => {
                     <td class="border border-gray-300 p-2 text-center">
                         {{ (currentPage - 1) * attendeesPerPage + index + 1 }}.
                     </td>
-                    <td class="border border-gray-300 p-2">
-                        <input v-model="attendee.name" class="w-full p-1">
-                    </td>
-                    <td class="border border-gray-300 p-2">
-                        <input v-model="attendee.course_year_section" class="w-full p-1">
-                    </td>
+            <td class="border border-gray-300 p-2">
+            <input v-model="attendee.name" class="w-full p-1 rounded-md">
+          </td>
+          <td class="border border-gray-300 p-2">
+            <input v-model="attendee.course_year_section" class="w-full p-1 rounded-md">
+          </td>
                     <td class="border border-gray-300 p-2">
                         <button type="button" @click="removeAttendee((currentPage - 1) * attendeesPerPage + index)" class="bg-red-500 text-white px-2 py-1 rounded text-xs">Remove</button>
                     </td>
@@ -504,7 +504,7 @@ const submit = () => {
             </tbody>
         </table>
         
-        <button type="button" @click="addAttendee" class="bg-blue-500 text-white px-3 py-1 rounded mb-4">
+    <button type="button" @click="addAttendee" class="bg-blue-500 text-white px-3 py-1 rounded mb-4">
             Add Attendee Row
         </button>
     </div>
