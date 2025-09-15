@@ -191,7 +191,7 @@ const submit = () => {
   </div>
 
   <div class="section justified" style="margin-bottom: 0.3cm; text-align: justify;">
-    <p class="indented" style="text-indent: 1.27cm;">It is understood that the provision to the LSPU Supplementary Rules and Regulations Governing Student Organization in this official Recognition is good only for one (1) school year, subject to renewal unless revoked prior its expiration.</p>
+    <p class="indented" style="text-indent: 1.27cm;">It is understood that the provision to the LSPU Supplementary Rules and Regulations Governing Student Organization in this official Recognition is good only for one (1) school year, subject to renewal unless revoked prior to its expiration.</p>
   </div>
 
   <div class="section respectfully-yours" style="text-align: right; padding-right: 90px; margin-top: 0.5cm;">
