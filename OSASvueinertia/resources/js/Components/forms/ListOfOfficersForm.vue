@@ -438,7 +438,7 @@ const submit = () => {
       </div>
       
       <div class="organization-details text-center mt-2 mb-4">
-        <p class="mb-1">Name of Organization: {{ form.organization_name }}</p>
+        <p class="mb-1">Name of Organization: {{ form.organization_name.toUpperCase() }}</p>
         <p class="mb-0">A.Y. 20{{ form.academic_year_start }}-20{{ form.academic_year_end }}</p>
       </div>
       
@@ -457,7 +457,7 @@ const submit = () => {
           <div class="field-row mb-4">
             <span class="field-label">Name</span>
             <span class="field-colon">:</span>
-            <span class="field-value">{{ officer.student_name || '' }}</span>
+            <span class="field-value">{{ (officer.student_name || '').toUpperCase() }}</span>
           </div>
           <div class="field-row mb-4">
             <span class="field-label">Position</span>
@@ -471,12 +471,12 @@ const submit = () => {
                     whiteSpace: 'normal',
                     maxWidth: '200px',
                     display: 'inline-block'
-                  }">{{ officer.position || '' }}</span>
+                  }">{{ (officer.position || '').toUpperCase() }}</span>
           </div>
           <div class="field-row mb-4">
             <span class="field-label">Student I.D. No.</span>
             <span class="field-colon">:</span>
-            <span class="field-value">{{ officer.student_number || '' }}</span>
+            <span class="field-value">{{ (officer.student_number || '').toUpperCase() }}</span>
           </div>
           <div class="field-row mb-4">
             <span class="field-label">Signature</span>

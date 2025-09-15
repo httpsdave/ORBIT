@@ -226,7 +226,7 @@
     
     <!-- Organization details -->
     <div class="organization-details">
-        <p> {{ $application->organization_name ?? '____________________' }}</p>
+        <p> {{ strtoupper($application->organization_name ?? '____________________') }}</p>
         <p>A.Y. 20{{ $application->academic_year_start ?? '2024' }}-20{{ $application->academic_year_end ?? '2025' }}</p>
     </div>
     
@@ -248,17 +248,17 @@
                 <div class="field-row">
                     <div class="field-label">Name</div>
                     <div class="field-colon">:</div>
-                    <div class="field-value">{{ isset($officers[0]) ? $officers[0]->student_name : '' }}</div>
+                    <div class="field-value">{{ isset($officers[0]) ? strtoupper($officers[0]->student_name) : '' }}</div>
                 </div>
                 <div class="field-row">
                     <div class="field-label">Position</div>
                     <div class="field-colon">:</div>
-                    <div class="field-value" style="font-size: {{ strlen($officers[0]->position ?? '') > 32 ? '9pt' : '11pt' }}; line-height: 1.2; word-wrap: break-word; overflow-wrap: break-word; white-space: normal; max-width: 200px;">{{ isset($officers[0]) ? $officers[0]->position : '' }}</div>
+                    <div class="field-value" style="font-size: {{ strlen($officers[0]->position ?? '') > 32 ? '9pt' : '11pt' }}; line-height: 1.2; word-wrap: break-word; overflow-wrap: break-word; white-space: normal; max-width: 200px;">{{ isset($officers[0]) ? strtoupper($officers[0]->position) : '' }}</div>
                 </div>
                 <div class="field-row">
                     <div class="field-label">Student I.D. No.</div>
                     <div class="field-colon">:</div>
-                    <div class="field-value">{{ isset($officers[0]) ? $officers[0]->student_number : '' }}</div>
+                    <div class="field-value">{{ isset($officers[0]) ? strtoupper($officers[0]->student_number) : '' }}</div>
                 </div>
                 <div class="field-row">
                     <div class="field-label">Signature</div>
@@ -281,17 +281,17 @@
                 <div class="field-row">
                     <div class="field-label">Name</div>
                     <div class="field-colon">:</div>
-                    <div class="field-value">{{ isset($officers[1]) ? $officers[1]->student_name : '' }}</div>
+                    <div class="field-value">{{ isset($officers[1]) ? strtoupper($officers[1]->student_name) : '' }}</div>
                 </div>
                 <div class="field-row">
                     <div class="field-label">Position</div>
                     <div class="field-colon">:</div>
-                    <div class="field-value" style="font-size: {{ strlen($officers[1]->position ?? '') > 32 ? '9pt' : '11pt' }}; line-height: 1.2; word-wrap: break-word; overflow-wrap: break-word; white-space: normal; max-width: 200px;">{{ isset($officers[1]) ? $officers[1]->position : '' }}</div>
+                    <div class="field-value" style="font-size: {{ strlen($officers[1]->position ?? '') > 32 ? '9pt' : '11pt' }}; line-height: 1.2; word-wrap: break-word; overflow-wrap: break-word; white-space: normal; max-width: 200px;">{{ isset($officers[1]) ? strtoupper($officers[1]->position) : '' }}</div>
                 </div>
                 <div class="field-row">
                     <div class="field-label">Student I.D. No.</div>
                     <div class="field-colon">:</div>
-                    <div class="field-value">{{ isset($officers[1]) ? $officers[1]->student_number : '' }}</div>
+                    <div class="field-value">{{ isset($officers[1]) ? strtoupper($officers[1]->student_number) : '' }}</div>
                 </div>
                 <div class="field-row">
                     <div class="field-label">Signature</div>
@@ -314,17 +314,17 @@
                 <div class="field-row">
                     <div class="field-label">Name</div>
                     <div class="field-colon">:</div>
-                    <div class="field-value">{{ isset($officers[2]) ? $officers[2]->student_name : '' }}</div>
+                    <div class="field-value">{{ isset($officers[2]) ? strtoupper($officers[2]->student_name) : '' }}</div>
                 </div>
                 <div class="field-row">
                     <div class="field-label">Position</div>
                     <div class="field-colon">:</div>
-                    <div class="field-value" style="font-size: {{ strlen($officers[2]->position ?? '') > 32 ? '9pt' : '11pt' }}; line-height: 1.2; word-wrap: break-word; overflow-wrap: break-word; white-space: normal; max-width: 200px;">{{ isset($officers[2]) ? $officers[2]->position : '' }}</div>
+                    <div class="field-value" style="font-size: {{ strlen($officers[2]->position ?? '') > 32 ? '9pt' : '11pt' }}; line-height: 1.2; word-wrap: break-word; overflow-wrap: break-word; white-space: normal; max-width: 200px;">{{ isset($officers[2]) ? strtoupper($officers[2]->position) : '' }}</div>
                 </div>
                 <div class="field-row">
                     <div class="field-label">Student I.D. No.</div>
                     <div class="field-colon">:</div>
-                    <div class="field-value">{{ isset($officers[2]) ? $officers[2]->student_number : '' }}</div>
+                    <div class="field-value">{{ isset($officers[2]) ? strtoupper($officers[2]->student_number) : '' }}</div>
                 </div>
                 <div class="field-row">
                     <div class="field-label">Signature</div>
@@ -347,17 +347,17 @@
                 <div class="field-row">
                     <div class="field-label">Name</div>
                     <div class="field-colon">:</div>
-                    <div class="field-value">{{ isset($officers[3]) ? $officers[3]->student_name : '' }}</div>
+                    <div class="field-value">{{ isset($officers[3]) ? strtoupper($officers[3]->student_name) : '' }}</div>
                 </div>
                 <div class="field-row">
                     <div class="field-label">Position</div>
                     <div class="field-colon">:</div>
-                    <div class="field-value" style="font-size: {{ strlen($officers[3]->position ?? '') > 32 ? '9pt' : '11pt' }}; line-height: 1.2; word-wrap: break-word; overflow-wrap: break-word; white-space: normal; max-width: 200px;">{{ isset($officers[3]) ? $officers[3]->position : '' }}</div>
+                    <div class="field-value" style="font-size: {{ strlen($officers[3]->position ?? '') > 32 ? '9pt' : '11pt' }}; line-height: 1.2; word-wrap: break-word; overflow-wrap: break-word; white-space: normal; max-width: 200px;">{{ isset($officers[3]) ? strtoupper($officers[3]->position) : '' }}</div>
                 </div>
                 <div class="field-row">
                     <div class="field-label">Student I.D. No.</div>
                     <div class="field-colon">:</div>
-                    <div class="field-value">{{ isset($officers[3]) ? $officers[3]->student_number : '' }}</div>
+                    <div class="field-value">{{ isset($officers[3]) ? strtoupper($officers[3]->student_number) : '' }}</div>
                 </div>
                 <div class="field-row">
                     <div class="field-label">Signature</div>
@@ -386,7 +386,7 @@
                 
                 <!-- Organization details on new page -->
                 <div class="organization-details">
-                    <p>{{ $application->organization_name ?? '____________________' }}</p>
+                    <p>{{ strtoupper($application->organization_name ?? '____________________') }}</p>
                     <p>A.Y. 20{{ $application->academic_year_start ?? '2024' }}-20{{ $application->academic_year_end ?? '2025' }}</p>
                 </div>
                 
@@ -406,17 +406,17 @@
                     <div class="field-row">
                         <div class="field-label">Name</div>
                         <div class="field-colon">:</div>
-                        <div class="field-value">{{ isset($officers[$i]) ? $officers[$i]->student_name : '' }}</div>
+                        <div class="field-value">{{ isset($officers[$i]) ? strtoupper($officers[$i]->student_name) : '' }}</div>
                     </div>
                     <div class="field-row">
                         <div class="field-label">Position</div>
                         <div class="field-colon">:</div>
-                        <div class="field-value" style="font-size: {{ strlen($officers[$i]->position ?? '') > 32 ? '9pt' : '11pt' }}; line-height: 1.2; word-wrap: break-word; overflow-wrap: break-word; white-space: normal; max-width: 200px;">{{ isset($officers[$i]) ? $officers[$i]->position : '' }}</div>
+                        <div class="field-value" style="font-size: {{ strlen($officers[$i]->position ?? '') > 32 ? '9pt' : '11pt' }}; line-height: 1.2; word-wrap: break-word; overflow-wrap: break-word; white-space: normal; max-width: 200px;">{{ isset($officers[$i]) ? strtoupper($officers[$i]->position) : '' }}</div>
                     </div>
                     <div class="field-row">
                         <div class="field-label">Student I.D. No.</div>
                         <div class="field-colon">:</div>
-                        <div class="field-value">{{ isset($officers[$i]) ? $officers[$i]->student_number : '' }}</div>
+                        <div class="field-value">{{ isset($officers[$i]) ? strtoupper($officers[$i]->student_number) : '' }}</div>
                     </div>
                     <div class="field-row">
                         <div class="field-label">Signature</div>
