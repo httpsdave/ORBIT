@@ -134,7 +134,10 @@ const toggleDropdown = (app, event) => {
         return;
     }
     // Desktop/table: floating dropdown
-    if (activeDropdownApp.value && activeDropdownApp.value.id === app.id) {
+  // Prevent the document click listener from closing the dropdown immediately
+  event.stopPropagation();
+
+  if (activeDropdownApp.value && activeDropdownApp.value.id === app.id) {
         activeDropdownApp.value = null;
         dropdownButtonEl.value = null;
         removeDropdownListeners();
@@ -188,6 +191,39 @@ function removeDropdownListeners() {
     window.removeEventListener('resize', updateDropdownPosition);
 }
 
+// Close dropdowns when clicking outside
+const closeDropdowns = (event) => {
+  try {
+    // If click happened inside the dropdown element, ignore
+    if (dropdownRef.value && dropdownRef.value.contains(event.target)) return;
+
+    // If click happened on a dropdown trigger button, ignore (so toggle still works)
+    if (event.target.closest && event.target.closest('[data-dropdown-trigger]')) return;
+
+    // Otherwise close any open floating dropdown
+    activeDropdownApp.value = null;
+    dropdownButtonEl.value = null;
+    removeDropdownListeners();
+  } catch (e) {
+    // ignore non-browser environments
+  }
+};
+
+const closeMobileDropdowns = (event) => {
+  try {
+    if (window.innerWidth >= 640) return; // not mobile
+    // If click happened inside the mobile dropdown, ignore
+    if (event.target.closest && event.target.closest('.mobile-dropdown-menu')) return;
+    // If click happened on a dropdown trigger button, ignore
+    if (event.target.closest && event.target.closest('[data-dropdown-trigger]')) return;
+
+    // Close mobile inline dropdown
+    activeMobileDropdownId.value = null;
+  } catch (e) {
+    // ignore
+  }
+};
+
 // Back-to-top button state and handler (same as OrganizationApplications Index.vue)
 const showBackToTop = ref(false);
 const onScroll = () => {
@@ -210,6 +246,17 @@ onMounted(() => {
 onUnmounted(() => {
     removeDropdownListeners();
     window.removeEventListener('scroll', onScroll);
+});
+
+// Ensure dropdowns close when clicking outside
+onMounted(() => {
+  document.addEventListener('click', closeDropdowns);
+  document.addEventListener('click', closeMobileDropdowns);
+});
+
+onUnmounted(() => {
+  document.removeEventListener('click', closeDropdowns);
+  document.removeEventListener('click', closeMobileDropdowns);
 });
 
 // Smooth scroll helper
@@ -491,10 +538,9 @@ watch(showPreviewModal, (val) => {
                                 <span><span class="font-semibold text-gray-700 dark:text-gray-200">Organization:</span> {{ application.user?.name || 'N/A' }}</span>
                                 <span><span class="font-semibold text-gray-700 dark:text-gray-200">Academic Year:</span> {{ application.academic_year_archived || 'N/A' }}</span>
                             </div>
-                            <div class="flex flex-wrap gap-2 text-xs text-gray-500 dark:text-gray-400 font-medium">
-                                <span><span class="font-semibold text-gray-700 dark:text-gray-200">Archived By:</span> {{ application.archived_by_user?.name || 'N/A' }}</span>
-                                <span><span class="font-semibold text-gray-700 dark:text-gray-200">Archived At:</span> {{ formatDate(application.archived_at) }}</span>
-                            </div>
+              <div class="flex flex-wrap gap-2 text-xs text-gray-500 dark:text-gray-400 font-medium">
+                <span><span class="font-semibold text-gray-700 dark:text-gray-200">Archived At:</span> {{ formatDate(application.archived_at) }}</span>
+              </div>
                     <div class="flex gap-2 mt-2 flex-wrap">
                         <button
                             @click.stop="toggleDropdown(application, $event)"
@@ -555,12 +601,11 @@ watch(showPreviewModal, (val) => {
                                         </span>
                                     </div>
                                     <div class="text-sm text-gray-500 dark:text-gray-400 font-medium truncate">{{ application.form_type }}</div>
-                                    <div class="flex flex-wrap gap-2 text-xs text-gray-500 dark:text-gray-400 mt-1 font-medium">
-                                        <span><span class="font-semibold text-gray-700 dark:text-gray-200">Academic Year:</span> {{ application.academic_year_archived || 'N/A' }}</span>
-                                        <span>&bull; <span :class="`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(application.status)}`">{{ application.status }}</span></span>
-                                        <span><span class="font-semibold text-gray-700 dark:text-gray-200">Archived By:</span> {{ application.archived_by_user?.name || 'N/A' }}</span>
-                                        <span><span class="font-semibold text-gray-700 dark:text-gray-200">Archived At:</span> {{ formatDate(application.archived_at) }}</span>
-                                    </div>
+                  <div class="flex flex-wrap gap-2 text-xs text-gray-500 dark:text-gray-400 mt-1 font-medium">
+                    <span><span class="font-semibold text-gray-700 dark:text-gray-200">Academic Year:</span> {{ application.academic_year_archived || 'N/A' }}</span>
+                    <span>&bull; <span :class="`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(application.status)}`">{{ application.status }}</span></span>
+                    <span><span class="font-semibold text-gray-700 dark:text-gray-200">Archived At:</span> {{ formatDate(application.archived_at) }}</span>
+                  </div>
                                 </div>
                             </div>
                             <div class="flex items-center gap-2 p-5 pt-0 md:pt-5 md:pl-0 md:pr-6 md:flex-col md:items-end">
