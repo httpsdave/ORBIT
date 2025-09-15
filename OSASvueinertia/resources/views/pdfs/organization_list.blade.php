@@ -629,15 +629,15 @@
             <p style="margin-top: 3px; font-weight: normal; margin-left: 0 !important; text-align: center !important;">Dean/Assoc. Dean of College</p>
         </div>
 
-        <div class="recommendation" style="margin-top:-10px; text-align: center;">
-            <p style="margin-bottom:5px;"><strong>Recommending Approval:</strong></p>
+        <div class="recommendation" style="margin-top:-20px; text-align: center;">
+            <p style="margin-bottom:18px;"><strong>Recommending Approval:</strong></p>
             <div class="signature-line" style="min-width:290px; margin-bottom:0px; display: inline-block; border-bottom: 1px solid black; text-align: center;"><strong>{{ $application->coordinator_name ?? 'N/A' }}</strong></div>
-            <p style="margin-top:2px; margin-bottom:22px;">Coordinator, Student Organization Unit</p>
+            <p style="margin-top:2px; margin-bottom:15px;">Coordinator, Student Organization Unit</p>
         </div>
         
-        <div class="signature-block" style="margin-top:-10px; text-align: center;">
+        <div class="signature-block" style="margin-top:-20px; text-align: center;">
                     <div class="signature-block" style="margin-top:-10px; text-align: center;">
-            <p style="margin-bottom:5px;"><strong>Approved/Disapproved:</strong></p>
+            <p style="margin-bottom:18px;"><strong>Approved/Disapproved:</strong></p>
                     <div class="signature-line" style="min-width:415px; margin-bottom:0px; display: inline-block; border-bottom: 1px solid black; text-align: center;"><strong>{{ $application->director_name ?? 'Sample Data' }}</strong></div>
             <p style="margin-top:2px;">Director/Chairperson, Office of Student Affairs and Services</p>
         </div>
@@ -917,17 +917,17 @@
                 <p style="margin-top: 3px; font-weight: normal; margin-left: 0 !important; text-align: center !important;">Dean/Assoc. Dean of College</p>
             </div>
 
-            <div class="recommendation" style="margin-top:-10px; text-align: center;">
-                <p style="margin-bottom:5px;"><strong>Recommending Approval:</strong></p>
+            <div class="recommendation" style="margin-top:-20px; text-align: center;">
+                <p style="margin-bottom:18px;"><strong>Recommending Approval:</strong></p>
                 <div class="signature-line" style="min-width:290px; margin-bottom:0px; display: inline-block; border-bottom: 1px solid black; text-align: center;"><strong>{{ $application->coordinator_name ?? 'N/A' }}</strong></div>
-                <p style="margin-top:2px; margin-bottom:22px;">Coordinator, Student Organization Unit</p>
+                <p style="margin-top:2px; margin-bottom:15px;">Coordinator, Student Organization Unit</p>
             </div>
             
-            <div class="signature-block" style="margin-top:-10px; text-align: center;">
+            <div class="signature-block" style="margin-top:-20px; text-align: center;">
                         <div class="signature-block" style="margin-top:-10px; text-align: center;">
-                <p style="margin-bottom:5px;"><strong>Approved/Disapproved:</strong></p>
+                <p style="margin-bottom:18px;"><strong>Approved/Disapproved:</strong></p>
                             <div class="signature-line" style="min-width:415px; margin-bottom:0px; display: inline-block; border-bottom: 1px solid black; text-align: center;"><strong>{{ $application->director_name ?? 'Sample Data' }}</strong></div>
-                <p style="margin-top:2px;">Director/Chairperson, Office of Student Affairs and Services</p>
+                <p style="margin-top:0px;">Director/Chairperson, Office of Student Affairs and Services</p>
             </div>
         @endif
     @endfor
