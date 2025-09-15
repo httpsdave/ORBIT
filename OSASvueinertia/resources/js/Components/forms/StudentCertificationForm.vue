@@ -154,11 +154,11 @@ const clearAllStudents = () => {
 const downloadCSVTemplate = () => {
   // Create CSV content with headers and sample data
   const csvContent = [
-    'Student Name,Course,Year & Section,Position/Rank,Do not fill beyond this point',
-    'First Name M.I. Last Name,BSCS,4IS1,President,',
-    'First Name M.I. Last Name,BSCS,4IS2,Vice President,',
-    'First Name M.I. Last Name,BSCS,4GAV1,Treasurer,',
-    ',,,,',
+    'Student Name,Course,Year & Section,Position/Rank,Dean Name,Do not fill beyond this point',
+    'First Name M.I. Last Name,BSCS,4IS1,President,Dr. John Doe,',
+    'First Name M.I. Last Name,BSCS,4IS2,Vice President,Dr. Jane Smith,',
+    'First Name M.I. Last Name,BSCS,4GAV1,Treasurer,Prof. Mike Johnson,',
+    ',,,,,',
   ].join('\n');
   // Create blob and download
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -210,11 +210,12 @@ const handleCSVUpload = (event) => {
             dataRows.forEach((row, index) => {
                 const columns = row.split(',').map(col => col.trim().replace(/"/g, ''));
                 
-                // Extract columns: Student Name, Course, Year Section, Position/Rank
+                // Extract columns: Student Name, Course, Year Section, Position/Rank, Dean Name
                 const studentName = columns[0] || '';
                 const course = columns[1] || '';
                 const yearSection = columns[2] || '';
                 const positionRank = columns[3] || '';
+                const deanName = columns[4] || '';
                 
           // Add student if at least one field has data
           if (studentName || course || yearSection) {
@@ -226,7 +227,7 @@ const handleCSVUpload = (event) => {
               position_rank: positionRank.toUpperCase(),
               certification_date: form.certification_date, // Always include certification_date
               college: '',
-              dean_name: '',
+              dean_name: deanName.toUpperCase(),
               dean_prefix: '',
               dean_suffix: '',
             });
@@ -668,8 +669,9 @@ const submit = () => {
                 <p class="font-semibold text-blue-800 mb-1">📋 CSV Format Requirements:</p>
                 <ul class="text-blue-700 list-disc list-inside space-y-1">
                     <li>First row should contain column headers (will be ignored)</li>
-                    <li>Columns must be in this order: <strong>Student Name, Course, Year & Section, Position/Rank</strong></li>
+                    <li>Columns must be in this order: <strong>Student Name, Course, Year & Section, Position/Rank, Dean Name</strong></li>
                     <li>Additional columns will be ignored</li>
+                    <li>Dean Name can be left empty if not available</li>
                     <li>File must be in CSV format (.csv extension)</li>
                 </ul>
             </div>
