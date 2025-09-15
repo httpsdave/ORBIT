@@ -514,18 +514,7 @@ watch(showPreviewModal, (val) => {
                     </div>
                     <!-- MOBILE INLINE DROPDOWN -->
                     <div v-if="activeMobileDropdownId === application.id" class="mobile-dropdown-menu mt-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg shadow p-3 flex flex-col gap-2 z-10" @click.stop>
-                        <a
-                            :href="route('applications.pdf', application.id) + '?action=view'"
-                            @click="activeMobileDropdownId = null"
-                            class="w-full text-left px-2 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200"
-                            target="_blank"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-600 dark:text-green-400" viewBox="0 0 20 20" fill="currentColor">
-                                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                                <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
-                            </svg>
-                            View PDF
-                        </a>
+              <!-- View PDF removed for archive actions -->
                         <button 
                             @click="activeMobileDropdownId = null; confirmRestore(application)" 
                             class="w-full text-left px-2 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200"
@@ -603,19 +592,7 @@ watch(showPreviewModal, (val) => {
                 :style="{ top: `${dropdownPosition.top}px`, left: `${dropdownPosition.left}px`, visibility: activeDropdownApp ? 'visible' : 'hidden' }"
                 @click.stop
             >
-                <!-- View PDF option -->
-                <a
-                    :href="route('applications.pdf', activeDropdownApp.id) + '?action=view'"
-                    class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200 font-medium"
-                    target="_blank"
-                    @click="activeDropdownApp = null"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-600 dark:text-green-400" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                        <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
-                    </svg>
-                    View PDF
-                </a>
+        <!-- View PDF option removed for archive actions -->
                 <!-- Restore option -->
                 <button 
                     @click="confirmRestore(activeDropdownApp); activeDropdownApp = null;"
