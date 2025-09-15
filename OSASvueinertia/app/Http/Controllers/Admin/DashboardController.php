@@ -54,6 +54,12 @@ class DashboardController extends Controller
         // Get pending applications count (only active applications)
         $pendingApplications = OrganizationApplication::active()->where('status', 'pending')->count();
         
+        // Get approved Plan of Activities count for this AY (only active applications)
+        $approvedPOAsCount = OrganizationApplication::active()
+            ->where('status', 'Approved')
+            ->where('form_type', 'LSPU-OSAS-SF-004')
+            ->count();
+        
         // Get archive statistics
         $totalArchived = OrganizationApplication::archived()->count();
         $recentlyArchived = OrganizationApplication::archived()
@@ -105,6 +111,7 @@ class DashboardController extends Controller
             'userName' => $userName,
             'advisersData' => $advisersData->filter()->values(),
             'pastEventsCount' => $pastEventsCount, // Pass to dashboard
+            'approvedPOAsCount' => $approvedPOAsCount, // Pass POA count to dashboard
         ]);
     }
 }
