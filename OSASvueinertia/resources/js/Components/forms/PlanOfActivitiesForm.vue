@@ -593,24 +593,92 @@ const submit = () => {
     return;
   }
   
-  console.log('Submitting form data:', form.data());
+  // Clean HTML content from contenteditable fields before submission
+  const cleanedData = {
+    ...form.data(),
+    activities: form.activities.map(activity => ({
+      ...activity,
+      objective: stripHtml(activity.objective || '').trim(),
+      name: stripHtml(activity.name || '').trim(),
+      description: stripHtml(activity.description || '').trim(),
+      persons_involved: stripHtml(activity.persons_involved || '').trim()
+    }))
+  };
+  
+  console.log('Submitting form data:', cleanedData);
   console.log('Semester value:', form.semester);
   
   // Check if we're in edit mode
   if (props.isEdit) {
-    // For edit mode, just emit the data - don't make HTTP request here
-    emit('submitted', form.data());
+    // For edit mode, just emit the cleaned data - don't make HTTP request here
+    emit('submitted', cleanedData);
   } else {
-    // For create mode, make the POST request
-    form.post('/applications', {
+    // For create mode, make the POST request with cleaned data
+    form.transform((data) => ({
+      ...data,
+      activities: data.activities.map(activity => ({
+        ...activity,
+        objective: stripHtml(activity.objective || '').trim(),
+        name: stripHtml(activity.name || '').trim(),
+        description: stripHtml(activity.description || '').trim(),
+        persons_involved: stripHtml(activity.persons_involved || '').trim()
+      }))
+    })).post('/applications', {
       onSuccess: () => {
-        emit('submitted', form.data());
+        emit('submitted', cleanedData);
       },
       onError: (errors) => {
         emit('error', 'Form submission failed.');
         console.error('Form submission errors:', errors);
       }
     });
+  }
+};
+
+// Function to handle paste events and strip unwanted formatting
+const handlePaste = (event, activityIndex, fieldType) => {
+  event.preventDefault();
+  
+  // Get plain text from clipboard
+  const paste = (event.clipboardData || window.clipboardData).getData('text/plain');
+  
+  // Get current selection
+  const selection = window.getSelection();
+  if (!selection.rangeCount) return;
+  
+  const range = selection.getRangeAt(0);
+  const maxChars = getMaxCharacters(fieldType);
+  
+  // Get current content and calculate remaining space
+  const currentContent = stripHtml(event.target.innerHTML);
+  const remainingChars = maxChars - currentContent.length;
+  
+  if (remainingChars <= 0) return; // No space left
+  
+  // Truncate pasted content if necessary
+  const truncatedPaste = paste.substring(0, remainingChars);
+  
+  // Insert the plain text
+  range.deleteContents();
+  const textNode = document.createTextNode(truncatedPaste);
+  range.insertNode(textNode);
+  
+  // Move cursor to end of inserted text
+  range.setStartAfter(textNode);
+  range.collapse(true);
+  selection.removeAllRanges();
+  selection.addRange(range);
+  
+  // Update form data
+  const newContent = event.target.innerHTML;
+  if (fieldType === 'objective') {
+    form.activities[activityIndex].objective = newContent;
+  } else if (fieldType === 'name') {
+    form.activities[activityIndex].name = newContent;
+  } else if (fieldType === 'description') {
+    form.activities[activityIndex].description = newContent;
+  } else if (fieldType === 'persons_involved') {
+    form.activities[activityIndex].persons_involved = newContent;
   }
 };
 
@@ -876,6 +944,7 @@ nextTick(() => {
                   :placeholder="'Objective'"
                   class="w-full min-h-[40px]"
                   @input="(e) => handleContentEditableInput(e, startIndex + idx, 'objective')"
+                  @paste="(e) => handlePaste(e, startIndex + idx, 'objective')"
                   @mouseup="handleMouseUp"
                   style="outline:none;word-break:break-word;overflow-wrap:break-word;"
                 ></div>
@@ -893,6 +962,7 @@ nextTick(() => {
                   :placeholder="'Activity'"
                   class="w-full min-h-[40px]"
                   @input="(e) => handleContentEditableInput(e, startIndex + idx, 'name')"
+                  @paste="(e) => handlePaste(e, startIndex + idx, 'name')"
                   @mouseup="handleMouseUp"
                   style="outline:none;word-break:break-word;overflow-wrap:break-word;"
                 ></div>
@@ -910,6 +980,7 @@ nextTick(() => {
                   :placeholder="'Brief Description'"
                   class="w-full min-h-[40px]"
                   @input="(e) => handleContentEditableInput(e, startIndex + idx, 'description')"
+                  @paste="(e) => handlePaste(e, startIndex + idx, 'description')"
                   @mouseup="handleMouseUp"
                   style="outline:none;word-break:break-word;overflow-wrap:break-word;"
                 ></div>
@@ -927,6 +998,7 @@ nextTick(() => {
                   :placeholder="'Persons Involved'"
                   class="w-full min-h-[40px]"
                   @input="(e) => handleContentEditableInput(e, startIndex + idx, 'persons_involved')"
+                  @paste="(e) => handlePaste(e, startIndex + idx, 'persons_involved')"
                   @mouseup="handleMouseUp"
                   style="outline:none;word-break:break-word;overflow-wrap:break-word;"
                 ></div>
