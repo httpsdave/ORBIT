@@ -714,7 +714,7 @@
                                                         if (strlen($leftMember->student_name) > 26) {
                                                             $studentNameFontSize = '9pt';
                                                         } elseif (strlen($leftMember->student_name) > 22) {
-                                                            $studentNameFontSize = '10t';
+                                                            $studentNameFontSize = '10pt';
                                                         } else {
                                                             $studentNameFontSize = '11pt';
                                                         }
@@ -786,10 +786,10 @@
                                             <div class="member-info underline">
                                                 @if($rightMember && $rightMember->student_name)
                                                     @php
-                                                        if (strlen($rightMember->student_name) > 27) {
+                                                        if (strlen($rightMember->student_name) > 26) {
                                                             $studentNameFontSize = '9pt';
                                                         } elseif (strlen($rightMember->student_name) > 22) {
-                                                            $studentNameFontSize = '9pt';
+                                                            $studentNameFontSize = '10pt';
                                                         } else {
                                                             $studentNameFontSize = '11pt';
                                                         }
