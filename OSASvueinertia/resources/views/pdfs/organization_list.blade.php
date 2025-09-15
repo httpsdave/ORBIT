@@ -426,7 +426,7 @@
                                                     if (strlen($leftMember->student_name) > 27) {
                                                         $studentNameFontSize = '9pt';
                                                     } elseif (strlen($leftMember->student_name) > 22) {
-                                                        $studentNameFontSize = '9pt';
+                                                        $studentNameFontSize = '10pt';
                                                     } else {
                                                         $studentNameFontSize = '11pt';
                                                     }
@@ -501,7 +501,7 @@
                                                         if (strlen($rightMember->student_name) > 27) {
                                                             $studentNameFontSize = '9pt';
                                                         } elseif (strlen($rightMember->student_name) > 22) {
-                                                            $studentNameFontSize = '9pt';
+                                                            $studentNameFontSize = '10pt';
                                                         } else {
                                                             $studentNameFontSize = '11pt';
                                                         }
@@ -714,7 +714,7 @@
                                                         if (strlen($leftMember->student_name) > 27) {
                                                             $studentNameFontSize = '9pt';
                                                         } elseif (strlen($leftMember->student_name) > 22) {
-                                                            $studentNameFontSize = '9pt';
+                                                            $studentNameFontSize = '10t';
                                                         } else {
                                                             $studentNameFontSize = '11pt';
                                                         }
