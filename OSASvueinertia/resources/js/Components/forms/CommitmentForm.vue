@@ -551,7 +551,7 @@ const submit = () => {
           <input 
             v-model="form.organization_name" 
             @input="form.organization_name = $event.target.value.toUpperCase()"
-            class="border p-2 w-full" 
+            class="border p-2 w-full rounded-md" 
             style="text-transform: uppercase;" 
             required>
           <p v-if="errors.organization_name" class="text-red-500 text-sm mt-1">{{ errors.organization_name }}</p>
@@ -562,7 +562,7 @@ const submit = () => {
           <div class="flex items-center space-x-2">
             <input 
               v-model="form.academic_year_start" 
-              class="border p-2 w-16 bg-gray-200 text-gray-500 select-none pointer-events-none text-center" 
+              class="border p-2 w-16 bg-gray-200 text-gray-500 select-none pointer-events-none text-center rounded-md" 
               required 
               :placeholder="currentYear" 
               readonly 
@@ -572,7 +572,7 @@ const submit = () => {
             <span class="mx-1">-</span>
             <input 
               v-model="form.academic_year_end" 
-              class="border p-2 w-16 bg-gray-200 text-gray-500 select-none pointer-events-none text-center" 
+              class="border p-2 w-16 bg-gray-200 text-gray-500 select-none pointer-events-none text-center rounded-md" 
               required 
               :placeholder="nextYear" 
               readonly 
@@ -588,7 +588,7 @@ const submit = () => {
           <input 
             type="date" 
             :value="form.form_date" 
-            class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none text-center" 
+            class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none text-center rounded-md" 
             required 
             readonly 
             tabindex="-1" 
@@ -599,7 +599,7 @@ const submit = () => {
         <!-- Right Column -->
         <div>
           <label class="block font-bold">Coordinator Name</label>
-          <input v-model="form.coordinator_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none; text-transform: uppercase;">
+          <input v-model="form.coordinator_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none rounded-md" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none; text-transform: uppercase;">
         </div>
         
         <!-- Left Column -->
@@ -608,18 +608,18 @@ const submit = () => {
           <div class="flex gap-1 items-center">
             <input 
               v-model="form.dean_prefix" 
-              class="border p-2 w-12 text-xs" 
+              class="border p-2 w-12 text-xs rounded-md" 
               placeholder="Pre"
               maxlength="6">
             <input 
               v-model="form.dean_name" 
               @input="form.dean_name = $event.target.value.toUpperCase().slice(0, 54)"
-              class="border p-2 flex-1" 
+              class="border p-2 flex-1 rounded-md" 
               style="text-transform: uppercase;" 
               maxlength="54">
             <input 
               v-model="form.dean_suffix" 
-              class="border p-2 w-14 text-xs" 
+              class="border p-2 w-14 text-xs rounded-md" 
               placeholder="Suf"
               maxlength="8">
           </div>
@@ -628,7 +628,7 @@ const submit = () => {
         <!-- Right Column -->
         <div>
           <label class="block font-bold">Director Name</label>
-          <input v-model="form.director_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none; text-transform: uppercase;">
+          <input v-model="form.director_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none rounded-md" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none; text-transform: uppercase;">
         </div>
       </div>
 
@@ -685,19 +685,19 @@ const submit = () => {
               <div class="flex items-center gap-2 md:gap-3">
                 <input 
                   v-model="currentAdviser.adviser_prefix" 
-                  class="border p-2 w-12 text-xs" 
+                  class="border p-2 w-12 text-xs rounded-md" 
                   placeholder="Pre"
                   maxlength="6">
                 <input 
                   v-model="currentAdviser.adviser_name" 
                   @input="currentAdviser.adviser_name = $event.target.value.toUpperCase().slice(0, 32)"
-                  class="border p-2 flex-1 min-w-0" 
+                  class="border p-2 flex-1 min-w-0 rounded-md" 
                   style="text-transform: uppercase;" 
                   required 
                   maxlength="32">
                 <input 
                   v-model="currentAdviser.adviser_suffix" 
-                  class="border p-2 w-14 text-xs" 
+                  class="border p-2 w-14 text-xs rounded-md" 
                   placeholder="Suf"
                   maxlength="8"
                   style="margin-right:8px;">
@@ -710,7 +710,7 @@ const submit = () => {
               <select 
                 :value="currentAdviser.adviser_college || 'None'"
                 @change="handleCollegeChange($event, currentPage - 1)"
-                class="border p-2 w-full text-black"
+                class="border p-2 w-full text-black rounded-md"
                 required
               >
                 <option value="" disabled>Select College</option>
@@ -723,7 +723,7 @@ const submit = () => {
               <select 
                 :value="currentAdviser.adviser_rank || 'None'"
                 @change="handleRankChange($event, currentPage - 1)"
-                class="border p-2 w-full text-black"
+                class="border p-2 w-full text-black rounded-md"
                 required
               >
                 <option value="" disabled>Select Rank</option>
@@ -735,7 +735,7 @@ const submit = () => {
               <label class="block font-bold">Home Address</label>
               <input 
                 v-model="currentAdviser.adviser_address" 
-                class="border p-2 w-full" 
+                class="border p-2 w-full rounded-md" 
                 required 
                 maxlength="108">
               <p v-if="errors[`adviser_${currentPage - 1}_address`]" class="text-red-500 text-sm mt-1">{{ errors[`adviser_${currentPage - 1}_address`] }}</p>
@@ -745,7 +745,7 @@ const submit = () => {
               <label class="block font-bold">Contact Number(s)</label>
               <input 
                 v-model="currentAdviser.adviser_contact" 
-                class="border p-2 w-full" 
+                class="border p-2 w-full rounded-md" 
                 required 
                 maxlength="15"
                 @input="e => { e.target.value = e.target.value.replace(/[^0-9+()\-]/g, ''); currentAdviser.adviser_contact = e.target.value.slice(0, 15); }"
