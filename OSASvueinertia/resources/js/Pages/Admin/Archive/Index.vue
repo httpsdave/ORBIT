@@ -1,6 +1,6 @@
 <script setup>
 import { Head, Link, router } from '@inertiajs/vue3';
-import { ref, computed, nextTick } from 'vue';
+import { ref, computed, nextTick, onMounted, onUnmounted } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import SelectInput from '@/Components/SelectInput.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
@@ -187,6 +187,36 @@ function removeDropdownListeners() {
     window.removeEventListener('scroll', updateDropdownPosition, true);
     window.removeEventListener('resize', updateDropdownPosition);
 }
+
+// Back-to-top button state and handler (same as OrganizationApplications Index.vue)
+const showBackToTop = ref(false);
+const onScroll = () => {
+    try {
+        const y = window.scrollY || window.pageYOffset;
+        showBackToTop.value = y > 300;
+    } catch (e) {
+        // ignore in non-browser environments
+    }
+};
+
+onMounted(() => {
+    window.addEventListener('scroll', onScroll, { passive: true });
+});
+
+onUnmounted(() => {
+    removeDropdownListeners();
+    window.removeEventListener('scroll', onScroll);
+});
+
+// Smooth scroll helper
+const scrollToTop = (e) => {
+    e?.preventDefault();
+    try {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (err) {
+        // ignore if window is not available
+    }
+};
 </script>
 
 <template>
@@ -465,8 +495,21 @@ function removeDropdownListeners() {
             </div>
         </Modal>
 
-        <!-- Add a subtle, center-aligned back link at the bottom -->
-        <div class="flex justify-center mt-10 mb-6">
+                <!-- Floating Back to top button -->
+                        <button
+                            v-if="showBackToTop"
+                            @click="scrollToTop"
+                            aria-label="Back to top"
+                            class="fixed z-50 right-6 bottom-8 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 shadow-lg hover:shadow-2xl rounded-full p-3 transition transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            title="Back to top"
+                        >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M10 5a1 1 0 01.707.293l5 5a1 1 0 01-1.414 1.414L10 7.414 5.707 11.707A1 1 0 014.293 10.293l5-5A1 1 0 0110 5z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+
+                <!-- Add a subtle, center-aligned back link at the bottom -->
+                <div class="flex justify-center mt-10 mb-6">
           <Link
             :href="route('applications.index')"
             class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg shadow-sm transition duration-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
