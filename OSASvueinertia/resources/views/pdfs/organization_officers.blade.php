@@ -85,8 +85,10 @@
             border: 1px solid black;
             text-align: center;
             line-height: 2in;
+            vertical-align: middle;
             float: left;
             margin-right: 0.5cm;
+            font-size: 12pt;
         }
 
         .officer-details {
@@ -251,7 +253,7 @@
                 <div class="field-row">
                     <div class="field-label">Position</div>
                     <div class="field-colon">:</div>
-                    <div class="field-value">{{ isset($officers[0]) ? $officers[0]->position : '' }}</div>
+                    <div class="field-value" style="font-size: {{ strlen($officers[0]->position ?? '') > 32 ? '9pt' : '11pt' }}; line-height: 1.2; word-wrap: break-word; overflow-wrap: break-word; white-space: normal; max-width: 200px;">{{ isset($officers[0]) ? $officers[0]->position : '' }}</div>
                 </div>
                 <div class="field-row">
                     <div class="field-label">Student I.D. No.</div>
@@ -284,7 +286,7 @@
                 <div class="field-row">
                     <div class="field-label">Position</div>
                     <div class="field-colon">:</div>
-                    <div class="field-value">{{ isset($officers[1]) ? $officers[1]->position : '' }}</div>
+                    <div class="field-value" style="font-size: {{ strlen($officers[1]->position ?? '') > 32 ? '9pt' : '11pt' }}; line-height: 1.2; word-wrap: break-word; overflow-wrap: break-word; white-space: normal; max-width: 200px;">{{ isset($officers[1]) ? $officers[1]->position : '' }}</div>
                 </div>
                 <div class="field-row">
                     <div class="field-label">Student I.D. No.</div>
@@ -317,7 +319,7 @@
                 <div class="field-row">
                     <div class="field-label">Position</div>
                     <div class="field-colon">:</div>
-                    <div class="field-value">{{ isset($officers[2]) ? $officers[2]->position : '' }}</div>
+                    <div class="field-value" style="font-size: {{ strlen($officers[2]->position ?? '') > 32 ? '9pt' : '11pt' }}; line-height: 1.2; word-wrap: break-word; overflow-wrap: break-word; white-space: normal; max-width: 200px;">{{ isset($officers[2]) ? $officers[2]->position : '' }}</div>
                 </div>
                 <div class="field-row">
                     <div class="field-label">Student I.D. No.</div>
@@ -350,7 +352,7 @@
                 <div class="field-row">
                     <div class="field-label">Position</div>
                     <div class="field-colon">:</div>
-                    <div class="field-value">{{ isset($officers[3]) ? $officers[3]->position : '' }}</div>
+                    <div class="field-value" style="font-size: {{ strlen($officers[3]->position ?? '') > 32 ? '9pt' : '11pt' }}; line-height: 1.2; word-wrap: break-word; overflow-wrap: break-word; white-space: normal; max-width: 200px;">{{ isset($officers[3]) ? $officers[3]->position : '' }}</div>
                 </div>
                 <div class="field-row">
                     <div class="field-label">Student I.D. No.</div>
@@ -409,7 +411,7 @@
                     <div class="field-row">
                         <div class="field-label">Position</div>
                         <div class="field-colon">:</div>
-                        <div class="field-value">{{ isset($officers[$i]) ? $officers[$i]->position : '' }}</div>
+                        <div class="field-value" style="font-size: {{ strlen($officers[$i]->position ?? '') > 32 ? '9pt' : '11pt' }}; line-height: 1.2; word-wrap: break-word; overflow-wrap: break-word; white-space: normal; max-width: 200px;">{{ isset($officers[$i]) ? $officers[$i]->position : '' }}</div>
                     </div>
                     <div class="field-row">
                         <div class="field-label">Student I.D. No.</div>

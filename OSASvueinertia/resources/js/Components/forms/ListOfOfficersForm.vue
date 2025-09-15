@@ -462,7 +462,16 @@ const submit = () => {
           <div class="field-row mb-4">
             <span class="field-label">Position</span>
             <span class="field-colon">:</span>
-            <span class="field-value">{{ officer.position || '' }}</span>
+            <span class="field-value" 
+                  :style="{ 
+                    fontSize: (officer.position || '').length > 32 ? '9pt' : '11pt',
+                    lineHeight: '1.2',
+                    wordWrap: 'break-word',
+                    overflowWrap: 'break-word',
+                    whiteSpace: 'normal',
+                    maxWidth: '200px',
+                    display: 'inline-block'
+                  }">{{ officer.position || '' }}</span>
           </div>
           <div class="field-row mb-4">
             <span class="field-label">Student I.D. No.</span>
