@@ -521,19 +521,17 @@ watch(showPreviewModal, (val) => {
             <!-- MOBILE CARD LAYOUT -->
             <div v-if="archivedApplications.length > 0" class="sm:hidden p-2 space-y-4 max-w-4xl mx-auto">
                 <div v-for="application in archivedApplications" :key="application.id" 
-                    class="bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-100 dark:border-gray-700 p-4 flex flex-col gap-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition"
-                    @click="viewPdf(application)">
-                    <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#2563eb">
-                                        <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h168q13-36 43.5-58t68.5-22q38 0 68.5 22t43.5 58h168q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm80-80h280v-80H280v80Zm0-160h400v-80H280v80Zm0-160h400v-80H280v80Zm200-190q13 0 21.5-8.5T510-820q0-13-8.5-21.5T480-850q-13 0-21.5 8.5T450-820q0 13 8.5 21.5T480-790ZM200-200v-560 560Z"/>
-                                    </svg>
-                                    <div class="text-base font-semibold text-gray-800 dark:text-gray-200">{{ getFormTypeLabel(application.form_type) }}</div>
-                                </div>
-                                <span :class="`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(application.status)}`">
-                                    {{ application.status }}
-                                </span>
-                            </div>
+          class="bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-100 dark:border-gray-700 p-4 flex flex-col gap-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+          @click="viewPdf(application)">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#2563eb"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h168q13-36 43.5-58t68.5-22q38 0 68.5 22t43.5 58h168q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm80-80h280v-80H280v80Zm0-160h400v-80H280v80Zm0-160h400v-80H280v80Zm200-190q13 0 21.5-8.5T510-820q0-13-8.5-21.5T480-850q-13 0-21.5 8.5T450-820q0 13 8.5 21.5T480-790ZM200-200v-560 560Z"/></svg>
+              <div class="text-base font-semibold text-gray-800 dark:text-gray-200">{{ formTypeToName(application.form_type) }}</div>
+            </div>
+            <span :class="`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(application.status)}`">
+              {{ application.status }}
+            </span>
+          </div>
                             <div class="flex flex-wrap gap-2 text-xs text-gray-500 dark:text-gray-400 font-medium">
                                 <span><span class="font-semibold text-gray-700 dark:text-gray-200">Organization:</span> {{ application.user?.name || 'N/A' }}</span>
                                 <span><span class="font-semibold text-gray-700 dark:text-gray-200">Academic Year:</span> {{ application.academic_year_archived || 'N/A' }}</span>
@@ -591,21 +589,21 @@ watch(showPreviewModal, (val) => {
                                     </div>
                                 </div>
                                 <div class="min-w-0 flex-1">
-                                    <div class="font-medium text-base text-gray-900 dark:text-gray-100 truncate">
-                                        {{ getFormTypeLabel(application.form_type) }}
-                                        <span class="inline-flex items-center">
-                                            <svg class="mx-1 text-gray-400 dark:text-gray-500" width="10" height="10" viewBox="0 0 10 10" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style="display:inline">
-                                                <polygon points="0,0 10,5 0,10"/>
-                                            </svg>
-                                            {{ application.user?.name || 'N/A' }}
-                                        </span>
+                                    <div class="font-medium text-base text-gray-900 dark:text-gray-100">
+                                        <div class="flex items-center gap-2 min-w-0">
+                                            <span class="truncate flex-shrink-0">{{ formTypeToName(application.form_type) }}</span>
+                                            <span class="inline-flex items-center text-sm text-gray-700 dark:text-gray-200 min-w-0">
+                                                <svg class="mx-1 text-gray-400 dark:text-gray-500 w-2.5 h-2.5 flex-shrink-0" width="10" height="10" viewBox="0 0 10 10" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><polygon points="0,0 10,5 0,10"/></svg>
+                                                <span class="truncate max-w-[40ch]">{{ application.user?.name || 'N/A' }}</span>
+                                            </span>
+                                        </div>
                                     </div>
                                     <div class="text-sm text-gray-500 dark:text-gray-400 font-medium truncate">{{ application.form_type }}</div>
-                  <div class="flex flex-wrap gap-2 text-xs text-gray-500 dark:text-gray-400 mt-1 font-medium">
-                    <span><span class="font-semibold text-gray-700 dark:text-gray-200">Academic Year:</span> {{ application.academic_year_archived || 'N/A' }}</span>
-                    <span>&bull; <span :class="`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(application.status)}`">{{ application.status }}</span></span>
-                    <span><span class="font-semibold text-gray-700 dark:text-gray-200">Archived At:</span> {{ formatDate(application.archived_at) }}</span>
-                  </div>
+                                    <div class="flex flex-wrap gap-2 text-xs text-gray-500 dark:text-gray-400 mt-1 font-medium">
+                                        <span><span class="font-semibold text-gray-700 dark:text-gray-200">Academic Year:</span> {{ application.academic_year_archived || 'N/A' }}</span>
+                                        <span>&bull; <span :class="`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(application.status)}`">{{ application.status }}</span></span>
+                                        <span><span class="font-semibold text-gray-700 dark:text-gray-200">Archived At:</span> {{ formatDate(application.archived_at) }}</span>
+                                    </div>
                                 </div>
                             </div>
                             <div class="flex items-center gap-2 p-5 pt-0 md:pt-5 md:pl-0 md:pr-6 md:flex-col md:items-end">
