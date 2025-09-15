@@ -155,9 +155,9 @@ const downloadCSVTemplate = () => {
   // Create CSV content with headers and sample data
   const csvContent = [
     'Student Name,Course,Year & Section,Position/Rank,Dean Name,Do not fill beyond this point',
-    'First Name M.I. Last Name,BSCS,4IS1,President,Dr. John Doe,',
-    'First Name M.I. Last Name,BSCS,4IS2,Vice President,Dr. Jane Smith,',
-    'First Name M.I. Last Name,BSCS,4GAV1,Treasurer,Prof. Mike Johnson,',
+    'First Name M.I. Last Name,BSCS,4IS1,President,Dean Name,',
+    'First Name M.I. Last Name,BSCS,4IS2,Vice President,Dean Name,',
+    'First Name M.I. Last Name,BSCS,4GAV1,Treasurer,Dean Name,',
     ',,,,,',
   ].join('\n');
   // Create blob and download
@@ -759,22 +759,22 @@ const submit = () => {
                         </select>
                     </div>
 
-                    <div class="md:col-span-2">
+                    <div>
                         <label class="block font-bold">Dean/Assoc. Dean Name</label>
-                        <div class="flex gap-1 items-center">
+                        <div class="flex gap-1 items-center min-w-0">
                           <input 
                             v-model="student.dean_prefix" 
-                            class="border p-2 w-12 text-xs rounded-md" 
+                            class="border p-2 w-12 text-xs rounded-md flex-shrink-0" 
                             placeholder="Pre"
                             maxlength="6">
                           <input 
                             v-model="student.dean_name" 
                             @input="student.dean_name = $event.target.value.toUpperCase()"
-                            class="border p-2 flex-1 rounded-md" 
+                            class="border p-2 flex-1 min-w-0 rounded-md" 
                             style="text-transform: uppercase;">
                           <input 
                             v-model="student.dean_suffix" 
-                            class="border p-2 w-14 text-xs rounded-md" 
+                            class="border p-2 w-14 text-xs rounded-md flex-shrink-0" 
                             placeholder="Suf"
                             maxlength="8">
                         </div>
