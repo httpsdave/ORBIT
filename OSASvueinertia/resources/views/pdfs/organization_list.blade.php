@@ -332,20 +332,36 @@
         $orgNameLen = strlen($orgName);
         $orgFontSize = '11pt';
         if ($orgNameLen > 84) {
-            $orgFontSize = '8pt';
-        } elseif ($orgNameLen > 74) {
             $orgFontSize = '9pt';
+        } elseif ($orgNameLen > 74) {
+            $orgFontSize = '10pt';
         } elseif ($orgNameLen > 65) {
             $orgFontSize = '10pt';
         }
-        $info .= '<div style="margin-top: 15px; text-align: center; overflow: visible;">
-            <div style="display: flex; flex-direction: column; align-items: center; overflow: visible;">
-                <span style="font-family: Times New Roman, serif; font-size: 11pt; font-weight: bold; text-align: left;">Name of Organization</span>
-                <span class="signature-line" style="margin-bottom:0px; min-width:375px; width:auto; font-family: Times New Roman, serif; font-size: ' . $orgFontSize . '; text-align: center; border-bottom: 1px solid #000; display: inline-block; overflow: visible; white-space: nowrap;">
-                    <span style="font-weight: bold;"><strong>' . $orgName . '</strong></span>
-                </span>
-            </div>
-        </div>';
+        // Check if organization name is long enough to require line wrapping (48+ characters)
+        $shouldWrap = $orgNameLen >= 48;
+        
+        if ($shouldWrap) {
+            // For long names, create a flexible horizontal layout that allows wrapping
+            $info .= '<div style="margin-top: 15px; text-align: center; overflow: visible;">
+                <div style="display: flex; flex-direction: row; align-items: flex-start; justify-content: center; overflow: visible; gap: 8px;">
+                    <span style="font-family: Times New Roman, serif; font-size: 11pt; font-weight: bold; white-space: nowrap; margin-top: 2px;">Name of Organization</span>
+                    <div style="min-width:300px; max-width:350px; font-family: Times New Roman, serif; font-size: ' . $orgFontSize . '; text-align: center; border-bottom: 1px solid #000; display: inline-block; overflow: visible; white-space: normal; word-wrap: break-word; padding: 2px 4px; line-height: 1.2;">
+                        <span style="font-weight: bold;"><strong>' . $orgName . '</strong></span>
+                    </div>
+                </div>
+            </div>';
+        } else {
+            // For shorter names, keep original horizontal single-line format
+            $info .= '<div style="margin-top: 15px; text-align: center; overflow: visible;">
+                <div style="display: flex; flex-direction: row; align-items: center; justify-content: center; overflow: visible; gap: 8px;">
+                    <span style="font-family: Times New Roman, serif; font-size: 11pt; font-weight: bold; white-space: nowrap;">Name of Organization</span>
+                    <span class="signature-line" style="min-width:300px; width:auto; font-family: Times New Roman, serif; font-size: ' . $orgFontSize . '; text-align: center; border-bottom: 1px solid #000; display: inline-block; overflow: visible; white-space: nowrap; padding: 2px 4px;">
+                        <span style="font-weight: bold;"><strong>' . $orgName . '</strong></span>
+                    </span>
+                </div>
+            </div>';
+        }
         return $info;
     }
     @endphp
