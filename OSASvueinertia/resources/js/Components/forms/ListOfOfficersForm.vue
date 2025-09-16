@@ -417,7 +417,7 @@ const submit = () => {
     <!-- Officer list preview -->
     <div class="mt-6 form-content">
       <!-- REMOVE: <StatusBanner ... /> -->
-      <div class="header text-center relative">
+  <div class="header text-center relative">
         <!-- Back Button positioned above LSPU logo -->
         <div style="position: absolute; top: -0.8cm; left: -2cm; z-index: 10;">
           <a :href="backHref"
@@ -431,14 +431,16 @@ const submit = () => {
           </a>
         </div>
         <img src="/images/lspu-logo.png" alt="LSPU Logo" class="absolute top-[-0.5rem] left-[-2rem] w-[250px] h-auto">
-        <p class="text-sm font-normal mb-0">Republic of the Philippines</p>
-        <p class="text-base font-bold university-name mb-0">Laguna State Polytechnic University</p>
-        <p class="text-sm mb-0">Province of Laguna</p>
-        <p class="text-sm font-bold mb-0">OFFICE OF STUDENT AFFAIRS AND SERVICES</p>
+        <div style="padding-top: 30px;">
+          <p class="text-sm font-normal mb-0" style="font-family: Calibri, sans-serif; font-size:10pt;">Republic of the Philippines</p>
+          <img src="/images/lspu-name.png" alt="Laguna State Polytechnic University" class="university-name mb-0" style="max-width:45%; height:auto; display:inline-block;" />
+          <p class="text-sm mb-0" style="font-family: Calibri, sans-serif; font-size:10pt;">Province of Laguna</p>
+          <p class="text-sm font-bold mb-0" style ="padding-top: 10px;">OFFICE OF STUDENT AFFAIRS AND SERVICES</p>
+        </div>
       </div>
       
       <div class="organization-details text-center mt-2 mb-4">
-        <p class="mb-1">Name of Organization: {{ form.organization_name.toUpperCase() }}</p>
+        <p class="mb-1">{{ form.organization_name.toUpperCase() }}</p>
         <p class="mb-0">A.Y. 20{{ form.academic_year_start }}-20{{ form.academic_year_end }}</p>
       </div>
       
