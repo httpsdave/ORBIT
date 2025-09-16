@@ -338,25 +338,39 @@
         } elseif ($orgNameLen > 65) {
             $orgFontSize = '10pt';
         }
-        // Check if organization name is long enough to require line wrapping (48+ characters)
-        $shouldWrap = $orgNameLen >= 48;
+        // Check if organization name is very long (90+ characters) for dynamic line
+        $isDynamicLine = $orgNameLen >= 90;
+        // Check if organization name needs wrapping (48+ characters but less than 90)
+        $shouldWrap = $orgNameLen >= 48 && $orgNameLen < 90;
         
-        if ($shouldWrap) {
-            // For long names, create a flexible horizontal layout that allows wrapping
-            $info .= '<div style="margin-top: 15px; text-align: center; overflow: visible;">
-                <div style="display: flex; flex-direction: row; align-items: flex-start; justify-content: center; overflow: visible; gap: 8px;">
-                    <span style="font-family: Times New Roman, serif; font-size: 11pt; font-weight: bold; white-space: nowrap; margin-top: 2px;">Name of Organization</span>
-                    <div style="min-width:300px; max-width:350px; font-family: Times New Roman, serif; font-size: ' . $orgFontSize . '; text-align: center; border-bottom: 1px solid #000; display: inline-block; overflow: visible; white-space: normal; word-wrap: break-word; padding: 2px 4px; line-height: 1.2;">
+        if ($isDynamicLine) {
+            // For very long names (90+ chars), keep the label left-pushed but CENTER the organization name inside the underline
+            $info .= '<div style="margin-top: 8px; text-align: left; overflow: visible; padding-left: 20px;">
+                <div style="display: flex; flex-direction: row; align-items: flex-start; justify-content: flex-start; overflow: visible; gap: 8px; flex-wrap: nowrap;">
+                    <span style="font-family: Times New Roman, serif; font-size: 11pt; font-weight: bold; white-space: nowrap; margin-top: 2px; flex-shrink: 0; min-width: 150px;">Name of Organization</span>
+                    <div style="flex: 1; max-width: calc(100% - 170px); font-family: Times New Roman, serif; font-size: ' . $orgFontSize . '; text-align: center; border-bottom: 1px solid #000; display: inline-flex; align-items: flex-end; overflow: visible; white-space: normal; word-wrap: break-word; padding: 0 4px; line-height: 1; min-height: 16px;">
+                        <div style="display: inline-block; width: 100%; text-align: center;">
+                            <span style="font-weight: bold;"><strong>' . $orgName . '</strong></span>
+                        </div>
+                    </div>
+                </div>
+            </div>';
+        } elseif ($shouldWrap) {
+            // For long names (48-89 chars), flexible horizontal layout - ALWAYS HORIZONTAL
+            $info .= '<div style="margin-top: 8px; text-align: center; overflow: visible;">
+                <div style="display: flex; flex-direction: row; align-items: flex-start; justify-content: center; overflow: visible; gap: 8px; flex-wrap: nowrap;">
+                    <span style="font-family: Times New Roman, serif; font-size: 11pt; font-weight: bold; white-space: nowrap; margin-top: 2px; flex-shrink: 0;">Name of Organization</span>
+                    <div style="min-width:300px; max-width:350px; font-family: Times New Roman, serif; font-size: ' . $orgFontSize . '; text-align: center; border-bottom: 1px solid #000; display: inline-flex; align-items: flex-end; overflow: visible; white-space: normal; word-wrap: break-word; padding: 0 4px; line-height: 1; min-height: 16px;">
                         <span style="font-weight: bold;"><strong>' . $orgName . '</strong></span>
                     </div>
                 </div>
             </div>';
         } else {
-            // For shorter names, keep original horizontal single-line format
-            $info .= '<div style="margin-top: 15px; text-align: center; overflow: visible;">
-                <div style="display: flex; flex-direction: row; align-items: center; justify-content: center; overflow: visible; gap: 8px;">
-                    <span style="font-family: Times New Roman, serif; font-size: 11pt; font-weight: bold; white-space: nowrap;">Name of Organization</span>
-                    <span class="signature-line" style="min-width:300px; width:auto; font-family: Times New Roman, serif; font-size: ' . $orgFontSize . '; text-align: center; border-bottom: 1px solid #000; display: inline-block; overflow: visible; white-space: nowrap; padding: 2px 4px;">
+            // For shorter names (under 48 chars), fixed width horizontal format - ALWAYS HORIZONTAL
+            $info .= '<div style="margin-top: 8px; text-align: center; overflow: visible;">
+                <div style="display: flex; flex-direction: row; align-items: center; justify-content: center; overflow: visible; gap: 8px; flex-wrap: nowrap;">
+                    <span style="font-family: Times New Roman, serif; font-size: 11pt; font-weight: bold; white-space: nowrap; flex-shrink: 0;">Name of Organization</span>
+                    <span class="signature-line" style="min-width:300px; width:300px; font-family: Times New Roman, serif; font-size: ' . $orgFontSize . '; text-align: center; border-bottom: 1px solid #000; display: inline-flex; align-items: flex-end; overflow: visible; white-space: nowrap; padding: 0 4px; min-height: 16px;">
                         <span style="font-weight: bold;"><strong>' . $orgName . '</strong></span>
                     </span>
                 </div>
