@@ -477,7 +477,22 @@
                                         </div>
                                         <div class="member-info underline">
                                             @if($leftMember && $leftMember->course_year_section && $leftMember->course_year_section !== 'Sample Data')
-                                                <span class="filled-text">{{ $leftMember->course_year_section }}</span>
+                                                @php
+                                                    if (strlen($leftMember->course_year_section) > 40) {
+                                                        $courseYearSectionFontSize = '6pt';
+                                                    } elseif (strlen($leftMember->course_year_section) > 35) {
+                                                        $courseYearSectionFontSize = '7pt';
+                                                    } elseif (strlen($leftMember->course_year_section) > 32) {
+                                                        $courseYearSectionFontSize = '8pt';
+                                                    } elseif (strlen($leftMember->course_year_section) > 26) {
+                                                        $courseYearSectionFontSize = '9pt';
+                                                    } elseif (strlen($leftMember->course_year_section) > 22) {
+                                                        $courseYearSectionFontSize = '10pt';
+                                                    } else {
+                                                        $courseYearSectionFontSize = '11pt';
+                                                    }
+                                                @endphp
+                                                <span class="filled-text" style="font-size: {{ $courseYearSectionFontSize }};">{{ $leftMember->course_year_section }}</span>
                                             @endif
                                         </div>
                                     </td>
@@ -558,7 +573,22 @@
                                         </div>
                                         <div class="member-info underline">
                                             @if($rightMember && $rightMember->course_year_section && $rightMember->course_year_section !== 'Sample Data')
-                                                <span class="filled-text">{{ $rightMember->course_year_section }}</span>
+                                                @php
+                                                    if (strlen($rightMember->course_year_section) > 40) {
+                                                        $courseYearSectionFontSize = '6pt';
+                                                    } elseif (strlen($rightMember->course_year_section) > 35) {
+                                                        $courseYearSectionFontSize = '7pt';
+                                                    } elseif (strlen($rightMember->course_year_section) > 32) {
+                                                        $courseYearSectionFontSize = '8pt';
+                                                    } elseif (strlen($rightMember->course_year_section) > 26) {
+                                                        $courseYearSectionFontSize = '9pt';
+                                                    } elseif (strlen($rightMember->course_year_section) > 22) {
+                                                        $courseYearSectionFontSize = '10pt';
+                                                    } else {
+                                                        $courseYearSectionFontSize = '11pt';
+                                                    }
+                                                @endphp
+                                                <span class="filled-text" style="font-size: {{ $courseYearSectionFontSize }};">{{ $rightMember->course_year_section }}</span>
                                             @endif
                                         </div>
                                     </td>
@@ -777,7 +807,22 @@
                                             </div>
                                             <div class="member-info underline">
                                                 @if($leftMember && $leftMember->course_year_section)
-                                                    <span class="filled-text">{{ $leftMember->course_year_section }}</span>
+                                                    @php
+                                                        if (strlen($leftMember->course_year_section) > 40) {
+                                                            $courseYearSectionFontSize = '6pt';
+                                                        } elseif (strlen($leftMember->course_year_section) > 35) {
+                                                            $courseYearSectionFontSize = '7pt';
+                                                        } elseif (strlen($leftMember->course_year_section) > 32) {
+                                                            $courseYearSectionFontSize = '8pt';
+                                                        } elseif (strlen($leftMember->course_year_section) > 26) {
+                                                            $courseYearSectionFontSize = '9pt';
+                                                        } elseif (strlen($leftMember->course_year_section) > 22) {
+                                                            $courseYearSectionFontSize = '10pt';
+                                                        } else {
+                                                            $courseYearSectionFontSize = '11pt';
+                                                        }
+                                                    @endphp
+                                                    <span class="filled-text" style="font-size: {{ $courseYearSectionFontSize }};">{{ $leftMember->course_year_section }}</span>
                                                 @endif
                                             </div>
                                         </td>
@@ -858,7 +903,22 @@
                                             </div>
                                             <div class="member-info underline">
                                                 @if($rightMember && $rightMember->course_year_section)
-                                                    <span class="filled-text">{{ $rightMember->course_year_section }}</span>
+                                                    @php
+                                                        if (strlen($rightMember->course_year_section) > 40) {
+                                                            $courseYearSectionFontSize = '6pt';
+                                                        } elseif (strlen($rightMember->course_year_section) > 35) {
+                                                            $courseYearSectionFontSize = '7pt';
+                                                        } elseif (strlen($rightMember->course_year_section) > 32) {
+                                                            $courseYearSectionFontSize = '8pt';
+                                                        } elseif (strlen($rightMember->course_year_section) > 26) {
+                                                            $courseYearSectionFontSize = '9pt';
+                                                        } elseif (strlen($rightMember->course_year_section) > 22) {
+                                                            $courseYearSectionFontSize = '10pt';
+                                                        } else {
+                                                            $courseYearSectionFontSize = '11pt';
+                                                        }
+                                                    @endphp
+                                                    <span class="filled-text" style="font-size: {{ $courseYearSectionFontSize }};">{{ $rightMember->course_year_section }}</span>
                                                 @endif
                                             </div>
                                         </td>
