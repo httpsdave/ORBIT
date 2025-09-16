@@ -374,7 +374,7 @@
             student taking up 
             <div style="display: inline-block; vertical-align: bottom; position: relative; top: 6px;">
                 <div>
-                    <span class="course-blank" style="font-weight: bold; font-size: {{ strlen($certification->course_year_section ?? '') > 35 ? '10pt' : '11pt' }}; word-wrap: break-word; overflow-wrap: break-word;">{{ $certification->course_year_section ?? '' }}</span>
+                    <span class="course-blank" style="font-weight: bold; font-size: {{ strlen($certification->course_year_section ?? '') > 41 ? '10pt' : '11pt' }}; word-wrap: break-word; overflow-wrap: break-word; white-space: normal; line-height: 1.2; max-width: 350px; display: inline-block;">{{ $certification->course_year_section ?? '' }}</span>
                 </div>
                 <div style="text-align: center; font-size: 11pt; margin-top: -5px;">
                     <span style="font-size: 11pt; position: relative; top: 5px;">(course, year and section)</span>
