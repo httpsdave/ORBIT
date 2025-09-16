@@ -370,8 +370,8 @@
             $info .= '<div style="margin-top: 8px; text-align: center; overflow: visible;">
                 <div style="display: flex; flex-direction: row; align-items: center; justify-content: center; overflow: visible; gap: 8px; flex-wrap: nowrap;">
                     <span style="font-family: Times New Roman, serif; font-size: 11pt; font-weight: bold; white-space: nowrap; flex-shrink: 0;">Name of Organization</span>
-                    <span class="signature-line" style="min-width:300px; width:300px; font-family: Times New Roman, serif; font-size: ' . $orgFontSize . '; text-align: center; border-bottom: 1px solid #000; display: inline-flex; align-items: flex-end; overflow: visible; white-space: nowrap; padding: 0 4px; min-height: 16px;">
-                        <span style="font-weight: bold;"><strong>' . $orgName . '</strong></span>
+                    <span class="signature-line" style="min-width:350px; width:auto; max-width:450px; font-family: Times New Roman, serif; font-size: ' . $orgFontSize . '; text-align: center; border-bottom: 1px solid #000; display: inline-flex; align-items: flex-end; overflow: visible; white-space: nowrap !important; word-wrap: normal !important; word-break: keep-all !important; padding: 0 4px; min-height: 16px;">
+                        <span style="font-weight: bold; white-space: nowrap !important;"><strong>' . $orgName . '</strong></span>
                     </span>
                 </div>
             </div>';
