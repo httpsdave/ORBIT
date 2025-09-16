@@ -453,7 +453,9 @@
                                         <div class="member-info underline">
                                             @if($leftMember && $leftMember->student_name && $leftMember->student_name !== 'Sample Data')
                                                 @php
-                                                    if (strlen($leftMember->student_name) > 26) {
+                                                    if (strlen($leftMember->student_name) > 32) {
+                                                        $studentNameFontSize = '8pt';
+                                                    } elseif (strlen($leftMember->student_name) > 26) {
                                                         $studentNameFontSize = '9pt';
                                                     } elseif (strlen($leftMember->student_name) > 22) {
                                                         $studentNameFontSize = '10pt';
@@ -528,7 +530,9 @@
                                         <div class="member-info underline">
                                                 @if($rightMember && $rightMember->student_name && $rightMember->student_name !== 'Sample Data')
                                                     @php
-                                                        if (strlen($rightMember->student_name) > 26) {
+                                                        if (strlen($rightMember->student_name) > 32) {
+                                                            $studentNameFontSize = '8pt';
+                                                        } elseif (strlen($rightMember->student_name) > 26) {
                                                             $studentNameFontSize = '9pt';
                                                         } elseif (strlen($rightMember->student_name) > 22) {
                                                             $studentNameFontSize = '10pt';
@@ -741,7 +745,9 @@
                                             <div class="member-info underline">
                                                 @if($leftMember && $leftMember->student_name)
                                                     @php
-                                                        if (strlen($leftMember->student_name) > 26) {
+                                                        if (strlen($leftMember->student_name) > 32) {
+                                                            $studentNameFontSize = '8pt';
+                                                        } elseif (strlen($leftMember->student_name) > 26) {
                                                             $studentNameFontSize = '9pt';
                                                         } elseif (strlen($leftMember->student_name) > 22) {
                                                             $studentNameFontSize = '10pt';
@@ -816,7 +822,9 @@
                                             <div class="member-info underline">
                                                 @if($rightMember && $rightMember->student_name)
                                                     @php
-                                                        if (strlen($rightMember->student_name) > 26) {
+                                                        if (strlen($rightMember->student_name) > 32) {
+                                                            $studentNameFontSize = '8pt';
+                                                        } elseif (strlen($rightMember->student_name) > 26) {
                                                             $studentNameFontSize = '9pt';
                                                         } elseif (strlen($rightMember->student_name) > 22) {
                                                             $studentNameFontSize = '10pt';
