@@ -431,7 +431,7 @@ const statsCards = computed(() => [
         color: 'yellow'
     },
     {
-        title: 'Total POAs',
+        title: 'Total Activities Conducted',
         value: props.approvedPOAsCount,
         icon: 'document-text',
         color: 'red'

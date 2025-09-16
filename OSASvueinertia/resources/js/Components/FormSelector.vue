@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, onMounted, onUnmounted } from 'vue';
+import { ref, watch, onMounted, onUnmounted, computed } from 'vue';
 import { ChevronDown } from 'lucide-vue-next';
 import { useTheme } from '@/Composables/useTheme';
 
@@ -50,6 +50,18 @@ const getSelectedLabel = () => {
   const option = props.formOptions.find(opt => opt.value === selectedForm.value);
   return option ? option.label : 'Choose a form';
 };
+
+// Keep hidden options in the prop but filter them out for rendering.
+const hiddenValues = [
+  'LSPU-OSAS-SF-FINANCIAL',
+  'LSPU-OSAS-SF-NARRATIVE',
+  'LSPU-OSAS-SF-ACCOMPLISHMENT'
+];
+
+const visibleOptions = computed(() => {
+  if (!Array.isArray(props.formOptions)) return [];
+  return props.formOptions.filter(opt => !hiddenValues.includes(opt?.value));
+});
 
 const closeDropdown = (event) => {
   if (dropdownRef.value && !dropdownRef.value.contains(event.target)) {
@@ -102,15 +114,15 @@ onUnmounted(() => {
           class="absolute z-50 mt-1 w-full bg-white dark:bg-gray-700 shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black dark:ring-gray-600 ring-opacity-5 dark:ring-opacity-25 overflow-auto focus:outline-none transition-all duration-150"
         >
           <div
-            v-for="option in formOptions"
-            :key="option.value"
-            @click="selectForm(option.value)"
+            v-for="option in visibleOptions"
+            :key="option?.value"
+            @click="option && selectForm(option.value)"
             class="cursor-pointer select-none relative py-2.5 pl-3 pr-9 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors duration-150 text-gray-900 dark:text-gray-100"
-            :class="{ 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300': selectedForm === option.value }"
+            :class="{ 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300': selectedForm === option?.value }"
           >
               <div class="flex justify-between items-center">
-                <span class="font-medium">{{ option.label }}</span>
-                <span v-if="!['LSPU-OSAS-SF-EVAL','LSPU-OSAS-SF-ACCOMPLISHMENT','LSPU-OSAS-SF-NARRATIVE','LSPU-OSAS-SF-FINANCIAL','LSPU-OSAS-SF-BYLAWS','LSPU-OSAS-SF-007'].includes(option.value)" class="text-xs text-gray-500 dark:text-gray-400 font-mono ml-2">{{ option.value }}</span>
+                <span class="font-medium">{{ option?.label }}</span>
+                <span v-if="option && !['LSPU-OSAS-SF-EVAL','LSPU-OSAS-SF-ACCOMPLISHMENT','LSPU-OSAS-SF-NARRATIVE','LSPU-OSAS-SF-FINANCIAL','LSPU-OSAS-SF-BYLAWS','LSPU-OSAS-SF-007'].includes(option.value)" class="text-xs text-gray-500 dark:text-gray-400 font-mono ml-2">{{ option.value }}</span>
               </div>
           </div>
         </div>
