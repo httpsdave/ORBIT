@@ -72,7 +72,9 @@ class DashboardController extends Controller
                 $requiredReportTypes = [
                     'LSPU-OSAS-SF-FINANCIAL',
                     'LSPU-OSAS-SF-NARRATIVE', 
-                    'LSPU-OSAS-SF-ACCOMPLISHMENT'
+                    'LSPU-OSAS-SF-ACCOMPLISHMENT',
+                    'LSPU-OSAS-SF-EVAL',
+                    'LSPU-OSAS-SF-009'
                 ];
                 
                 // Check each activity page (1 to activityCount)
