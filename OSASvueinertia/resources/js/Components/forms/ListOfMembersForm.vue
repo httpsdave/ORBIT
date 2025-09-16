@@ -103,7 +103,7 @@ const addMember = () => {
 const downloadCSVTemplate = () => {
     // Create CSV content with headers and sample data
     const csvContent = [
-        'Student Name,Student Number,Course- Year & Section,Do Not Fill beyond this point',
+      'Student Name,Student Number,Course- Year & Section,Do Not Fill beyond this point',
         'First Name M.I. Last Name,0325-0001,BSCS-4IS1,',
         'First Name M.I. Last Name,0325-0002,BSCS-4IS2,',
         'First Name M.I. Last Name,0325-0003,BSCS-4GAV1,',
@@ -874,7 +874,7 @@ const submit = () => {
                 <p class="font-semibold text-blue-800 mb-1">📋 CSV Format Requirements:</p>
                 <ul class="text-blue-700 list-disc list-inside space-y-1">
                     <li>First row should contain column headers (will be ignored)</li>
-                    <li>Columns must be in this order: <strong>Student Name, Student Number, Course - Year & Section</strong></li>
+                              <li>Columns must be in this order: <strong>Student Name, Student Number, Course - Year & Section</strong></li>
                     <li>Additional columns will be ignored</li>
                     <li>File must be in CSV format (.csv extension)</li>
                 </ul>
@@ -908,7 +908,7 @@ const submit = () => {
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block font-bold">Student Name</label>
+                        <label class="block font-bold">Student Name (First Name M.I. Last Name)</label>
                         <input 
                           v-model="member.student_name" 
                           @input="member.student_name = $event.target.value.toUpperCase()"
