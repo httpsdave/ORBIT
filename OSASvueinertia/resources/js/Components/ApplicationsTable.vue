@@ -680,7 +680,7 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
         </div>
         
         <!-- View Reports button for Plan of Activities (LSPU-OSAS-SF-004) -->
-        <div v-if="app.form_type === 'LSPU-OSAS-SF-004'" class="relative">
+        <div v-if="app.form_type === 'LSPU-OSAS-SF-004' && app.status === 'Approved'" class="relative">
           <button
             @click.stop="$event => { router.visit(`/applications/${app.id}/reports`) }"
             class="absolute -bottom-6 right-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-medium px-3 py-1.5 rounded-b-lg rounded-tl-lg shadow-lg border-2 border-white dark:border-gray-800 flex items-center gap-1.5 hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-200 z-10"
@@ -835,7 +835,7 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
         
         <!-- View Reports hanging tag for Plan of Activities (LSPU-OSAS-SF-004) -->
         <button
-          v-if="app.form_type === 'LSPU-OSAS-SF-004'"
+          v-if="app.form_type === 'LSPU-OSAS-SF-004' && app.status === 'Approved'"
           @click.stop="$event => { router.visit(`/applications/${app.id}/reports`) }"
           class="absolute -bottom-3 left-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-medium px-3 py-1.5 rounded-b-lg rounded-tr-lg shadow-lg border-2 border-white dark:border-gray-800 flex items-center gap-1.5 hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-200 z-10"
         >

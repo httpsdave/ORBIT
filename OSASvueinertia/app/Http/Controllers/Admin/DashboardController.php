@@ -54,10 +54,47 @@ class DashboardController extends Controller
         // Get pending applications count (only active applications)
         $pendingApplications = OrganizationApplication::active()->where('status', 'pending')->count();
         
-        // Get approved Plan of Activities count for this AY (only active applications)
+        // Get approved Plan of Activities count that have ALL their activity reports approved
         $approvedPOAsCount = OrganizationApplication::active()
             ->where('status', 'Approved')
             ->where('form_type', 'LSPU-OSAS-SF-004')
+            ->whereHas('activities') // Ensure POA has activities
+            ->get()
+            ->filter(function($poa) {
+                // Get the number of activities for this POA
+                $activityCount = $poa->activities->count();
+                
+                if ($activityCount === 0) {
+                    return false; // No activities, so no reports needed
+                }
+                
+                // Required report types for each activity
+                $requiredReportTypes = [
+                    'LSPU-OSAS-SF-FINANCIAL',
+                    'LSPU-OSAS-SF-NARRATIVE', 
+                    'LSPU-OSAS-SF-ACCOMPLISHMENT'
+                ];
+                
+                // Check each activity page (1 to activityCount)
+                for ($pageNumber = 1; $pageNumber <= $activityCount; $pageNumber++) {
+                    // For each required report type, check if it exists and is approved
+                    foreach ($requiredReportTypes as $reportType) {
+                        $report = $poa->activityReports()
+                            ->where('activity_page_number', $pageNumber)
+                            ->where('report_type', $reportType)
+                            ->where('status', 'Approved')
+                            ->first();
+                            
+                        // If any required report is missing or not approved, exclude this POA
+                        if (!$report) {
+                            return false;
+                        }
+                    }
+                }
+                
+                // All activities have all required reports approved
+                return true;
+            })
             ->count();
         
         // Get archive statistics

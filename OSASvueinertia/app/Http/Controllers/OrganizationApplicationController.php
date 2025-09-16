@@ -1856,6 +1856,11 @@ class OrganizationApplicationController extends Controller
             abort(404, 'Reports are only available for Plan of Activities submissions.');
         }
 
+        // Ensure the POA is approved before allowing report access
+        if (strtolower($application->status) !== 'approved') {
+            return redirect()->back()->with('error', 'Reports can only be accessed for approved Plan of Activities submissions.');
+        }
+
         // Ensure user owns this application or is admin
         if (!auth()->user()->isAdmin() && $application->user_id !== auth()->id()) {
             abort(403, 'Unauthorized access to this application.');
