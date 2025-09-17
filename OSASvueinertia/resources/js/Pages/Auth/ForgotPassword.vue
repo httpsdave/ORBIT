@@ -295,28 +295,35 @@ onBeforeUnmount(() => {
                 <!-- Form -->
                 <form @submit.prevent="submit" class="space-y-4 sm:space-y-6" novalidate>
                     <div>
-                        <label for="email" class="block text-xs sm:text-sm font-medium mb-2 sm:mb-3 text-gray-300">
-                            Email Address
-                        </label>
                         <div class="relative group">
-                            <div class="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
+                            <div class="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none z-10">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-focus-within:text-orange-400 transition-colors duration-300 text-gray-500">
                                     <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
                                     <polyline points="22,6 12,13 2,6"></polyline>
                                 </svg>
                             </div>
+
                             <TextInput
                                 id="email"
                                 type="email"
-                                class="pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 text-sm sm:text-base rounded-lg w-full border-0 focus:border-orange-400 focus:ring-2 focus:ring-orange-400 focus:ring-opacity-50 transition-all duration-300 bg-white bg-opacity-10 backdrop-blur-sm text-white placeholder-gray-300"
+                                class="peer pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 text-sm sm:text-base rounded-lg w-full border-0 focus:border-orange-400 focus:ring-2 focus:ring-orange-400 focus:ring-opacity-50 transition-all duration-300 bg-white bg-opacity-10 backdrop-blur-sm text-white placeholder-transparent"
                                 v-model="email"
-                                placeholder="Enter your email address"
+                                placeholder="Email Address"
                                 required
                                 autofocus
                                 autocomplete="username"
                                 aria-label="Email address"
                             />
+
+                            <label
+                                for="email"
+                                class="floating-label absolute left-10 sm:left-12 top-3 sm:top-4 text-xs sm:text-sm text-gray-300 pointer-events-none peer-focus:floating-label-active peer-[:not(:placeholder-shown)]:floating-label-active"
+                                :class="[ email ? 'floating-label-active' : '' ]"
+                            >
+                                Email Address
+                            </label>
                         </div>
+
                         <!-- Only show InputError if there's an actual error message for the email field -->
                         <InputError v-if="error && error.includes('email')" class="mt-2 text-red-400 text-sm" :message="error" />
                     </div>
@@ -433,5 +440,50 @@ button:hover:not(:disabled) {
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 300ms;
+}
+
+/* Floating label animations (match Logz.vue) */
+.floating-label {
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    transform-origin: left top;
+    will-change: transform, color, background-color;
+}
+
+.floating-label-active {
+    transform: translateY(-1.5rem) translateX(-1.6rem) scale(0.78) !important;
+    color: #fb923c !important; /* orange-400 */
+    background-color: rgba(17, 24, 39, 0.9) !important;
+    padding: 0.125rem 0.25rem !important;
+    border-radius: 0.25rem !important;
+    backdrop-filter: blur(4px);
+}
+
+/* Peer-based animations for smoother transitions */
+.peer:focus ~ .floating-label {
+    transform: translateY(-1.5rem) translateX(-1.6rem) scale(0.78);
+    color: #fb923c;
+    background-color: rgba(17, 24, 39, 0.9);
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.25rem;
+    backdrop-filter: blur(4px);
+}
+
+.peer:not(:placeholder-shown) ~ .floating-label {
+    transform: translateY(-1.5rem) translateX(-1.6rem) scale(0.78);
+    color: #fb923c;
+    background-color: rgba(17, 24, 39, 0.9);
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.25rem;
+    backdrop-filter: blur(4px);
+}
+
+@media (min-width: 640px) {
+        .floating-label-active {
+            transform: translateY(-1.65rem) translateX(-2rem) scale(0.78) !important;
+        }
+        .peer:focus ~ .floating-label,
+        .peer:not(:placeholder-shown) ~ .floating-label {
+            transform: translateY(-1.65rem) translateX(-2rem) scale(0.78);
+        }
 }
 </style>
