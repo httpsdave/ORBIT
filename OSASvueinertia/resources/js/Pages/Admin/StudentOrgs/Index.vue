@@ -539,28 +539,24 @@
                               </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                              <!-- Status Toggle Button -->
+                              <!-- Improved Status Toggle (desktop table) -->
                               <button
                                 @click.stop="toggleUserStatus(user)"
-                                :class="[
-                                  'relative inline-flex items-center rounded-full transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800',
-                                  user.status === 'active' ? 'bg-green-200 hover:bg-green-300' : 'bg-gray-200 hover:bg-gray-300',
-                                  'h-6 w-11'
-                                ]"
+                                role="switch"
+                                :aria-checked="user.status === 'active'"
                                 :title="`Toggle status to ${user.status === 'active' ? 'inactive' : 'active'}`"
+                                class="relative inline-flex items-center transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-full"
+                                :class="user.status === 'active' ? 'bg-green-500 hover:bg-green-600 h-7 w-14' : 'bg-gray-200 hover:bg-gray-300 h-7 w-14'"
                               >
-                                <!-- Toggle Knob -->
+                                <span class="sr-only">Toggle organization status</span>
                                 <span
                                   :class="[
-                                    'inline-block rounded-full shadow-sm transform transition-all duration-300 ease-in-out',
-                                    user.status === 'active' ? 'translate-x-5 bg-green-600' : 'translate-x-0 bg-gray-400',
-                                    'h-4 w-4'
+                                    'inline-flex bg-white rounded-full shadow transform transition-transform duration-200 items-center justify-center',
+                                    user.status === 'active' ? 'translate-x-7' : 'translate-x-0',
+                                    'h-6 w-6'
                                   ]"
                                 >
-                                  <!-- Icon inside the knob -->
-                                  <span class="flex items-center justify-center h-full w-full text-white">
-                                    <!-- knob icon intentionally removed -->
-                                  </span>
+                                  <!-- knob icon intentionally removed -->
                                 </span>
                               </button>
                               <!-- Status Label -->
