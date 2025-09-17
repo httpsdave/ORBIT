@@ -66,15 +66,15 @@ const handleUpdateStatus = () => {
         <div class="p-6 space-y-4 bg-white dark:bg-gray-800">
           <!-- Admin: Status Buttons -->
           <div v-if="isAdmin">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
-            <div class="grid grid-cols-3 gap-3">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Status</label>
+            <div class="grid grid-cols-3 gap-2 min-w-0">
               <button
                 @click="newStatus = 'Pending'"
                 :class="[
-                  'py-2 px-4 rounded-lg border text-sm font-medium transition-all duration-200',
+                  'py-2 px-2 rounded-lg border text-xs font-medium transition-all duration-200 w-full min-w-0 truncate',
                   newStatus === 'Pending'
                     ? 'bg-amber-100 border-amber-400 text-amber-800 ring-2 ring-amber-200'
-                    : 'bg-white border-gray-200 text-gray-600 hover:bg-amber-50'
+                    : 'bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-amber-50 dark:hover:bg-amber-900/20'
                 ]"
               >
                 Pending
@@ -82,10 +82,10 @@ const handleUpdateStatus = () => {
               <button
                 @click="newStatus = 'Approved'"
                 :class="[
-                  'py-2 px-4 rounded-lg border text-sm font-medium transition-all duration-200',
+                  'py-2 px-2 rounded-lg border text-xs font-medium transition-all duration-200 w-full min-w-0 truncate',
                   newStatus === 'Approved'
                     ? 'bg-green-100 border-green-400 text-green-800 ring-2 ring-green-200'
-                    : 'bg-white border-gray-200 text-gray-600 hover:bg-green-50'
+                    : 'bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-green-50 dark:hover:bg-green-900/20'
                 ]"
               >
                 Approved
@@ -93,10 +93,10 @@ const handleUpdateStatus = () => {
               <button
                 @click="newStatus = 'Disapproved'"
                 :class="[
-                  'py-2 px-4 rounded-lg border text-sm font-medium transition-all duration-200',
+                  'py-2 px-2 rounded-lg border text-xs font-medium transition-all duration-200 w-full min-w-0 truncate',
                   newStatus === 'Disapproved'
                     ? 'bg-red-100 border-red-400 text-red-800 ring-2 ring-red-200'
-                    : 'bg-white border-gray-200 text-gray-600 hover:bg-red-50'
+                    : 'bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-red-50 dark:hover:bg-red-900/20'
                 ]"
               >
                 Rejected
@@ -114,7 +114,7 @@ const handleUpdateStatus = () => {
               v-model="feedbackText"
               rows="4"
               class="w-full rounded-lg border border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 transition duration-200 p-3 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-              placeholder="Enter feedback to the organization..."
+              :placeholder="newStatus === 'Approved' ? 'Goodjob! thank you for your submission. Keep it up.' : 'Enter feedback to the organization...'"
             ></textarea>
           </div>
 

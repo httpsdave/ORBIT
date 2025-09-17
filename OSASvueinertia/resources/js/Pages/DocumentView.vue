@@ -160,11 +160,11 @@
           <div key="admin-status-update" v-if="props.isAdmin">
             <h3 class="text-sm font-medium text-gray-900 mb-3">Update Status & Feedback</h3>
             <div class="space-y-3">
-              <div class="grid grid-cols-3 gap-3">
+              <div class="grid grid-cols-3 gap-2 min-w-0">
                 <button
                   @click="selectedStatus = 'Pending'"
                   :class="[
-                    'py-2 px-4 rounded-lg border text-sm font-medium transition-all duration-200',
+                    'py-2 px-2 rounded-lg border text-xs font-medium transition-all duration-200 w-full min-w-0 truncate',
                     selectedStatus === 'Pending'
                       ? 'bg-amber-100 border-amber-400 text-amber-800 ring-2 ring-amber-200'
                       : 'bg-white border-gray-200 text-gray-600 hover:bg-amber-50'
@@ -175,7 +175,7 @@
                 <button
                   @click="selectedStatus = 'Approved'"
                   :class="[
-                    'py-2 px-4 rounded-lg border text-sm font-medium transition-all duration-200',
+                    'py-2 px-2 rounded-lg border text-xs font-medium transition-all duration-200 w-full min-w-0 truncate',
                     selectedStatus === 'Approved'
                       ? 'bg-green-100 border-green-400 text-green-800 ring-2 ring-green-200'
                       : 'bg-white border-gray-200 text-gray-600 hover:bg-green-50'
@@ -186,7 +186,7 @@
                 <button
                   @click="selectedStatus = 'Disapproved'"
                   :class="[
-                    'py-2 px-4 rounded-lg border text-sm font-medium transition-all duration-200',
+                    'py-2 px-2 rounded-lg border text-xs font-medium transition-all duration-200 w-full min-w-0 truncate',
                     selectedStatus === 'Disapproved'
                       ? 'bg-red-100 border-red-400 text-red-800 ring-2 ring-red-200'
                       : 'bg-white border-gray-200 text-gray-600 hover:bg-red-50'
