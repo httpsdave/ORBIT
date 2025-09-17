@@ -222,7 +222,7 @@ const activeTab = ref('applications');
           </div>
 
           <!-- Stats Cards Row (separate from greeting) -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-4 sm:mb-6">
+          <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-3 gap-4 sm:gap-6 mb-4 sm:mb-6">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg border-l-4 border-blue-500 transition hover:shadow-md">
               <div class="p-4 sm:p-5">
                 <div class="flex items-center">
@@ -257,7 +257,7 @@ const activeTab = ref('applications');
                 </div>
               </div>
             </div>
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg border-l-4 border-yellow-500 transition hover:shadow-md sm:col-span-2 lg:col-span-1">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg border-l-4 border-yellow-500 transition hover:shadow-md">
               <div class="p-4 sm:p-5">
                 <div class="flex items-center">
                   <div class="flex-shrink-0">
