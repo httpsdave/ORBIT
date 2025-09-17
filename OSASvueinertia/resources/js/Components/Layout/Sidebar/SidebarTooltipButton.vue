@@ -17,7 +17,7 @@
           top: tooltipPos.top + 'px',
           left: tooltipPos.left + 'px',
           transform: 'translateY(-50%)',
-          zIndex: 9999
+          zIndex: 40
         }"
         class="bg-gray-800 dark:bg-gray-700 text-white dark:text-gray-200 text-xs rounded py-1 px-2 shadow-lg opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none"
       >
