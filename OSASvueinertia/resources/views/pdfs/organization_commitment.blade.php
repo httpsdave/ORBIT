@@ -229,7 +229,12 @@
         }
 
         /* Individual width controls for each signature field */
-        .sig-name { width: 230px; }
+        .sig-name { 
+            width: 230px; 
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
         .sig-signature { width: 205px; }
         .sig-college { width: 220px; }
         .sig-rank { width: 165px; }
@@ -376,21 +381,36 @@
                 $adviserFullName = trim((isset($adviser['adviser_prefix']) && $adviser['adviser_prefix'] ? $adviser['adviser_prefix'] . ' ' : '') . ($adviser['adviser_name'] ?? '') . (isset($adviser['adviser_suffix']) && $adviser['adviser_suffix'] ? ', ' . $adviser['adviser_suffix'] : ''));
                 $firstLineAdviserName = '';
                 $secondLineAdviserName = '';
-                if (mb_strlen($adviserFullName) > 26) {
-                    // Try to find a good break point, preferring to break at spaces
-                    $breakPos = mb_strrpos(mb_substr($adviserFullName, 0, 26), ' ');
+                
+                // More conservative approach - split if longer than 28 characters to prevent CSS wrapping
+                if (mb_strlen($adviserFullName) > 28) {
+                    // Look for the last space before position 28
+                    $breakPos = mb_strrpos(mb_substr($adviserFullName, 0, 28), ' ');
                     
-                    // If no space found within the first 26 characters, look for comma
-                    if ($breakPos === false) {
-                        $breakPos = mb_strrpos(mb_substr($adviserFullName, 0, 26), ',');
-                        if ($breakPos !== false) {
-                            $breakPos++; // Include the comma in the first line
+                    // If no good space found, try to break after common prefixes
+                    if ($breakPos === false || $breakPos < 8) {
+                        // Check for common prefixes and break after them
+                        $prefixes = ['ENGR.', 'DR.', 'PROF.', 'MR.', 'MS.', 'MRS.'];
+                        foreach ($prefixes as $prefix) {
+                            $prefixPos = mb_strpos($adviserFullName, $prefix);
+                            if ($prefixPos === 0) {
+                                $spaceAfterPrefix = mb_strpos($adviserFullName, ' ', mb_strlen($prefix));
+                                if ($spaceAfterPrefix !== false && $spaceAfterPrefix < 28) {
+                                    $breakPos = $spaceAfterPrefix;
+                                    break;
+                                }
+                            }
                         }
-                    }
-                    
-                    // If still no break point, force break at character limit
-                    if ($breakPos === false) {
-                        $breakPos = 26;
+                        
+                        // Fallback: look for comma position
+                        if ($breakPos === false || $breakPos < 8) {
+                            $commaPos = mb_strpos($adviserFullName, ',');
+                            if ($commaPos !== false && $commaPos <= 28 && $commaPos >= 15) {
+                                $breakPos = $commaPos;
+                            } else {
+                                $breakPos = 28;
+                            }
+                        }
                     }
                     
                     $firstLineAdviserName = trim(mb_substr($adviserFullName, 0, $breakPos));
