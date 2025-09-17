@@ -130,6 +130,7 @@
             margin: 0.5cm 0;
             table-layout: fixed; /* Fixed layout ensures columns respect width settings */
             overflow-wrap: break-word; /* Ensures text wraps within cells */
+            font-size: 11pt; /* Slightly smaller font for better fit */
         }
 
         table, th, td {
@@ -137,23 +138,28 @@
         }
 
         th {
-            padding: 4px 6px;
+            padding: 2px 3px; /* Reduced padding significantly */
             text-align: center;
             vertical-align: middle;
             font-weight: bold;
             font-size: 10pt;
             height: auto;
             word-wrap: break-word;
+            word-break: break-word; /* Force breaking of long words */
             hyphens: auto;
+            line-height: 1.0; /* Tighter line height */
         }
 
         td {
-            padding: 3px 6px; /* Reduced padding for better space utilization */
+            padding: 2px 3px; /* Reduced padding significantly */
             text-align: center;
             vertical-align: top; /* Text starts at the top of each cell */
             height: auto; /* Allow height to grow naturally */
             word-wrap: break-word;
+            word-break: break-word; /* Force breaking of long words */
             hyphens: auto;
+            line-height: 1.1; /* Slightly tighter line height */
+            overflow-wrap: anywhere; /* Break anywhere if needed */
         }
 
         /* Optimized column width distribution for better space usage */
@@ -249,6 +255,10 @@
             td { 
                 vertical-align: top; 
                 word-wrap: break-word;
+                word-break: break-word;
+                overflow-wrap: anywhere;
+                hyphens: auto;
+                line-height: 1.1;
             }
             .signature-container,
             .noted,
