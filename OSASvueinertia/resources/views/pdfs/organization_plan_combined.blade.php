@@ -370,7 +370,7 @@
                     <td>{!! $activity->description !!}</td>
                     <td>{!! $activity->persons_involved !!}</td>
                     <td>{{ \Carbon\Carbon::parse($activity->target_date)->format('F d, Y') }}</td>
-                    <td>{{ $activity->budget ?? '' }}</td>
+                    <td>{{ isset($activity->budget) && $activity->budget !== '' ? 'Php ' . number_format((float)$activity->budget, 2) : '' }}</td>
                 </tr>
             </table>
             

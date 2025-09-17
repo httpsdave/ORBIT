@@ -617,6 +617,15 @@ const validateForm = () => {
       }
     }
 
+    // Budget validation - optional but must be numeric if provided
+    if (activity.budget && activity.budget.trim() !== '') {
+      const budgetValue = parseFloat(activity.budget);
+      if (isNaN(budgetValue) || budgetValue < 0) {
+        errors.value.activities[index].budget = 'Budget must be a valid positive number';
+        isValid = false;
+      }
+    }
+
     // Budget is now optional - no validation needed
   });
 
@@ -792,6 +801,81 @@ const focusContentEditable = (event, fieldId) => {
 
 function limitTo2Digits(event) {
   event.target.value = event.target.value.replace(/[^0-9]/g, '').slice(0, 2);
+}
+
+// Function to handle budget input - only allow numeric values
+function handleBudgetInput(event) {
+  // Remove any non-numeric characters except decimal point
+  let value = event.target.value.replace(/[^0-9.]/g, '');
+  
+  // Ensure only one decimal point
+  const parts = value.split('.');
+  if (parts.length > 2) {
+    value = parts[0] + '.' + parts.slice(1).join('');
+  }
+  
+  // Limit to 2 decimal places
+  if (parts[1] && parts[1].length > 2) {
+    value = parts[0] + '.' + parts[1].slice(0, 2);
+  }
+  
+  // Update the input value
+  event.target.value = value;
+}
+
+// Function to handle budget paste events - only allow numeric values
+function handleBudgetPaste(event, activityIndex) {
+  event.preventDefault();
+  
+  // Get plain text from clipboard
+  const paste = (event.clipboardData || window.clipboardData).getData('text/plain');
+  
+  // Remove any non-numeric characters except decimal point
+  let cleanValue = paste.replace(/[^0-9.]/g, '');
+  
+  // Ensure only one decimal point
+  const parts = cleanValue.split('.');
+  if (parts.length > 2) {
+    cleanValue = parts[0] + '.' + parts.slice(1).join('');
+  }
+  
+  // Limit to 2 decimal places
+  if (parts[1] && parts[1].length > 2) {
+    cleanValue = parts[0] + '.' + parts[1].slice(0, 2);
+  }
+  
+  // Update the form data directly
+  const currentIndex = startIndex.value + activityIndex;
+  if (form.activities[currentIndex]) {
+    form.activities[currentIndex].budget = cleanValue;
+    event.target.value = cleanValue;
+  }
+}
+
+// Function to handle budget keypress - prevent non-numeric characters
+function handleBudgetKeypress(event) {
+  // Allow: backspace, delete, tab, escape, enter
+  if ([8, 9, 27, 13, 46].indexOf(event.keyCode) !== -1 ||
+      // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+      (event.keyCode === 65 && event.ctrlKey === true) ||
+      (event.keyCode === 67 && event.ctrlKey === true) ||
+      (event.keyCode === 86 && event.ctrlKey === true) ||
+      (event.keyCode === 88 && event.ctrlKey === true)) {
+    return;
+  }
+  
+  // Allow only numbers and one decimal point
+  const char = String.fromCharCode(event.keyCode);
+  const currentValue = event.target.value;
+  
+  // Check if it's a number
+  if (!/[0-9]/.test(char)) {
+    // Allow decimal point only if there isn't one already
+    if (char === '.' && currentValue.indexOf('.') === -1) {
+      return;
+    }
+    event.preventDefault();
+  }
 }
 
 // Add event listeners
@@ -1060,9 +1144,12 @@ nextTick(() => {
                 <input 
                   type="text"
                   v-model="activity.budget"
+                  @input="handleBudgetInput"
+                  @paste="(e) => handleBudgetPaste(e, idx)"
+                  @keypress="handleBudgetKeypress"
                   class="w-full border p-1 text-right rounded-md"
                   style="min-height:40px;"
-                  placeholder=''
+                  placeholder='0.00'
                 >
                 <p v-if="errors.activities && errors.activities[startIndex + idx] && errors.activities[startIndex + idx].budget" class="text-red-500 text-xs mt-1">{{ errors.activities[startIndex + idx].budget }}</p>
               </td>
@@ -1534,7 +1621,15 @@ nextTick(() => {
                                         <p v-if="errors.activities?.[startIndex + idx]?.target_date" class="text-red-500 text-xs mt-1">{{ errors.activities[startIndex + idx].target_date }}</p>
                                     </td>
                                     <td class="border border-gray-300 p-2">
-                                        <input type="text" v-model="activity.budget" class="w-full p-1 text-sm" placeholder=''>
+                                        <input 
+                                            type="text" 
+                                            v-model="activity.budget" 
+                                            @input="handleBudgetInput"
+                                            @paste="(e) => handleBudgetPaste(e, idx)"
+                                            @keypress="handleBudgetKeypress"
+                                            class="w-full p-1 text-sm text-right" 
+                                            placeholder='0.00'
+                                        >
                                         <p v-if="errors.activities?.[startIndex + idx]?.budget" class="text-red-500 text-xs mt-1">{{ errors.activities[startIndex + idx].budget }}</p>
                                     </td>
                                     <td class="border border-gray-300 p-2 text-center">

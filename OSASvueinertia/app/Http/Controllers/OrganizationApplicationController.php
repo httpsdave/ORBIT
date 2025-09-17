@@ -190,7 +190,7 @@ class OrganizationApplicationController extends Controller
                 'activities.*.description' => 'required|string|max:1000',
                 'activities.*.persons_involved' => 'required|string|max:255',
                 'activities.*.target_date' => 'required|date',
-                'activities.*.budget' => 'nullable|string|max:255',
+                'activities.*.budget' => 'nullable|numeric|min:0|max:999999999.99',
                 'activities.*.target_participants' => 'required|integer|min:0|max:99999',
             ]);
         } elseif ($request->form_type === 'LSPU-OSAS-SF-005') {
@@ -608,7 +608,7 @@ class OrganizationApplicationController extends Controller
                     'activities.*.description' => 'required|string|max:1000',
                     'activities.*.persons_involved' => 'required|string|max:255',
                     'activities.*.target_date' => 'required|date',
-                    'activities.*.budget' => 'nullable|string|max:255',
+                    'activities.*.budget' => 'nullable|numeric|min:0|max:999999999.99',
                     'activities.*.target_participants' => 'required|integer|min:0|max:99999',
                 ]);
             }
@@ -1854,11 +1854,6 @@ class OrganizationApplicationController extends Controller
         // Ensure this is a Plan of Activities form
         if ($application->form_type !== 'LSPU-OSAS-SF-004') {
             abort(404, 'Reports are only available for Plan of Activities submissions.');
-        }
-
-        // Ensure the POA is approved before allowing report access
-        if (strtolower($application->status) !== 'approved') {
-            return redirect()->back()->with('error', 'Reports can only be accessed for approved Plan of Activities submissions.');
         }
 
         // Ensure user owns this application or is admin
