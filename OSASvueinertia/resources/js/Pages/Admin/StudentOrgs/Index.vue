@@ -359,8 +359,8 @@
                                 <div v-else class="h-10 w-10 bg-gradient-to-br from-blue-500 to-green-400 rounded-full flex items-center justify-center text-white font-medium shadow-inner">
                                   {{ user.name ? user.name.charAt(0).toUpperCase() : 'O' }}
                                 </div>
-                                <div class="ml-4">
-                                  <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                <div class="ml-4 min-w-0">
+                                  <div class="text-sm font-medium text-gray-900 dark:text-gray-100 max-w-[220px] truncate" :title="user.name || 'Unknown Organization'">
                                     {{ user.name || 'Unknown Organization' }}
                                   </div>
                                 </div>
@@ -518,8 +518,8 @@
                                 <div v-else class="h-10 w-10 bg-gradient-to-br from-blue-500 to-green-400 rounded-full flex items-center justify-center text-white font-medium shadow-inner">
                                   {{ user.name ? user.name.charAt(0).toUpperCase() : 'O' }}
                                 </div>
-                                <div class="ml-4">
-                                  <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                <div class="ml-4 min-w-0">
+                                  <div class="text-sm font-medium text-gray-900 dark:text-gray-100 max-w-[220px] truncate" :title="user.name || 'Unknown Organization'">
                                     {{ user.name || 'Unknown Organization' }}
                                   </div>
                                 </div>
@@ -648,8 +648,8 @@
               <div v-else class="h-10 w-10 bg-gradient-to-br from-blue-500 to-green-400 rounded-full flex items-center justify-center text-white font-medium shadow-inner text-sm mr-3">
                 {{ selectedUsers[0].name ? selectedUsers[0].name.charAt(0).toUpperCase() : 'O' }}
               </div>
-              <div>
-                <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ selectedUsers[0].name || 'Unknown Organization' }}</div>
+              <div class="min-w-0">
+                <div class="text-sm font-medium text-gray-900 dark:text-gray-100 max-w-[320px] truncate" :title="selectedUsers[0].name || 'Unknown Organization'">{{ selectedUsers[0].name || 'Unknown Organization' }}</div>
                 <div class="text-xs text-gray-500 dark:text-gray-400">{{ selectedUsers[0].email || 'No email' }}</div>
               </div>
             </div>
@@ -679,7 +679,7 @@
                 </div>
                 <!-- User Info -->
                 <div class="flex-1 min-w-0">
-                  <div class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{{ user.name || 'Unknown Organization' }}</div>
+                  <div class="text-sm font-medium text-gray-900 dark:text-gray-100 max-w-[320px] truncate" :title="user.name || 'Unknown Organization'">{{ user.name || 'Unknown Organization' }}</div>
                   <div class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 truncate">{{ user.email || 'No email' }}</div>
                   <!-- Mobile: Show role and status on separate lines -->
                   <div class="sm:hidden mt-1 space-y-1">
@@ -743,7 +743,7 @@
               </div>
               <!-- User Info -->
               <div class="flex-1 min-w-0">
-                <div class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{{ user.name || 'Unknown Organization' }}</div>
+                <div class="text-sm font-medium text-gray-900 dark:text-gray-100 max-w-[320px] truncate" :title="user.name || 'Unknown Organization'">{{ user.name || 'Unknown Organization' }}</div>
                 <div class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 truncate">{{ user.email || 'No email' }}</div>
                 <div class="text-xs text-gray-400 dark:text-gray-500">{{ user.role ? user.role.name : 'No role' }}</div>
                 <div class="text-xs text-gray-400 dark:text-gray-500">
@@ -782,7 +782,7 @@
               </div>
             </div>
             <div class="flex-1 min-w-0">
-              <div class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{{ orgToRemove.name || 'Unknown Organization' }}</div>
+              <div class="text-sm font-medium text-gray-900 dark:text-gray-100 max-w-[320px] truncate" :title="orgToRemove.name || 'Unknown Organization'">{{ orgToRemove.name || 'Unknown Organization' }}</div>
               <div class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 truncate">{{ orgToRemove.email || 'No email' }}</div>
               <div class="text-xs text-gray-400 dark:text-gray-500">{{ orgToRemove.role ? orgToRemove.role.name : 'No role' }}</div>
               <div class="text-xs text-gray-400 dark:text-gray-500">
