@@ -192,9 +192,14 @@ const filterApplications = () => {
     });
   }
   
-  // Status filter
+  // Status filter (case-insensitive). Support 'Disapproved' which may be stored as 'rejected' or 'disapproved'.
   if (statusFilter.value) {
-    filtered = filtered.filter(app => app.status === statusFilter.value);
+    const sf = statusFilter.value.toLowerCase();
+    if (sf === 'disapproved') {
+      filtered = filtered.filter(app => ['rejected', 'disapproved'].includes((app.status || '').toLowerCase()));
+    } else {
+      filtered = filtered.filter(app => (app.status || '').toLowerCase() === sf);
+    }
   }
   
   // Form type filter
@@ -227,6 +232,12 @@ const hasActiveFilters = computed(() => {
 const clearSearch = () => {
     searchQuery.value = '';
     filterApplications();
+};
+
+// Helper to set status filter from pill buttons
+const setStatusFilter = (val) => {
+  statusFilter.value = val;
+  filterApplications();
 };
 
 let bannerTimeout = null;
@@ -700,6 +711,16 @@ const confirmClearData = () => {
               <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
             </svg>
           </button>
+        </div>
+      </div>
+
+      <!-- Status pill buttons (All | Pending | Approved | Disapproved) - placed under search bar on the right -->
+      <div class="flex justify-center sm:justify-end mt-2 px-2 sm:px-0">
+        <div class="inline-flex rounded-full bg-gray-100 dark:bg-gray-800 p-0.5 sm:p-1 w-full max-w-xs sm:max-w-none sm:w-auto">
+          <button @click="setStatusFilter('')" :class="['flex-1 sm:flex-none px-1.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-medium text-center', !statusFilter ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow' : 'text-gray-600 dark:text-gray-300']">All</button>
+          <button @click="setStatusFilter('pending')" :class="['flex-1 sm:flex-none px-1.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-medium text-center', statusFilter && statusFilter.toLowerCase() === 'pending' ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow' : 'text-gray-600 dark:text-gray-300']">Pending</button>
+          <button @click="setStatusFilter('approved')" :class="['flex-1 sm:flex-none px-1.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-medium text-center', statusFilter && statusFilter.toLowerCase() === 'approved' ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow' : 'text-gray-600 dark:text-gray-300']">Approved</button>
+          <button @click="setStatusFilter('disapproved')" :class="['flex-1 sm:flex-none px-1.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-medium text-center', statusFilter && statusFilter.toLowerCase() === 'disapproved' ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow' : 'text-gray-600 dark:text-gray-300']">Disapproved</button>
         </div>
       </div>
 
