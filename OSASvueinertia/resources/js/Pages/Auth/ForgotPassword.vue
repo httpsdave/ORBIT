@@ -2,19 +2,21 @@
 import InputError from '@/Components/InputError.vue';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import TextInput from '@/Components/TextInput.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { auth } from '@/firebase/config';
+import { sendPasswordResetEmail, createUserWithEmailAndPassword, fetchSignInMethodsForEmail } from 'firebase/auth';
+
 defineProps({
     status: {
         type: String,
     },
 });
 
-const form = useForm({
-    email: '',
-});
-
+const email = ref('');
 const isLoading = ref(false);
+const message = ref('');
+const error = ref('');
 const formElement = ref(null);
 // Set dark mode as default
 const isDarkMode = ref(true);
@@ -33,15 +35,103 @@ const slideshowImages = [
     '/images/LSPU7.jpg',
 ];
 
-const submit = () => {
-    if (form.processing) return;
+const submit = async () => {
+    if (isLoading.value) return;
+    
+    // Clear previous messages
+    message.value = '';
+    error.value = '';
+    
+    if (!email.value) {
+        error.value = 'Please enter your email address.';
+        return;
+    }
     
     isLoading.value = true;
-    form.post(route('password.email'), {
-        onFinish: () => {
-            isLoading.value = false;
-        },
-    });
+    
+    try {
+        // For now, skip Laravel user check and go directly to Firebase
+        // This will help us isolate if the issue is with Laravel API or Firebase
+        console.log('Attempting to send password reset email directly through Firebase to:', email.value);
+        
+        // Send password reset email through Firebase
+        try {
+            console.log('Checking if user exists in Firebase...');
+            
+            // First check if user exists in Firebase
+            const signInMethods = await fetchSignInMethodsForEmail(auth, email.value);
+            console.log('Firebase sign-in methods found:', signInMethods);
+            
+            if (signInMethods.length === 0) {
+                // User doesn't exist in Firebase, create them with a temporary password
+                console.log('User not found in Firebase, creating Firebase account...');
+                const tempPassword = Math.random().toString(36).slice(-12) + 'A1!'; // Generate secure temp password
+                await createUserWithEmailAndPassword(auth, email.value, tempPassword);
+                console.log('Firebase user created successfully');
+            } else {
+                console.log('User already exists in Firebase, proceeding with password reset...');
+            }
+            
+            // Now send the password reset email
+            console.log('Sending password reset email...');
+            await sendPasswordResetEmail(auth, email.value, {
+                url: window.location.origin + '/reset-password',
+                handleCodeInApp: false
+            });
+            
+            console.log('Firebase sendPasswordResetEmail completed successfully');
+            message.value = 'Password reset email sent! Please check your inbox (including spam folder) and follow the instructions to reset your password.';
+            
+        } catch (innerError) {
+            console.error('Inner Firebase error:', innerError);
+            
+            // If the error is "email already in use" during user creation, 
+            // it means the user exists, so we can still try to send the reset email
+            if (innerError.code === 'auth/email-already-in-use') {
+                console.log('User already exists, attempting password reset anyway...');
+                try {
+                    await sendPasswordResetEmail(auth, email.value, {
+                        url: window.location.origin + '/reset-password',
+                        handleCodeInApp: false
+                    });
+                    console.log('Password reset email sent successfully');
+                    message.value = 'Password reset email sent! Please check your inbox (including spam folder) and follow the instructions to reset your password.';
+                    return; // Success, exit the function
+                } catch (resetError) {
+                    console.error('Failed to send reset email:', resetError);
+                    throw resetError;
+                }
+            }
+            
+            throw innerError; // Re-throw other errors to be caught by outer catch
+        }
+        
+    } catch (firebaseError) {
+        console.error('Firebase error details:', firebaseError);
+        console.error('Error code:', firebaseError.code);
+        console.error('Error message:', firebaseError.message);
+        
+        // Handle specific Firebase error codes
+        switch (firebaseError.code) {
+            case 'auth/user-not-found':
+                error.value = 'No Firebase account found. The user may need to be created in Firebase first.';
+                break;
+            case 'auth/invalid-email':
+                error.value = 'Please enter a valid email address.';
+                break;
+            case 'auth/too-many-requests':
+                error.value = 'Too many requests. Please try again later.';
+                break;
+            case 'auth/configuration-not-found':
+                error.value = 'Firebase email configuration not found. Please check Firebase settings.';
+                break;
+            default:
+                error.value = `Firebase error (${firebaseError.code}): ${firebaseError.message}`;
+                break;
+        }
+    } finally {
+        isLoading.value = false;
+    }
 };
 
 const startSlideshow = () => {
@@ -181,23 +271,24 @@ onBeforeUnmount(() => {
                 </div>
                 
                 <!-- Status message -->
-                <div v-if="status" class="mb-4 sm:mb-6 p-3 sm:p-4 bg-green-500 bg-opacity-20 border-l-4 border-green-500 text-green-400 text-xs sm:text-sm font-medium animate-fadeIn backdrop-blur-sm rounded-r-lg">
+                <div v-if="status || message" class="mb-4 sm:mb-6 p-3 sm:p-4 bg-green-500 bg-opacity-20 border-l-4 border-green-500 text-green-400 text-xs sm:text-sm font-medium animate-fadeIn backdrop-blur-sm rounded-r-lg">
                     <div class="flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 sm:mr-3 flex-shrink-0">
                             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                             <polyline points="22,4 12,14.01 9,11.01"></polyline>
                         </svg>
-                        {{ status }}
+                        {{ status || message }}
                     </div>
                 </div>
-                <!-- Unavailable message -->
-                <div class="mb-4 sm:mb-6 p-3 sm:p-4 bg-red-500 bg-opacity-20 border-l-4 border-red-500 text-red-400 text-xs sm:text-sm font-medium animate-fadeIn backdrop-blur-sm rounded-r-lg">
+                
+                <!-- Error message -->
+                <div v-if="error" class="mb-4 sm:mb-6 p-3 sm:p-4 bg-red-500 bg-opacity-20 border-l-4 border-red-500 text-red-400 text-xs sm:text-sm font-medium animate-fadeIn backdrop-blur-sm rounded-r-lg">
                     <div class="flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 sm:mr-3 flex-shrink-0">
                             <path d="M18 6L6 18"></path>
                             <path d="M6 6l12 12"></path>
                         </svg>
-                        Password reset functionality is currently unavailable due to recent Google privacy updates. Please contact your Administrator for assistance. Thank you for your understanding.
+                        {{ error }}
                     </div>
                 </div>
 
@@ -218,7 +309,7 @@ onBeforeUnmount(() => {
                                 id="email"
                                 type="email"
                                 class="pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 text-sm sm:text-base rounded-lg w-full border-0 focus:border-orange-400 focus:ring-2 focus:ring-orange-400 focus:ring-opacity-50 transition-all duration-300 bg-white bg-opacity-10 backdrop-blur-sm text-white placeholder-gray-300"
-                                v-model="form.email"
+                                v-model="email"
                                 placeholder="Enter your email address"
                                 required
                                 autofocus
@@ -226,24 +317,34 @@ onBeforeUnmount(() => {
                                 aria-label="Email address"
                             />
                         </div>
-                        <InputError class="mt-2 text-red-400 text-sm" :message="form.errors.email" />
+                        <!-- Only show InputError if there's an actual error message for the email field -->
+                        <InputError v-if="error && error.includes('email')" class="mt-2 text-red-400 text-sm" :message="error" />
                     </div>
 
                     <!-- Action buttons -->
                     <div class="space-y-3 sm:space-y-4">
                         <button
-                            type="button"
-                            class="w-full text-white font-semibold py-3 sm:py-4 px-4 sm:px-6 rounded-lg transition-all duration-300 flex items-center justify-center relative overflow-hidden group shadow-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-opacity-50 transform-none opacity-80 cursor-not-allowed"
-                            disabled
+                            type="submit"
+                            class="w-full text-white font-semibold py-3 sm:py-4 px-4 sm:px-6 rounded-lg transition-all duration-300 flex items-center justify-center relative overflow-hidden group shadow-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-opacity-50 transform hover:scale-105 disabled:transform-none disabled:opacity-50 disabled:cursor-not-allowed"
+                            :class="[
+                                isLoading 
+                                    ? 'bg-gradient-to-r from-gray-500 to-gray-600' 
+                                    : 'bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600'
+                            ]"
+                            :disabled="isLoading"
                             aria-label="Send Reset Link"
                         >
                             <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
                             <span class="flex items-center relative z-10 text-sm sm:text-base">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 sm:mr-3">
+                                <svg v-if="isLoading" class="animate-spin -ml-1 mr-2 sm:mr-3 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                <svg v-else xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 sm:mr-3">
                                     <line x1="22" y1="2" x2="11" y2="13"></line>
                                     <polygon points="22,2 15,22 11,13 2,9"></polygon>
                                 </svg>
-                                Send Reset Instructions
+                                {{ isLoading ? 'Sending...' : 'Send Reset Instructions' }}
                             </span>
                         </button>
 

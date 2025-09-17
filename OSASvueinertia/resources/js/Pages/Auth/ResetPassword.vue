@@ -1,28 +1,33 @@
 <script setup>
 import InputError from '@/Components/InputError.vue';
 import TextInput from '@/Components/TextInput.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { auth } from '@/firebase/config';
+import { confirmPasswordReset, verifyPasswordResetCode } from 'firebase/auth';
 
 const props = defineProps({
-    email: {
+    mode: {
+        type: String,
+        default: 'resetPassword'
+    },
+    oobCode: {
         type: String,
         required: true,
     },
-    token: {
+    continueUrl: {
         type: String,
-        required: true,
+        default: null,
     },
 });
 
-const form = useForm({
-    token: props.token,
-    email: props.email,
-    password: '',
-    password_confirmation: '',
-});
-
+const email = ref('');
+const password = ref('');
+const passwordConfirmation = ref('');
 const isLoading = ref(false);
+const message = ref('');
+const error = ref('');
+const isCodeValid = ref(false);
 const formElement = ref(null);
 // Set dark mode as default
 const isDarkMode = ref(true);
@@ -41,16 +46,110 @@ const slideshowImages = [
     '/images/LSPU7.jpg',
 ];
 
-const submit = () => {
-    if (form.processing) return;
+const submit = async () => {
+    if (isLoading.value) return;
+    
+    // Clear previous messages
+    message.value = '';
+    error.value = '';
+    
+    // Validate password
+    if (!password.value) {
+        error.value = 'Please enter your new password.';
+        return;
+    }
+    
+    if (password.value.length < 8) {
+        error.value = 'Password must be at least 8 characters long.';
+        return;
+    }
+    
+    if (password.value !== passwordConfirmation.value) {
+        error.value = 'Passwords do not match.';
+        return;
+    }
     
     isLoading.value = true;
-    form.post(route('password.store'), {
-        onFinish: () => {
-            isLoading.value = false;
-            form.reset('password', 'password_confirmation');
-        },
-    });
+    
+    try {
+        // Confirm password reset with Firebase
+        await confirmPasswordReset(auth, props.oobCode, password.value);
+        
+        // Sync the new password with Laravel database
+        const syncResponse = await fetch('/firebase/sync-password', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({ 
+                email: email.value, 
+                password: password.value 
+            })
+        });
+        
+        const syncResult = await syncResponse.json();
+        
+        if (syncResult.success) {
+            message.value = 'Password reset successfully! You can now sign in with your new password.';
+            
+            // Redirect to login after a short delay
+            setTimeout(() => {
+                router.visit('/login', {
+                    data: { 
+                        message: 'Password reset successfully! You can now sign in with your new password.' 
+                    }
+                });
+            }, 2000);
+        } else {
+            error.value = 'Password reset failed. Please try again or contact support.';
+        }
+        
+    } catch (firebaseError) {
+        console.error('Firebase error:', firebaseError);
+        
+        // Handle specific Firebase error codes
+        switch (firebaseError.code) {
+            case 'auth/expired-action-code':
+                error.value = 'The reset link has expired. Please request a new password reset.';
+                break;
+            case 'auth/invalid-action-code':
+                error.value = 'Invalid or already used reset link. Please request a new password reset.';
+                break;
+            case 'auth/weak-password':
+                error.value = 'Password is too weak. Please choose a stronger password.';
+                break;
+            default:
+                error.value = 'An error occurred while resetting your password. Please try again.';
+                break;
+        }
+    } finally {
+        isLoading.value = false;
+    }
+};
+
+// Verify the reset code on component mount
+const verifyResetCode = async () => {
+    try {
+        const emailFromCode = await verifyPasswordResetCode(auth, props.oobCode);
+        email.value = emailFromCode;
+        isCodeValid.value = true;
+    } catch (verifyError) {
+        console.error('Code verification error:', verifyError);
+        isCodeValid.value = false;
+        
+        switch (verifyError.code) {
+            case 'auth/expired-action-code':
+                error.value = 'The reset link has expired. Please request a new password reset.';
+                break;
+            case 'auth/invalid-action-code':
+                error.value = 'Invalid reset link. Please request a new password reset.';
+                break;
+            default:
+                error.value = 'Invalid reset link. Please request a new password reset.';
+                break;
+        }
+    }
 };
 
 const startSlideshow = () => {
@@ -70,6 +169,9 @@ onMounted(() => {
     if (formElement.value) {
         formElement.value.classList.add('opacity-100');
     }
+    
+    // Verify the reset code
+    verifyResetCode();
     
     // Start slideshow
     startSlideshow();
@@ -189,8 +291,30 @@ onBeforeUnmount(() => {
                     </p>
                 </div>
 
+                <!-- Success message -->
+                <div v-if="message" class="mb-4 sm:mb-6 p-3 sm:p-4 bg-green-500 bg-opacity-20 border-l-4 border-green-500 text-green-400 text-xs sm:text-sm font-medium animate-fadeIn backdrop-blur-sm rounded-r-lg">
+                    <div class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 sm:mr-3 flex-shrink-0">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22,4 12,14.01 9,11.01"></polyline>
+                        </svg>
+                        {{ message }}
+                    </div>
+                </div>
+                
+                <!-- Error message -->
+                <div v-if="error" class="mb-4 sm:mb-6 p-3 sm:p-4 bg-red-500 bg-opacity-20 border-l-4 border-red-500 text-red-400 text-xs sm:text-sm font-medium animate-fadeIn backdrop-blur-sm rounded-r-lg">
+                    <div class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 sm:mr-3 flex-shrink-0">
+                            <path d="M18 6L6 18"></path>
+                            <path d="M6 6l12 12"></path>
+                        </svg>
+                        {{ error }}
+                    </div>
+                </div>
+
                 <!-- Form -->
-                <form @submit.prevent="submit" class="space-y-4 sm:space-y-6" novalidate>
+                <form @submit.prevent="submit" class="space-y-4 sm:space-y-6" novalidate v-if="isCodeValid">
                     <!-- Email field (read-only) -->
                     <div>
                         <label for="email" class="block text-xs sm:text-sm font-medium mb-2 sm:mb-3 text-gray-300">
@@ -207,13 +331,12 @@ onBeforeUnmount(() => {
                                 id="email"
                                 type="email"
                                 class="pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 text-sm sm:text-base rounded-lg w-full border-0 focus:border-orange-400 focus:ring-2 focus:ring-orange-400 focus:ring-opacity-50 transition-all duration-300 bg-white bg-opacity-10 backdrop-blur-sm text-white placeholder-gray-300"
-                                v-model="form.email"
+                                v-model="email"
                                 readonly
                                 autocomplete="username"
                                 aria-label="Email address"
                             />
                         </div>
-                        <InputError class="mt-2 text-red-400 text-sm" :message="form.errors.email" />
                     </div>
 
                     <!-- New Password field -->
@@ -233,14 +356,13 @@ onBeforeUnmount(() => {
                                 id="password"
                                 type="password"
                                 class="pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 text-sm sm:text-base rounded-lg w-full border-0 focus:border-orange-400 focus:ring-2 focus:ring-orange-400 focus:ring-opacity-50 transition-all duration-300 bg-white bg-opacity-10 backdrop-blur-sm text-white placeholder-gray-300"
-                                v-model="form.password"
+                                v-model="password"
                                 placeholder="Enter your new password"
                                 required
                                 autocomplete="new-password"
                                 aria-label="New password"
                             />
                         </div>
-                        <InputError class="mt-2 text-red-400 text-sm" :message="form.errors.password" />
                     </div>
 
                     <!-- Confirm Password field -->
@@ -260,40 +382,38 @@ onBeforeUnmount(() => {
                                 id="password_confirmation"
                                 type="password"
                                 class="pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 text-sm sm:text-base rounded-lg w-full border-0 focus:border-orange-400 focus:ring-2 focus:ring-orange-400 focus:ring-opacity-50 transition-all duration-300 bg-white bg-opacity-10 backdrop-blur-sm text-white placeholder-gray-300"
-                                v-model="form.password_confirmation"
+                                v-model="passwordConfirmation"
                                 placeholder="Confirm your new password"
                                 required
                                 autocomplete="new-password"
                                 aria-label="Confirm new password"
                             />
                         </div>
-                        <InputError class="mt-2 text-red-400 text-sm" :message="form.errors.password_confirmation" />
                     </div>
 
                     <!-- Action buttons -->
                     <div class="space-y-3 sm:space-y-4">
                         <button
                             type="submit"
-                            class="w-full text-white font-semibold py-3 sm:py-4 px-4 sm:px-6 rounded-lg transition-all duration-300 flex items-center justify-center relative overflow-hidden group shadow-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-opacity-50 transform hover:scale-105"
+                            class="w-full text-white font-semibold py-3 sm:py-4 px-4 sm:px-6 rounded-lg transition-all duration-300 flex items-center justify-center relative overflow-hidden group shadow-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-opacity-50 transform hover:scale-105 disabled:transform-none disabled:opacity-50 disabled:cursor-not-allowed"
                             :class="[
-                                'bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-400 hover:to-red-500',
-                                { 'opacity-80 cursor-not-allowed transform-none': form.processing || isLoading }
+                                isLoading 
+                                    ? 'bg-gradient-to-r from-gray-500 to-gray-600' 
+                                    : 'bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600'
                             ]"
-                            :disabled="form.processing || isLoading"
+                            :disabled="isLoading"
                             aria-label="Reset Password"
                         >
                             <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white dark:bg-gray-800 rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
-                            <span v-if="isLoading" class="absolute inset-0 flex items-center justify-center">
-                                <svg class="animate-spin h-4 w-4 sm:h-5 sm:w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <span class="flex items-center relative z-10 text-sm sm:text-base">
+                                <svg v-if="isLoading" class="animate-spin -ml-1 mr-2 sm:mr-3 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                 </svg>
-                            </span>
-                            <span :class="{ 'opacity-0': isLoading }" class="flex items-center relative z-10 text-sm sm:text-base">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 sm:mr-3">
+                                <svg v-else xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 sm:mr-3">
                                     <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
                                 </svg>
-                                Reset Password
+                                {{ isLoading ? 'Resetting...' : 'Reset Password' }}
                             </span>
                         </button>
 

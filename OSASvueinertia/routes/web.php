@@ -19,6 +19,7 @@ use App\Http\Middleware\CheckRole;
 use App\Models\User;
 use App\Models\Role;
 use App\Http\Controllers\ArchiveController;
+use App\Http\Controllers\Auth\FirebasePasswordController;
 
 // Cookie reset route to clear corrupted browser cookies - IMPORTANT FOR 419 FIXES
 Route::get('/clear-cookies', function () {
@@ -261,4 +262,17 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::post('/applications/upload-report', [OrganizationApplicationController::class, 'uploadReport'])->name('applications.upload-report');
+
+// Firebase password reset integration routes
+Route::post('/firebase/check-user', [FirebasePasswordController::class, 'checkUserExists']);
+Route::post('/firebase/sync-password', [FirebasePasswordController::class, 'syncPasswordReset']);
+
+// Firebase reset password route (handles Firebase reset links)
+Route::get('/reset-password', function () {
+    return Inertia::render('Auth/ResetPassword', [
+        'mode' => request('mode', 'resetPassword'),
+        'oobCode' => request('oobCode'),
+        'continueUrl' => request('continueUrl'),
+    ]);
+})->middleware('guest')->name('firebase.password.reset');
 
