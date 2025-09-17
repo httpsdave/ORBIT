@@ -160,15 +160,40 @@
             hyphens: auto;
             line-height: 1.1; /* Slightly tighter line height */
             overflow-wrap: anywhere; /* Break anywhere if needed */
+            max-width: 0; /* Force table-layout: fixed to respect column widths */
+            overflow: hidden; /* Prevent content overflow */
+        }
+
+        /* List styling within table cells */
+        td ul, td ol {
+            margin: 0;
+            padding: 0 0 0 8px; /* Small left padding for bullet indentation */
+            text-align: left; /* Left align lists for better readability */
+            list-style-position: inside; /* Keep bullets inside the cell */
+            font-size: 9pt; /* Smaller font for lists to fit better */
+            max-width: 100%;
+            overflow: hidden;
+            word-wrap: break-word;
+        }
+
+        td li {
+            margin: 0;
+            padding: 0;
+            line-height: 1.0; /* Tighter line height for list items */
+            text-align: left;
+            word-wrap: break-word;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+            hyphens: auto;
         }
 
         /* Optimized column width distribution for better space usage */
-        table th:nth-child(1), table td:nth-child(1) { width: 18%; } /* OBJECTIVE */
-        table th:nth-child(2), table td:nth-child(2) { width: 16%; } /* ACTIVITIES */
-        table th:nth-child(3), table td:nth-child(3) { width: 24%; } /* BRIEF DESCRIPTION */
-        table th:nth-child(4), table td:nth-child(4) { width: 16%; } /* PERSONS INVOLVED */
+        table th:nth-child(1), table td:nth-child(1) { width: 17%; } /* OBJECTIVE */
+        table th:nth-child(2), table td:nth-child(2) { width: 15%; } /* ACTIVITIES */
+        table th:nth-child(3), table td:nth-child(3) { width: 22%; } /* BRIEF DESCRIPTION */
+        table th:nth-child(4), table td:nth-child(4) { width: 20%; } /* PERSONS INVOLVED - Increased width */
     table th:nth-child(5), table td:nth-child(5) { width: 13%; min-width: 80px; max-width: 110px; } /* TARGET DATE */
-        table th:nth-child(6), table td:nth-child(6) { width: 14%; } /* BUDGET */
+        table th:nth-child(6), table td:nth-child(6) { width: 13%; } /* BUDGET */
 
         /* Remove forced height and optimize for content */
 
@@ -259,6 +284,28 @@
                 overflow-wrap: anywhere;
                 hyphens: auto;
                 line-height: 1.1;
+                max-width: 0;
+                overflow: hidden;
+            }
+            td ul, td ol {
+                margin: 0;
+                padding: 0 0 0 8px;
+                text-align: left;
+                list-style-position: inside;
+                font-size: 9pt;
+                max-width: 100%;
+                overflow: hidden;
+                word-wrap: break-word;
+            }
+            td li {
+                margin: 0;
+                padding: 0;
+                line-height: 1.0;
+                text-align: left;
+                word-wrap: break-word;
+                word-break: break-word;
+                overflow-wrap: anywhere;
+                hyphens: auto;
             }
             .signature-container,
             .noted,

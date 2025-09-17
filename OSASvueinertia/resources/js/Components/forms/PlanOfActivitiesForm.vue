@@ -426,8 +426,46 @@ const MAX_CHAR_GENERAL = 144;
 const MAX_CHAR_ACTIVITIES = 99;
 const MAX_CHAR_PERSONS = 99;
 
-// Helper to strip HTML tags
-const stripHtml = (html) => {
+// Helper to sanitize HTML - keeps lists but removes unwanted formatting
+const sanitizeHtml = (html) => {
+  if (!html) return '';
+  const tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  
+  // Remove unwanted tags while preserving lists
+  const allowedTags = ['ul', 'ol', 'li', 'br'];
+  const walker = document.createTreeWalker(
+    tmp,
+    NodeFilter.SHOW_ELEMENT,
+    null,
+    false
+  );
+  
+  const nodesToRemove = [];
+  let node = walker.nextNode();
+  
+  while (node) {
+    if (!allowedTags.includes(node.tagName.toLowerCase())) {
+      // Replace disallowed tags with their content
+      nodesToRemove.push(node);
+    }
+    node = walker.nextNode();
+  }
+  
+  // Replace unwanted tags with their content
+  nodesToRemove.forEach(nodeToRemove => {
+    const parent = nodeToRemove.parentNode;
+    while (nodeToRemove.firstChild) {
+      parent.insertBefore(nodeToRemove.firstChild, nodeToRemove);
+    }
+    parent.removeChild(nodeToRemove);
+  });
+  
+  return tmp.innerHTML;
+};
+
+// Helper to get plain text length for character counting
+const getPlainTextLength = (html) => {
   const tmp = document.createElement('div');
   tmp.innerHTML = html || '';
   return tmp.textContent || tmp.innerText || '';
@@ -437,7 +475,7 @@ const stripHtml = (html) => {
 const getCharacterCount = (activityIndex, fieldType) => {
   if (!form.activities[activityIndex]) return 0;
   const content = form.activities[activityIndex][fieldType] || '';
-  return stripHtml(content).length;
+  return getPlainTextLength(content).length;
 };
 
 const getMaxCharacters = (fieldType) => {
@@ -523,34 +561,34 @@ const validateForm = () => {
     }
 
     // Check required fields and character limits
-    if (!activity.objective || !stripHtml(activity.objective).trim()) {
+    if (!activity.objective || !getPlainTextLength(activity.objective).trim()) {
       errors.value.activities[index].objective = 'Objective is required';
       isValid = false;
-    } else if (stripHtml(activity.objective).length > MAX_CHAR_GENERAL) {
+    } else if (getPlainTextLength(activity.objective).length > MAX_CHAR_GENERAL) {
       errors.value.activities[index].objective = `Objective must be ${MAX_CHAR_GENERAL} characters or less.`;
       isValid = false;
     }
 
-    if (!activity.name || !stripHtml(activity.name).trim()) {
+    if (!activity.name || !getPlainTextLength(activity.name).trim()) {
       errors.value.activities[index].name = 'Activity name is required';
       isValid = false;
-    } else if (stripHtml(activity.name).length > MAX_CHAR_ACTIVITIES) {
+    } else if (getPlainTextLength(activity.name).length > MAX_CHAR_ACTIVITIES) {
       errors.value.activities[index].name = `Activity name must be ${MAX_CHAR_ACTIVITIES} characters or less.`;
       isValid = false;
     }
 
-    if (!activity.description || !stripHtml(activity.description).trim()) {
+    if (!activity.description || !getPlainTextLength(activity.description).trim()) {
       errors.value.activities[index].description = 'Description is required';
       isValid = false;
-    } else if (stripHtml(activity.description).length > MAX_CHAR_GENERAL) {
+    } else if (getPlainTextLength(activity.description).length > MAX_CHAR_GENERAL) {
       errors.value.activities[index].description = `Description must be ${MAX_CHAR_GENERAL} characters or less.`;
       isValid = false;
     }
 
-    if (!activity.persons_involved || !stripHtml(activity.persons_involved).trim()) {
+    if (!activity.persons_involved || !getPlainTextLength(activity.persons_involved).trim()) {
       errors.value.activities[index].persons_involved = 'Persons involved is required';
       isValid = false;
-    } else if (stripHtml(activity.persons_involved).length > MAX_CHAR_PERSONS) {
+    } else if (getPlainTextLength(activity.persons_involved).length > MAX_CHAR_PERSONS) {
       errors.value.activities[index].persons_involved = `Persons involved must be ${MAX_CHAR_PERSONS} characters or less.`;
       isValid = false;
     }
@@ -598,10 +636,10 @@ const submit = () => {
     ...form.data(),
     activities: form.activities.map(activity => ({
       ...activity,
-      objective: stripHtml(activity.objective || '').trim(),
-      name: stripHtml(activity.name || '').trim(),
-      description: stripHtml(activity.description || '').trim(),
-      persons_involved: stripHtml(activity.persons_involved || '').trim()
+      objective: sanitizeHtml(activity.objective || '').trim(),
+      name: sanitizeHtml(activity.name || '').trim(),
+      description: sanitizeHtml(activity.description || '').trim(),
+      persons_involved: sanitizeHtml(activity.persons_involved || '').trim()
     }))
   };
   
@@ -618,10 +656,10 @@ const submit = () => {
       ...data,
       activities: data.activities.map(activity => ({
         ...activity,
-        objective: stripHtml(activity.objective || '').trim(),
-        name: stripHtml(activity.name || '').trim(),
-        description: stripHtml(activity.description || '').trim(),
-        persons_involved: stripHtml(activity.persons_involved || '').trim()
+        objective: sanitizeHtml(activity.objective || '').trim(),
+        name: sanitizeHtml(activity.name || '').trim(),
+        description: sanitizeHtml(activity.description || '').trim(),
+        persons_involved: sanitizeHtml(activity.persons_involved || '').trim()
       }))
     })).post('/applications', {
       onSuccess: () => {
@@ -650,7 +688,7 @@ const handlePaste = (event, activityIndex, fieldType) => {
   const maxChars = getMaxCharacters(fieldType);
   
   // Get current content and calculate remaining space
-  const currentContent = stripHtml(event.target.innerHTML);
+  const currentContent = getPlainTextLength(event.target.innerHTML);
   const remainingChars = maxChars - currentContent.length;
   
   if (remainingChars <= 0) return; // No space left
@@ -686,7 +724,7 @@ const handlePaste = (event, activityIndex, fieldType) => {
 const handleContentEditableInput = (event, activityIndex, fieldType) => {
   const content = event.target.innerHTML;
   const maxChars = getMaxCharacters(fieldType);
-  const currentLength = stripHtml(content).length;
+  const currentLength = getPlainTextLength(content).length;
   
   // Check if content exceeds limit
   if (currentLength > maxChars) {
@@ -695,7 +733,7 @@ const handleContentEditableInput = (event, activityIndex, fieldType) => {
     
     // Get the previous content and trim it to max length
     const previousContent = form.activities[activityIndex][fieldType] || '';
-    const trimmedText = stripHtml(content).substring(0, maxChars);
+    const trimmedText = getPlainTextLength(content).substring(0, maxChars);
     
     // Set the trimmed content back
     event.target.innerHTML = trimmedText;
