@@ -1,7 +1,7 @@
 <script setup>
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
@@ -69,6 +69,14 @@ const editForm = useForm({
 
 const deleteForm = useForm({});
 
+// Dropdown state management (similar to ApplicationsTable)
+const activeDropdownUser = ref(null);
+const dropdownPosition = ref({ top: 0, left: 0 });
+const dropdownButtonEl = ref(null);
+const dropdownRef = ref(null);
+const dropdownDirection = ref('down');
+const activeMobileDropdownId = ref(null);
+
 // Back-to-top button state and handler
 const showBackToTop = ref(false);
 const onScroll = () => {
@@ -87,10 +95,15 @@ const scrollToTop = (e) => {
 
 onMounted(() => {
     window.addEventListener('scroll', onScroll, { passive: true });
+    document.addEventListener('click', closeDropdowns);
+    document.addEventListener('click', closeMobileDropdowns);
 });
 
 onUnmounted(() => {
     window.removeEventListener('scroll', onScroll);
+    document.removeEventListener('click', closeDropdowns);
+    document.removeEventListener('click', closeMobileDropdowns);
+    removeDropdownListeners();
 });
 
 // Helper function to check if a role is admin
@@ -174,6 +187,103 @@ const deleteUser = () => {
             deleteConfirmation.value = '';
         },
     });
+};
+
+// Dropdown functionality (similar to ApplicationsTable)
+const toggleDropdown = (user, event) => {
+    if (window.innerWidth < 640) { // Mobile: show inline dropdown
+        if (activeMobileDropdownId.value === user.id) {
+            activeMobileDropdownId.value = null;
+        } else {
+            activeMobileDropdownId.value = user.id;
+        }
+        return;
+    }
+    // Desktop: floating dropdown
+    if (activeDropdownUser.value && activeDropdownUser.value.id === user.id) {
+        activeDropdownUser.value = null;
+        dropdownButtonEl.value = null;
+        removeDropdownListeners();
+    } else {
+        activeDropdownUser.value = user;
+        dropdownButtonEl.value = event.currentTarget;
+        updateDropdownPosition();
+        addDropdownListeners();
+    }
+};
+
+async function updateDropdownPosition() {
+    if (!dropdownButtonEl.value) return;
+    const rect = dropdownButtonEl.value.getBoundingClientRect();
+    let dropdownWidth = 160; // Fixed width for w-40
+    let left = rect.right - dropdownWidth + 8;
+    if (left + dropdownWidth > window.innerWidth) left = window.innerWidth - dropdownWidth - 16;
+    if (left < 16) left = 16;
+
+    await nextTick();
+    let dropdownHeight = dropdownRef.value ? dropdownRef.value.offsetHeight : 120;
+
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const spaceAbove = rect.top;
+
+    let top;
+    if (spaceBelow >= dropdownHeight + 16) {
+        top = rect.bottom + 2;
+        dropdownDirection.value = 'down';
+    } else if (spaceAbove >= dropdownHeight + 16) {
+        top = rect.top - dropdownHeight - 2;
+        dropdownDirection.value = 'up';
+    } else if (spaceBelow >= spaceAbove) {
+        top = rect.bottom + 2;
+        dropdownDirection.value = 'down';
+    } else {
+        top = Math.max(8, rect.top - dropdownHeight - 2);
+        dropdownDirection.value = 'up';
+    }
+
+    dropdownPosition.value = { top, left };
+}
+
+function addDropdownListeners() {
+    window.addEventListener('scroll', updateDropdownPosition, true);
+    window.addEventListener('resize', updateDropdownPosition);
+}
+
+function removeDropdownListeners() {
+    window.removeEventListener('scroll', updateDropdownPosition, true);
+    window.removeEventListener('resize', updateDropdownPosition);
+}
+
+const closeDropdowns = (event) => {
+    if (!event.target.closest('.dropdown-container')) {
+        activeDropdownUser.value = null;
+    }
+};
+
+const closeMobileDropdowns = (event) => {
+    if (window.innerWidth >= 640) return;
+    if (
+        activeMobileDropdownId.value &&
+        !event.target.closest('.mobile-dropdown-menu')
+    ) {
+        activeMobileDropdownId.value = null;
+    }
+};
+
+const handleDropdownAction = (user, action) => {
+    // Close dropdown
+    activeDropdownUser.value = null;
+    activeMobileDropdownId.value = null;
+    
+    // Handle specific actions
+    switch(action) {
+        case 'edit':
+            confirmUserEdit(user);
+            break;
+        case 'delete':
+            confirmUserDeletion(user);
+            break;
+    }
 };
 </script>
 
@@ -271,25 +381,40 @@ const deleteUser = () => {
                                     </span>
                                 </div>
                                 <div class="flex justify-end space-x-2 pt-2 border-t border-gray-100 dark:border-gray-600">
-                                    <button 
-                                        @click="confirmUserEdit(user)" 
-                                        class="flex items-center px-3 py-1.5 text-xs font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg"
+                                    <button
+                                        @click.stop="toggleDropdown(user, $event)"
+                                        :aria-label="'Actions for ' + user.name"
+                                        class="relative inline-flex items-center justify-center rounded-full p-2 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-400 transition group"
+                                        :data-dropdown-trigger="user.id"
                                     >
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                            <circle cx="10" cy="4" r="2.2"/>
+                                            <circle cx="10" cy="10" r="2.2"/>
+                                            <circle cx="10" cy="16" r="2.2"/>
+                                        </svg>
+                                        <span class="absolute left-1/2 -bottom-8 transform -translate-x-1/2 bg-gray-800 dark:bg-gray-700 text-white dark:text-gray-200 text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity duration-300 whitespace-nowrap z-50">
+                                            Actions
+                                        </span>
+                                    </button>
+                                </div>
+                                
+                                <!-- MOBILE INLINE DROPDOWN -->
+                                <div v-if="activeMobileDropdownId === user.id" class="mobile-dropdown-menu mt-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg shadow p-3 flex flex-col gap-2 z-10" @click.stop>
+                                    <button @click="handleDropdownAction(user, 'edit')" class="w-full text-left px-2 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                         </svg>
                                         Edit
                                     </button>
                                     <button 
-                                        @click="confirmUserDeletion(user)" 
-                                        class="flex items-center px-3 py-1.5 text-xs font-medium text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg"
                                         v-if="user.id !== $page.props.auth.user.id"
+                                        @click="handleDropdownAction(user, 'delete')" 
+                                        class="w-full text-left px-2 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 flex items-center gap-2 transition duration-200 border-t border-gray-100 dark:border-gray-600 mt-1 pt-1"
                                     >
-                                    >
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 xs:mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                         </svg>
-                                        <span class="hidden xs:inline">Delete</span>
+                                        Delete
                                     </button>
                                 </div>
                             </div>
@@ -299,16 +424,9 @@ const deleteUser = () => {
                         </div>
                         
                         <!-- Desktop Table View (hidden on mobile) -->
-                        <div class="hidden md:block overflow-x-auto bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                        <div class="hidden md:block bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
                             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                                <thead class="bg-gray-50 dark:bg-gray-700">
-                                    <tr>
-                                        <th scope="col" class="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th>
-                                        <th scope="col" class="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Email</th>
-                                        <th scope="col" class="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Role</th>
-                                        <th scope="col" class="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
-                                    </tr>
-                                </thead>
+                                
                                 <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                     <tr v-for="user in filteredUsers" :key="user.id" class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
                                         <td class="px-3 lg:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
@@ -347,25 +465,21 @@ const deleteUser = () => {
                                             </span>
                                         </td>
                                         <td class="px-3 lg:px-6 py-4 whitespace-nowrap text-xs lg:text-sm">
-                                            <div class="flex space-x-2 lg:space-x-3">
-                                                <button 
-                                                    @click="confirmUserEdit(user)" 
-                                                    class="flex items-center text-blue-500 hover:text-blue-700 transition-colors duration-150"
+                                            <div class="flex justify-center">
+                                                <button
+                                                    @click.stop="toggleDropdown(user, $event)"
+                                                    :aria-label="'Actions for ' + user.name"
+                                                    class="relative inline-flex items-center justify-center rounded-full p-2 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-400 transition group"
+                                                    :data-dropdown-trigger="user.id"
                                                 >
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 lg:h-4 lg:w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                        <circle cx="10" cy="4" r="2.2"/>
+                                                        <circle cx="10" cy="10" r="2.2"/>
+                                                        <circle cx="10" cy="16" r="2.2"/>
                                                     </svg>
-                                                    <span class="hidden lg:inline">Edit</span>
-                                                </button>
-                                                <button 
-                                                    @click="confirmUserDeletion(user)" 
-                                                    class="flex items-center text-red-500 hover:text-red-700 transition-colors duration-150"
-                                                    v-if="user.id !== $page.props.auth.user.id"
-                                                >
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 lg:h-4 lg:w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                    </svg>
-                                                    <span class="hidden lg:inline">Delete</span>
+                                                    <span class="absolute left-1/2 -bottom-8 transform -translate-x-1/2 bg-gray-800 dark:bg-gray-700 text-white dark:text-gray-200 text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity duration-300 whitespace-nowrap z-50">
+                                                        Actions
+                                                    </span>
                                                 </button>
                                             </div>
                                         </td>
@@ -641,6 +755,37 @@ const deleteUser = () => {
             </div>
         </Modal>
     </AuthenticatedLayout>
+
+    <!-- Floating Desktop Dropdown (similar to ApplicationsTable) -->
+    <Teleport to="body">
+        <div 
+            ref="dropdownRef"
+            v-if="activeDropdownUser"
+            class="dropdown-container fixed z-50 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 w-40"
+            :style="{ top: `${dropdownPosition.top}px`, left: `${dropdownPosition.left}px`, visibility: activeDropdownUser ? 'visible' : 'hidden' }"
+            @click.stop
+        >
+            <button 
+                @click="handleDropdownAction(activeDropdownUser, 'edit')"
+                class="w-full text-left px-3 py-1.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+                Edit
+            </button>
+            <button 
+                v-if="activeDropdownUser && activeDropdownUser.id !== $page.props.auth.user.id"
+                @click="handleDropdownAction(activeDropdownUser, 'delete')" 
+                class="w-full text-left px-3 py-1.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 flex items-center gap-2 transition duration-200 border-t border-gray-100 dark:border-gray-600 mt-1 pt-1"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+                Delete
+            </button>
+        </div>
+    </Teleport>
 
     <!-- Back to top floating button -->
     <button
