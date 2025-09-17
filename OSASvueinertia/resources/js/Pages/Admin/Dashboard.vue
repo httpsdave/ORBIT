@@ -239,7 +239,7 @@ const updateChartData = () => {
                     color: '#ffffff',
                     font: {
                         weight: 'bold',
-                        size: 28
+                        size: 20
                     }
                 }
             }
@@ -258,7 +258,7 @@ const setPlaceholderCharts = () => {
                 color: '#666666',
                 font: {
                     weight: 'bold',
-                    size: 28
+                    size: 20
                 }
             }
         }]
@@ -300,8 +300,8 @@ const pieChartOptions = ref({
                     const label = context.label || '';
                     const value = context.raw || 0;
                     const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
-                    const percentage = Math.round((value / total) * 100);
-                    return `${label}: ${value} orgs (${percentage}%)`;
+                    // Show raw count instead of percentage
+                    return `${label}: ${value} orgs`;
                 }
             }
         },
@@ -309,14 +309,13 @@ const pieChartOptions = ref({
             color: '#ffffff',
             font: {
                 weight: 'bold',
-                size: 28,
+                    size: 20,
                 family: 'Inter, sans-serif'
             },
-            formatter: function(value, context) {
-                const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
-                const percentage = Math.round((value / total) * 100);
-                return percentage + '%';
-            },
+                formatter: function(value) {
+                    // Display the raw count on the slice
+                    return value;
+                },
             textAlign: 'center',
             textBaseline: 'middle'
         }
