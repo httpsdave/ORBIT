@@ -376,11 +376,23 @@
                 $adviserFullName = trim((isset($adviser['adviser_prefix']) && $adviser['adviser_prefix'] ? $adviser['adviser_prefix'] . ' ' : '') . ($adviser['adviser_name'] ?? '') . (isset($adviser['adviser_suffix']) && $adviser['adviser_suffix'] ? ', ' . $adviser['adviser_suffix'] : ''));
                 $firstLineAdviserName = '';
                 $secondLineAdviserName = '';
-                if (mb_strlen($adviserFullName) > 24) {
-                    $breakPos = mb_strrpos(mb_substr($adviserFullName, 0, 24), ' ');
+                if (mb_strlen($adviserFullName) > 26) {
+                    // Try to find a good break point, preferring to break at spaces
+                    $breakPos = mb_strrpos(mb_substr($adviserFullName, 0, 26), ' ');
+                    
+                    // If no space found within the first 26 characters, look for comma
                     if ($breakPos === false) {
-                        $breakPos = 24;
+                        $breakPos = mb_strrpos(mb_substr($adviserFullName, 0, 26), ',');
+                        if ($breakPos !== false) {
+                            $breakPos++; // Include the comma in the first line
+                        }
                     }
+                    
+                    // If still no break point, force break at character limit
+                    if ($breakPos === false) {
+                        $breakPos = 26;
+                    }
+                    
                     $firstLineAdviserName = trim(mb_substr($adviserFullName, 0, $breakPos));
                     $secondLineAdviserName = trim(mb_substr($adviserFullName, $breakPos));
                 } else {
