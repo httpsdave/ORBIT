@@ -84,14 +84,16 @@
                     :class="['transition-colors', activeTab === 'college' ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200']"
                     @click.prevent="switchTab('college')"
                   >
-                    College Affiliated Organizations
+                    <span class="inline sm:hidden">College</span>
+                    <span class="hidden sm:inline">College Affiliated Organizations</span>
                   </button>
                   <span class="mx-3 text-gray-400 dark:text-gray-500">|</span>
                   <button
                     :class="['transition-colors', activeTab === 'non-college' ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200']"
                     @click.prevent="switchTab('non-college')"
                   >
-                    Non-College Affiliated Organizations
+                    <span class="inline sm:hidden">Non-College</span>
+                    <span class="hidden sm:inline">Non-College Affiliated Organizations</span>
                   </button>
                 </div>
               </div>
