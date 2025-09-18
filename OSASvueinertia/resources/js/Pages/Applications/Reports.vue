@@ -325,6 +325,14 @@ const formatFileSize = (bytes) => {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
 }
 
+// Format date similar to ApplicationsTable: 'Sept. 18, 2025'
+const formatDate = (dateString) => {
+  if (!dateString) return 'N/A'
+  const d = new Date(dateString)
+  if (isNaN(d.getTime())) return 'Invalid Date'
+  return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+}
+
 // Dropdown functionality
 const toggleDropdown = (report, event) => {
   if (activeDropdownReport.value && activeDropdownReport.value.id === report.id) {
@@ -745,7 +753,7 @@ watch(showStatusModal, (val) => {
                       
                       <div class="text-sm text-gray-600 dark:text-gray-400 mb-3">
                         <p class="truncate"><strong>Current File:</strong> {{ page.reports[reportType].original_filename }}</p>
-                        <p><strong>Submitted:</strong> {{ new Date(page.reports[reportType].submitted_at).toLocaleDateString() }}</p>
+                        <p><span class="font-semibold text-gray-700 dark:text-gray-200">Submitted:</span> {{ formatDate(page.reports[reportType].submitted_at) }}</p>
                       </div>
 
                       <!-- File Upload for Edit -->
@@ -797,7 +805,7 @@ watch(showStatusModal, (val) => {
                       <div class="flex items-center justify-between min-w-0">
                         <div class="text-sm text-gray-600 dark:text-gray-400 flex-1 min-w-0">
                           <p class="truncate"><strong>File:</strong> {{ page.reports[reportType].original_filename }}</p>
-                          <p><strong>Submitted:</strong> {{ new Date(page.reports[reportType].submitted_at).toLocaleDateString() }}</p>
+                          <p><span class="font-semibold text-gray-700 dark:text-gray-200">Submitted:</span> {{ formatDate(page.reports[reportType].submitted_at) }}</p>
                           <!-- Feedback is handled on the Report Feedback page; inline display removed -->
                           <!-- Visual indicator for clickability -->
                           <div class="mt-2 flex items-center text-xs text-blue-600 dark:text-blue-400 opacity-75">
