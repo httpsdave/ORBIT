@@ -79,15 +79,16 @@
 
               <!-- Tabs: College Affiliated | Non-College Affiliated -->
               <div class="mb-4">
-                <div class="inline-flex rounded-lg bg-gray-100 dark:bg-gray-800 p-1">
+                <div class="flex items-center text-sm font-medium">
                   <button
-                    :class="['px-3 py-1 text-sm font-medium rounded-md transition', activeTab === 'college' ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow' : 'text-gray-600 dark:text-gray-300']"
+                    :class="['transition-colors', activeTab === 'college' ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200']"
                     @click.prevent="switchTab('college')"
                   >
                     College Affiliated Organizations
                   </button>
+                  <span class="mx-3 text-gray-400 dark:text-gray-500">|</span>
                   <button
-                    :class="['ml-1 px-3 py-1 text-sm font-medium rounded-md transition', activeTab === 'non-college' ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow' : 'text-gray-600 dark:text-gray-300']"
+                    :class="['transition-colors', activeTab === 'non-college' ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200']"
                     @click.prevent="switchTab('non-college')"
                   >
                     Non-College Affiliated Organizations
@@ -98,36 +99,23 @@
               <!-- Mobile Card View (hidden on large screens and above) -->
               <div class="block xl:hidden space-y-2 sm:space-y-3">
                 <!-- Non-College Affiliated Organizations Section -->
-                <div v-if="activeTab === 'non-college' && nonCollegeOrganizations.length > 0" class="bg-gray-50 dark:bg-gray-700 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-gray-200 dark:border-gray-600 shadow-sm hover:shadow-md transition-all duration-200">
-                  <div 
-                    @click="toggleCollege('non-college', $event)"
-                    class="flex justify-between items-center cursor-pointer"
-                  >
+                <div v-if="activeTab === 'non-college' && nonCollegeOrganizations.length > 0" class="bg-gray-50 dark:bg-gray-700 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-gray-200 dark:border-gray-600 shadow-sm">
+                  <div class="flex justify-between items-center">
                     <div class="flex items-center flex-1 min-w-0">
                       <div class="min-w-0 flex-1">
                         <h4 class="font-semibold text-gray-900 dark:text-gray-100 text-sm sm:text-base lg:text-lg truncate">Non-College Affiliated Organizations</h4>
-                        
                       </div>
                     </div>
                     <div class="flex items-center ml-2 sm:ml-3 flex-shrink-0">
-                      <span class="mr-1.5 sm:mr-2 text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full flex-shrink-0" 
+                      <span class="text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full flex-shrink-0" 
                             :class="nonCollegeOrganizations.length > 0 ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-200' : 'bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-400'">
                         {{ nonCollegeOrganizations.length }}
                       </span>
-                      <svg
-                        :class="{'transform rotate-180': openColleges.includes('non-college')}"
-                        class="w-4 h-4 sm:w-5 sm:h-5 transition-transform text-gray-500 dark:text-gray-400 flex-shrink-0"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                      </svg>
                     </div>
                   </div>
 
                   <!-- Mobile Non-College Organizations List -->
-                  <div v-if="openColleges.includes('non-college')" class="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-200 dark:border-gray-600">
+                  <div class="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-200 dark:border-gray-600">
                     <div class="space-y-2 sm:space-y-3">
                       <div class="flex flex-col xs:flex-row xs:justify-between xs:items-center mb-2 sm:mb-3 space-y-1 xs:space-y-0">
                         <span class="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">Organizations ({{ nonCollegeOrganizations.length }})</span>
@@ -307,43 +295,23 @@
               <!-- Desktop Accordion View (hidden on mobile and tablet) -->
               <div class="hidden xl:block space-y-3">
                 <!-- Non-College Affiliated Organizations Section -->
-                <div v-if="activeTab === 'non-college' && nonCollegeOrganizations.length > 0" class="border border-gray-200 dark:border-gray-700 rounded-md overflow-hidden shadow-sm hover:shadow transition-shadow duration-200" data-college-accordion>
-                  <div 
-                    @click="toggleCollege('non-college', $event)"
-                    class="flex justify-between items-center p-4 cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-150"
-                  >
+                <div v-if="activeTab === 'non-college' && nonCollegeOrganizations.length > 0" class="border border-gray-200 dark:border-gray-700 rounded-md overflow-hidden shadow-sm" data-college-accordion>
+                  <div class="flex justify-between items-center p-4 bg-gray-50 dark:bg-gray-700">
                     <div class="flex items-center">
                       <div>
                         <span class="text-lg font-medium text-gray-900 dark:text-gray-100">Non-College Affiliated Organizations</span>
-                        
                       </div>
                     </div>
                     <div class="flex items-center">
-                      <span class="mr-2 text-sm font-medium px-2 py-1 rounded-full" 
+                      <span class="text-sm font-medium px-2 py-1 rounded-full" 
                             :class="nonCollegeOrganizations.length > 0 ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-200' : 'bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-400'">
                         {{ nonCollegeOrganizations.length }} Organizations
                       </span>
-                      <svg
-                        :class="{'transform rotate-180': openColleges.includes('non-college')}"
-                        class="w-5 h-5 transition-transform text-gray-500 dark:text-gray-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M19 9l-7 7-7-7"
-                        ></path>
-                      </svg>
                     </div>
                   </div>
 
                   <!-- Non-College Organizations List -->
-                  <div v-if="openColleges.includes('non-college')" 
-                      class="p-4 divide-y divide-gray-100 dark:divide-gray-700 bg-white dark:bg-gray-800 transition-all duration-300 ease-in-out">
+                  <div class="p-4 divide-y divide-gray-100 dark:divide-gray-700 bg-white dark:bg-gray-800">
                     <div class="overflow-x-auto -mx-4 sm:-mx-0">
                       <div class="flex justify-between items-center mb-4 px-6">
                         
