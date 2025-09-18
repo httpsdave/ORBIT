@@ -102,11 +102,32 @@ const bulkDeleteNotifications = () => {
   });
 };
 
-// Toggle active status of a notification
+// Toggle active status of a notification (optimistic, in-place update)
 const toggleActive = (notification) => {
+  // Optimistically update UI
+  const originalState = notification.is_active;
+  notification.is_active = !originalState;
+
   router.patch(route('admin.notifications.toggle-active', notification.id), {}, {
     preserveScroll: true,
     preserveState: true,
+    onError: () => {
+      // Revert UI if request fails
+      notification.is_active = originalState;
+    },
+    onSuccess: (page) => {
+      // If the server returns updated notification data, try to sync fields
+      // Look for the notification in page.props (Inertia response) and update local props if present
+      try {
+        const updated = page.props?.notifications?.data?.find(n => n.id === notification.id);
+        if (updated) {
+          // copy relevant fields
+          notification.is_active = updated.is_active;
+        }
+      } catch (e) {
+        // ignore errors - we already applied optimistic update
+      }
+    }
   });
 };
 
