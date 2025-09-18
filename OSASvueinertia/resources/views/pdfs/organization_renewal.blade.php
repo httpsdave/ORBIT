@@ -277,7 +277,7 @@
 
             <div class="signature">
                 <p><span class="signature-line" style="min-width:160px;"><strong>{{ $application->president_name }}</strong></span></p>
-                <p><span class="title-under-signature title-left-adjust"><strong>Organization President</strong></span></p>
+                <p style = "margin-top: -6px"><span class="title-under-signature title-left-adjust"><strong>Organization President</strong></span></p>
             </div>
         </div>
 
@@ -323,28 +323,28 @@
                     }
                 @endphp
                 <p style="margin-bottom: 2px;"><span class="signature-line" style="min-width:160px; {{ $fontSize }} {{ $textAlign }} {{ $lineHeight }}"><strong>{!! $stackedName !!}</strong></span></p>
-                <p><span class="title-under-signature title-left-adjust-more"><strong>Name of Organization</strong></span></p>
+                <p style = "margin-top:-6px"><span class="title-under-signature title-left-adjust-more"><strong>Name of Organization</strong></span></p>
             </div>
         </div>
 
         <div class="section left-align">
             <p><strong>NOTED:</strong></p>
-            <div class="signature">
+                <div class="signature">
                 <p><span class="signature-line" style="min-width:220px;"><strong>{{ trim((isset($application->adviser_prefix) && $application->adviser_prefix ? $application->adviser_prefix . ' ' : '') . $application->adviser_name . (isset($application->adviser_suffix) && $application->adviser_suffix ? ', ' . $application->adviser_suffix : '')) }}</strong></span></p>
-                <p><span class="title-under-signature title-right-adjust"><strong>Adviser/s, Student Organization</strong></span></p>
+                <p><span class="title-under-signature title-right-adjust" style="margin-top:-6px;"><strong>Adviser/s, Student Organization</strong></span></p>
             </div>
             
-            <div class="signature">
+                <div class="signature">
                 <p><span class="signature-line" style="min-width:305px;"><strong>{{ trim((isset($application->dean_prefix) && $application->dean_prefix ? $application->dean_prefix . ' ' : '') . $application->dean_name . (isset($application->dean_suffix) && $application->dean_suffix ? ', ' . $application->dean_suffix : '')) }}</strong></span></p>
-                <p><span class="title-under-signature"><strong>Dean/Assoc. Dean, College of</strong> <span class="signature-line signature-line-inline" style="min-width:120px;"><strong>{{ $application->college ?? '' }}</strong></span></span></p>
+                <p><span class="title-under-signature" style="margin-top:-4px;"><strong>Dean/Assoc. Dean, College of</strong> <span class="signature-line signature-line-inline" style="min-width:120px; margin-top:-4px;"><strong>{{ $application->college ?? '' }}</strong></span></span></p>
             </div>
         </div>
 
         <div class="section center-align">
-            <p style="margin-left:-380px;"><strong>Recommending Approval:</strong></p>
+            <p style="margin-left:-380px;margin-top: 15px"><strong>Recommending Approval:</strong></p>
             <div class="signature">
                 <p><span class="signature-line" style="min-width:270px;"><strong>{{ $application->coordinator_name }}</strong></span></p>
-                <p><strong>Coordinator, Student Organization Unit</strong></p>
+                <p style = "margin-top:-6px;"><strong>Coordinator, Student Organization Unit</strong></p>
             </div>
         </div>
 
@@ -352,7 +352,7 @@
             <p style="margin-left:-380px;"><strong>Approved / Disapproved:</strong></p>
             <div class="signature">
                 <p><span class="signature-line" style="min-width:390px;"><strong>{{ $application->director_name }}</strong></span></p>
-                <p><strong>Director/Chairperson, Office of Student Affairs and Services</strong></p>
+                <p style="margin-top:-6px;"><strong>Director/Chairperson, Office of Student Affairs and Services</strong></p>
             </div>
         </div>
     </div>
