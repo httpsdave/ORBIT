@@ -19,6 +19,7 @@ class EventExtractionService
             'end_time' => null,
             'description' => null,
             'location' => null,
+            'organization' => null,
         ];
 
         // List of phrases to exclude from title extraction
@@ -379,6 +380,107 @@ class EventExtractionService
                 $result['location'] = trim($matches[1]);
                 break;
             }
+        }
+
+        // Extract organization information
+        $organizationPatterns = [
+            // Direct organization patterns
+            '/Organization[:\s]+([^\n.]+)/',
+            '/Organizer[:\s]+([^\n.]+)/',
+            '/Organized\s+by[:\s]*([^\n.]+)/',
+            '/Sponsored\s+by[:\s]*([^\n.]+)/',
+            '/Hosted\s+by[:\s]*([^\n.]+)/',
+            '/Presented\s+by[:\s]*([^\n.]+)/',
+            '/From[:\s]+([^\n.]+)/',
+            // University and department patterns
+            '/([A-Z][a-z]+\s+(?:State\s+)?(?:Polytechnic\s+)?University(?:\s+[-–—]\s*[A-Za-z\s]+)?(?:\s+Campus)?)/',
+            '/([A-Z][a-z]+\s+(?:College|University)(?:\s+of\s+[A-Za-z\s]+)?)/',
+            '/(College\s+of\s+[A-Za-z\s]+)/',
+            '/(Department\s+of\s+[A-Za-z\s]+)/',
+            '/([A-Z][A-Z]+(?:\s+[-–—]\s*[A-Z][A-Za-z\s]+)?)/', // Acronyms like LSPU - SPCC
+            // Office patterns
+            '/(Office\s+of\s+(?:the\s+)?[A-Za-z\s]+)/',
+            '/((?:Student\s+)?(?:Government|Council|Organization)(?:\s+[A-Za-z\s]+)?)/',
+            // Commission patterns  
+            '/((?:Local\s+)?Commission\s+on\s+[A-Za-z\s]+)/',
+            '/(Student\s+(?:Organization|Council|Government)(?:\s+[A-Za-z\s]+)?)/',
+        ];
+        
+        $organizationCandidates = [];
+        
+        foreach ($organizationPatterns as $pattern) {
+            preg_match_all($pattern, $text, $matches, PREG_SET_ORDER);
+            foreach ($matches as $match) {
+                if (isset($match[1])) {
+                    $candidate = trim($match[1]);
+                    // Clean up common artifacts
+                    $candidate = preg_replace('/[,;.!]+$/', '', $candidate);
+                    $candidate = trim($candidate);
+                    
+                    // Skip if too short or contains excluded phrases
+                    if (strlen($candidate) > 5 && strlen($candidate) <= 100) {
+                        $isValidOrg = true;
+                        
+                        // Check against excluded phrases from title extraction
+                        $excludedOrgPhrases = [
+                            'To Whom It May Concern',
+                            'To: All Concerned',
+                            'Subject:',
+                            'Re:',
+                            'Attention:',
+                            'Sir:',
+                            'Greetings of peace',
+                            'Campus Director',
+                            'period to participate',
+                        ];
+                        
+                        foreach ($excludedOrgPhrases as $excluded) {
+                            if (stripos($candidate, $excluded) !== false) {
+                                $isValidOrg = false;
+                                break;
+                            }
+                        }
+                        
+                        if ($isValidOrg) {
+                            $organizationCandidates[] = $candidate;
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Select the best organization candidate
+        if (!empty($organizationCandidates)) {
+            // Prefer university/college names, then departments, then offices
+            $priorities = [
+                'University' => 3,
+                'College' => 3,
+                'Polytechnic' => 3,
+                'Department' => 2,
+                'Office' => 2,
+                'Commission' => 2,
+                'Student' => 1,
+            ];
+            
+            $bestCandidate = '';
+            $bestScore = 0;
+            
+            foreach ($organizationCandidates as $candidate) {
+                $score = 0;
+                foreach ($priorities as $keyword => $weight) {
+                    if (stripos($candidate, $keyword) !== false) {
+                        $score += $weight;
+                    }
+                }
+                
+                // Prefer longer, more descriptive names if scores are equal
+                if ($score > $bestScore || ($score === $bestScore && strlen($candidate) > strlen($bestCandidate))) {
+                    $bestScore = $score;
+                    $bestCandidate = $candidate;
+                }
+            }
+            
+            $result['organization'] = $bestCandidate ?: $organizationCandidates[0];
         }
 
         // Generate a concise description of the event

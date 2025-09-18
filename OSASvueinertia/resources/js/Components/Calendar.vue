@@ -279,6 +279,10 @@
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Location</label>
           <input v-model="eventForm.location" type="text" class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" placeholder="Event location (optional)" />
         </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Organization</label>
+          <input v-model="eventForm.organization" type="text" class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" placeholder="Organizing institution (optional)" />
+        </div>
         <div class="pt-4 flex justify-end space-x-3">
           <button 
             @click="cancelEdit" 
@@ -354,6 +358,10 @@
         <div v-if="selectedEvent.location" class="mt-4 bg-blue-50 p-4 rounded-lg">
           <p class="text-sm text-blue-600 font-medium mb-2">Location:</p>
           <p class="text-gray-700 whitespace-pre-line break-words overflow-wrap-anywhere">{{selectedEvent.location}}</p>
+        </div>
+        <div v-if="selectedEvent.organization" class="mt-4 bg-green-50 p-4 rounded-lg">
+          <p class="text-sm text-green-600 font-medium mb-2">Organization:</p>
+          <p class="text-gray-700 whitespace-pre-line break-words overflow-wrap-anywhere">{{selectedEvent.organization}}</p>
         </div>
         <div v-if="isAdmin" class="flex justify-end space-x-2 mt-4">
           <button @click="editEvent(selectedEvent)" class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-sm font-medium text-white rounded-xl shadow-md hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group">
@@ -1015,7 +1023,8 @@ export default {
       start_time: '',
       end_time: '',
       description: '',
-      location: ''
+      location: '',
+      organization: ''
     });
     
     // Filter out expired and cancelled events for display
@@ -1190,7 +1199,8 @@ export default {
         start_date: startDate,
         end_date: endDate, // Always include end_date
         description: eventForm.description,
-        location: eventForm.location
+        location: eventForm.location,
+        organization: eventForm.organization
       })
         .then(response => {
           // Add the new event to the list
@@ -1254,6 +1264,7 @@ export default {
       }
       eventForm.description = event.description || '';
       eventForm.location = event.location || '';
+      eventForm.organization = event.organization || '';
     }
     
     function updateEvent() {
@@ -1270,7 +1281,8 @@ export default {
         start_date: startDate,
         end_date: endDate, // Always include end_date
         description: eventForm.description,
-        location: eventForm.location
+        location: eventForm.location,
+        organization: eventForm.organization
       })
         .then(response => {
           // Update the event in our local state
@@ -1323,6 +1335,7 @@ export default {
       eventForm.end_time = '';
       eventForm.description = '';
       eventForm.location = '';
+      eventForm.organization = '';
     }
     
     function deleteEvent(eventId) {
@@ -1577,6 +1590,7 @@ export default {
       eventForm.end_time = '';
       eventForm.description = '';
       eventForm.location = '';
+      eventForm.organization = '';
     }
 
     function createEventForDate(clickedDate, info) {
@@ -1592,6 +1606,7 @@ export default {
       eventForm.end_time = '';
       eventForm.description = '';
       eventForm.location = '';
+      eventForm.organization = '';
       
       // Add smooth visual feedback with modern animation
       if (info.dayEl) {
@@ -1625,6 +1640,7 @@ export default {
       eventForm.end_time = '';
       eventForm.description = '';
       eventForm.location = '';
+      eventForm.organization = '';
       
       console.log(`Event creation initiated for date range: ${startDate} to ${endDate}`);
       
@@ -1757,6 +1773,7 @@ export default {
         eventForm.end_time = '';
         eventForm.description = '';
         eventForm.location = '';
+        eventForm.organization = '';
         
         console.log(`Event creation initiated for date range: ${startDate} to ${endDate}`);
         
@@ -1888,6 +1905,7 @@ export default {
   eventForm.end_time = data.end_time || '';
   eventForm.description = data.description || '';
   eventForm.location = data.location || '';
+  eventForm.organization = data.organization || '';
 }
 
 function exportPastEventsCsv(pastEvents) {

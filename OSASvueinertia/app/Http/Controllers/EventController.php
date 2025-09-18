@@ -51,6 +51,7 @@ class EventController extends Controller
             'end_date' => 'nullable|date|after_or_equal:start_date',
             'description' => 'nullable|string',
             'location' => 'nullable|string|max:255',
+            'organization' => 'nullable|string|max:255',
             'status' => 'nullable|in:active,cancelled'
         ]);
 
@@ -75,6 +76,7 @@ class EventController extends Controller
             'end_date' => 'nullable|date|after_or_equal:start_date',
             'description' => 'nullable|string',
             'location' => 'nullable|string|max:255',
+            'organization' => 'nullable|string|max:255',
             'status' => 'sometimes|in:active,cancelled'
         ]);
 
