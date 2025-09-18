@@ -950,11 +950,34 @@ export default {
         alert('Please select a college first.');
         return;
       }
-      
-      this.showConfirmModal = true;
+
+      // Ensure the user selection modal is closed before showing confirm to avoid overlap
+      const wasUserSelectionOpen = this.showUserSelectionModal;
+      // Clear any previous reopen intent before transitioning
+      this._reopenUserSelectionAfterConfirm = false;
+      this.showUserSelectionModal = false;
+      // Small defer to allow modal close animation to complete (if any)
+      setTimeout(() => {
+        this.showConfirmModal = true;
+        // store whether we should re-open the user selection modal after confirm closes
+        // set it here intentionally based on current interaction
+        this._reopenUserSelectionAfterConfirm = wasUserSelectionOpen;
+      }, 150);
     },
     closeConfirmModal() {
+      // Close confirm and clear the reopen flag before any async callbacks can run
       this.showConfirmModal = false;
+      if (this._reopenUserSelectionAfterConfirm) {
+        // small delay to avoid animation collision
+        setTimeout(() => {
+          this.showUserSelectionModal = true;
+          // reset the flag immediately after re-opening
+          this._reopenUserSelectionAfterConfirm = false;
+        }, 150);
+      } else {
+        // ensure no stale flag remains
+        this._reopenUserSelectionAfterConfirm = false;
+      }
     },
     confirmAssignUsers() {
       if (!this.selectedCollegeId) {
@@ -966,7 +989,10 @@ export default {
       this.assignForm.post(route('admin.student-orgs.assign-user'), {
         preserveScroll: true,
         onSuccess: () => {
+          // Prevent any accidental reopen: clear the flag and close confirm first
+          this._reopenUserSelectionAfterConfirm = false;
           this.closeConfirmModal();
+          // After successful post, fully close the user selection modal
           this.closeUserSelectionModal();
         }
       });
