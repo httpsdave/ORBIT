@@ -345,13 +345,13 @@ const submit = () => {
     <img src="/images/lspu-name.png" alt="Laguna State Polytechnic University" class="university-name mb-0" style="max-width: 45%; height: auto; margin: 4px 0; display: inline-block;" />
     <p class="header-province-text mb-0" style="font-family: 'Calibri', sans-serif; font-weight: normal; font-size: 11pt;">Province of Laguna</p>
       <div style="height:10px;"></div>
-      <p class="office-title" style="margin-bottom:10px; font-size:12pt; font-family: 'Times New Roman', serif; text-align:center; font-weight:bold;">OFFICE OF STUDENT AFFAIRS AND SERVICES</p>
+      <p class="office-title" style="margin-bottom:10px; margin-top:20px; font-size:12pt; font-family: 'Times New Roman', serif; text-align:center; font-weight:bold;">OFFICE OF STUDENT AFFAIRS AND SERVICES</p>
         <p class="commitment-form-title mb-4">ORGANIZATION ADVISER COMMITMENT FORM</p>
       </div>
 
       <div class="section right-align" style="text-align: right; margin-bottom: 0;margin-top: 25px;">
         <p style="margin: 0;">
-          <span class="signature-line date-underline" style="min-width: 150px; display: inline-block; border-bottom: 1px solid black; text-align: center; padding-bottom: 2px;"><strong>{{ formattedDate }}</strong></span>
+          <span class="signature-line date-underline" style="min-width: 150px; display: inline-block; border-bottom: 1px solid black; text-align: center; padding-bottom: 2px; font-size: 11pt;"><strong>{{ formattedDate }}</strong></span>
         </p>
     <p style="margin-top: 0; text-align: left; width: max-content; padding-left: 550px;">Date</p>
       </div>
@@ -364,7 +364,7 @@ const submit = () => {
       </div>
 
       <div class="section">
-        <p class="thru-line font-bold mb-2" style="padding-left: 1.27cm; text-indent: 0;font-size: 11pt;">Thru: The Coordinator, Student Organization Unit</p>
+        <p class="thru-line font-bold mb-2" style="padding-left: 1.27cm; text-indent: 0;font-size: 11pt;margin-top:20px;">Thru: The Coordinator, Student Organization Unit</p>
       </div>
 
       <div class="section commitment-body" style="text-align: justify; font-family: 'Times New Roman', Times, serif; font-size: 12pt; line-height: 1.1;">
@@ -389,7 +389,7 @@ const submit = () => {
           as a duly recognized LSPU Organization.
         </p>
         <p class="indented" style="text-indent: 1.45cm;">
-    I, the undersigned, have committed to serve as the organization's Adviser for the academic year 20<u>{{ form.academic_year_start }}</u>-20<u>{{ form.academic_year_end }}</u>, and shall therefore assume full responsibility as provided in the guidelines for the recognition of student organizations.
+  I, the undersigned, have committed to serve as the organization's Adviser for the academic year 20<u><strong>{{ form.academic_year_start }}</strong></u>-20<u><strong>{{ form.academic_year_end }}</strong></u>, and shall therefore assume full responsibility as provided in the guidelines for the recognition of student organizations.
         </p>
         <p class="indented" style="text-indent: 1.45cm;">
           Furthermore, I certify to the correctness and completeness of the documents attached to the organization application for recognition.
@@ -398,12 +398,12 @@ const submit = () => {
 
       <!-- Signature block: Very respectfully yours -->
       <div class="very-respectfully mt-12 mb-8">
-        <p class="mb-2" style="font-weight: bold;">Very respectfully yours,</p>
+  <p class="mb-2" style="font-weight: bold; margin-bottom: 30px;">Very respectfully yours,</p>
         <!-- Name signature line: 32 chars, single line, ellipsis -->
         <div class="sig-row">
           <span class="sig-label">Name:</span>
           <span class="sig-line sig-name" style="width:230px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-            {{ displayCurrentAdviserName }}
+            <strong>{{ displayCurrentAdviserName }}</strong>
           </span>
         </div>
         <div class="sig-row"><span class="sig-label">Signature:</span><span class="sig-line sig-signature">&nbsp;</span></div>
@@ -411,13 +411,13 @@ const submit = () => {
         <div class="sig-row">
           <span class="sig-label">College:</span>
           <span class="sig-line sig-college">
-            {{ adviser.adviser_college.length > 25 ? adviser.adviser_college.slice(0, adviser.adviser_college.slice(0,25).lastIndexOf(' ') > 0 ? adviser.adviser_college.slice(0,25).lastIndexOf(' ') : 25) : adviser.adviser_college }}
+            <strong>{{ adviser.adviser_college.length > 25 ? adviser.adviser_college.slice(0, adviser.adviser_college.slice(0,25).lastIndexOf(' ') > 0 ? adviser.adviser_college.slice(0,25).lastIndexOf(' ') : 25) : adviser.adviser_college }}</strong>
           </span>
         </div>
         <div v-if="adviser.adviser_college.length > 25" class="sig-row" style="margin-left: -5px;">
           <span class="sig-label"></span>
           <span class="sig-line sig-college">
-            {{ (() => {
+            <strong>{{ (() => {
               const college = adviser.adviser_college;
               const break1 = college.length > 25 ? (college.slice(0,25).lastIndexOf(' ') > 0 ? college.slice(0,25).lastIndexOf(' ') : 25) : college.length;
               const remaining = college.slice(break1).trim();
@@ -427,7 +427,7 @@ const submit = () => {
               } else {
                 return remaining;
               }
-            })() }}
+            })() }}</strong>
           </span>
         </div>
         <div v-if="(() => {
@@ -442,7 +442,7 @@ const submit = () => {
         })()" class="sig-row" style="margin-left: -5px;">
           <span class="sig-label"></span>
           <span class="sig-line sig-college">
-            {{ (() => {
+            <strong>{{ (() => {
               const college = adviser.adviser_college;
               const break1 = college.length > 25 ? (college.slice(0,25).lastIndexOf(' ') > 0 ? college.slice(0,25).lastIndexOf(' ') : 25) : college.length;
               const remaining = college.slice(break1).trim();
@@ -451,21 +451,21 @@ const submit = () => {
                 return remaining.slice(break2).trim();
               }
               return '';
-            })() }}
+            })() }}</strong>
           </span>
         </div>
-        <div class="sig-row"><span class="sig-label">Academic Rank:</span><span class="sig-line sig-rank">{{ adviser.adviser_rank }}</span></div>
+  <div class="sig-row"><span class="sig-label">Academic Rank:</span><span class="sig-line sig-rank"><strong>{{ adviser.adviser_rank }}</strong></span></div>
         <!-- Home Address signature lines: split into up to 3 lines -->
         <div class="sig-row">
           <span class="sig-label">Home Address:</span>
           <span class="sig-line sig-address">
-            {{ adviser.adviser_address.length > 25 ? adviser.adviser_address.slice(0, adviser.adviser_address.slice(0,25).lastIndexOf(' ') > 0 ? adviser.adviser_address.slice(0,25).lastIndexOf(' ') : 25) : adviser.adviser_address }}
+            <strong>{{ adviser.adviser_address.length > 25 ? adviser.adviser_address.slice(0, adviser.adviser_address.slice(0,25).lastIndexOf(' ') > 0 ? adviser.adviser_address.slice(0,25).lastIndexOf(' ') : 25) : adviser.adviser_address }}</strong>
           </span>
         </div>
         <div v-if="adviser.adviser_address.length > 25" class="sig-row" style="margin-left: -5px;">
           <span class="sig-label"></span>
           <span class="sig-line sig-address">
-            {{ (() => {
+            <strong>{{ (() => {
               const addr = adviser.adviser_address;
               const break1 = addr.length > 25 ? (addr.slice(0,25).lastIndexOf(' ') > 0 ? addr.slice(0,25).lastIndexOf(' ') : 25) : addr.length;
               const remaining = addr.slice(break1).trim();
@@ -475,7 +475,7 @@ const submit = () => {
               } else {
                 return remaining;
               }
-            })() }}
+            })() }}</strong>
           </span>
         </div>
         <div v-if="(() => {
@@ -490,7 +490,7 @@ const submit = () => {
         })()" class="sig-row" style="margin-left: -5px;">
           <span class="sig-label"></span>
           <span class="sig-line sig-address">
-            {{ (() => {
+            <strong>{{ (() => {
               const addr = adviser.adviser_address;
               const break1 = addr.length > 25 ? (addr.slice(0,25).lastIndexOf(' ') > 0 ? addr.slice(0,25).lastIndexOf(' ') : 25) : addr.length;
               const remaining = addr.slice(break1).trim();
@@ -499,17 +499,17 @@ const submit = () => {
                 return remaining.slice(break2).trim();
               }
               return '';
-            })() }}
+            })() }}</strong>
           </span>
         </div>
-        <div class="sig-row"><span class="sig-label">Contact Number(s):</span><span class="sig-line sig-contact">{{ adviser.adviser_contact }}</span></div>
-        <div class="sig-row"><span class="sig-label">Date:</span><span class="sig-line sig-date">{{ new Date(form.form_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) }}</span></div>
+  <div class="sig-row"><span class="sig-label">Contact Number(s):</span><span class="sig-line sig-contact"><strong>{{ adviser.adviser_contact }}</strong></span></div>
+  <div class="sig-row"><span class="sig-label">Date:</span><span class="sig-line sig-date"><strong>{{ new Date(form.form_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) }}</strong></span></div>
       </div>
 
       <!-- Noted, Recommending Approval, and Approval Section -->
       <div class="mt-2 mb-8">
         <div class="mb-8" style="text-align:left;">
-    <div class="noted-label mb-1" style="font-size: 1rem; font-weight: bold; margin-bottom: 10px;">Noted:</div>
+    <div class="noted-label mb-1" style="font-size: 1rem; font-weight: bold; margin-bottom: 35px;margin-top:40px;">Noted:</div>
           <div class="noted-signature-block" style="width: 350px; margin-left: 65px;">
             <span class="signature-line" style="min-width: 180px; border-bottom: 1px solid #000; display: inline-block; margin-left: 0; font-size: 12pt; font-family: 'Times New Roman', serif; font-weight: bold; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ displayDeanName || '' }}</span>
             <p class="mb-0 text-xs text-center" style="font-size: 11pt; font-family: 'Times New Roman', serif; font-weight: bold; margin-top: 2px; font-weight: bold;margin-left:-175px">Dean/Assoc. Dean of College</p>
@@ -517,14 +517,14 @@ const submit = () => {
         </div>
         <div class="approval-center-block text-center" style="margin-top: 30px;">
           <div class="mb-8">
-            <p class="mb-1" style="font-size: 12pt; font-family: 'Times New Roman', serif; font-weight: bold;">Recommending Approval:</p>
+            <p class="mb-1" style="font-size: 12pt; font-family: 'Times New Roman', serif; font-weight: bold;margin-bottom:30px;">Recommending Approval:</p>
             <div class="mt-2">
               <span class="signature-line" style="min-width: 270px; border-bottom: 1px solid #000; font-size: 12pt; font-family: 'Times New Roman', serif; font-weight: bold; display: block; margin: 0 auto 2px auto;">{{ form.coordinator_name }}</span>
               <p class="mb-0 text-xs" style="font-size: 11pt; font-family: 'Times New Roman', serif; font-weight: bold; margin-top: 2px;">Coordinator, Student Organization Unit</p>
             </div>
           </div>
           <div>
-            <p class="mb-1" style="font-size: 12pt; font-family: 'Times New Roman', serif; font-weight: bold;">Approved / Disapproved:</p>
+            <p class="mb-1" style="font-size: 12pt; font-family: 'Times New Roman', serif; font-weight: bold;margin-bottom:30px;">Approved / Disapproved:</p>
             <div class="mt-2">
               <span class="signature-line" style="min-width: 340px; border-bottom: 1px solid #000; font-size: 12pt; font-family: 'Times New Roman', serif; font-weight: bold; display: block; margin: 0 auto 2px auto;">{{ form.director_name }}</span>
               <p class="mb-0 text-xs" style="font-size: 11pt; font-family: 'Times New Roman', serif; font-weight: bold; margin-top: 2px;">Director, Office of Student Affairs and Services</p>
@@ -895,7 +895,7 @@ const submit = () => {
   margin: 0 auto;
 }
 .commitment-body p {
-  margin-bottom: 0;
+  margin-bottom: 3px; /* increased spacing between paragraphs */
   margin-top: 0;
 }
 .blank-line.org-name {
