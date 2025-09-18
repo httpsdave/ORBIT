@@ -715,7 +715,7 @@ const confirmClearData = () => {
       </div>
 
       <!-- Status pill buttons (All | Pending | Approved | Disapproved) - placed under search bar on the right -->
-      <div class="flex justify-center sm:justify-end mt-2 px-2 sm:px-0">
+      <div v-if="!isAdmin" class="flex justify-center sm:justify-end mt-2 px-2 sm:px-0">
         <div class="inline-flex rounded-full bg-gray-100 dark:bg-gray-800 p-0.5 sm:p-1 w-full max-w-xs sm:max-w-none sm:w-auto">
           <button @click="setStatusFilter('')" :class="['flex-1 sm:flex-none px-1.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-medium text-center', !statusFilter ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow' : 'text-gray-600 dark:text-gray-300']">All</button>
           <button @click="setStatusFilter('pending')" :class="['flex-1 sm:flex-none px-1.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-medium text-center', statusFilter && statusFilter.toLowerCase() === 'pending' ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow' : 'text-gray-600 dark:text-gray-300']">Pending</button>
