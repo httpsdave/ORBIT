@@ -77,10 +77,28 @@
                 </div>
               </div>
 
+              <!-- Tabs: College Affiliated | Non-College Affiliated -->
+              <div class="mb-4">
+                <div class="inline-flex rounded-lg bg-gray-100 dark:bg-gray-800 p-1">
+                  <button
+                    :class="['px-3 py-1 text-sm font-medium rounded-md transition', activeTab === 'college' ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow' : 'text-gray-600 dark:text-gray-300']"
+                    @click.prevent="switchTab('college')"
+                  >
+                    College Affiliated Organizations
+                  </button>
+                  <button
+                    :class="['ml-1 px-3 py-1 text-sm font-medium rounded-md transition', activeTab === 'non-college' ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow' : 'text-gray-600 dark:text-gray-300']"
+                    @click.prevent="switchTab('non-college')"
+                  >
+                    Non-College Affiliated Organizations
+                  </button>
+                </div>
+              </div>
+
               <!-- Mobile Card View (hidden on large screens and above) -->
               <div class="block xl:hidden space-y-2 sm:space-y-3">
                 <!-- Non-College Affiliated Organizations Section -->
-                <div v-if="nonCollegeOrganizations.length > 0" class="bg-gray-50 dark:bg-gray-700 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-gray-200 dark:border-gray-600 shadow-sm hover:shadow-md transition-all duration-200">
+                <div v-if="activeTab === 'non-college' && nonCollegeOrganizations.length > 0" class="bg-gray-50 dark:bg-gray-700 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-gray-200 dark:border-gray-600 shadow-sm hover:shadow-md transition-all duration-200">
                   <div 
                     @click="toggleCollege('non-college', $event)"
                     class="flex justify-between items-center cursor-pointer"
@@ -168,7 +186,7 @@
                   </div>
                 </div>
 
-                <div v-for="college in colleges" :key="`mobile-${college.id}`" class="bg-gray-50 dark:bg-gray-700 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-gray-200 dark:border-gray-600 shadow-sm hover:shadow-md transition-all duration-200">
+                <div v-if="activeTab === 'college'" v-for="college in colleges" :key="`mobile-${college.id}`" class="bg-gray-50 dark:bg-gray-700 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-gray-200 dark:border-gray-600 shadow-sm hover:shadow-md transition-all duration-200">
                   <div 
                     @click="toggleCollege(college.id, $event)"
                     class="flex justify-between items-center cursor-pointer"
@@ -289,7 +307,7 @@
               <!-- Desktop Accordion View (hidden on mobile and tablet) -->
               <div class="hidden xl:block space-y-3">
                 <!-- Non-College Affiliated Organizations Section -->
-                <div v-if="nonCollegeOrganizations.length > 0" class="border border-gray-200 dark:border-gray-700 rounded-md overflow-hidden shadow-sm hover:shadow transition-shadow duration-200" data-college-accordion>
+                <div v-if="activeTab === 'non-college' && nonCollegeOrganizations.length > 0" class="border border-gray-200 dark:border-gray-700 rounded-md overflow-hidden shadow-sm hover:shadow transition-shadow duration-200" data-college-accordion>
                   <div 
                     @click="toggleCollege('non-college', $event)"
                     class="flex justify-between items-center p-4 cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-150"
@@ -425,7 +443,7 @@
                   </div>
                 </div>
 
-                <div v-for="college in colleges" :key="college.id" class="border border-gray-200 dark:border-gray-700 rounded-md overflow-hidden shadow-sm hover:shadow transition-shadow duration-200" data-college-accordion>
+                <div v-if="activeTab === 'college'" v-for="college in colleges" :key="college.id" class="border border-gray-200 dark:border-gray-700 rounded-md overflow-hidden shadow-sm hover:shadow transition-shadow duration-200" data-college-accordion>
                   <div 
                     @click="toggleCollege(college.id, $event)"
                     class="flex justify-between items-center p-4 cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-150"
@@ -828,6 +846,8 @@ export default {
   data() {
     return {
       openColleges: [],
+        // activeTab controls which section is visible: 'college' or 'non-college'
+        activeTab: 'college',
       showUserSelectionModal: false,
       showConfirmModal: false,
       showRemoveConfirmModal: false,
@@ -890,6 +910,13 @@ export default {
   },
   
   methods: {
+    switchTab(tab) {
+      if (tab === 'college' || tab === 'non-college') {
+        this.activeTab = tab;
+        // close any open accordions when switching
+        this.openColleges = [];
+      }
+    },
     isClickInsideAccordion(element) {
       // Traverse up the DOM to check if the clicked element is inside any accordion
       let currentElement = element;
