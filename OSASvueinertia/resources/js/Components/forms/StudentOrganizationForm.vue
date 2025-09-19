@@ -98,6 +98,39 @@ const deanSignatureStyle = computed(() => {
   return {};
 });
 
+// Adviser signature display logic to match blade rules (same as dean):
+const adviserSignatureHtml = computed(() => {
+  const full = displayAdviserName.value || '';
+  const len = full.length;
+  if (len > 39) {
+    const words = full.split(' ').filter(Boolean);
+    const total = words.length;
+    const perLine = Math.ceil(total / 2);
+    const line1 = words.slice(0, perLine).join(' ');
+    const line2 = words.slice(perLine).join(' ');
+    return `<strong>${line1}<br>${line2}</strong>`;
+  }
+  return `<strong>${full}</strong>`;
+});
+
+const adviserSignatureStyle = computed(() => {
+  const full = displayAdviserName.value || '';
+  const len = full.length;
+  if (len > 39) {
+    return {
+      'font-size': '11pt',
+      'text-align': 'center',
+      'line-height': '0.9'
+    };
+  } else if (len > 32) {
+    return {
+      'font-size': '11pt',
+      'white-space': 'nowrap'
+    };
+  }
+  return {};
+});
+
 // Computed property to format the date
 const formattedDate = computed(() => {
   if (!form.application_date) return '';
@@ -285,10 +318,10 @@ const submit = () => {
 
   <div style="width: 100%; margin-top: 0.1cm; display: flex;">
     <div style="width: 50%; text-align: left;">
-      <div class="signature left-align" style="margin-top: 0.3cm; text-align: left;">
-  <p><span class="signature-line" style="display: inline-block; min-width: 200px; border-bottom: 1px solid black; padding-bottom: 2px; text-align: center;"><strong>{{ displayAdviserName }}</strong></span></p>
-        <p><span class="title-text" style="display: block; width: 200px; text-align: center; white-space: nowrap; font-size: 11pt;">Adviser, Student Organization</span></p>
-      </div>
+  <div class="signature left-align" style="margin-top: 0.3cm; text-align: left;">
+  <p><span class="signature-line" style="display: inline-block; min-width: 200px; border-bottom: 1px solid black; padding-bottom: 2px; text-align: center;" :style="adviserSignatureStyle" v-html="adviserSignatureHtml"></span></p>
+    <p><span class="title-text" style="display: block; width: 200px; text-align: center; white-space: nowrap; font-size: 11pt;">Adviser, Student Organization</span></p>
+  </div>
     </div>
     <div style="width: 50%; text-align: right;">
     <div class="signature right-align" style="margin-top: 0.3cm; text-align: right;">
