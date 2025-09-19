@@ -62,6 +62,42 @@ const displayDeanName = computed(() => {
   return name;
 });
 
+// Dean signature display logic to match blade rules:
+// <=32 chars: normal
+// 33-39 chars: 10pt, no wrapping
+// >39 chars: 10pt, allow double stacking (split into two lines)
+const deanSignatureHtml = computed(() => {
+  const full = displayDeanName.value || '';
+  const len = full.length;
+  if (len > 39) {
+    const words = full.split(' ').filter(Boolean);
+    const total = words.length;
+    const perLine = Math.ceil(total / 2);
+    const line1 = words.slice(0, perLine).join(' ');
+    const line2 = words.slice(perLine).join(' ');
+    return `<strong>${line1}<br>${line2}</strong>`;
+  }
+  return `<strong>${full}</strong>`;
+});
+
+const deanSignatureStyle = computed(() => {
+  const full = displayDeanName.value || '';
+  const len = full.length;
+  if (len > 39) {
+    return {
+      'font-size': '10pt',
+      'text-align': 'center',
+      'line-height': '0.9'
+    };
+  } else if (len > 32) {
+    return {
+      'font-size': '10pt',
+      'white-space': 'nowrap'
+    };
+  }
+  return {};
+});
+
 // Computed property to format the date
 const formattedDate = computed(() => {
   if (!form.application_date) return '';
@@ -191,7 +227,7 @@ const submit = () => {
   </div>
 
   <div class="section justified" style="margin-bottom: 0.3cm; text-align: justify;">
-    <p class="indented" style="text-indent: 1.27cm;">It is understood that the provision to the LSPU Supplementary Rules and Regulations Governing Student Organization in this official Recognition is good only for one (1) school year, subject to renewal unless revoked prior to its expiration.</p>
+    <p class="indented" style="text-indent: 1.27cm;">It is understood that the provision to the LSPU Supplementary Rules and Regulations Governing Student Organization in this official Recognition is good only for one (1) school year, subject to renewal unless revoked prior its expiration.</p>
   </div>
 
   <div class="section respectfully-yours" style="text-align: right; padding-right: 90px; margin-top: 0.5cm;">
@@ -255,10 +291,10 @@ const submit = () => {
       </div>
     </div>
     <div style="width: 50%; text-align: right;">
-      <div class="signature right-align" style="margin-top: 0.3cm; text-align: right;">
-  <p><span class="signature-line" style="display: inline-block; min-width: 200px; border-bottom: 1px solid black; padding-bottom: 2px; text-align: center;"><strong>{{ displayDeanName }}</strong></span></p>
+    <div class="signature right-align" style="margin-top: 0.3cm; text-align: right;">
+  <p><span class="signature-line" style="display: inline-block; min-width: 200px; border-bottom: 1px solid black; padding-bottom: 2px; text-align: center;" :style="deanSignatureStyle" v-html="deanSignatureHtml"></span></p>
   <p style="margin: 0; padding: 0;"><span class="title-text" style="display: block; width: 200px; margin-left: 120px; text-align: center; white-space: nowrap; font-size: 11pt;">Dean/Assoc. Dean of College</span></p>
-      </div>
+    </div>
     </div>
   </div>
 
