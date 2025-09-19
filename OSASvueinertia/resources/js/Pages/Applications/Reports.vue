@@ -712,24 +712,24 @@ watch(showStatusModal, (val) => {
               </div>
 
               <!-- Reports Grid for this Activity -->
-              <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5 gap-4 lg:gap-6">
+              <div class="responsive-reports-grid gap-4 lg:gap-6">
                 <div
                   v-for="(reportTypeName, reportType) in reportTypes"
                   :key="reportType"
                   @click="handleReportContainerClick(page.reports[reportType], $event)"
                   :class="[
-                    'border border-gray-200 dark:border-gray-700 rounded-xl p-4 lg:p-5 bg-gray-50 dark:bg-gray-900/50 transition-colors duration-200',
+                    'border border-gray-200 dark:border-gray-700 rounded-xl p-3 sm:p-4 lg:p-5 bg-gray-50 dark:bg-gray-900/50 transition-colors duration-200',
                     page.reports[reportType] 
                       ? 'hover:bg-gray-100 dark:hover:bg-gray-900/70 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-md' 
                       : 'hover:bg-gray-100 dark:hover:bg-gray-900/70'
                   ]"
                 >
-                  <div class="flex items-center justify-between mb-3">
-                    <h3 class="font-medium text-gray-900 dark:text-gray-100 text-sm lg:text-base truncate pr-2">{{ reportTypeName }}</h3>
+                  <div class="flex items-start justify-between mb-2 sm:mb-3 gap-2">
+                    <h3 class="font-medium text-gray-900 dark:text-gray-100 text-sm sm:text-base leading-tight">{{ reportTypeName }}</h3>
                     <span
                       v-if="page.reports[reportType]"
                       :class="[
-                        'inline-flex items-center px-2 lg:px-2.5 py-0.5 rounded-full text-xs font-medium flex-shrink-0',
+                        'inline-flex items-center px-2 sm:px-2.5 py-0.5 rounded-full text-xs font-medium flex-shrink-0',
                         getStatusBadgeClass(page.reports[reportType].status)
                       ]"
                     >
@@ -803,9 +803,9 @@ watch(showStatusModal, (val) => {
                       @click="handleReportContainerClick(page.reports[reportType], $event)"
                     >
                       <div class="flex items-center justify-between min-w-0">
-                        <div class="text-sm text-gray-600 dark:text-gray-400 flex-1 min-w-0">
-                          <p class="truncate"><strong>File:</strong> {{ page.reports[reportType].original_filename }}</p>
-                          <p><span class="font-semibold text-gray-700 dark:text-gray-200">Submitted:</span> {{ formatDate(page.reports[reportType].submitted_at) }}</p>
+                        <div class="text-xs sm:text-sm text-gray-600 dark:text-gray-400 flex-1 min-w-0 space-y-1">
+                          <p class="break-words"><strong>File:</strong> <span class="text-gray-900 dark:text-gray-100">{{ page.reports[reportType].original_filename }}</span></p>
+                          <p><span class="font-semibold text-gray-700 dark:text-gray-200">Submitted:</span> <span class="text-gray-900 dark:text-gray-100">{{ formatDate(page.reports[reportType].submitted_at) }}</span></p>
                           <!-- Feedback is handled on the Report Feedback page; inline display removed -->
                           <!-- Visual indicator for clickability -->
                           <div class="mt-2 flex items-center text-xs text-blue-600 dark:text-blue-400 opacity-75">
@@ -834,15 +834,15 @@ watch(showStatusModal, (val) => {
                   </div>
 
                   <!-- If no report exists -->
-                  <div v-else class="space-y-3">
-                    <div class="text-sm text-gray-500 dark:text-gray-400 mb-3">
+                  <div v-else class="space-y-2 sm:space-y-3">
+                    <div class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-2 sm:mb-3">
                       No report uploaded yet
                     </div>
                     
                     <!-- Drag and Drop Zone -->
                     <div 
                       :class="[
-                        'relative border-2 border-dashed rounded-xl p-4 lg:p-6 transition-all duration-200',
+                        'relative border-2 border-dashed rounded-xl p-3 sm:p-4 lg:p-6 transition-all duration-200',
                         dragStates[`${page.pageNumber}-${reportType}`] 
                           ? 'border-blue-400 bg-blue-50 dark:bg-blue-900/20' 
                           : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
@@ -862,10 +862,10 @@ watch(showStatusModal, (val) => {
                       
                       <!-- Drop zone content when no file is selected -->
                       <div v-if="!selectedFiles[`${page.pageNumber}-${reportType}`]" class="text-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 lg:h-12 w-8 lg:w-12 mx-auto text-gray-400 dark:text-gray-500 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 sm:h-8 lg:h-12 w-6 sm:w-8 lg:w-12 mx-auto text-gray-400 dark:text-gray-500 mb-1 sm:mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                         </svg>
-                        <p class="text-xs lg:text-sm text-gray-600 dark:text-gray-400 mb-1">
+                        <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-1">
                           <span class="font-medium text-blue-600 dark:text-blue-400">Click to upload</span> or drag and drop
                         </p>
                         <p class="text-xs text-gray-500 dark:text-gray-500">
@@ -875,14 +875,14 @@ watch(showStatusModal, (val) => {
                       
                       <!-- Selected file preview -->
                       <div v-else class="flex items-center justify-between space-x-2">
-                        <div class="flex items-center space-x-2 lg:space-x-3 min-w-0 flex-1">
+                        <div class="flex items-center space-x-2 min-w-0 flex-1">
                           <div class="flex-shrink-0">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 lg:h-8 w-6 lg:w-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 sm:h-6 lg:h-8 w-5 sm:w-6 lg:w-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                             </svg>
                           </div>
                           <div class="flex-1 min-w-0">
-                            <p class="text-xs lg:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                            <p class="text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100 break-words">
                               {{ selectedFiles[`${page.pageNumber}-${reportType}`].name }}
                             </p>
                             <p class="text-xs text-gray-500 dark:text-gray-400">
@@ -906,17 +906,17 @@ watch(showStatusModal, (val) => {
                       v-if="selectedFiles[`${page.pageNumber}-${reportType}`]"
                       @click="uploadReport(page.pageNumber, reportType)"
                       :disabled="uploading && uploadingFor === `${page.pageNumber}-${reportType}`"
-                      class="upload-button w-full inline-flex items-center justify-center px-3 lg:px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-xs lg:text-sm font-medium text-white rounded-xl shadow-md hover:shadow-green-300/30 hover:from-green-400 hover:to-green-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 active:from-green-600 active:to-green-700 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none transition-all duration-300 relative overflow-hidden group"
+                      class="upload-button w-full inline-flex items-center justify-center px-3 sm:px-4 py-2 sm:py-2.5 bg-gradient-to-r from-green-500 to-green-600 text-xs sm:text-sm font-medium text-white rounded-xl shadow-md hover:shadow-green-300/30 hover:from-green-400 hover:to-green-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 active:from-green-600 active:to-green-700 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none transition-all duration-300 relative overflow-hidden group"
                     >
                       <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white dark:bg-gray-800 rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
-                      <svg v-if="uploading && uploadingFor === `${page.pageNumber}-${reportType}`" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <svg v-if="uploading && uploadingFor === `${page.pageNumber}-${reportType}`" class="animate-spin -ml-1 mr-2 h-3 sm:h-4 w-3 sm:w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
-                      <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                      <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-3 sm:h-4 w-3 sm:w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
                       </svg>
-                      <span class="truncate">{{ uploading && uploadingFor === `${page.pageNumber}-${reportType}` ? 'Uploading...' : 'Upload Report' }}</span>
+                      <span>{{ uploading && uploadingFor === `${page.pageNumber}-${reportType}` ? 'Uploading...' : 'Upload Report' }}</span>
                     </button>
                   </div>
                 </div>
@@ -1090,6 +1090,47 @@ watch(showStatusModal, (val) => {
 </template>
 
 <style scoped>
+/* Responsive grid for report cards - mobile-first approach */
+.responsive-reports-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+/* Small tablets and up */
+@media (min-width: 640px) {
+  .responsive-reports-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+}
+
+/* Medium screens - prevent too narrow cards */
+@media (min-width: 768px) {
+  .responsive-reports-grid {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+}
+
+/* Large screens - ensure readability */
+@media (min-width: 1024px) {
+  .responsive-reports-grid {
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  }
+}
+
+/* Extra large screens - prevent too many columns */
+@media (min-width: 1280px) {
+  .responsive-reports-grid {
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  }
+}
+
+/* 2XL screens - maximum readability */
+@media (min-width: 1536px) {
+  .responsive-reports-grid {
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  }
+}
+
 /* Enhanced drag and drop styling */
 .drag-active {
   border-color: #60a5fa;
