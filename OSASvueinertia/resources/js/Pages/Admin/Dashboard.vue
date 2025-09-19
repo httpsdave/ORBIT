@@ -616,9 +616,9 @@ function exportAdvisersToCSV() {
                     </div>
                     <div v-else-if="activeChart === 'advisers'" class="overflow-x-auto">
                         <button
+                            v-if="props.advisersData && props.advisersData.length > 0"
                             @click="exportAdvisersToCSV"
                             class="mb-4 inline-flex items-center justify-center px-3 sm:px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-xs sm:text-sm font-medium text-white rounded-xl shadow-md hover:shadow-green-300/30 hover:from-green-400 hover:to-green-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 active:from-green-600 active:to-green-700 transition-all duration-300 relative overflow-hidden group disabled:opacity-60 disabled:pointer-events-none disabled:bg-gray-200 disabled:text-gray-400 w-full sm:w-auto"
-                            :disabled="!props.advisersData.length"
                             title="Export as CSV"
                             aria-label="Export as CSV"
                         >
