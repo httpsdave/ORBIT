@@ -962,8 +962,9 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
     </Teleport>
 
     <!-- PDF Preview Modal -->
-    <transition name="fade">
-      <div v-if="showPreviewModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60" @click="closePreviewModal">
+    <Teleport to="body">
+      <transition name="fade">
+        <div v-if="showPreviewModal" class="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-60" @click="closePreviewModal">
         <div
           class="relative bg-transparent shadow-2xl flex flex-col w-[95vw] max-w-4xl md:w-[70vw] md:max-w-3xl lg:w-[60vw] lg:max-w-4xl xl:w-[50vw] xl:max-w-5xl h-[75vh] md:h-[85vh] lg:h-[90vh] xl:h-[95vh] max-h-[95vh] overflow-hidden border border-transparent"
           @click.stop
@@ -1013,10 +1014,12 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
         </div>
       </div>
     </transition>
+    </Teleport>
 
     <!-- Signed Document Preview Modal -->
-    <transition name="fade">
-      <div v-if="showSignedDocumentModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60" @click="closeSignedDocumentModal">
+    <Teleport to="body">
+      <transition name="fade">
+        <div v-if="showSignedDocumentModal" class="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-60" @click="closeSignedDocumentModal">
         <div
           class="relative bg-transparent shadow-2xl flex flex-col w-[95vw] max-w-4xl md:w-[70vw] md:max-w-3xl lg:w-[60vw] lg:max-w-4xl xl:w-[50vw] xl:max-w-5xl h-[75vh] md:h-[85vh] lg:h-[90vh] xl:h-[95vh] max-h-[95vh] overflow-hidden border border-transparent"
           @click.stop
@@ -1094,6 +1097,7 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
         </div>
       </div>
     </transition>
+    </Teleport>
 
     <!-- File Upload Modal -->
     <FileUploadModal
@@ -1107,8 +1111,9 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
     />
 
     <!-- Link Confirmation Modal -->
-    <transition name="fade">
-      <div v-if="showLinkConfirmationModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60" @click="closeLinkConfirmationModal">
+    <Teleport to="body">
+      <transition name="fade">
+        <div v-if="showLinkConfirmationModal" class="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-60" @click="closeLinkConfirmationModal">
         <div
           class="relative bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md mx-4 overflow-hidden"
           @click.stop
@@ -1157,5 +1162,6 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
         </div>
       </div>
     </transition>
+    </Teleport>
   </div>
 </template>

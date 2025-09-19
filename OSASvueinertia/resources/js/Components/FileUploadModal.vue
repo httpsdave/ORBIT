@@ -133,16 +133,17 @@ const switchSubmissionType = (type) => {
 </script>
 
 <template>
-  <transition name="fade">
-    <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <!-- Backdrop without blur -->
-      <div
-        class="absolute inset-0 bg-black bg-opacity-50"
-        @click="handleClose"
-      ></div>
+  <Teleport to="body">
+    <transition name="fade">
+      <div v-if="showModal" class="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+        <!-- Backdrop without blur -->
+        <div
+          class="absolute inset-0 bg-black bg-opacity-50"
+          @click="handleClose"
+        ></div>
 
-      <!-- Modal Content -->
-      <div class="bg-white rounded-2xl shadow-md w-full max-w-md relative z-10 overflow-hidden">
+        <!-- Modal Content -->
+        <div class="bg-white rounded-2xl shadow-md w-full max-w-md relative z-10 overflow-hidden" role="dialog" aria-modal="true">
         <!-- Header -->
         <div class="bg-gradient-to-r from-indigo-600 to-blue-600 p-6 text-white">
           <h3 class="text-xl font-bold">
@@ -304,9 +305,10 @@ const switchSubmissionType = (type) => {
             <span>{{ isUploading ? 'Uploading...' : 'Upload Document' }}</span>
           </button>
         </div>
+        </div>
       </div>
-    </div>
-  </transition>
+    </transition>
+  </Teleport>
 </template>
 
 <style>
