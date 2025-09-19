@@ -6,6 +6,8 @@ import TextInput from '@/Components/TextInput.vue';
 import { Link, useForm, usePage, router } from '@inertiajs/vue3';
 import { ref, watch, onMounted, computed } from 'vue';
 import Modal from '@/Components/Modal.vue';
+import Cropper from 'cropperjs';
+import 'cropperjs/dist/cropper.css';
 
 defineProps({
     mustVerifyEmail: {
@@ -70,6 +72,12 @@ const form = useForm({
 
 const photoPreview = ref(user.profile_photo_url);
 const removeProfilePhoto = ref(false);
+// Cropper related state
+const showCropperModal = ref(false);
+const cropperInstance = ref(null);
+const imageToCrop = ref(null);
+const selectedFile = ref(null);
+const tempImageUrl = ref(null);
 
 // Helper function to get URL for a specific platform
 const getSocialUrl = (platform) => {
@@ -145,9 +153,71 @@ function cancelSocialModal() {
 function handlePhotoChange(e) {
     const file = e.target.files[0];
     if (file) {
-        form.profile_photo = file;
-        photoPreview.value = URL.createObjectURL(file);
+        // Prepare the file for cropping instead of immediately assigning to the form
+        selectedFile.value = file;
+        // Create a temporary URL for the cropper to load
+        if (tempImageUrl.value) URL.revokeObjectURL(tempImageUrl.value);
+        tempImageUrl.value = URL.createObjectURL(file);
+        showCropperModal.value = true;
     }
+}
+
+function onCropperImageLoaded() {
+    // Initialize cropper when image element is ready
+    // Destroy existing cropper if present
+    if (cropperInstance.value) {
+        try { cropperInstance.value.destroy(); } catch (e) {}
+        cropperInstance.value = null;
+    }
+    if (!imageToCrop.value) return;
+    cropperInstance.value = new Cropper(imageToCrop.value, {
+        aspectRatio: 1,
+        viewMode: 1,
+        background: false,
+        autoCropArea: 1,
+        responsive: true,
+        movable: true,
+        zoomable: true,
+        scalable: false,
+        rotatable: false,
+    });
+}
+
+function applyCrop() {
+    if (!cropperInstance.value) return cancelCropper();
+    // Get a cropped canvas at a reasonable size
+    const canvas = cropperInstance.value.getCroppedCanvas({ width: 400, height: 400, imageSmoothingQuality: 'high' });
+    if (!canvas) return cancelCropper();
+    canvas.toBlob((blob) => {
+        if (!blob) return cancelCropper();
+        // Create a File from the blob so it can be uploaded via FormData
+        const fileName = selectedFile.value && selectedFile.value.name ? selectedFile.value.name : `profile_${Date.now()}.png`;
+        const croppedFile = new File([blob], fileName, { type: blob.type });
+        form.profile_photo = croppedFile;
+        // Update preview to show the cropped result
+        if (photoPreview.value) URL.revokeObjectURL(photoPreview.value);
+        photoPreview.value = URL.createObjectURL(blob);
+        // Clean up temp URL and cropper
+        cleanupCropper();
+    }, 'image/png', 0.9);
+}
+
+function cancelCropper() {
+    // User cancelled cropping: clean up and keep previous preview
+    cleanupCropper();
+}
+
+function cleanupCropper() {
+    showCropperModal.value = false;
+    if (cropperInstance.value) {
+        try { cropperInstance.value.destroy(); } catch (e) {}
+        cropperInstance.value = null;
+    }
+    if (tempImageUrl.value) {
+        try { URL.revokeObjectURL(tempImageUrl.value); } catch (e) {}
+        tempImageUrl.value = null;
+    }
+    selectedFile.value = null;
 }
 
 function handleRemovePhoto() {
@@ -471,6 +541,27 @@ const emailDisabled = computed(() => {
                 </div>
                 <InputError class="mt-2" :message="form.errors.profile_photo" />
             </div>
+
+                    <!-- Cropper Modal -->
+                    <Modal :show="showCropperModal" @close="cancelCropper">
+                        <div class="p-4 sm:p-6 bg-white dark:bg-gray-800 max-w-2xl mx-auto">
+                            <h2 class="text-lg font-semibold mb-4 text-center text-gray-900 dark:text-gray-100">Crop Profile Photo</h2>
+                            <div class="w-full h-[60vh] sm:h-[50vh] flex items-center justify-center bg-gray-100 dark:bg-gray-700 rounded-md overflow-hidden">
+                                <img
+                                    v-if="tempImageUrl"
+                                    :src="tempImageUrl"
+                                    ref="imageToCrop"
+                                    @load="onCropperImageLoaded"
+                                    class="max-w-full max-h-full"
+                                />
+                                <div v-else class="text-sm text-gray-500">Loading image...</div>
+                            </div>
+                            <div class="mt-4 flex justify-end gap-2">
+                                <button type="button" @click="cancelCropper" class="px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-md">Cancel</button>
+                                <button type="button" @click="applyCrop" class="px-4 py-2 bg-blue-600 text-white rounded-md">Crop & Use</button>
+                            </div>
+                        </div>
+                    </Modal>
 
             <!-- Social Links Section -->
             <div>
