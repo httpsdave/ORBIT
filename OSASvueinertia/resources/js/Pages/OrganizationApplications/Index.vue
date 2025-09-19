@@ -550,8 +550,8 @@ const confirmClearData = () => {
   <Head title="Applications" />
 
   <AuthenticatedLayout>
-    <!-- Background Illustration - True bottom of page -->
-    <div class="hidden xl:block fixed bottom-0 left-1/2 transform -translate-x-1/2 translate-y-[32%] opacity-[0.23] dark:opacity-1 w-[1200px] h-[1200px] pointer-events-none z-0">
+    <!-- Background Illustration - Responsive across all screen sizes -->
+    <div class="fixed bottom-0 left-1/2 transform -translate-x-1/2 translate-y-[32%] opacity-[0.15] dark:opacity-[0.08] w-[400px] h-[400px] sm:w-[500px] sm:h-[500px] md:w-[700px] md:h-[700px] lg:w-[900px] lg:h-[900px] xl:w-[1200px] xl:h-[1200px] pointer-events-none z-0">
       <img 
         src="/images/flatillus1.svg" 
         alt="" 
