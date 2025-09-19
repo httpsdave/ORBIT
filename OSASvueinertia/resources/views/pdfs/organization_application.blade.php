@@ -315,7 +315,30 @@
         <tr style="vertical-align: top;">
             <td style="width: 50%; text-align: left;">
                 <div class="signature left-align">
-                    <p><span class="signature-line"><strong>{{ trim((isset($application->adviser_prefix) && $application->adviser_prefix ? $application->adviser_prefix . ' ' : '') . ($application->adviser_name ?? 'N/A') . (isset($application->adviser_suffix) && $application->adviser_suffix ? ', ' . $application->adviser_suffix : '')) }}</strong></span></p>
+                    @php
+                        $adviserFullName = trim((isset($application->adviser_prefix) && $application->adviser_prefix ? $application->adviser_prefix . ' ' : '') . ($application->adviser_name ?? 'N/A') . (isset($application->adviser_suffix) && $application->adviser_suffix ? ', ' . $application->adviser_suffix : ''));
+                        $adviserNameLength = strlen($adviserFullName);
+                        
+                        if ($adviserNameLength > 39) {
+                            // Over 39 characters: allow double stacking with 10pt font
+                            $words = explode(' ', $adviserFullName);
+                            $totalWords = count($words);
+                            $wordsPerLine = ceil($totalWords / 2);
+                            $line1 = implode(' ', array_slice($words, 0, $wordsPerLine));
+                            $line2 = implode(' ', array_slice($words, $wordsPerLine));
+                            $adviserDisplayName = $line1 . '<br>' . $line2;
+                            $adviserFontSize = 'font-size: 11pt; text-align: center; line-height: 0.9;';
+                        } elseif ($adviserNameLength > 32) {
+                            // 33-39 characters: 11pt font with no wrapping
+                            $adviserDisplayName = $adviserFullName;
+                            $adviserFontSize = 'font-size: 11pt; white-space: nowrap;';
+                        } else {
+                            // 32 characters or less: normal styling
+                            $adviserDisplayName = $adviserFullName;
+                            $adviserFontSize = '';
+                        }
+                    @endphp
+                    <p><span class="signature-line" style="{{ $adviserFontSize }}"><strong>{!! $adviserDisplayName !!}</strong></span></p>
                     <p style="text-align:left;"><span class="title-text">Adviser, Student Organization</span></p>
             </td>
             <td style="width: 50%; text-align: right;">
