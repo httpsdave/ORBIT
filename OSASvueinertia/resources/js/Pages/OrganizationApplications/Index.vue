@@ -550,6 +550,16 @@ const confirmClearData = () => {
   <Head title="Applications" />
 
   <AuthenticatedLayout>
+    <!-- Background Illustration - True bottom of page -->
+    <div class="hidden xl:block fixed bottom-0 left-1/2 transform -translate-x-1/2 translate-y-[32%] opacity-[0.23] dark:opacity-1 w-[1200px] h-[1200px] pointer-events-none z-0">
+      <img 
+        src="/images/flatillus1.svg" 
+        alt="" 
+        class="w-full h-full object-contain"
+        role="presentation"
+      />
+    </div>
+
     <template #header>
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 w-full">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-100 leading-tight">
@@ -812,19 +822,22 @@ const confirmClearData = () => {
 
     <!-- Applications Table -->
     <div class="relative">
-      <ApplicationsTable 
-        v-if="filteredApplications.length > 0" 
-        :applications="filteredApplications" 
-        :isAdmin="isAdmin"
-        :isPreviewModalOpen="showPreviewModal"
-        @openStatusModal="openStatusModal"
-        @deleteApplication="deleteApplication"
-        @uploadDocument="handleDocumentUpload"
-        @submitLink="handleSubmitLink"
-        @refreshData="refreshApplications"
-        @confirmDeleteDocument="handleConfirmDeleteDocument"
-      />
-      <NoApplicationsMessage v-else />
+      <!-- Content Layer -->
+      <div class="relative z-10">
+        <ApplicationsTable 
+          v-if="filteredApplications.length > 0" 
+          :applications="filteredApplications" 
+          :isAdmin="isAdmin"
+          :isPreviewModalOpen="showPreviewModal"
+          @openStatusModal="openStatusModal"
+          @deleteApplication="deleteApplication"
+          @uploadDocument="handleDocumentUpload"
+          @submitLink="handleSubmitLink"
+          @refreshData="refreshApplications"
+          @confirmDeleteDocument="handleConfirmDeleteDocument"
+        />
+        <NoApplicationsMessage v-else />
+      </div>
     </div>
 
     <!-- Status Update Modal -->
