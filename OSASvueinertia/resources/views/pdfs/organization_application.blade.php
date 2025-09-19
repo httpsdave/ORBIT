@@ -320,7 +320,30 @@
             </td>
             <td style="width: 50%; text-align: right;">
                 <div class="signature right-align">
-                    <p><span class="signature-line"><strong>{{ trim((isset($application->dean_prefix) && $application->dean_prefix ? $application->dean_prefix . ' ' : '') . ($application->dean_name ?? '') . (isset($application->dean_suffix) && $application->dean_suffix ? ', ' . $application->dean_suffix : '')) }}</strong></span></p>
+                    @php
+                        $deanFullName = trim((isset($application->dean_prefix) && $application->dean_prefix ? $application->dean_prefix . ' ' : '') . ($application->dean_name ?? '') . (isset($application->dean_suffix) && $application->dean_suffix ? ', ' . $application->dean_suffix : ''));
+                        $deanNameLength = strlen($deanFullName);
+                        
+                        if ($deanNameLength > 39) {
+                            // Over 39 characters: allow double stacking with 10pt font
+                            $words = explode(' ', $deanFullName);
+                            $totalWords = count($words);
+                            $wordsPerLine = ceil($totalWords / 2);
+                            $line1 = implode(' ', array_slice($words, 0, $wordsPerLine));
+                            $line2 = implode(' ', array_slice($words, $wordsPerLine));
+                            $deanDisplayName = $line1 . '<br>' . $line2;
+                            $deanFontSize = 'font-size: 11pt; text-align: center; line-height: 0.9;';
+                        } elseif ($deanNameLength > 32) {
+                            // 33-39 characters: 11pt font with no wrapping
+                            $deanDisplayName = $deanFullName;
+                            $deanFontSize = 'font-size: 11pt; white-space: nowrap;';
+                        } else {
+                            // 32 characters or less: normal styling
+                            $deanDisplayName = $deanFullName;
+                            $deanFontSize = '';
+                        }
+                    @endphp
+                    <p><span class="signature-line" style="{{ $deanFontSize }}"><strong>{!! $deanDisplayName !!}</strong></span></p>
                     <p><span class="title-text">Dean/Assoc. Dean of College</span></p>
                 </div>
             </td>
