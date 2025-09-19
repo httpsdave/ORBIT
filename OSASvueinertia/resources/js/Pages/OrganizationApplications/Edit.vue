@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch, onUnmounted } from 'vue';
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 import { useForm,router, usePage } from '@inertiajs/vue3';
 import StudentOrganizationForm from '@/Components/forms/StudentOrganizationForm.vue';
 import RenewalForm from '@/Components/forms/RenewalForm.vue';
@@ -235,6 +235,53 @@ const uploadError = ref('');
 const uploadProgress = ref(0);
 const pdfPreviewUrl = ref(null);
 
+// Store original viewport for restoration
+let originalViewport = null;
+
+// Function to automatically set desktop view for optimal form filling experience
+const setDesktopView = () => {
+  try {
+    // For mobile browsers that support viewport meta tag manipulation
+    let viewport = document.querySelector('meta[name=viewport]');
+    if (!viewport) {
+      viewport = document.createElement('meta');
+      viewport.name = 'viewport';
+      document.head.appendChild(viewport);
+    }
+    // Set fixed width to force desktop view on mobile devices
+    viewport.content = 'width=1024, initial-scale=0.5, user-scalable=yes';
+    
+    // Additional mobile-specific adjustments
+    if (/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+      // Force zoom out to show full desktop layout
+      setTimeout(() => {
+        if (window.visualViewport) {
+          // Modern approach for supported browsers
+          try {
+            window.scrollTo(0, 0);
+          } catch (e) {
+            console.log('Visual viewport adjustment not supported');
+          }
+        }
+      }, 100);
+    }
+  } catch (error) {
+    console.log('Desktop view adjustment not supported on this browser');
+  }
+};
+
+// Function to restore original viewport settings
+const restoreViewport = () => {
+  try {
+    const viewport = document.querySelector('meta[name=viewport]');
+    if (viewport && originalViewport) {
+      viewport.content = originalViewport;
+    }
+  } catch (error) {
+    console.log('Viewport restoration not supported');
+  }
+};
+
 watch(uploadFile, (file) => {
   if (pdfPreviewUrl.value) {
     URL.revokeObjectURL(pdfPreviewUrl.value);
@@ -245,10 +292,23 @@ watch(uploadFile, (file) => {
   }
 });
 
+onMounted(() => {
+  // Store original viewport content
+  const viewport = document.querySelector('meta[name=viewport]');
+  if (viewport) {
+    originalViewport = viewport.content;
+  }
+  
+  // Automatically set desktop view when form page loads
+  setDesktopView();
+});
+
 onUnmounted(() => {
   if (pdfPreviewUrl.value) {
     URL.revokeObjectURL(pdfPreviewUrl.value);
   }
+  // Restore original viewport when leaving the form
+  restoreViewport();
 });
 
 const handleFileDrop = (e) => {

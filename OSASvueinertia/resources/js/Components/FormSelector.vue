@@ -33,9 +33,45 @@ const selectedForm = ref('');
 const isOpen = ref(false);
 const dropdownRef = ref(null);
 
+// Function to automatically set desktop view for optimal form filling experience
+const setDesktopView = () => {
+  try {
+    // For mobile browsers that support viewport meta tag manipulation
+    let viewport = document.querySelector('meta[name=viewport]');
+    if (!viewport) {
+      viewport = document.createElement('meta');
+      viewport.name = 'viewport';
+      document.head.appendChild(viewport);
+    }
+    // Set fixed width to force desktop view on mobile devices
+    viewport.content = 'width=1024, initial-scale=0.5, user-scalable=yes';
+    
+    // Additional mobile-specific adjustments
+    if (/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+      // Force zoom out to show full desktop layout
+      setTimeout(() => {
+        if (window.visualViewport) {
+          // Modern approach for supported browsers
+          try {
+            window.scrollTo(0, 0);
+          } catch (e) {
+            console.log('Visual viewport adjustment not supported');
+          }
+        }
+      }, 100);
+    }
+  } catch (error) {
+    console.log('Desktop view adjustment not supported on this browser');
+  }
+};
+
 const selectForm = (value) => {
   selectedForm.value = value;
   isOpen.value = false;
+  
+  // Automatically set desktop view for better form experience
+  setDesktopView();
+  
   emit('form-selected', value);
 };
 
@@ -69,12 +105,35 @@ const closeDropdown = (event) => {
   }
 };
 
+// Store original viewport for restoration
+let originalViewport = null;
+
+// Function to restore original viewport settings
+const restoreViewport = () => {
+  try {
+    const viewport = document.querySelector('meta[name=viewport]');
+    if (viewport && originalViewport) {
+      viewport.content = originalViewport;
+    }
+  } catch (error) {
+    console.log('Viewport restoration not supported');
+  }
+};
+
 onMounted(() => {
+  // Store original viewport content
+  const viewport = document.querySelector('meta[name=viewport]');
+  if (viewport) {
+    originalViewport = viewport.content;
+  }
+  
   document.addEventListener('click', closeDropdown);
 });
 
 onUnmounted(() => {
   document.removeEventListener('click', closeDropdown);
+  // Restore original viewport when component unmounts
+  restoreViewport();
 });
 </script>
 

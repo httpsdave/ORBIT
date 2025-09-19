@@ -550,12 +550,12 @@ const confirmClearData = () => {
   <Head title="Applications" />
 
   <AuthenticatedLayout>
-    <!-- Background Illustration - Responsive across all screen sizes -->
-    <div class="fixed bottom-0 left-1/2 transform -translate-x-1/2 translate-y-[32%] opacity-[0.15] dark:opacity-[0.08] w-[400px] h-[400px] sm:w-[500px] sm:h-[500px] md:w-[700px] md:h-[700px] lg:w-[900px] lg:h-[900px] xl:w-[1200px] xl:h-[1200px] pointer-events-none z-0">
+    <!-- Background Illustration - Enhanced responsive design -->
+    <div class="fixed bottom-0 left-1/2 transform -translate-x-1/2 translate-y-[28%] opacity-[0.12] dark:opacity-[0.06] w-[350px] h-[350px] xs:w-[400px] xs:h-[400px] sm:w-[550px] sm:h-[550px] md:w-[750px] md:h-[750px] lg:w-[950px] lg:h-[950px] xl:w-[1300px] xl:h-[1300px] 2xl:w-[1500px] 2xl:h-[1500px] pointer-events-none z-0 transition-all duration-300 ease-in-out">
       <img 
         src="/images/flatillus1.svg" 
         alt="" 
-        class="w-full h-full object-contain"
+        class="w-full h-full object-contain filter blur-[0.5px]"
         role="presentation"
       />
     </div>
@@ -700,48 +700,48 @@ const confirmClearData = () => {
       </div>
     </transition>
 
-    <!-- Unified Search and Filter Section -->
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 mb-6 space-y-4">
-      <!-- Search Bar -->
+    <!-- Enhanced Search and Filter Section -->
+    <div class="max-w-5xl mx-auto px-3 sm:px-4 lg:px-6 mb-6 space-y-3">
+      <!-- Search Bar with improved mobile design -->
       <div class="relative">
-        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div class="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
         </div>
         <input
           type="text"
           v-model="searchQuery"
-          class="block w-full pl-12 pr-12 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 transition duration-150 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+          class="block w-full pl-10 sm:pl-12 pr-10 sm:pr-12 py-2.5 sm:py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 transition duration-150 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 text-sm sm:text-base"
           :placeholder="isAdmin ? 'Search submissions by organization, form type, or status...' : 'Search submissions by form type or status...'"
         />
-        <div v-if="searchQuery" class="absolute inset-y-0 right-0 pr-4 flex items-center">
-          <button @click="clearSearch" class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+        <div v-if="searchQuery" class="absolute inset-y-0 right-0 pr-3 sm:pr-4 flex items-center">
+          <button @click="clearSearch" class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors p-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
             </svg>
           </button>
         </div>
       </div>
 
-      <!-- Status pill buttons (All | Pending | Approved | Disapproved) - placed under search bar on the right -->
-      <div v-if="!isAdmin" class="flex justify-center sm:justify-end mt-2 px-2 sm:px-0">
-        <div class="inline-flex rounded-full bg-gray-100 dark:bg-gray-800 p-0.5 sm:p-1 w-full max-w-xs sm:max-w-none sm:w-auto">
-          <button @click="setStatusFilter('')" :class="['flex-1 sm:flex-none px-1.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-medium text-center', !statusFilter ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow' : 'text-gray-600 dark:text-gray-300']">All</button>
-          <button @click="setStatusFilter('pending')" :class="['flex-1 sm:flex-none px-1.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-medium text-center', statusFilter && statusFilter.toLowerCase() === 'pending' ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow' : 'text-gray-600 dark:text-gray-300']">Pending</button>
-          <button @click="setStatusFilter('approved')" :class="['flex-1 sm:flex-none px-1.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-medium text-center', statusFilter && statusFilter.toLowerCase() === 'approved' ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow' : 'text-gray-600 dark:text-gray-300']">Approved</button>
-          <button @click="setStatusFilter('disapproved')" :class="['flex-1 sm:flex-none px-1.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-medium text-center', statusFilter && statusFilter.toLowerCase() === 'disapproved' ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow' : 'text-gray-600 dark:text-gray-300']">Disapproved</button>
+      <!-- Enhanced Status pill buttons for users -->
+      <div v-if="!isAdmin" class="flex justify-center mt-3">
+        <div class="inline-flex rounded-full bg-gray-100 dark:bg-gray-800 p-1 w-full max-w-sm">
+          <button @click="setStatusFilter('')" :class="['flex-1 px-2 py-1.5 sm:px-3 sm:py-2 rounded-full text-xs sm:text-sm font-medium text-center transition-all duration-200', !statusFilter ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200']">All</button>
+          <button @click="setStatusFilter('pending')" :class="['flex-1 px-2 py-1.5 sm:px-3 sm:py-2 rounded-full text-xs sm:text-sm font-medium text-center transition-all duration-200', statusFilter && statusFilter.toLowerCase() === 'pending' ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200']">Pending</button>
+          <button @click="setStatusFilter('approved')" :class="['flex-1 px-2 py-1.5 sm:px-3 sm:py-2 rounded-full text-xs sm:text-sm font-medium text-center transition-all duration-200', statusFilter && statusFilter.toLowerCase() === 'approved' ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200']">Approved</button>
+          <button @click="setStatusFilter('disapproved')" :class="['flex-1 px-2 py-1.5 sm:px-3 sm:py-2 rounded-full text-xs sm:text-sm font-medium text-center transition-all duration-200', statusFilter && statusFilter.toLowerCase() === 'disapproved' ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200']">Disapproved</button>
         </div>
       </div>
 
-      <!-- Filter Bar (Admin Only) -->
-      <div v-if="isAdmin" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <!-- Enhanced Filter Bar (Admin Only) -->
+      <div v-if="isAdmin" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <!-- Status Filter -->
-        <div class="flex flex-col gap-1">
-          <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
+        <div class="flex flex-col gap-1.5">
+          <label class="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
           <select 
             v-model="statusFilter"
-            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+            class="w-full px-2.5 sm:px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 transition-colors"
           >
             <option value="">All Statuses</option>
             <option v-for="option in statusOptions" :key="option.value" :value="option.value">
@@ -751,11 +751,11 @@ const confirmClearData = () => {
         </div>
 
         <!-- Form Type Filter -->
-        <div class="flex flex-col gap-1">
-          <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Form Type</label>
+        <div class="flex flex-col gap-1.5">
+          <label class="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">Form Type</label>
           <select 
             v-model="formTypeFilter"
-            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+            class="w-full px-2.5 sm:px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 transition-colors"
           >
             <option value="">All Types</option>
             <option 
@@ -770,20 +770,20 @@ const confirmClearData = () => {
         </div>
 
         <!-- Organization Filter -->
-        <div v-if="users.length > 0" class="flex flex-col gap-1">
-          <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Organization</label>
+        <div v-if="users.length > 0" class="flex flex-col gap-1.5">
+          <label class="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">Organization</label>
           <select 
             v-model="organizationFilter"
-            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+            class="w-full px-2.5 sm:px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 transition-colors"
           >
             <option value="">All Organizations</option>
             <option 
               v-for="option in organizationOptions" 
               :key="option.value" 
               :value="option.value"
-              :title="option.label.length > 25 ? option.label : undefined"
+              :title="option.label.length > 30 ? option.label : undefined"
             >
-              {{ option.label.length > 25 ? option.label.substring(0, 25) + '...' : option.label }}
+              {{ option.label.length > 30 ? option.label.substring(0, 30) + '...' : option.label }}
             </option>
           </select>
         </div>
@@ -792,9 +792,9 @@ const confirmClearData = () => {
         <div v-if="hasActiveFilters" class="flex flex-col justify-end">
           <button
             @click="clearAllFilters"
-            class="w-full px-3 py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition duration-200 flex items-center justify-center gap-1 border border-gray-300 dark:border-gray-600"
+            class="w-full px-2.5 sm:px-3 py-2 text-xs sm:text-sm text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition duration-200 flex items-center justify-center gap-1.5 border border-gray-300 dark:border-gray-600"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
             Clear All
