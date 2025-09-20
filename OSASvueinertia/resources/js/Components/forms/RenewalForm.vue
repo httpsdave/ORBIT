@@ -251,8 +251,8 @@ const submit = () => {
 
     <div class="section text-right">
   <p class="respectfully-text" style="font-size:11pt; margin-left:calc(59% - 45px); margin-bottom:10px;">Very respectfully yours,</p>
-  <div class="signature" style="margin-bottom:20px;">
-    <p><span class="signature-line" style="min-width:160px; font-size:11pt;">{{ form.president_name }}</span></p>
+    <div class="signature" style="margin-bottom:20px;">
+    <p><span class="signature-line" style="min-width:160px; font-size:11pt;"><strong>{{ form.president_name }}</strong></span></p>
     <p><span class="title-under-signature title-left-adjust" style="font-size:11pt;"><strong>Organization President</strong></span></p>
   </div>
     </div>
@@ -490,7 +490,21 @@ const submit = () => {
           </div>
 
           <div class="mt-6 text-center">
-        <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">{{ props.isEdit ? 'Update' : 'Submit' }}</button>
+        <button
+          type="submit"
+          class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-sm font-medium text-white rounded-xl shadow-md hover:shadow-green-300/30 hover:from-green-400 hover:to-green-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 active:from-green-600 active:to-green-700 transition-all duration-300 relative overflow-hidden group"
+          style="font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Liberation Sans', sans-serif;"
+        >
+          <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
+          <span>{{ props.isEdit ? 'Update' : 'Submit' }}</span>
+          <!-- Conditional icons: Update vs Create -->
+          <svg v-if="props.isEdit" xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#e3e3e3" class="ml-2" aria-hidden="true">
+            <path d="M480-120q-75 0-140.5-28.5t-114-77q-48.5-48.5-77-114T120-480q0-75 28.5-140.5t77-114q48.5-48.5 114-77T480-840q82 0 155.5 35T760-706v-94h80v240H600v-80h110q-41-56-101-88t-129-32q-117 0-198.5 81.5T200-480q0 117 81.5 198.5T480-200q105 0 183.5-68T756-440h82q-15 137-117.5 228.5T480-120Zm112-192L440-464v-216h80v184l128 128-56 56Z"/>
+          </svg>
+          <svg v-else xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#e3e3e3" class="ml-2" aria-hidden="true">
+            <path d="M120-160v-640l760 320-760 320Zm80-120 474-200-474-200v140l240 60-240 60v140Zm0 0v-400 400Z"/>
+          </svg>
+        </button>
         <!-- Auto-save indicator -->
         <div v-if="isAutoSaving" class="mt-2 text-sm text-gray-600">
           <span class="inline-flex items-center">
