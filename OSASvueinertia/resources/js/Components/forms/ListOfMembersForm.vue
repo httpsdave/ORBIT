@@ -75,7 +75,7 @@ const errors = ref({});
 const showCsvModal = ref(false);
 const csvModalTitle = ref('');
 const csvModalMessage = ref('');
-const csvModalType = ref('success'); // 'success' or 'error'
+const csvModalType = ref('success'); // 'success', 'error', or 'warning'
 
 const closeCsvModal = () => {
   showCsvModal.value = false;
@@ -181,9 +181,19 @@ const handleCSVUpload = (event) => {
             // Reset to first page after upload
             currentPage.value = 1;
             
+            // Check if imported count exceeds limits
+            const memberCount = form.members.length;
+            let warningMessage = '';
+            
+            if (memberCount > memberLimitDefault.value) {
+                warningMessage = `\n\n⚠️ Warning: ${memberCount} members exceeds the recommended limit of ${memberLimitDefault.value}. Consider splitting into multiple submissions for better performance.`;
+            } else if (memberCount > memberLimitDefault.value * 0.8) {
+                warningMessage = `\n\n💡 Note: Approaching the recommended limit of ${memberLimitDefault.value} members. Monitor submission performance.`;
+            }
+            
             csvModalTitle.value = 'Import Successful';
-            csvModalMessage.value = `Successfully imported ${form.members.length} members from CSV file.`;
-            csvModalType.value = 'success';
+            csvModalMessage.value = `Successfully imported ${memberCount} members from CSV file.${warningMessage}`;
+            csvModalType.value = memberCount > memberLimitDefault.value ? 'warning' : 'success';
             showCsvModal.value = true;
             
         } catch (error) {
@@ -320,6 +330,17 @@ const prevPage = () => {
         currentPage.value--;
     }
 };
+
+// Calculate safe member limits based on PHP max_input_vars
+const MAX_INPUT_VARS_DEFAULT = 1000; // PHP default
+const MAX_INPUT_VARS_RECOMMENDED = 5000; // Common hosting limit
+const BASE_FORM_FIELDS = 18; // Approximate count of non-member form fields
+const FIELDS_PER_MEMBER = 4; // student_name, student_number, course_year_section, photo_path
+
+const memberLimitDefault = computed(() => Math.floor((MAX_INPUT_VARS_DEFAULT - BASE_FORM_FIELDS) / FIELDS_PER_MEMBER));
+const memberLimitRecommended = computed(() => Math.floor((MAX_INPUT_VARS_RECOMMENDED - BASE_FORM_FIELDS) / FIELDS_PER_MEMBER));
+const isNearLimit = computed(() => form.members.length > memberLimitDefault.value * 0.8); // 80% of default limit
+const isOverLimit = computed(() => form.members.length > memberLimitDefault.value);
 
 const form = useForm({
   form_type: 'LSPU-OSAS-SF-005',
@@ -465,6 +486,21 @@ const submit = () => {
     emit('error', 'Please fill in all required fields.');
     return;
   }
+  
+  // Warn user if they're submitting a large number of members
+  if (isOverLimit.value) {
+    const confirmSubmit = confirm(
+      `Warning: You are submitting ${form.members.length} members, which exceeds the recommended limit of ${memberLimitDefault.value} members.\n\n` +
+      `This may cause slow performance or submission failures due to server limits.\n\n` +
+      `Consider splitting this into multiple submissions for better reliability.\n\n` +
+      `Do you want to proceed anyway?`
+    );
+    
+    if (!confirmSubmit) {
+      return;
+    }
+  }
+  
   if (props.isEdit) {
     emit('submitted', form.data());
   } else {
@@ -888,6 +924,32 @@ const submit = () => {
                 </span>
             </div>
 
+            <!-- Member Limit Warning -->
+            <div v-if="isNearLimit || isOverLimit" class="mb-4 p-3 rounded text-sm" 
+                 :class="isOverLimit ? 'bg-red-50 border border-red-200' : 'bg-yellow-50 border border-yellow-200'">
+                <div class="flex items-start gap-2">
+                    <span v-if="isOverLimit" class="text-red-600">⚠️</span>
+                    <span v-else class="text-yellow-600">⚠️</span>
+                    <div>
+                        <div class="font-semibold" :class="isOverLimit ? 'text-red-800' : 'text-yellow-800'">
+                            {{ isOverLimit ? 'Member Limit Exceeded' : 'Approaching Member Limit' }}
+                        </div>
+                        <div :class="isOverLimit ? 'text-red-700' : 'text-yellow-700'" class="mt-1">
+                            <template v-if="isOverLimit">
+                                <strong>Warning:</strong> You have {{ form.members.length }} members, which exceeds the recommended limit of {{ memberLimitDefault }} members.
+                                This may cause slow performance or submission failures due to PHP server limits.
+                            </template>
+                            <template v-else>
+                                You have {{ form.members.length }} members. Consider splitting into multiple submissions if you exceed {{ memberLimitDefault }} members.
+                            </template>
+                        </div>
+                        <div :class="isOverLimit ? 'text-red-600' : 'text-yellow-600'" class="mt-2 text-xs">
+                            <strong>Recommended:</strong> Submit in batches of {{ memberLimitDefault }} members or less for optimal performance.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div v-for="(member, idx) in currentPageMemberInputs" :key="startIndex + idx" class="mt-4 p-4 border rounded">
                 <div class="flex justify-between items-center mb-2">
                     <h4 class="font-bold">Member #{{ startIndex + idx + 1 }}</h4>
@@ -1010,10 +1072,14 @@ const submit = () => {
           <div class="flex items-center">
             <div :class="[
               'flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center mr-3',
-              csvModalType === 'success' ? 'bg-green-100 dark:bg-green-900' : 'bg-red-100 dark:bg-red-900'
+              csvModalType === 'success' ? 'bg-green-100 dark:bg-green-900' : 
+              csvModalType === 'warning' ? 'bg-yellow-100 dark:bg-yellow-900' : 'bg-red-100 dark:bg-red-900'
             ]">
               <svg v-if="csvModalType === 'success'" class="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              <svg v-else-if="csvModalType === 'warning'" class="w-5 h-5 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.73-.833-2.5 0L4.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
               </svg>
               <svg v-else class="w-5 h-5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -1021,7 +1087,8 @@ const submit = () => {
             </div>
             <h3 :class="[
               'text-lg font-semibold',
-              csvModalType === 'success' ? 'text-green-900 dark:text-green-100' : 'text-red-900 dark:text-red-100'
+              csvModalType === 'success' ? 'text-green-900 dark:text-green-100' : 
+              csvModalType === 'warning' ? 'text-yellow-900 dark:text-yellow-100' : 'text-red-900 dark:text-red-100'
             ]">{{ csvModalTitle }}</h3>
           </div>
           <button @click="closeCsvModal" class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200">
@@ -1040,6 +1107,8 @@ const submit = () => {
               'inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-xl shadow-sm transition-all duration-300 relative overflow-hidden group',
               csvModalType === 'success' 
                 ? 'bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800' 
+                : csvModalType === 'warning'
+                ? 'bg-gradient-to-r from-yellow-500 to-yellow-600 text-white hover:from-yellow-600 hover:to-yellow-700 focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800'
                 : 'bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800'
             ]"
           >
