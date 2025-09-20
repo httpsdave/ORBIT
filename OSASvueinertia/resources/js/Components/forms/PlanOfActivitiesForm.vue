@@ -88,8 +88,8 @@ const initializeActivities = () => {
 const form = useForm({
   form_type: 'LSPU-OSAS-SF-004',
   organization_name: props.initialFormData.organization_name?.toUpperCase() || '',
-  academic_year_start: props.initialFormData.academic_year_start || '',
-  academic_year_end: props.initialFormData.academic_year_end || '',
+  academic_year_start: props.initialFormData.academic_year_start || currentYear.value,
+  academic_year_end: props.initialFormData.academic_year_end || nextYear.value,
   semester: props.initialFormData.semester || '',
   president_name: props.initialFormData.president_name?.toUpperCase() || '',
   secretary_name: props.initialFormData.secretary_name?.toUpperCase() || '',

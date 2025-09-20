@@ -114,6 +114,14 @@ class OrganizationApplicationController extends Controller
             $savedFormData['director_name'] = SystemSetting::getDirectorName();
         }
         
+        // Set default academic year values if not provided
+        if (!isset($savedFormData['academic_year_start']) || empty($savedFormData['academic_year_start'])) {
+            $savedFormData['academic_year_start'] = date('y'); // Current year (2-digit)
+        }
+        if (!isset($savedFormData['academic_year_end']) || empty($savedFormData['academic_year_end'])) {
+            $savedFormData['academic_year_end'] = date('y') + 1; // Next year (2-digit)
+        }
+        
         return Inertia::render('OrganizationApplications/Create', [
             'savedFormData' => $savedFormData,
             'selectedFormType' => $request->input('form_type')
@@ -290,6 +298,14 @@ class OrganizationApplicationController extends Controller
         }
         if (empty($data['director_name'])) {
             $data['director_name'] = SystemSetting::getDirectorName();
+        }
+        
+        // Set default academic year values if not provided
+        if (empty($data['academic_year_start'])) {
+            $data['academic_year_start'] = date('y'); // Current year (2-digit)
+        }
+        if (empty($data['academic_year_end'])) {
+            $data['academic_year_end'] = date('y') + 1; // Next year (2-digit)
         }
         
         // Defensive: ensure *_report_path fields are null if not set
@@ -770,6 +786,14 @@ class OrganizationApplicationController extends Controller
         }
         if (empty($validatedData['director_name'])) {
             $validatedData['director_name'] = SystemSetting::getDirectorName();
+        }
+        
+        // Set default academic year values if not provided
+        if (empty($validatedData['academic_year_start'])) {
+            $validatedData['academic_year_start'] = date('y'); // Current year (2-digit)
+        }
+        if (empty($validatedData['academic_year_end'])) {
+            $validatedData['academic_year_end'] = date('y') + 1; // Next year (2-digit)
         }
         
         // Update the application with validated data
