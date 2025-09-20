@@ -293,9 +293,9 @@ const onRatingKeyPress = (e, i) => {
         </a>
       </div>
       <img src="/images/lspu-logo.png" alt="LSPU Logo" class="absolute top-[-0.5cm] left-[-2cm] w-[250px] h-auto">
-      <p class="text-sm font-bold mb-0">Republic of the Philippines</p>
+  <p class="text-sm mb-0 calibri">Republic of the Philippines</p>
       <p class="text-base font-bold university-name mb-0">Laguna State Polytechnic University</p>
-      <p class="text-sm mb-0">Province of Laguna</p>
+  <p class="text-sm mb-0 calibri">Province of Laguna</p>
       <p class="text-lg font-bold mt-6 mb-2">Evaluation Sheet for all Programs/Activities</p>
     </div>
     <div class="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -316,18 +316,18 @@ const onRatingKeyPress = (e, i) => {
         <p v-if="errors.venue" class="text-red-500 text-sm mt-1">{{ errors.venue }}</p>
       </div>
       
-      <!-- Date Range -->
-      <div class="md:col-span-2">
+  <!-- Date Range -->
+  <div>
         <label class="block font-bold mb-1">Date Range</label>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
+        <div class="flex items-end gap-3 flex-wrap">
+          <div class="flex flex-col">
             <label class="block text-sm font-medium mb-1">Start Date</label>
-            <input v-model="form.date_start" type="date" class="border p-2 w-full" required>
+            <input v-model="form.date_start" type="date" class="border p-1 w-36" required>
             <p v-if="errors.date_start" class="text-red-500 text-sm mt-1">{{ errors.date_start }}</p>
           </div>
-          <div>
+          <div class="flex flex-col">
             <label class="block text-sm font-medium mb-1">End Date (Optional)</label>
-            <input v-model="form.date_end" type="date" :min="form.date_start" class="border p-2 w-full">
+            <input v-model="form.date_end" type="date" :min="form.date_start" class="border p-1 w-36">
             <p v-if="errors.date_end" class="text-red-500 text-sm mt-1">{{ errors.date_end }}</p>
           </div>
         </div>
@@ -336,18 +336,18 @@ const onRatingKeyPress = (e, i) => {
         </p>
       </div>
       
-      <!-- Time Range -->
-      <div class="md:col-span-2">
+  <!-- Time Range -->
+  <div class="md:col-start-2">
         <label class="block font-bold mb-1">Time Range</label>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
+        <div class="flex items-end gap-3 flex-wrap">
+          <div class="flex flex-col">
             <label class="block text-sm font-medium mb-1">Start Time</label>
-            <input v-model="form.time_start" type="time" class="border p-2 w-full" required>
+            <input v-model="form.time_start" type="time" class="border p-1 w-28" required>
             <p v-if="errors.time_start" class="text-red-500 text-sm mt-1">{{ errors.time_start }}</p>
           </div>
-          <div>
+          <div class="flex flex-col">
             <label class="block text-sm font-medium mb-1">End Time (Optional)</label>
-            <input v-model="form.time_end" type="time" class="border p-2 w-full">
+            <input v-model="form.time_end" type="time" class="border p-1 w-28">
             <p v-if="errors.time_end" class="text-red-500 text-sm mt-1">{{ errors.time_end }}</p>
           </div>
         </div>
@@ -369,25 +369,25 @@ const onRatingKeyPress = (e, i) => {
       </ul>
     </div>
     <div class="overflow-x-auto">
-      <table class="w-full border border-gray-400 mb-6">
+  <table class="w-full border border-gray-400 mb-4" style="border-collapse: collapse;">
         <thead>
           <tr class="bg-gray-100">
-            <th class="border border-gray-400 px-2 py-1 w-12">#</th>
-            <th class="border border-gray-400 px-2 py-1 text-left">Statement</th>
-            <th class="border border-gray-400 px-2 py-1 w-32 text-center">Rating</th>
+            <th class="border-t border-b border-l border-gray-400 px-2 py-0 w-12"></th>
+            <th class="border-t border-b border-r border-gray-400 px-2 py-0 text-left"></th>
+            <th class="border border-gray-400 px-2 py-0 w-32 text-center">Average</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(statement, i) in statements" :key="i">
-            <td class="border border-gray-400 px-2 py-1 text-center">{{ i + 1 }}</td>
-            <td class="border border-gray-400 px-2 py-1">{{ statement }}</td>
-            <td class="border border-gray-400 px-2 py-1 text-center">
+            <td class="border-t border-b border-l border-gray-400 px-2 py-0 text-center">{{ i + 1 }}.</td>
+            <td class="border-t border-b border-r border-gray-400 px-2 py-0">{{ statement }}</td>
+            <td class="border border-gray-400 px-2 py-0 text-center">
               <input
                 v-model="form.ratings[i]"
                 type="text"
                 inputmode="decimal"
                 maxlength="3"
-                class="border p-1 w-20 text-center"
+                class="border p-0.5 h-6 w-20 text-center"
                 @keypress="e => onRatingKeyPress(e, i)"
                 @input="e => {
                   let val = e.target.value;
@@ -457,5 +457,9 @@ const onRatingKeyPress = (e, i) => {
 .university-name {
   font-family: 'Old English Text MT', 'Times New Roman', serif;
   font-weight: bold;
+}
+
+.calibri {
+  font-family: Calibri, 'Helvetica Neue', Arial, sans-serif;
 }
 </style> 
