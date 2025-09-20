@@ -234,9 +234,8 @@ const submit = () => {
     form.post('/applications', {
       preserveScroll: true,
       onSuccess: () => {
-        alert('Form submitted successfully!');
-        emit('submitted', form.data());
-      },
+          emit('submitted', form.data());
+        },
       onError: (errors) => {
         console.error('Form submission errors:', errors);
       }
