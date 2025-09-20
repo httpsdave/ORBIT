@@ -90,6 +90,14 @@ const membersPerPage = 8; // 4 rows × 2 columns per page, matching PDF
 
 // Add a function to add a new empty member
 const addMember = () => {
+    if (form.members.length >= MEMBER_LIMIT_MAX) {
+        csvModalTitle.value = 'Member Limit Reached';
+        csvModalMessage.value = `Cannot add more members. Maximum limit of ${MEMBER_LIMIT_MAX} members per submission has been reached.`;
+        csvModalType.value = 'error';
+        showCsvModal.value = true;
+        return;
+    }
+    
     form.members.push({
         student_name: '',
         student_number: '',
@@ -157,6 +165,15 @@ const handleCSVUpload = (event) => {
             // Clear existing members
             form.members = [];
             
+            // Check if import would exceed limit
+            if (dataRows.length > MEMBER_LIMIT_MAX) {
+                csvModalTitle.value = 'Import Limit Exceeded';
+                csvModalMessage.value = `Cannot import ${dataRows.length} members. Maximum limit is ${MEMBER_LIMIT_MAX} members per submission. Please reduce the number of members in your CSV file.`;
+                csvModalType.value = 'error';
+                showCsvModal.value = true;
+                return;
+            }
+            
             // Process each row
             dataRows.forEach((row, index) => {
                 const columns = row.split(',').map(col => col.trim().replace(/"/g, ''));
@@ -185,15 +202,13 @@ const handleCSVUpload = (event) => {
             const memberCount = form.members.length;
             let warningMessage = '';
             
-            if (memberCount > memberLimitDefault.value) {
-                warningMessage = `\n\n⚠️ Warning: ${memberCount} members exceeds the recommended limit of ${memberLimitDefault.value}. Consider splitting into multiple submissions for better performance.`;
-            } else if (memberCount > memberLimitDefault.value * 0.8) {
-                warningMessage = `\n\n💡 Note: Approaching the recommended limit of ${memberLimitDefault.value} members. Monitor submission performance.`;
+            if (memberCount > MEMBER_LIMIT_MAX * 0.8) { // 240 members
+                warningMessage = `\n\n⚠️ Note: ${memberCount} members is approaching the maximum limit of ${MEMBER_LIMIT_MAX}. Consider splitting into multiple submissions if you need to add more members.`;
             }
             
             csvModalTitle.value = 'Import Successful';
             csvModalMessage.value = `Successfully imported ${memberCount} members from CSV file.${warningMessage}`;
-            csvModalType.value = memberCount > memberLimitDefault.value ? 'warning' : 'success';
+            csvModalType.value = memberCount > MEMBER_LIMIT_MAX * 0.8 ? 'warning' : 'success';
             showCsvModal.value = true;
             
         } catch (error) {
@@ -331,16 +346,13 @@ const prevPage = () => {
     }
 };
 
-// Calculate safe member limits based on PHP max_input_vars
-const MAX_INPUT_VARS_DEFAULT = 1000; // PHP default
-const MAX_INPUT_VARS_RECOMMENDED = 5000; // Common hosting limit
-const BASE_FORM_FIELDS = 18; // Approximate count of non-member form fields
-const FIELDS_PER_MEMBER = 4; // student_name, student_number, course_year_section, photo_path
+// Hard limit of 300 members per submission
+const MEMBER_LIMIT_MAX = 304;
 
-const memberLimitDefault = computed(() => Math.floor((MAX_INPUT_VARS_DEFAULT - BASE_FORM_FIELDS) / FIELDS_PER_MEMBER));
-const memberLimitRecommended = computed(() => Math.floor((MAX_INPUT_VARS_RECOMMENDED - BASE_FORM_FIELDS) / FIELDS_PER_MEMBER));
-const isNearLimit = computed(() => form.members.length > memberLimitDefault.value * 0.8); // 80% of default limit
-const isOverLimit = computed(() => form.members.length > memberLimitDefault.value);
+const memberLimitDefault = computed(() => MEMBER_LIMIT_MAX);
+const memberLimitRecommended = computed(() => MEMBER_LIMIT_MAX);
+const isNearLimit = computed(() => form.members.length > MEMBER_LIMIT_MAX * 0.8); // 80% of limit (240)
+const isOverLimit = computed(() => form.members.length > MEMBER_LIMIT_MAX);
 
 const form = useForm({
   form_type: 'LSPU-OSAS-SF-005',
@@ -489,16 +501,11 @@ const submit = () => {
   
   // Warn user if they're submitting a large number of members
   if (isOverLimit.value) {
-    const confirmSubmit = confirm(
-      `Warning: You are submitting ${form.members.length} members, which exceeds the recommended limit of ${memberLimitDefault.value} members.\n\n` +
-      `This may cause slow performance or submission failures due to server limits.\n\n` +
-      `Consider splitting this into multiple submissions for better reliability.\n\n` +
-      `Do you want to proceed anyway?`
-    );
-    
-    if (!confirmSubmit) {
-      return;
-    }
+    csvModalTitle.value = 'Submission Blocked';
+    csvModalMessage.value = `Cannot submit ${form.members.length} members. Maximum limit is ${MEMBER_LIMIT_MAX} members per submission. Please remove some members or split into multiple submissions.`;
+    csvModalType.value = 'error';
+    showCsvModal.value = true;
+    return;
   }
   
   if (props.isEdit) {
@@ -944,7 +951,7 @@ const submit = () => {
                             </template>
                         </div>
                         <div :class="isOverLimit ? 'text-red-600' : 'text-yellow-600'" class="mt-2 text-xs">
-                            <strong>Recommended:</strong> Submit in batches of {{ memberLimitDefault }} members or less for optimal performance.
+                            <strong>Limit:</strong> Maximum {{ memberLimitDefault }} members per submission.
                         </div>
                     </div>
                 </div>

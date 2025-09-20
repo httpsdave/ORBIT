@@ -202,7 +202,7 @@ class OrganizationApplicationController extends Controller
                 'second_adviser_prefix' => 'nullable|string|max:10',
                 'second_adviser_suffix' => 'nullable|string|max:15',
                 'director_name' => 'required|string|max:255',
-                'members' => 'required|array|min:1',
+                'members' => 'required|array|min:1|max:304',
                 'members.*.student_name' => 'required|string|max:255',
                 'members.*.student_number' => 'required|string|max:50',
                 'members.*.course_year_section' => 'required|string|max:255',
@@ -266,6 +266,15 @@ class OrganizationApplicationController extends Controller
                 'ratings.*' => ['required', 'regex:/^(?:[1-4]\.[0-9]|5\.0)$/', 'numeric', 'min:1.0', 'max:5.0'],
                 'comments_suggestions' => 'nullable|string',
             ]);
+        }
+        
+        // Additional validation for members count limit
+        if ($request->form_type === 'LSPU-OSAS-SF-005' && $request->has('members')) {
+            if (count($request->members) > 304) {
+                return redirect()->back()->withErrors([
+                    'members' => 'Maximum 304 members allowed per submission. Please reduce the number of members or split into multiple submissions.'
+                ])->withInput();
+            }
         }
         
         
@@ -356,7 +365,11 @@ class OrganizationApplicationController extends Controller
             $data['signed_document_path'] = $path;
         }
 
+        // Validate the request data using the defined validation rules
+        $validatedData = $request->validate($validationRules);
         
+        // Merge validated data with processed data
+        $data = array_merge($data, $validatedData);
         
         $application = OrganizationApplication::create($data);
 
@@ -692,6 +705,15 @@ class OrganizationApplicationController extends Controller
                 ],
                 'comments_suggestions' => 'nullable|string',
             ]);
+        }
+        
+        // Additional validation for members count limit
+        if ($application->form_type === 'LSPU-OSAS-SF-005' && $request->has('members')) {
+            if (count($request->members) > 304) {
+                return redirect()->back()->withErrors([
+                    'members' => 'Maximum 304 members allowed per submission. Please reduce the number of members or split into multiple submissions.'
+                ])->withInput();
+            }
         }
         
         // Debug logging for CommitmentForm updates
