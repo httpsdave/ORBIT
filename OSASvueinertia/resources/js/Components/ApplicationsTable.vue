@@ -778,8 +778,8 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
           </button>
         </div>
         
-        <!-- Timestamp for admin users only - bottom right -->
-        <div v-if="isAdmin && formatTime(app.created_at)" class="absolute bottom-2 right-2 text-xs text-gray-400 dark:text-gray-500 font-mono">
+        <!-- Timestamp for admin users only - bottom right, positioned higher to avoid View Reports button -->
+        <div v-if="isAdmin && formatTime(app.created_at)" class="absolute bottom-12 right-2 text-xs text-gray-400 dark:text-gray-500 font-mono">
           {{ formatTime(app.created_at) }}
         </div>
       </div>
