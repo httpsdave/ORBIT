@@ -21,6 +21,7 @@ class User extends Authenticatable
         'role_id',
         'profile_photo_path',
         'college_id',
+        'parent_organization_id',
         'description',
         'last_name_change_at',
         'status',
@@ -69,6 +70,22 @@ class User extends Authenticatable
     public function college()
     {
         return $this->belongsTo(College::class);
+    }
+
+    /**
+     * Get the parent organization.
+     */
+    public function parentOrganization()
+    {
+        return $this->belongsTo(User::class, 'parent_organization_id');
+    }
+
+    /**
+     * Get the sub-organizations (children).
+     */
+    public function subOrganizations()
+    {
+        return $this->hasMany(User::class, 'parent_organization_id');
     }
 
     /**

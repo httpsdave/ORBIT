@@ -15,8 +15,8 @@ class StudentOrgController extends Controller
      */
     public function index()
     {
-        $colleges = College::with('users.role')->get();
-        $users = User::with('role')->get(); // For selection modal
+        $colleges = College::with(['users.role', 'users.parentOrganization', 'users.subOrganizations'])->get();
+        $users = User::with(['role', 'parentOrganization', 'subOrganizations'])->get(); // For selection modal
         return Inertia::render('Admin/StudentOrgs/Index', [
             'colleges' => $colleges,
             'users' => $users,
@@ -138,5 +138,76 @@ class StudentOrgController extends Controller
 
         return redirect()->route('admin.student-orgs.index')
             ->with('message', 'Organization status updated successfully.');
+    }
+
+    /**
+     * Assign a parent organization to a sub-organization.
+     */
+    public function assignParentOrganization(Request $request)
+    {
+        $validated = $request->validate([
+            'sub_organization_id' => 'required|exists:users,id',
+            'parent_organization_id' => 'required|exists:users,id',
+        ]);
+
+        $subOrg = User::findOrFail($validated['sub_organization_id']);
+        $parentOrg = User::findOrFail($validated['parent_organization_id']);
+
+        // Prevent circular relationships
+        if ($this->wouldCreateCircularRelationship($subOrg, $parentOrg)) {
+            return redirect()->route('admin.student-orgs.index')
+                ->with('error', 'Cannot assign parent organization - this would create a circular relationship.');
+        }
+
+        // Prevent parent organizations from becoming sub-organizations
+        if ($parentOrg->subOrganizations()->exists()) {
+            return redirect()->route('admin.student-orgs.index')
+                ->with('error', 'Cannot assign this organization as parent - it already has sub-organizations and cannot be a sub-organization itself.');
+        }
+
+        // Prevent sub-organizations from becoming parent organizations
+        if ($subOrg->subOrganizations()->exists()) {
+            return redirect()->route('admin.student-orgs.index')
+                ->with('error', 'Cannot assign parent to this organization - it already has sub-organizations and cannot be a sub-organization itself.');
+        }
+
+        $subOrg->parent_organization_id = $validated['parent_organization_id'];
+        $subOrg->save();
+
+        return redirect()->route('admin.student-orgs.index')
+            ->with('message', 'Parent organization assigned successfully.');
+    }
+
+    /**
+     * Remove parent organization from a sub-organization.
+     */
+    public function removeParentOrganization(Request $request)
+    {
+        $validated = $request->validate([
+            'sub_organization_id' => 'required|exists:users,id',
+        ]);
+
+        $subOrg = User::findOrFail($validated['sub_organization_id']);
+        $subOrg->parent_organization_id = null;
+        $subOrg->save();
+
+        return redirect()->route('admin.student-orgs.index')
+            ->with('message', 'Parent organization removed successfully.');
+    }
+
+    /**
+     * Check if assigning a parent would create a circular relationship.
+     */
+    private function wouldCreateCircularRelationship($subOrg, $parentOrg)
+    {
+        // If the proposed parent is already a child of the sub-org, it would create a circle
+        $currentParent = $parentOrg;
+        while ($currentParent && $currentParent->parent_organization_id) {
+            if ($currentParent->parent_organization_id === $subOrg->id) {
+                return true;
+            }
+            $currentParent = $currentParent->parentOrganization;
+        }
+        return false;
     }
 }

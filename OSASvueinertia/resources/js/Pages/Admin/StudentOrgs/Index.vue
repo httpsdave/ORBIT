@@ -77,7 +77,7 @@
                 </div>
               </div>
 
-              <!-- Tabs: College Affiliated | Non-College Affiliated -->
+              <!-- Tabs: College Affiliated | Non-College Affiliated | Sub-Organizations -->
               <div class="mb-4">
                 <div class="flex items-center text-sm font-medium">
                   <button
@@ -94,6 +94,14 @@
                   >
                     <span class="inline sm:hidden">Non-College</span>
                     <span class="hidden sm:inline">Non-College Affiliated Organizations</span>
+                  </button>
+                  <span class="mx-3 text-gray-400 dark:text-gray-500">|</span>
+                  <button
+                    :class="['transition-colors', activeTab === 'sub-organizations' ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200']"
+                    @click.prevent="switchTab('sub-organizations')"
+                  >
+                    <span class="inline sm:hidden">Sub-Orgs</span>
+                    <span class="hidden sm:inline">Sub-Organizations</span>
                   </button>
                 </div>
               </div>
@@ -167,6 +175,17 @@
                             >
                               <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                              </svg>
+                            </button>
+                            <!-- Assign Parent Organization Button -->
+                            <button
+                              v-if="canBeAssignedParent(user)"
+                              @click="openParentAssignModal(user)"
+                              class="inline-flex items-center justify-center text-purple-500 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors duration-150 p-1 sm:p-1.5 rounded-lg"
+                              title="Assign Parent Organization"
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                               </svg>
                             </button>
                           </div>
@@ -272,6 +291,16 @@
                               </span>
                             </button>
                             <button
+                              v-if="canBeAssignedParent(user)"
+                              @click="openParentAssignModal(user)"
+                              class="inline-flex items-center justify-center text-purple-500 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors duration-150 p-1 sm:p-1.5 rounded-lg"
+                              title="Assign Parent Organization"
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                              </svg>
+                            </button>
+                            <button
                               @click="removeUserFromCollege(user.id)"
                               class="inline-flex items-center justify-center text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-150 p-1 sm:p-1.5 rounded-lg"
                             >
@@ -285,6 +314,108 @@
                     </div>
                   </div>
                 </div>
+
+                <!-- Sub-Organizations Section (Mobile) -->
+                <div v-if="activeTab === 'sub-organizations'" class="space-y-2 sm:space-y-3">
+                  <div v-if="parentOrganizations.length === 0" class="text-center py-8 text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700 rounded-lg p-6">
+                    <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                    <p class="mt-4 text-base font-medium text-gray-900 dark:text-gray-100">No sub-organizations found</p>
+                    <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Organizations with sub-organizations will appear here.</p>
+                  </div>
+
+                  <div v-for="parentOrg in parentOrganizations" :key="`mobile-parent-${parentOrg.id}`" class="bg-gray-50 dark:bg-gray-700 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-gray-200 dark:border-gray-600 shadow-sm hover:shadow-md transition-all duration-200">
+                    <div 
+                      @click="toggleSubOrganization(parentOrg.id, $event)"
+                      class="flex justify-between items-center cursor-pointer"
+                    >
+                      <div class="flex items-center flex-1 min-w-0">
+                        <div v-if="parentOrg.profile_photo_url" class="flex-shrink-0 h-8 w-8 sm:h-10 sm:w-10 mr-3">
+                          <img class="h-8 w-8 sm:h-10 sm:w-10 rounded-full object-cover border border-gray-200 dark:border-gray-500" :src="parentOrg.profile_photo_url" alt="" />
+                        </div>
+                        <div v-else class="h-8 w-8 sm:h-10 sm:w-10 bg-gradient-to-br from-purple-500 to-pink-400 rounded-full flex items-center justify-center text-white font-medium shadow-inner text-xs sm:text-sm mr-3 flex-shrink-0">
+                          {{ parentOrg.name ? parentOrg.name.charAt(0).toUpperCase() : 'O' }}
+                        </div>
+                        <div class="min-w-0 flex-1">
+                          <h4 class="font-semibold text-gray-900 dark:text-gray-100 text-sm sm:text-base lg:text-lg truncate">{{ parentOrg.name }}</h4>
+                          <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-400 truncate">{{ parentOrg.email }}</p>
+                          <p class="text-xs text-gray-500 dark:text-gray-400">{{ parentOrg.college ? parentOrg.college.acronym : 'Non-College Affiliated' }}</p>
+                        </div>
+                      </div>
+                      <div class="flex items-center ml-2 sm:ml-3 flex-shrink-0">
+                        <span class="mr-1.5 sm:mr-2 text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full flex-shrink-0" 
+                              :class="parentOrg.sub_organizations?.length > 0 ? 'bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-200' : 'bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-400'">
+                          {{ parentOrg.sub_organizations?.length || 0 }}
+                        </span>
+                        <svg
+                          :class="{'transform rotate-180': openSubOrganizations.includes(parentOrg.id)}"
+                          class="w-4 h-4 sm:w-5 sm:h-5 transition-transform text-gray-500 dark:text-gray-400 flex-shrink-0"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                      </div>
+                    </div>
+
+                    <!-- Sub-Organizations List (Mobile) -->
+                    <div v-if="openSubOrganizations.includes(parentOrg.id)" class="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-200 dark:border-gray-600">
+                      <div v-if="!parentOrg.sub_organizations?.length" class="text-center text-gray-500 dark:text-gray-400 py-4 sm:py-6">
+                        <svg class="mx-auto h-8 w-8 sm:h-10 sm:w-10 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        <p class="mt-1 sm:mt-2 text-xs sm:text-sm font-medium">No sub-organizations</p>
+                      </div>
+                      <div v-else class="space-y-2 sm:space-y-3">
+                        <div class="flex flex-col xs:flex-row xs:justify-between xs:items-center mb-2 sm:mb-3 space-y-1 xs:space-y-0">
+                          <span class="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">Sub-Organizations ({{ parentOrg.sub_organizations.length }})</span>
+                        </div>
+                        <div v-for="subOrg in parentOrg.sub_organizations" :key="`mobile-sub-${subOrg.id}`" class="bg-white dark:bg-gray-600 rounded-lg p-2.5 sm:p-3 border border-gray-200 dark:border-gray-500 shadow-sm">
+                          <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2 flex-1 min-w-0">
+                              <div v-if="subOrg.profile_photo_url" class="flex-shrink-0 h-7 w-7 sm:h-8 sm:w-8">
+                                <img class="h-7 w-7 sm:h-8 sm:w-8 rounded-full object-cover border border-gray-200 dark:border-gray-500" :src="subOrg.profile_photo_url" alt="" />
+                              </div>
+                              <div v-else class="h-7 w-7 sm:h-8 sm:w-8 bg-gradient-to-br from-blue-500 to-green-400 rounded-full flex items-center justify-center text-white font-medium shadow-inner text-xs flex-shrink-0">
+                                {{ subOrg.name ? subOrg.name.charAt(0).toUpperCase() : 'S' }}
+                              </div>
+                              <div class="min-w-0 flex-1">
+                                <div class="text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                                  {{ subOrg.name || 'Unknown Sub-Organization' }}
+                                </div>
+                                <div class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ subOrg.email || 'No email' }}</div>
+                                <div class="text-xs text-gray-500 dark:text-gray-400">{{ subOrg.college ? subOrg.college.acronym : 'Non-College Affiliated' }}</div>
+                              </div>
+                            </div>
+                            <div class="flex items-center space-x-1.5 sm:space-x-2 ml-2 flex-shrink-0">
+                              <button
+                                @click="openParentAssignModal(subOrg)"
+                                class="inline-flex items-center justify-center text-purple-500 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors duration-150 p-1 sm:p-1.5 rounded-lg"
+                                title="Change Parent Organization"
+                              >
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                                </svg>
+                              </button>
+                              <button
+                                @click="removeParentOrganization(subOrg.id)"
+                                class="inline-flex items-center justify-center text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-150 p-1 sm:p-1.5 rounded-lg"
+                                title="Remove from Parent"
+                              >
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <div v-if="colleges.length === 0" class="text-center py-12">
                   <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0h3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
@@ -404,6 +535,17 @@
                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                                 </svg>
                                 Assign
+                              </button>
+                              <button
+                                v-if="canBeAssignedParent(user)"
+                                @click="openParentAssignModal(user)"
+                                class="inline-flex items-center text-purple-500 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 transition-colors duration-150"
+                                title="Assign Parent Organization"
+                              >
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 515.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                </svg>
+                                Assign Parent
                               </button>
                             </td>
                           </tr>
@@ -555,6 +697,17 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                               <button
+                                v-if="canBeAssignedParent(user)"
+                                @click="openParentAssignModal(user)"
+                                class="inline-flex items-center text-purple-500 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 transition-colors duration-150 mr-4"
+                                title="Assign Parent Organization"
+                              >
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 515.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 919.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                </svg>
+                                Assign Parent
+                              </button>
+                              <button
                                 @click="removeUserFromCollege(user.id)"
                                 class="inline-flex items-center text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors duration-150"
                               >
@@ -570,6 +723,149 @@
                     </div>
                   </div>
                 </div>
+
+                <!-- Sub-Organizations Section (Desktop) -->
+                <div v-if="activeTab === 'sub-organizations'" class="space-y-3">
+                  <div v-if="parentOrganizations.length === 0" class="text-center py-8 text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700 rounded-lg p-8">
+                    <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                    <p class="mt-4 text-lg font-medium text-gray-900 dark:text-gray-100">No sub-organizations found</p>
+                    <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Organizations with sub-organizations will appear here.</p>
+                  </div>
+
+                  <div v-for="parentOrg in parentOrganizations" :key="`desktop-parent-${parentOrg.id}`" class="border border-gray-200 dark:border-gray-700 rounded-md overflow-hidden shadow-sm hover:shadow transition-shadow duration-200" data-college-accordion>
+                    <div 
+                      @click="toggleSubOrganization(parentOrg.id, $event)"
+                      class="flex justify-between items-center p-4 cursor-pointer bg-purple-50 dark:bg-purple-900/20 hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors duration-150"
+                    >
+                      <div class="flex items-center">
+                        <div v-if="parentOrg.profile_photo_url" class="flex-shrink-0 h-12 w-12 mr-4">
+                          <img class="h-12 w-12 rounded-full object-cover border border-gray-200 dark:border-gray-600" :src="parentOrg.profile_photo_url" alt="" />
+                        </div>
+                        <div v-else class="h-12 w-12 bg-gradient-to-br from-purple-500 to-pink-400 rounded-full flex items-center justify-center text-white font-medium shadow-inner text-lg mr-4">
+                          {{ parentOrg.name ? parentOrg.name.charAt(0).toUpperCase() : 'O' }}
+                        </div>
+                        <div>
+                          <span class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ parentOrg.name }}</span>
+                          <div class="text-sm text-gray-600 dark:text-gray-400">{{ parentOrg.email }}</div>
+                          <div class="text-xs text-gray-500 dark:text-gray-400">{{ parentOrg.college ? parentOrg.college.acronym : 'Non-College Affiliated' }}</div>
+                        </div>
+                      </div>
+                      <div class="flex items-center">
+                        <span class="mr-2 text-sm font-medium px-2 py-1 rounded-full" 
+                              :class="parentOrg.sub_organizations?.length > 0 ? 'bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-200' : 'bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-400'">
+                          {{ parentOrg.sub_organizations?.length || 0 }} Sub-Organizations
+                        </span>
+                        <svg
+                          :class="{'transform rotate-180': openSubOrganizations.includes(parentOrg.id)}"
+                          class="w-5 h-5 transition-transform text-gray-500 dark:text-gray-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M19 9l-7 7-7-7"
+                          ></path>
+                        </svg>
+                      </div>
+                    </div>
+
+                    <!-- Sub-Organizations List (Desktop) -->
+                    <div v-if="openSubOrganizations.includes(parentOrg.id)" 
+                        class="p-4 divide-y divide-gray-100 dark:divide-gray-700 bg-white dark:bg-gray-800 transition-all duration-300 ease-in-out">
+                      <div v-if="!parentOrg.sub_organizations?.length" class="text-center text-gray-500 dark:text-gray-400 py-8">
+                        <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        <p class="mt-2">No sub-organizations found for this organization</p>
+                      </div>
+                      <div v-else class="overflow-x-auto -mx-4 sm:-mx-0">
+                        <div class="flex justify-between items-center mb-4 px-6">
+                          <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">Sub-Organizations under this organization</h4>
+                        </div>
+                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                          <thead class="bg-gray-50 dark:bg-gray-700">
+                            <tr>
+                              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                Sub-Organization
+                              </th>
+                              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                Email
+                              </th>
+                              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                College
+                              </th>
+                              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                Status
+                              </th>
+                              <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                Actions
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                            <tr v-for="subOrg in parentOrg.sub_organizations" :key="`desktop-sub-${subOrg.id}`" class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                              <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                  <div v-if="subOrg.profile_photo_url" class="flex-shrink-0 h-10 w-10">
+                                    <img class="h-10 w-10 rounded-full object-cover border border-gray-200 dark:border-gray-600" :src="subOrg.profile_photo_url" alt="" />
+                                  </div>
+                                  <div v-else class="h-10 w-10 bg-gradient-to-br from-blue-500 to-green-400 rounded-full flex items-center justify-center text-white font-medium shadow-inner">
+                                    {{ subOrg.name ? subOrg.name.charAt(0).toUpperCase() : 'S' }}
+                                  </div>
+                                  <div class="ml-4 min-w-0">
+                                    <div class="text-sm font-medium text-gray-900 dark:text-gray-100 max-w-[220px] truncate" :title="subOrg.name || 'Unknown Sub-Organization'">
+                                      {{ subOrg.name || 'Unknown Sub-Organization' }}
+                                    </div>
+                                  </div>
+                                </div>
+                              </td>
+                              <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900 dark:text-gray-100">{{ subOrg.email || 'No email' }}</div>
+                              </td>
+                              <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900 dark:text-gray-100">{{ subOrg.college ? subOrg.college.acronym : 'Non-College Affiliated' }}</div>
+                              </td>
+                              <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="ml-2 text-xs font-medium" :class="subOrg.status === 'active' ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'">
+                                  {{ subOrg.status === 'active' ? 'Active' : 'Inactive' }}
+                                </span>
+                              </td>
+                              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <button
+                                  @click="openParentAssignModal(subOrg)"
+                                  class="inline-flex items-center text-purple-500 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 transition-colors duration-150 mr-4"
+                                  title="Change Parent Organization"
+                                >
+                                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                                  </svg>
+                                  Change Parent
+                                </button>
+                                <button
+                                  @click="removeParentOrganization(subOrg.id)"
+                                  class="inline-flex items-center text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors duration-150"
+                                  title="Remove from Parent"
+                                >
+                                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                  </svg>
+                                  Remove
+                                </button>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <div v-if="colleges.length === 0" class="text-center py-8 text-gray-500 dark:text-gray-400">
                   No colleges found.
                 </div>
@@ -789,6 +1085,67 @@
           </div>
         </div>
       </Modal>
+
+      <!-- Parent Assignment Modal -->
+      <Modal :show="showParentAssignModal" @close="closeParentAssignModal" maxWidth="lg">
+        <div class="p-4 sm:p-6">
+          <div class="flex items-center justify-between mb-4 sm:mb-5">
+            <h2 class="text-base sm:text-lg font-medium text-gray-900 dark:text-gray-100 pr-4">
+              Assign Parent Organization
+            </h2>
+            <button @click="closeParentAssignModal" class="text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 flex-shrink-0">
+              <svg class="h-5 w-5 sm:h-6 sm:w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          <!-- Show current organization info -->
+          <div v-if="orgToAssignParent" class="mb-4 p-3 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg">
+            <p class="text-sm text-blue-800 dark:text-blue-200 mb-2">Sub-Organization:</p>
+            <div class="flex items-center">
+              <div v-if="orgToAssignParent.profile_photo_url" class="flex-shrink-0 h-10 w-10 mr-3">
+                <img class="h-10 w-10 rounded-full object-cover border border-gray-200 dark:border-gray-600" :src="orgToAssignParent.profile_photo_url" alt="" />
+              </div>
+              <div v-else class="h-10 w-10 bg-gradient-to-br from-blue-500 to-green-400 rounded-full flex items-center justify-center text-white font-medium shadow-inner text-sm mr-3">
+                {{ orgToAssignParent.name ? orgToAssignParent.name.charAt(0).toUpperCase() : 'O' }}
+              </div>
+              <div class="min-w-0">
+                <div class="text-sm font-medium text-gray-900 dark:text-gray-100 max-w-[320px] truncate" :title="orgToAssignParent.name || 'Unknown Organization'">{{ orgToAssignParent.name || 'Unknown Organization' }}</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400">{{ orgToAssignParent.email || 'No email' }}</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400">{{ orgToAssignParent.college ? orgToAssignParent.college.acronym : 'Non-College Affiliated' }}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Parent Organization Selection -->
+          <div class="mb-3 sm:mb-4">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Select Parent Organization</label>
+            <select
+              v-model="selectedParentOrgId"
+              class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+              required
+            >
+              <option :value="null" disabled>Choose a parent organization...</option>
+              <option v-for="org in availableParentOrganizations" :key="`parent-option-${org.id}`" :value="org.id">
+                {{ org.name }} - {{ org.college ? org.college.acronym : 'Non-College Affiliated' }}
+              </option>
+            </select>
+          </div>
+
+          <div class="flex flex-col sm:flex-row items-center justify-end mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-gray-200 dark:border-gray-700 space-y-2 sm:space-y-0 sm:space-x-3">
+            <SecondaryButton @click="closeParentAssignModal" class="w-full sm:w-auto order-2 sm:order-1" type="button">Cancel</SecondaryButton>
+            <button
+              class="inline-flex items-center justify-center px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg shadow-md transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm w-full sm:w-auto order-1 sm:order-2"
+              :disabled="!selectedParentOrgId"
+              @click="confirmAssignParent"
+              type="button"
+            >
+              Assign Parent Organization
+            </button>
+          </div>
+        </div>
+      </Modal>
     </AuthenticatedLayout>
   </div>
 </template>
@@ -816,14 +1173,18 @@ export default {
   data() {
     return {
       openColleges: [],
-        // activeTab controls which section is visible: 'college' or 'non-college'
+      openSubOrganizations: [],
+        // activeTab controls which section is visible: 'college' or 'non-college' or 'sub-organizations'
         activeTab: 'college',
       showUserSelectionModal: false,
       showConfirmModal: false,
       showRemoveConfirmModal: false,
+      showParentAssignModal: false,
       orgToRemove: null,
+      orgToAssignParent: null,
       selectedCollegeId: null,
       selectedCollegeName: '',
+      selectedParentOrgId: null,
       searchQuery: '',
       selectedUsers: [],
       clickOutsideHandler: null,
@@ -833,6 +1194,10 @@ export default {
       }),
       removeForm: useForm({
         user_id: null
+      }),
+      parentAssignForm: useForm({
+        sub_organization_id: null,
+        parent_organization_id: null
       })
     };
   },
@@ -856,6 +1221,30 @@ export default {
         return [];
       }
       return this.users.filter(user => !user.college_id);
+    },
+    parentOrganizations() {
+      if (!this.users || !Array.isArray(this.users)) {
+        return [];
+      }
+      return this.users.filter(user => 
+        user.sub_organizations && user.sub_organizations.length > 0
+      );
+    },
+    availableParentOrganizations() {
+      if (!this.users || !Array.isArray(this.users)) {
+        return [];
+      }
+      // Organizations that can be parent organizations:
+      // 1. Not the organization being assigned
+      // 2. Not having a parent organization themselves (can't be both parent and sub)
+      // 3. Won't create circular relationships
+      // 4. Organization being assigned doesn't already have sub-organizations
+      return this.users.filter(user => 
+        user.id !== this.orgToAssignParent?.id && 
+        !user.parent_organization_id && // Can't be a sub-organization
+        !this.wouldCreateCircularRelationship(user, this.orgToAssignParent) &&
+        !(this.orgToAssignParent?.sub_organizations && this.orgToAssignParent.sub_organizations.length > 0) // Target can't have sub-orgs
+      );
     }
   },
   mounted() {
@@ -881,10 +1270,11 @@ export default {
   
   methods: {
     switchTab(tab) {
-      if (tab === 'college' || tab === 'non-college') {
+      if (tab === 'college' || tab === 'non-college' || tab === 'sub-organizations') {
         this.activeTab = tab;
         // close any open accordions when switching
         this.openColleges = [];
+        this.openSubOrganizations = [];
       }
     },
     isClickInsideAccordion(element) {
@@ -1077,6 +1467,79 @@ export default {
             alert(error.response.data.message);
           }
         });
+    },
+    // Sub-organization management methods
+    toggleSubOrganization(parentOrgId, event) {
+      if (event) {
+        event.stopPropagation();
+      }
+      
+      if (this.openSubOrganizations.includes(parentOrgId)) {
+        this.openSubOrganizations = this.openSubOrganizations.filter(id => id !== parentOrgId);
+      } else {
+        this.openSubOrganizations.push(parentOrgId);
+      }
+    },
+    openParentAssignModal(organization) {
+      this.orgToAssignParent = organization;
+      this.selectedParentOrgId = organization.parent_organization_id;
+      this.showParentAssignModal = true;
+    },
+    closeParentAssignModal() {
+      this.showParentAssignModal = false;
+      this.orgToAssignParent = null;
+      this.selectedParentOrgId = null;
+    },
+    confirmAssignParent() {
+      if (!this.selectedParentOrgId || !this.orgToAssignParent) {
+        alert('Please select a parent organization.');
+        return;
+      }
+      
+      this.parentAssignForm.sub_organization_id = this.orgToAssignParent.id;
+      this.parentAssignForm.parent_organization_id = this.selectedParentOrgId;
+      
+      this.parentAssignForm.post(route('admin.student-orgs.assign-parent'), {
+        preserveScroll: true,
+        onSuccess: () => {
+          this.closeParentAssignModal();
+        }
+      });
+    },
+    removeParentOrganization(subOrgId) {
+      if (confirm('Are you sure you want to remove this organization from its parent organization?')) {
+        const removeForm = useForm({
+          sub_organization_id: subOrgId
+        });
+        
+        removeForm.post(route('admin.student-orgs.remove-parent'), {
+          preserveScroll: true
+        });
+      }
+    },
+    wouldCreateCircularRelationship(potentialParent, subOrg) {
+      if (!potentialParent || !subOrg) return false;
+      
+      // If the potential parent is the same as the sub-org, it's circular
+      if (potentialParent.id === subOrg.id) return true;
+      
+      // Check if the sub-org is already a parent of the potential parent
+      let currentParent = potentialParent;
+      while (currentParent && currentParent.parent_organization_id) {
+        if (currentParent.parent_organization_id === subOrg.id) {
+          return true;
+        }
+        currentParent = this.users.find(u => u.id === currentParent.parent_organization_id);
+      }
+      
+      return false;
+    },
+    canBeAssignedParent(organization) {
+      // An organization can be assigned a parent if:
+      // 1. It doesn't already have sub-organizations (can't be both parent and sub)
+      // 2. It doesn't already have a parent organization
+      return !(organization.sub_organizations && organization.sub_organizations.length > 0) && 
+             !organization.parent_organization_id;
     }
   }
 };
