@@ -334,8 +334,8 @@ const submit = () => {
       </div>
       <div class="font-bold text-[11pt] office-title" style="font-family:Calibri,sans-serif; font-size:11pt; font-weight:bold; margin-bottom:10px; margin-top:30px; display: block;">OFFICE OF STUDENT AFFAIRS AND SERVICES</div>
       <div class="font-bold text-[11pt] sub-header" style="font-family:Calibri,sans-serif; font-size:11pt; font-weight:bold; margin-bottom:10px; margin-top:6px; display: block; font-style: italic;">STUDENT ACTIVITY ATTENDANCE SHEET</div>
-      <div class="font-bold text-[11pt] college-header" style="font-family:Calibri,sans-serif; font-size:11pt; font-weight:bold; margin-top:6px; display: block;">
-        COLLEGE OF {{ form.college ? form.college.toUpperCase() : '' }}
+      <div v-if="form.college" class="font-bold text-[11pt] college-header" style="font-family:Calibri,sans-serif; font-size:11pt; font-weight:bold; margin-top:6px; display: block;">
+        COLLEGE OF {{ form.college.toUpperCase() }}
       </div>
     </div>
 
