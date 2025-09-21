@@ -735,13 +735,12 @@ const confirmClearData = () => {
       </div>
 
       <!-- Filter Bar (Admin Only) -->
-      <div v-if="isAdmin" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div v-if="isAdmin" class="flex flex-wrap items-center gap-2 sm:gap-3">
         <!-- Status Filter -->
-        <div class="flex flex-col gap-1">
-          <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
+        <div class="min-w-0 flex-shrink-0">
           <select 
             v-model="statusFilter"
-            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+            class="pl-3 pr-8 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm"
           >
             <option value="">All Statuses</option>
             <option v-for="option in statusOptions" :key="option.value" :value="option.value">
@@ -751,11 +750,10 @@ const confirmClearData = () => {
         </div>
 
         <!-- Form Type Filter -->
-        <div class="flex flex-col gap-1">
-          <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Form Type</label>
+        <div class="min-w-0 flex-shrink-0">
           <select 
             v-model="formTypeFilter"
-            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+            class="pl-3 pr-8 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm max-w-[200px]"
           >
             <option value="">All Types</option>
             <option 
@@ -770,36 +768,34 @@ const confirmClearData = () => {
         </div>
 
         <!-- Organization Filter -->
-        <div v-if="users.length > 0" class="flex flex-col gap-1">
-          <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Organization</label>
+        <div v-if="users.length > 0" class="min-w-0 flex-shrink-0">
           <select 
             v-model="organizationFilter"
-            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+            class="pl-3 pr-8 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm max-w-[180px]"
           >
             <option value="">All Organizations</option>
             <option 
               v-for="option in organizationOptions" 
               :key="option.value" 
               :value="option.value"
-              :title="option.label.length > 25 ? option.label : undefined"
+              :title="option.label.length > 20 ? option.label : undefined"
             >
-              {{ option.label.length > 25 ? option.label.substring(0, 25) + '...' : option.label }}
+              {{ option.label.length > 20 ? option.label.substring(0, 20) + '...' : option.label }}
             </option>
           </select>
         </div>
 
         <!-- Clear All Filters Button -->
-        <div v-if="hasActiveFilters" class="flex flex-col justify-end">
-          <button
-            @click="clearAllFilters"
-            class="w-full px-3 py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition duration-200 flex items-center justify-center gap-1 border border-gray-300 dark:border-gray-600"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-            Clear All
-          </button>
-        </div>
+        <button
+          v-if="hasActiveFilters"
+          @click="clearAllFilters"
+          class="px-3 py-1.5 text-sm text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition duration-200 flex items-center gap-1.5 border border-gray-300 dark:border-gray-600 shadow-sm flex-shrink-0"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+          <span class="hidden sm:inline">Clear</span>
+        </button>
       </div>
 
       <!-- Active Filters Display -->
