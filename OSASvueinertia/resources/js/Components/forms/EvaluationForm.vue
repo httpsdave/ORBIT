@@ -296,71 +296,33 @@ const onRatingKeyPress = (e, i) => {
   <p class="text-sm mb-0 calibri">Republic of the Philippines</p>
       <p class="text-base font-bold university-name mb-0">Laguna State Polytechnic University</p>
   <p class="text-sm mb-0 calibri">Province of Laguna</p>
-      <p class="text-lg font-bold mt-6 mb-2">Evaluation Sheet for all Programs/Activities</p>
+  <p class="text-lg font-bold mt-6 mb-2 calibri">Evaluation Sheet for all Programs/Activities</p>
     </div>
-    <div class="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div>
-        <label class="block font-bold mb-1">Organization Name</label>
-        <input v-model="form.organization_name" class="border p-2 w-full" required>
-        <p v-if="errors.organization_name" class="text-red-500 text-sm mt-1">{{ errors.organization_name }}</p>
+    
+    <!-- Preview Section -->
+    <div class="mb-6 calibri-11">
+      <div class="mb-2">
+        <span class="font-bold">Title of the Activity:</span>
+        <span class="ml-2">{{ form.activity_title || 'Not specified' }}</span>
       </div>
-      <!-- President Name field removed for Evaluation Form -->
-      <div>
-        <label class="block font-bold mb-1">Title of the Activity</label>
-        <input v-model="form.activity_title" class="border p-2 w-full" required>
-        <p v-if="errors.activity_title" class="text-red-500 text-sm mt-1">{{ errors.activity_title }}</p>
+      <div class="mb-2">
+        <span class="font-bold">Venue:</span>
+        <span class="ml-2">{{ form.venue || 'Not specified' }}</span>
       </div>
-      <div>
-        <label class="block font-bold mb-1">Venue</label>
-        <input v-model="form.venue" class="border p-2 w-full" required>
-        <p v-if="errors.venue" class="text-red-500 text-sm mt-1">{{ errors.venue }}</p>
+      <div class="mb-2">
+        <span class="font-bold">Date:</span>
+        <span class="ml-2">{{ formattedDateRange || 'Not specified' }}</span>
       </div>
-      
-  <!-- Date Range -->
-  <div>
-        <label class="block font-bold mb-1">Date Range</label>
-        <div class="flex items-end gap-3 flex-wrap">
-          <div class="flex flex-col">
-            <label class="block text-sm font-medium mb-1">Start Date</label>
-            <input v-model="form.date_start" type="date" class="border p-1 w-36" required>
-            <p v-if="errors.date_start" class="text-red-500 text-sm mt-1">{{ errors.date_start }}</p>
-          </div>
-          <div class="flex flex-col">
-            <label class="block text-sm font-medium mb-1">End Date (Optional)</label>
-            <input v-model="form.date_end" type="date" :min="form.date_start" class="border p-1 w-36">
-            <p v-if="errors.date_end" class="text-red-500 text-sm mt-1">{{ errors.date_end }}</p>
-          </div>
-        </div>
-        <p class="text-sm text-gray-600 mt-1">
-          <strong>Display:</strong> {{ formattedDateRange }}
-        </p>
-      </div>
-      
-  <!-- Time Range -->
-  <div class="md:col-start-2">
-        <label class="block font-bold mb-1">Time Range</label>
-        <div class="flex items-end gap-3 flex-wrap">
-          <div class="flex flex-col">
-            <label class="block text-sm font-medium mb-1">Start Time</label>
-            <input v-model="form.time_start" type="time" class="border p-1 w-28" required>
-            <p v-if="errors.time_start" class="text-red-500 text-sm mt-1">{{ errors.time_start }}</p>
-          </div>
-          <div class="flex flex-col">
-            <label class="block text-sm font-medium mb-1">End Time (Optional)</label>
-            <input v-model="form.time_end" type="time" class="border p-1 w-28">
-            <p v-if="errors.time_end" class="text-red-500 text-sm mt-1">{{ errors.time_end }}</p>
-          </div>
-        </div>
-        <p class="text-sm text-gray-600 mt-1">
-          <strong>Display:</strong> {{ formattedTimeRange }}
-        </p>
+      <div class="mb-6">
+        <span class="font-bold">Time:</span>
+        <span class="ml-2">{{ formattedTimeRange || 'Not specified' }}</span>
       </div>
     </div>
     
-    <div class="mb-4">
+    <div class="mb-4 calibri-11">
       <p class="mb-1">Direction: Please put a check (✓) at the following statements with the corresponding rating scale.</p>
-      <p class="mb-1 font-bold">Rating Scale:</p>
-      <ul class="mb-2 ml-6">
+  <p class="mb-1 mt-10px">Rating Scale:</p>
+      <ul class="mb-2 ml-6 rating-indent-50 rating-gap-10 rating-item-gap">
         <li>Excellent - 5</li>
         <li>Very Satisfactory - 4</li>
         <li>Satisfactory - 3</li>
@@ -368,7 +330,7 @@ const onRatingKeyPress = (e, i) => {
         <li>Not Satisfactory - 1</li>
       </ul>
     </div>
-    <div class="overflow-x-auto">
+    <div class="overflow-x-auto calibri">
   <table class="w-full border border-gray-400 mb-4" style="border-collapse: collapse;">
         <thead>
           <tr class="bg-gray-100">
@@ -418,32 +380,98 @@ const onRatingKeyPress = (e, i) => {
     </div>
     <!-- Comments & Suggestions Section -->
     <div class="mb-4">
-      <label class="block font-bold mb-1">Comments & Suggestions:</label>
+      <label class="block font-bold mb-1 calibri">Comments & Suggestions:</label>
       <textarea
         v-model="form.comments_suggestions"
-        class="border p-2 w-full"
+        class="border p-2 w-full calibri"
         rows="5"
         placeholder="Enter each comment or suggestion on a new line. Each line will be a bullet point."
       ></textarea>
-      <p class="text-gray-500 text-xs mt-1">Each line will be displayed as a separate bullet.</p>
+      <p class="text-gray-500 text-xs mt-1 calibri">Each line will be displayed as a separate bullet.</p>
     </div>
-  <div class="flex justify-center mt-6">
-      <button
-        @click="submit"
-        type="button"
-  class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-sm font-medium text-white rounded-xl shadow-md hover:shadow-green-300/30 hover:from-green-400 hover:to-green-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 active:from-green-600 active:to-green-700 transition-all duration-300 relative overflow-hidden group"
-        style="font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Liberation Sans', sans-serif;"
-      >
-        <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
-        <span>{{ props.isEdit ? 'Update' : 'Submit' }}</span>
-        <!-- Conditional icons: Update vs Create -->
-        <svg v-if="props.isEdit" xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#e3e3e3" class="ml-2" aria-hidden="true">
-          <path d="M480-120q-75 0-140.5-28.5t-114-77q-48.5-48.5-77-114T120-480q0-75 28.5-140.5t77-114q48.5-48.5 114-77T480-840q82 0 155.5 35T760-706v-94h80v240H600v-80h110q-41-56-101-88t-129-32q-117 0-198.5 81.5T200-480q0 117 81.5 198.5T480-200q105 0 183.5-68T756-440h82q-15 137-117.5 228.5T480-120Zm112-192L440-464v-216h80v184l128 128-56 56Z"/>
-        </svg>
-        <svg v-else xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#e3e3e3" class="ml-2" aria-hidden="true">
-          <path d="M120-160v-640l760 320-760 320Zm80-120 474-200-474-200v140l240 60-240 60v140Zm0 0v-400 400Z"/>
-        </svg>
-      </button>
+    
+    <!-- Form Details Section -->
+    <div class="mt-8 border-t pt-6">
+      <h3 class="text-lg font-bold mb-4">Form Details</h3>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block font-bold mb-1">Organization Name</label>
+          <input v-model="form.organization_name" class="border p-2 w-full rounded-md" required>
+          <p v-if="errors.organization_name" class="text-red-500 text-sm mt-1">{{ errors.organization_name }}</p>
+        </div>
+        
+        <div>
+          <label class="block font-bold mb-1">Title of the Activity</label>
+          <input v-model="form.activity_title" class="border p-2 w-full rounded-md" required>
+          <p v-if="errors.activity_title" class="text-red-500 text-sm mt-1">{{ errors.activity_title }}</p>
+        </div>
+        
+        <div>
+          <label class="block font-bold mb-1">Venue</label>
+          <input v-model="form.venue" class="border p-2 w-full rounded-md" required>
+          <p v-if="errors.venue" class="text-red-500 text-sm mt-1">{{ errors.venue }}</p>
+        </div>
+        
+        <!-- Date Range -->
+        <div>
+          <label class="block font-bold mb-1">Date Range</label>
+          <div class="flex items-end gap-3 flex-wrap">
+            <div class="flex flex-col">
+              <label class="block text-sm font-medium mb-1">Start Date</label>
+              <input v-model="form.date_start" type="date" class="border p-1 w-36 rounded-md" required>
+              <p v-if="errors.date_start" class="text-red-500 text-sm mt-1">{{ errors.date_start }}</p>
+            </div>
+            <div class="flex flex-col">
+              <label class="block text-sm font-medium mb-1">End Date (Optional)</label>
+              <input v-model="form.date_end" type="date" :min="form.date_start" class="border p-1 w-36 rounded-md">
+              <p v-if="errors.date_end" class="text-red-500 text-sm mt-1">{{ errors.date_end }}</p>
+            </div>
+          </div>
+          <p class="text-sm text-gray-600 mt-1">
+            <strong>Display:</strong> {{ formattedDateRange }}
+          </p>
+        </div>
+        
+        <!-- Time Range -->
+        <div>
+          <label class="block font-bold mb-1">Time Range</label>
+          <div class="flex items-end gap-3 flex-wrap">
+            <div class="flex flex-col">
+              <label class="block text-sm font-medium mb-1">Start Time</label>
+              <input v-model="form.time_start" type="time" class="border p-1 w-28 rounded-md" required>
+              <p v-if="errors.time_start" class="text-red-500 text-sm mt-1">{{ errors.time_start }}</p>
+            </div>
+            <div class="flex flex-col">
+              <label class="block text-sm font-medium mb-1">End Time (Optional)</label>
+              <input v-model="form.time_end" type="time" class="border p-1 w-28 rounded-md">
+              <p v-if="errors.time_end" class="text-red-500 text-sm mt-1">{{ errors.time_end }}</p>
+            </div>
+          </div>
+          <p class="text-sm text-gray-600 mt-1">
+            <strong>Display:</strong> {{ formattedTimeRange }}
+          </p>
+        </div>
+      </div>
+
+      <div class="mt-6 text-center">
+        <button
+          @click="submit"
+          type="button"
+          class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-sm font-medium text-white rounded-xl shadow-md hover:shadow-green-300/30 hover:from-green-400 hover:to-green-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 active:from-green-600 active:to-green-700 transition-all duration-300 relative overflow-hidden group"
+          style="font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Liberation Sans', sans-serif;"
+        >
+          <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
+          <span>{{ props.isEdit ? 'Update' : 'Submit' }}</span>
+          <!-- Conditional icons: Update vs Create -->
+          <svg v-if="props.isEdit" xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#e3e3e3" class="ml-2" aria-hidden="true">
+            <path d="M480-120q-75 0-140.5-28.5t-114-77q-48.5-48.5-77-114T120-480q0-75 28.5-140.5t77-114q48.5-48.5 114-77T480-840q82 0 155.5 35T760-706v-94h80v240H600v-80h110q-41-56-101-88t-129-32q-117 0-198.5 81.5T200-480q0 117 81.5 198.5T480-200q105 0 183.5-68T756-440h82q-15 137-117.5 228.5T480-120Zm112-192L440-464v-216h80v184l128 128-56 56Z"/>
+          </svg>
+          <svg v-else xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#e3e3e3" class="ml-2" aria-hidden="true">
+            <path d="M120-160v-640l760 320-760 320Zm80-120 474-200-474-200v140l240 60-240 60v140Zm0 0v-400 400Z"/>
+          </svg>
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -460,6 +488,32 @@ const onRatingKeyPress = (e, i) => {
 }
 
 .calibri {
+  font-family: Calibri, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.calibri-11 {
+  font-family: Calibri, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 11pt;
+}
+
+.mt-10px {
+  margin-top: 30px;
+}
+
+.rating-indent-50 {
+  margin-left: 90px;
+}
+
+.rating-gap-10 {
+  margin-top: 10px;
+}
+
+.rating-item-gap li {
+  margin-bottom: 5px;
+}
+
+/* Ensure table content in the calibri container uses Calibri */
+.calibri table, .calibri table th, .calibri table td, .calibri table input {
   font-family: Calibri, 'Helvetica Neue', Arial, sans-serif;
 }
 </style> 
