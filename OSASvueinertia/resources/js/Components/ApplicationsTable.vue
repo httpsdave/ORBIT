@@ -98,6 +98,21 @@ const formatDate = (dateString) => {
   });
 };
 
+// Format time function to display submission time
+const formatTime = (dateString) => {
+  if (!dateString) return '';
+  
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return '';
+  
+  return date.toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true
+  });
+};
+
 // Add this function to your methods
 const getDropdownPosition = (appId) => {
   // Find the button element that triggered this dropdown
@@ -626,7 +641,7 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
     <!-- MOBILE CARD LAYOUT -->
     <div class="sm:hidden p-2 space-y-4 max-w-4xl mx-auto">
       <div v-for="app in applications" :key="app.id" 
-        class="bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-100 dark:border-gray-700 p-4 flex flex-col gap-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+        class="relative bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-100 dark:border-gray-700 p-4 flex flex-col gap-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition"
         @click="viewPdf(app)">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
@@ -762,6 +777,11 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
             Delete Application
           </button>
         </div>
+        
+        <!-- Timestamp for admin users only - bottom right -->
+        <div v-if="isAdmin && formatTime(app.created_at)" class="absolute bottom-2 right-2 text-xs text-gray-400 dark:text-gray-500 font-mono">
+          {{ formatTime(app.created_at) }}
+        </div>
       </div>
     </div>
 
@@ -845,6 +865,11 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
           </svg>
           View Reports
         </button>
+        
+        <!-- Timestamp for admin users only - bottom right -->
+        <div v-if="isAdmin && formatTime(app.created_at)" class="absolute bottom-2 right-2 text-xs text-gray-400 dark:text-gray-500 font-mono">
+          {{ formatTime(app.created_at) }}
+        </div>
       </div>
     </div>
     <!-- Render the dropdown only once, outside the table -->
