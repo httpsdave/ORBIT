@@ -27,6 +27,11 @@ class DashboardController extends Controller
         $userRoleId = \App\Models\Role::where('slug', 'user')->value('id');
         $totalStudentOrgs = \App\Models\User::where('role_id', $userRoleId)->count();
         
+        // Get total sub-organizations count (users that have a parent organization)
+        $totalSubOrgs = \App\Models\User::where('role_id', $userRoleId)
+            ->whereNotNull('parent_organization_id')
+            ->count();
+        
         // Get today's event
         $todayEvent = Event::where('start_date', '<=', Carbon::now())
             ->where('end_date', '>=', Carbon::now())
@@ -144,6 +149,7 @@ class DashboardController extends Controller
         return Inertia::render('Admin/Dashboard', [
             'collegesData' => $colleges,
             'totalStudentOrgs' => $totalStudentOrgs,
+            'totalSubOrgs' => $totalSubOrgs,
             'todayEvent' => $todayEvent,
             'upcomingEvent' => $upcomingEvent,
             'pendingApplications' => $pendingApplications,
