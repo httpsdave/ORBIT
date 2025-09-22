@@ -159,16 +159,16 @@ class StudentOrgController extends Controller
                 ->with('error', 'Cannot assign parent organization - this would create a circular relationship.');
         }
 
-        // Prevent parent organizations from becoming sub-organizations
-        if ($parentOrg->subOrganizations()->exists()) {
-            return redirect()->route('admin.student-orgs.index')
-                ->with('error', 'Cannot assign this organization as parent - it already has sub-organizations and cannot be a sub-organization itself.');
-        }
-
         // Prevent sub-organizations from becoming parent organizations
         if ($subOrg->subOrganizations()->exists()) {
             return redirect()->route('admin.student-orgs.index')
                 ->with('error', 'Cannot assign parent to this organization - it already has sub-organizations and cannot be a sub-organization itself.');
+        }
+
+        // Prevent an organization from becoming a sub-organization if the proposed parent already has that organization as a parent (circular check)
+        if ($parentOrg->parent_organization_id) {
+            return redirect()->route('admin.student-orgs.index')
+                ->with('error', 'Cannot assign this organization as parent - it is already a sub-organization itself.');
         }
 
         $subOrg->parent_organization_id = $validated['parent_organization_id'];

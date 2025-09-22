@@ -703,7 +703,7 @@
                                 title="Assign Parent Organization"
                               >
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 515.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 919.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                                 </svg>
                                 Assign Parent
                               </button>
@@ -1235,15 +1235,15 @@ export default {
         return [];
       }
       // Organizations that can be parent organizations:
-      // 1. Not the organization being assigned
-      // 2. Not having a parent organization themselves (can't be both parent and sub)
+      // 1. Not the organization being assigned as a sub-organization
+      // 2. Not already a sub-organization themselves (can't be both parent and sub)
       // 3. Won't create circular relationships
-      // 4. Organization being assigned doesn't already have sub-organizations
+      // 4. The organization being assigned as sub-org doesn't already have sub-organizations (can't make a parent into a child)
       return this.users.filter(user => 
         user.id !== this.orgToAssignParent?.id && 
-        !user.parent_organization_id && // Can't be a sub-organization
+        !user.parent_organization_id && // Potential parent can't already be a sub-organization
         !this.wouldCreateCircularRelationship(user, this.orgToAssignParent) &&
-        !(this.orgToAssignParent?.sub_organizations && this.orgToAssignParent.sub_organizations.length > 0) // Target can't have sub-orgs
+        !(this.orgToAssignParent?.sub_organizations && this.orgToAssignParent.sub_organizations.length > 0) // Child-to-be can't already have children
       );
     }
   },
