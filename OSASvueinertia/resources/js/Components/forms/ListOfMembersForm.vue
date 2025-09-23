@@ -84,6 +84,17 @@ const closeCsvModal = () => {
   csvModalType.value = 'success';
 };
 
+// Error navigation modal states
+const showErrorModal = ref(false);
+const errorPages = ref([]);
+const totalErrors = ref(0);
+
+const closeErrorModal = () => {
+  showErrorModal.value = false;
+  errorPages.value = [];
+  totalErrors.value = 0;
+};
+
 // Add pagination state
 const currentPage = ref(1);
 const membersPerPage = 8; // 4 rows × 2 columns per page, matching PDF
@@ -346,6 +357,71 @@ const prevPage = () => {
     }
 };
 
+// Error detection functions
+const getPageErrors = (pageNumber) => {
+  const startIdx = (pageNumber - 1) * membersPerPage;
+  const endIdx = Math.min(startIdx + membersPerPage, form.members.length);
+  const pageErrors = [];
+  
+  // Check members on this page
+  for (let i = startIdx; i < endIdx; i++) {
+    const member = form.members[i];
+    const memberErrors = [];
+    
+    if (!member.student_name?.trim()) {
+      memberErrors.push('Student name');
+    }
+    if (!member.student_number?.trim()) {
+      memberErrors.push('Student number');
+    }
+    if (!member.course_year_section?.trim()) {
+      memberErrors.push('Course - Year & Section');
+    }
+    
+    if (memberErrors.length > 0) {
+      pageErrors.push({
+        memberIndex: i + 1,
+        errors: memberErrors
+      });
+    }
+  }
+  
+  return pageErrors;
+};
+
+const getFormFieldErrors = () => {
+  const formErrors = [];
+  
+  if (!form.organization_name?.trim()) {
+    formErrors.push('Organization name');
+  }
+  if (!form.semester?.trim()) {
+    formErrors.push('Semester');
+  }
+  if (!form.academic_year_start?.trim()) {
+    formErrors.push('Academic year start');
+  }
+  if (!form.academic_year_end?.trim()) {
+    formErrors.push('Academic year end');
+  }
+  if (!form.adviser_name?.trim()) {
+    formErrors.push('Faculty adviser name');
+  }
+  if (!form.coordinator_name?.trim()) {
+    formErrors.push('Coordinator name');
+  }
+  if (!form.director_name?.trim()) {
+    formErrors.push('Director/Chairperson name');
+  }
+  
+  return formErrors;
+};
+
+const goToErrorPage = (pageNumber) => {
+  goToPage(pageNumber);
+  closeErrorModal();
+};
+
 // Hard limit of 300 members per submission
 const MEMBER_LIMIT_MAX = 304;
 
@@ -430,12 +506,14 @@ if (props.initialFormData?.members && props.initialFormData.members.length > 0) 
 const validateForm = () => {
   errors.value = {};
   
+  // Check if we should use modal-based error reporting (when more than 3 pages)
+  const useErrorModal = totalPages.value > 3;
+  
+  // Always validate and set individual field errors for visual feedback
   // Validate main form fields
   if (!form.organization_name.trim()) {
     errors.value.organization_name = 'Organization name is required';
   }
-  
-  // president_name validation removed for List of Members Form
   
   if (!form.coordinator_name.trim()) {
     errors.value.coordinator_name = 'Coordinator name is required';
@@ -457,13 +535,11 @@ const validateForm = () => {
     errors.value.adviser_name = 'Faculty adviser name is required';
   }
   
-  // Dean name is now optional - no validation required
-  
   if (!form.director_name.trim()) {
     errors.value.director_name = 'Director/Chairperson name is required';
   }
   
-  // Validate members
+  // Validate members and set individual field errors
   form.members.forEach((member, index) => {
     if (!member.student_name.trim()) {
       errors.value[`member_${index}_name`] = 'Student name is required';
@@ -478,8 +554,52 @@ const validateForm = () => {
     }
   });
   
-  // Return true if no errors
-  return Object.keys(errors.value).length === 0;
+  // Check if there are any errors
+  const hasErrors = Object.keys(errors.value).length > 0;
+  
+  if (useErrorModal && hasErrors) {
+    // For > 3 pages: show both individual field errors AND the navigation modal
+    errorPages.value = [];
+    totalErrors.value = 0;
+    
+    // Check form field errors
+    const formFieldErrors = getFormFieldErrors();
+    let hasFormErrors = formFieldErrors.length > 0;
+    
+    // Check each page for member errors
+    const pagesWithErrors = [];
+    for (let page = 1; page <= totalPages.value; page++) {
+      const pageErrors = getPageErrors(page);
+      if (pageErrors.length > 0) {
+        pagesWithErrors.push({
+          pageNumber: page,
+          errors: pageErrors,
+          errorCount: pageErrors.reduce((sum, member) => sum + member.errors.length, 0)
+        });
+        totalErrors.value += pageErrors.reduce((sum, member) => sum + member.errors.length, 0);
+      }
+    }
+    
+    // Build error pages array for modal
+    errorPages.value = pagesWithErrors;
+    if (hasFormErrors) {
+      totalErrors.value += formFieldErrors.length;
+      // Add form errors as "page 0" for navigation
+      errorPages.value.unshift({
+        pageNumber: 0,
+        isFormFields: true,
+        errors: formFieldErrors.map(error => ({ memberIndex: null, errors: [error] })),
+        errorCount: formFieldErrors.length
+      });
+    }
+    
+    // Show the modal for easy navigation
+    showErrorModal.value = true;
+    return false;
+  }
+  
+  // Return true if no errors (works for both modal and non-modal cases)
+  return !hasErrors;
 };
 
 // REMOVE: const statusMessage = ref('');
@@ -1136,6 +1256,85 @@ const submit = () => {
           >
             <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
             <span class="relative z-10">Close</span>
+          </button>
+        </div>
+      </div>
+    </Modal>
+
+    <!-- Error Navigation Modal -->
+    <Modal :show="showErrorModal" @close="closeErrorModal">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 sm:p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center">
+            <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center mr-3 bg-red-100 dark:bg-red-900">
+              <svg class="w-5 h-5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-red-900 dark:text-red-100">Form Validation Errors</h3>
+          </div>
+          <button @click="closeErrorModal" class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        
+        <div class="mb-4">
+          <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">
+            Found <span class="font-semibold text-red-600 dark:text-red-400">{{ totalErrors }}</span> validation errors. 
+            Please review and fix the following issues:
+          </p>
+        </div>
+
+        <div class="space-y-3 max-h-80 overflow-y-auto">
+          <div v-for="pageInfo in errorPages" :key="pageInfo.pageNumber" 
+               class="border border-red-200 dark:border-red-800 rounded-lg p-3 bg-red-50 dark:bg-red-900/20">
+            <div class="flex items-center justify-between mb-2">
+              <h4 class="font-semibold text-red-800 dark:text-red-200">
+                <span v-if="pageInfo.isFormFields">Form Fields</span>
+                <span v-else>Page {{ pageInfo.pageNumber }}</span>
+                <span class="text-sm font-normal text-red-600 dark:text-red-400">
+                  ({{ pageInfo.errorCount }} error{{ pageInfo.errorCount !== 1 ? 's' : '' }})
+                </span>
+              </h4>
+              <button 
+                v-if="!pageInfo.isFormFields"
+                @click="goToErrorPage(pageInfo.pageNumber)"
+                class="inline-flex items-center px-3 py-1 text-xs font-medium text-white bg-red-600 hover:bg-red-700 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+              >
+                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                </svg>
+                Go to Page
+              </button>
+            </div>
+            
+            <div class="space-y-1">
+              <div v-if="pageInfo.isFormFields">
+                <ul class="text-sm text-red-700 dark:text-red-300 list-disc list-inside space-y-1">
+                  <li v-for="error in pageInfo.errors" :key="error.errors[0]">
+                    {{ error.errors[0] }} is required
+                  </li>
+                </ul>
+              </div>
+              <div v-else>
+                <div v-for="memberError in pageInfo.errors" :key="memberError.memberIndex" 
+                     class="text-sm text-red-700 dark:text-red-300">
+                  <span class="font-medium">Member #{{ memberError.memberIndex }}:</span>
+                  <span class="ml-1">{{ memberError.errors.join(', ') }} missing</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6 flex justify-end space-x-3">
+          <button 
+            @click="closeErrorModal"
+            class="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 rounded-xl shadow-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+          >
+            Close
           </button>
         </div>
       </div>
