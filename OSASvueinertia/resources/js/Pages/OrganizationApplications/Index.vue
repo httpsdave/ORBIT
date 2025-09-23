@@ -740,7 +740,7 @@ const confirmClearData = () => {
         <div class="min-w-0 flex-shrink-0">
           <select 
             v-model="statusFilter"
-            class="pl-3 pr-8 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm"
+            class="pl-3 pr-8 py-1.5 border border-gray-300 dark:border-gray-600 rounded-full text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm"
           >
             <option value="">All Statuses</option>
             <option v-for="option in statusOptions" :key="option.value" :value="option.value">
@@ -753,7 +753,7 @@ const confirmClearData = () => {
         <div class="min-w-0 flex-shrink-0">
           <select 
             v-model="formTypeFilter"
-            class="pl-3 pr-8 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm max-w-[200px]"
+            class="pl-3 pr-8 py-1.5 border border-gray-300 dark:border-gray-600 rounded-full text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm max-w-[200px]"
           >
             <option value="">All Types</option>
             <option 
@@ -771,7 +771,7 @@ const confirmClearData = () => {
         <div v-if="users.length > 0" class="min-w-0 flex-shrink-0">
           <select 
             v-model="organizationFilter"
-            class="pl-3 pr-8 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm max-w-[180px]"
+            class="pl-3 pr-8 py-1.5 border border-gray-300 dark:border-gray-600 rounded-full text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm max-w-[180px]"
           >
             <option value="">All Organizations</option>
             <option 
@@ -789,7 +789,7 @@ const confirmClearData = () => {
         <button
           v-if="hasActiveFilters"
           @click="clearAllFilters"
-          class="px-3 py-1.5 text-sm text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition duration-200 flex items-center gap-1.5 border border-gray-300 dark:border-gray-600 shadow-sm flex-shrink-0"
+          class="px-3 py-1.5 text-sm text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition duration-200 flex items-center gap-1.5 border border-gray-300 dark:border-gray-600 shadow-sm flex-shrink-0"
         >
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
