@@ -2,6 +2,20 @@
 
 echo "Starting application..."
 
+# Check if Railway volume is mounted
+echo "=== Storage Volume Check ==="
+echo "Checking if Railway volume is mounted at /app/storage/app/public..."
+if [ -d "/app/storage/app/public" ]; then
+    echo "✅ Storage volume directory exists"
+    echo "Volume permissions: $(ls -ld /app/storage/app/public)"
+    echo "Volume disk usage: $(df -h /app/storage/app/public | tail -1)"
+else
+    echo "⚠️  Storage volume directory not found - creating it"
+    mkdir -p /app/storage/app/public
+    chmod 755 /app/storage/app/public
+fi
+echo "================================"
+
 # Debug: Show critical configuration
 echo "=== Critical Configuration ==="
 echo "APP_URL: ${APP_URL:-'❌ NOT SET'}"
@@ -119,6 +133,13 @@ else
     # Create storage symlink
     echo "Creating storage symlink..."
     php artisan storage:link 2>/dev/null || echo "Storage link already exists"
+    
+    # Verify storage symlink and volume
+    echo "=== Storage Verification ==="
+    echo "Storage symlink exists: $([ -L public/storage ] && echo 'YES' || echo 'NO')"
+    echo "Storage symlink target: $(readlink public/storage 2>/dev/null || echo 'Not found')"
+    echo "Volume mounted files count: $(find /app/storage/app/public -type f 2>/dev/null | wc -l)"
+    echo "================================"
     
     # Clean up missing profile photos
     echo "Cleaning up missing profile photos..."

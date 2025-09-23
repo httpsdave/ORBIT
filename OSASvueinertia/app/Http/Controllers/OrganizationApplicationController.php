@@ -1980,16 +1980,16 @@ class OrganizationApplicationController extends Controller
                 ->first();
 
             if ($existingReport) {
-                // Delete old file if it exists - use the same disk consistently
-                if ($existingReport->file_path && Storage::disk('local')->exists($existingReport->file_path)) {
-                    Storage::disk('local')->delete($existingReport->file_path);
+                // Delete old file if it exists - use public disk for persistence
+                if ($existingReport->file_path && Storage::disk('public')->exists($existingReport->file_path)) {
+                    Storage::disk('public')->delete($existingReport->file_path);
                 }
             }
 
-            // Store the uploaded file - use local disk consistently for production
+            // Store the uploaded file - use public disk for Railway volume persistence
             $file = $request->file('report_file');
             $filename = time() . '_' . $file->getClientOriginalName();
-            $filePath = $file->storeAs('activity_reports', $filename, 'local');
+            $filePath = $file->storeAs('activity_reports', $filename, 'public');
 
             \Log::info('File stored successfully', [
                 'application_id' => $application->id,
@@ -2052,18 +2052,18 @@ class OrganizationApplicationController extends Controller
 
             $report = $application->activityReports()->findOrFail($reportId);
 
-            // Check if file exists - use local disk consistently
-            if (!$report->file_path || !Storage::disk('local')->exists($report->file_path)) {
+            // Check if file exists - use public disk for persistence
+            if (!$report->file_path || !Storage::disk('public')->exists($report->file_path)) {
                 abort(404, 'File not found.');
             }
 
             // If action=view, return file for viewing in browser
             if ($request->query('action') === 'view') {
-                $filePath = Storage::disk('local')->path($report->file_path);
+                $filePath = Storage::disk('public')->path($report->file_path);
                 return response()->file($filePath);
             }
 
-            return Storage::disk('local')->download($report->file_path, $report->original_filename);
+            return Storage::disk('public')->download($report->file_path, $report->original_filename);
             
         } catch (\Exception $e) {
             \Log::error('Report download failed: ' . $e->getMessage(), [
@@ -2100,15 +2100,15 @@ class OrganizationApplicationController extends Controller
                 'report_file' => 'required|file|mimes:pdf|max:20480', // 20MB in KB
             ]);
 
-            // Delete the old file from storage if it exists - use local disk consistently
-            if ($report->file_path && Storage::disk('local')->exists($report->file_path)) {
-                Storage::disk('local')->delete($report->file_path);
+            // Delete the old file from storage if it exists - use public disk for persistence
+            if ($report->file_path && Storage::disk('public')->exists($report->file_path)) {
+                Storage::disk('public')->delete($report->file_path);
             }
 
-            // Store the new file - use local disk consistently
+            // Store the new file - use public disk for Railway volume persistence
             $file = $request->file('report_file');
             $filename = time() . '_' . $file->getClientOriginalName();
-            $path = $file->storeAs('activity_reports', $filename, 'local');
+            $path = $file->storeAs('activity_reports', $filename, 'public');
 
             // Update the report record
             $report->update([
@@ -2150,9 +2150,9 @@ class OrganizationApplicationController extends Controller
 
             $report = $application->activityReports()->findOrFail($reportId);
 
-            // Delete the file from storage - use local disk consistently
-            if ($report->file_path && Storage::disk('local')->exists($report->file_path)) {
-                Storage::disk('local')->delete($report->file_path);
+            // Delete the file from storage - use public disk for persistence
+            if ($report->file_path && Storage::disk('public')->exists($report->file_path)) {
+                Storage::disk('public')->delete($report->file_path);
             }
 
             // Delete the report record
