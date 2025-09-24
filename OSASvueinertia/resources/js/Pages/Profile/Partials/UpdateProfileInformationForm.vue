@@ -227,22 +227,18 @@ function handleRemovePhoto() {
 }
 
 function submit() {
-    const data = { ...form.data() };
-    if (removeProfilePhoto.value) {
-        data.remove_profile_photo = true;
-        data.profile_photo = null;
-    }
-    
-    // Filter out empty social links before submission
-    data.social_links = form.social_links.filter(link => 
-        link.platform && link.platform.trim() !== '' && 
+    // Ensure social_links are assigned on the form as a filtered array
+    const filtered = form.social_links.filter(link => 
+        link && link.platform && link.platform.trim() !== '' && 
         link.url && link.url.trim() !== ''
     );
-    
-    console.log('Submitting profile data:', data);
-    
+    form.social_links = filtered.length > 0 ? filtered : [{ platform: '', url: '' }];
+
+    // If removeProfilePhoto was requested, form.profile_photo is already set to '__REMOVE__' by handleRemovePhoto
+    console.log('Submitting profile data (form):', form.data());
+
+    // Post the form itself (do not pass a `data` wrapper) so Laravel receives top-level keys like `social_links`
     form.post(route('profile.update'), {
-        data,
         preserveScroll: true,
         forceFormData: true,
         onSuccess: () => {

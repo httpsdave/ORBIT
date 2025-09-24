@@ -9,6 +9,36 @@ use Illuminate\Validation\Rule;
 class ProfileUpdateRequest extends FormRequest
 {
     /**
+     * Prepare the data for validation.
+     */
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('social_links') && is_array($this->input('social_links'))) {
+            $clean = [];
+            foreach ($this->input('social_links') as $link) {
+                if (!is_array($link)) continue;
+                $platform = isset($link['platform']) ? trim($link['platform']) : '';
+                $url = isset($link['url']) ? trim($link['url']) : '';
+
+                if ($platform === '' || $url === '') {
+                    continue; // drop empty entries
+                }
+
+                // If URL missing scheme, prefix https://
+                if (!preg_match('#^https?://#i', $url)) {
+                    $url = 'https://' . ltrim($url, '/');
+                }
+
+                $clean[] = [
+                    'platform' => $platform,
+                    'url' => $url,
+                ];
+            }
+
+            $this->merge(['social_links' => $clean]);
+        }
+    }
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
