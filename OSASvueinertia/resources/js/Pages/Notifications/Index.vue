@@ -124,17 +124,17 @@ const formatType = (type) => {
     <Head title="Notifications" />
     
     <!-- Colored banner -->
-    <div class="flex w-full mb-6 overflow-hidden rounded-xl shadow-sm">
+    <div class="flex w-full mb-3 sm:mb-6 overflow-hidden rounded-lg sm:rounded-xl shadow-sm">
       <div class="w-1/4 h-1 bg-blue-500 " style="animation-delay: 0.2s;"></div>
       <div class="w-1/4 h-1 bg-green-500 " style="animation-delay: 0.4s;"></div>
       <div class="w-1/4 h-1 bg-yellow-500 " style="animation-delay: 0.6s;"></div>
       <div class="w-1/4 h-1 bg-red-500 " style="animation-delay: 0.8s;"></div>
     </div>
 
-    <div class="py-6">
-      <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-xl">
-          <div class="p-4 sm:p-6">
+    <div class="py-2 sm:py-6">
+      <div class="max-w-5xl mx-auto px-2 sm:px-6 lg:px-8">
+        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg sm:rounded-xl">
+          <div class="p-3 sm:p-6">
             <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
               <div class="flex items-center">
                 <h2 class="text-lg sm:text-xl font-medium text-gray-800 dark:text-gray-200">Notifications</h2>
@@ -153,9 +153,9 @@ const formatType = (type) => {
             </div>
 
             <!-- Filters -->
-            <div class="bg-gray-50 dark:bg-gray-700 rounded-xl mb-6 border border-gray-100 dark:border-gray-600 overflow-hidden">
-              <div class="p-3 sm:p-4">
-                <div class="flex flex-col sm:flex-row items-start sm:items-end gap-3 sm:gap-4">
+            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg sm:rounded-xl mb-4 sm:mb-6 border border-gray-100 dark:border-gray-600 overflow-hidden">
+              <div class="p-2.5 sm:p-4">
+                <div class="flex flex-col sm:flex-row items-start sm:items-end gap-2.5 sm:gap-4">
                   <div class="w-full sm:w-auto">
                     <label for="type-filter" class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Filter by type</label>
                     <select 
@@ -201,16 +201,16 @@ const formatType = (type) => {
               <p class="text-gray-500 dark:text-gray-400 text-sm">You're all caught up!</p>
             </div>
 
-            <div v-else class="space-y-2 sm:space-y-3">
+            <div v-else class="space-y-1.5 sm:space-y-3">
               <button
                 v-for="notification in filteredNotifications"
                 :key="notification.id"
                 @click="showNotificationPopup(notification)"
-                class="w-full block border rounded-xl overflow-hidden transition duration-200 ease-in-out hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-800 transform hover:scale-[1.01]"
+                class="w-full block border rounded-lg sm:rounded-xl overflow-hidden transition duration-200 ease-in-out hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-1 sm:focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-800 sm:transform sm:hover:scale-[1.01]"
                 :class="[notification.is_read ? 'border-gray-100 dark:border-gray-700' : 'border-blue-200 dark:border-blue-600 shadow-sm', getNotificationClass(notification.type)]"
               >
-                <div class="p-3 sm:p-4">
-                  <div class="flex items-start space-x-3">
+                <div class="p-2.5 sm:p-4">
+                  <div class="flex items-start space-x-2.5 sm:space-x-3">
                     <div class="flex-shrink-0 pt-0.5">
                       <!-- Success Icon -->
                       <svg v-if="notification.type === 'success'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-green-500" viewBox="0 0 20 20" fill="currentColor">
@@ -240,10 +240,10 @@ const formatType = (type) => {
                           </h3>
                           <span v-if="!notification.is_read" class="inline-block h-2 w-2 ml-2 rounded-full bg-blue-500 dark:bg-blue-400 flex-shrink-0"></span>
                         </div>
-                        <div class="flex items-center justify-between sm:justify-end space-x-2 sm:space-x-3 text-xs text-gray-500 dark:text-gray-400">
-                          <span class="hidden sm:inline">{{ notification.created_at }}</span>
-                          <span class="sm:hidden">{{ notification.created_at.split(' ')[0] }}</span>
-                          <span class="inline-flex items-center px-1.5 sm:px-2 py-0.5 rounded-full text-xs font-medium" 
+                        <div class="flex items-center justify-between sm:justify-end space-x-1.5 sm:space-x-3 text-xs text-gray-500 dark:text-gray-400">
+                          <span class="hidden sm:inline text-xs">{{ notification.created_at }}</span>
+                          <span class="sm:hidden text-xs truncate max-w-[80px]">{{ notification.created_at.split(' ')[0] }}</span>
+                          <span class="inline-flex items-center px-1.5 sm:px-2 py-0.5 rounded-full text-xs font-medium flex-shrink-0" 
                             :class="{
                               'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300': notification.type === 'info',
                               'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300': notification.type === 'success',
@@ -251,15 +251,17 @@ const formatType = (type) => {
                               'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300': notification.type === 'error',
                             }"
                           >
-                            {{ formatType(notification.type) }}
+                            <span class="hidden sm:inline">{{ formatType(notification.type) }}</span>
+                            <span class="sm:hidden">{{ notification.type.charAt(0).toUpperCase() }}</span>
                           </span>
                         </div>
                       </div>
-                      <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-300 line-clamp-2 sm:line-clamp-1">
+                      <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-300 line-clamp-3 sm:line-clamp-1 leading-relaxed">
                         {{ notification.message }}
                       </p>
-                      <p class="text-xs text-blue-600 dark:text-blue-400 mt-1 opacity-75">
-                        Click to view full message
+                      <p class="text-xs text-blue-600 dark:text-blue-400 mt-1 opacity-70">
+                        <span class="hidden sm:inline">Click to view full message</span>
+                        <span class="sm:hidden">Tap for details</span>
                       </p>
                     </div>
                   </div>
@@ -399,6 +401,14 @@ const formatType = (type) => {
   line-clamp: 2;
 }
 
+.line-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+}
+
 /* Responsive line clamp for different screen sizes */
 @media (min-width: 640px) {
   .sm\:line-clamp-1 {
@@ -407,6 +417,15 @@ const formatType = (type) => {
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 1;
     line-clamp: 1;
+  }
+}
+
+/* Mobile optimizations */
+@media (max-width: 639px) {
+  /* Ensure full width utilization on mobile */
+  .mobile-full-width {
+    margin-left: -0.5rem;
+    margin-right: -0.5rem;
   }
 }
 </style>
