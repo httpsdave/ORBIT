@@ -517,13 +517,21 @@ const submit = () => {
   <div class="college-is-text" style="padding-left:10px; margin-bottom:40px;">Certified true and correct:</div>
         <div class="noted-section" style="padding-left:40px;">
           <div class="faculty-adviser-signature" style="margin-top:0; margin-left:-42px;">
-            <div style="text-align:left;">
-              <span style="display:inline-block; min-width:200px; width:auto; border-bottom:1px solid black; padding-bottom:2px; text-align:center; margin-left:0px; text-transform: uppercase; font-weight:bold;">{{ displayAdviserName }}</span>
+              <div style="text-align:left;">
+              <span style="display:inline-block; min-width:200px; width:auto; border-bottom:1px solid black; padding-bottom:2px; text-align:center; margin-left:0px; text-transform: uppercase; font-weight:bold;">
+                <span v-if="form.adviser_prefix">{{ form.adviser_prefix }} </span>
+                <span>{{ form.adviser_name }}</span>
+                <span v-if="form.adviser_suffix">, <span style="text-transform: none;">{{ form.adviser_suffix }}</span></span>
+              </span>
               <span style="display:block; text-align:left; margin-left:25px;">Organization Adviser(s)</span>
             </div>
           </div>
           <div style="margin-top:40px; text-align:left; margin-left:-42px;">
-            <span style="display:inline-block; min-width:220px; width:auto; border-bottom:1px solid black; padding-bottom:2px; text-align:center; text-transform: uppercase; font-weight:bold;">{{ getStudentDeanDisplayName(student) }}</span>
+            <span style="display:inline-block; min-width:220px; width:auto; border-bottom:1px solid black; padding-bottom:2px; text-align:center; text-transform: uppercase; font-weight:bold;">
+              <span v-if="student.dean_prefix">{{ student.dean_prefix }} </span>
+              <span>{{ student.dean_name }}</span>
+              <span v-if="student.dean_suffix">, <span style="text-transform: none;">{{ student.dean_suffix }}</span></span>
+            </span>
             <span style="display:block; text-align:left; margin-left:25px;">Dean/Assoc. Dean of College</span>
           </div>
           <div style="text-align:center; margin-top:40px; margin-left:0;">Noted:</div>
