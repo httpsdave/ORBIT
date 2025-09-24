@@ -21,6 +21,10 @@ const props = defineProps({
   recentActivity: {
     type: Array,
     default: () => [],
+  },
+  reportsToBeSubmitted: {
+    type: Number,
+    default: 0,
   }
 });
 
@@ -299,13 +303,13 @@ const displayedActivities = computed(() => {
                   <div class="flex-shrink-0">
                     <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-yellow-100 dark:bg-yellow-900/50">
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 text-yellow-500 dark:text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                       </svg>
                     </div>
                   </div>
                   <div class="ml-3 sm:ml-4">
-                    <p class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Recent Activities</p>
-                    <p class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">{{ props.recentActivity.length }}</p>
+                    <p class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Reports to be approved</p>
+                    <p class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">{{ props.reportsToBeSubmitted }}</p>
                   </div>
                 </div>
               </div>

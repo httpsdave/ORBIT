@@ -7,6 +7,7 @@ use Inertia\Inertia;
 use App\Models\OrganizationApplication;
 use App\Models\Event;
 use App\Models\UserActivity;
+use App\Models\ActivityReport;
 use Carbon\Carbon;
 
 class UserDashboardController extends Controller
@@ -57,12 +58,58 @@ class UserDashboardController extends Controller
         // Get recent activity from UserActivity model
         $recentActivity = UserActivity::recentForUser($user->id, 10);
         
+        // Calculate reports to be submitted
+        $reportsToBeSubmitted = $this->calculateReportsToBeSubmitted($user->id);
+        
         return Inertia::render('Dashboard', [
             'myApplications' => $myApplications,
             'todayEvent' => $todayEvent,
             'upcomingEvents' => $upcomingEvents,
             'recentActivity' => $recentActivity,
+            'reportsToBeSubmitted' => $reportsToBeSubmitted,
         ]);
+    }
+    
+    /**
+     * Calculate how many reports need to be submitted for approved Plan of Activities
+     */
+    private function calculateReportsToBeSubmitted($userId)
+    {
+        // Get approved Plan of Activities applications for this user
+        $approvedPOAs = OrganizationApplication::where('user_id', $userId)
+            ->where('status', 'Approved')
+            ->where('form_type', 'LSPU-OSAS-SF-004')
+            ->whereHas('activities') // Must have activities
+            ->with(['activities', 'activityReports'])
+            ->get();
+        
+        $totalReportsNeeded = 0;
+        $totalReportsSubmitted = 0;
+        
+        // Report types that need to be submitted (3 per activity page)
+        $requiredReportTypes = [
+            'LSPU-OSAS-SF-FINANCIAL',
+            'LSPU-OSAS-SF-NARRATIVE', 
+            'LSPU-OSAS-SF-ACCOMPLISHMENT'
+        ];
+        
+        foreach ($approvedPOAs as $poa) {
+            $activityCount = $poa->activities->count();
+            
+            // Each activity page requires 3 reports
+            $totalReportsNeeded += $activityCount * count($requiredReportTypes);
+            
+            // Count submitted reports for this POA
+            $submittedReports = $poa->activityReports()
+                ->whereIn('report_type', $requiredReportTypes)
+                ->whereNotNull('file_path')
+                ->whereIn('status', ['submitted', 'approved'])
+                ->count();
+            
+            $totalReportsSubmitted += $submittedReports;
+        }
+        
+        return max(0, $totalReportsNeeded - $totalReportsSubmitted);
     }
     
 
