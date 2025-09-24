@@ -454,6 +454,28 @@ const closeMobileDropdowns = (event) => {
 const openPreview = (app) => {
   previewApp.value = app;
   showPreviewModal.value = true;
+  
+  // Log the view activity (only for user's own applications)
+  if (!props.isAdmin && app.user_id === props.userId) {
+    logApplicationView(app);
+  }
+};
+
+// Function to log application view activity
+const logApplicationView = async (app) => {
+  try {
+    await fetch(`/applications/${app.id}/log-view`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+        'Accept': 'application/json',
+      },
+    });
+  } catch (error) {
+    // Silently handle errors - logging is not critical functionality
+    console.debug('Activity logging error:', error);
+  }
 };
 const closePreviewModal = () => {
   showPreviewModal.value = false;

@@ -7,6 +7,7 @@ use App\Models\ActivityReport;
 use App\Models\Notification;
 use App\Models\SystemSetting;
 use App\Services\FormDataService;
+use App\Traits\LogsUserActivity;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -16,6 +17,7 @@ use Illuminate\Support\Facades\Storage;
 
 class OrganizationApplicationController extends Controller
 {
+    use LogsUserActivity;
     public function index(Request $request)
 {
     $query = OrganizationApplication::query();
@@ -426,6 +428,9 @@ class OrganizationApplicationController extends Controller
                 $application->studentCertifications()->create($studentData);
             }
         }
+
+        // Log the application creation activity
+        $this->logApplicationCreated($application);
 
         // Always redirect to the applications index after successful creation for all forms, including renewal
         return redirect()->route('applications.index')->with('success', 'Application submitted successfully!');
@@ -879,6 +884,9 @@ class OrganizationApplicationController extends Controller
             }
         }
         
+        // Log the application update activity
+        $this->logApplicationUpdated($application);
+        
         return redirect()->route('applications.index')->with('updateMessage', 'Application updated successfully!');
     }
 
@@ -888,6 +896,9 @@ class OrganizationApplicationController extends Controller
         if (!auth()->user()->isAdmin() && $application->status === 'Approved') {
             return redirect()->route('applications.index')->with('error', 'You cannot delete an approved application.');
         }
+        // Log the application deletion activity before deleting
+        $this->logApplicationDeleted($application);
+        
         // Delete the signed document if it exists
         if ($application->signed_document_path) {
             Storage::disk('public')->delete($application->signed_document_path);
@@ -895,6 +906,19 @@ class OrganizationApplicationController extends Controller
         
         $application->delete();
         return redirect()->route('applications.index');
+    }
+    
+    /**
+     * Log when a user views an application (for activity tracking)
+     */
+    public function logView(OrganizationApplication $application)
+    {
+        // Only allow users to log views of their own applications
+        if ($application->user_id === auth()->id()) {
+            $this->logApplicationViewed($application);
+        }
+        
+        return response()->json(['success' => true]);
     }
     
     // Add a new method to handle signed document uploads separately
@@ -921,6 +945,10 @@ class OrganizationApplicationController extends Controller
         $path = $request->file('signed_document')->store('signed_documents', 'public');
         $application->signed_document_path = $path;
         $application->save();
+        
+        // Log document upload activity
+        $fileName = $request->file('signed_document')->getClientOriginalName();
+        $this->logDocumentUploaded($application, $fileName);
         
         if ($request->expectsJson()) {
             return response()->json(['success' => true, 'message' => 'Signed document uploaded successfully']);
@@ -979,10 +1007,19 @@ class OrganizationApplicationController extends Controller
         
         // Check if document exists (file or link)
         if ($application->signed_document_path || $application->signed_document_link) {
+            // Get file name for logging before deletion
+            $fileName = 'signed_document.pdf'; // Default name
+            if ($application->signed_document_path) {
+                $fileName = basename($application->signed_document_path);
+            }
+            
             // Delete file from storage if exists
             if ($application->signed_document_path) {
                 Storage::disk('public')->delete($application->signed_document_path);
             }
+            
+            // Log document deletion activity
+            $this->logDocumentDeleted($application, $fileName);
             
             // Update database record
             $application->signed_document_path = null;
@@ -1037,6 +1074,11 @@ class OrganizationApplicationController extends Controller
         // If it's a link, redirect to the external document
         if ($application->signed_document_link) {
             return redirect($application->signed_document_link);
+        }
+
+        // Log application view activity (only for non-admin users viewing their own applications)
+        if (!auth()->user()->isAdmin() && $application->user_id === auth()->id()) {
+            $this->logApplicationViewed($application);
         }
 
         // Determine back URL based on user role

@@ -131,6 +131,7 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/applications/{application}', [OrganizationApplicationController::class, 'update'])->name('applications.update');
     Route::delete('/applications/{application}', [OrganizationApplicationController::class, 'destroy'])->name('applications.destroy');
     Route::post('/applications/{application}/update-status', [OrganizationApplicationController::class, 'updateStatus'])->name('applications.update-status');
+    Route::post('/applications/{application}/log-view', [OrganizationApplicationController::class, 'logView'])->name('applications.log-view');
 
     // Archive routes for regular users
     Route::get('/archive', [ArchiveController::class, 'index'])->name('archive.index');
