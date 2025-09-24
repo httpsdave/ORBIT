@@ -203,10 +203,13 @@ const timeUntilNext = computed(() => {
 
 // Tab state for combined Applications/Activity card
 const activeTab = ref('applications');
-// Control activity list expansion (show only 3 by default)
+
+// Activity expansion state
 const showAllActivities = ref(false);
+
+// Computed property for displayed activities
 const displayedActivities = computed(() => {
-  if (!props.recentActivity) return [];
+  if (!props.recentActivity || props.recentActivity.length === 0) return [];
   return showAllActivities.value ? props.recentActivity : props.recentActivity.slice(0, 3);
 });
 </script>
@@ -397,38 +400,49 @@ const displayedActivities = computed(() => {
                 </div>
                 <!-- Activity Tab -->
                 <div v-if="activeTab === 'activity'">
-                  <div v-if="props.recentActivity && props.recentActivity.length > 0" class="space-y-4">
-                    <div :class="showAllActivities ? 'max-h-80 overflow-y-auto space-y-3' : ''">
-                      <div v-for="activity in displayedActivities" :key="activity.id" class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-white dark:bg-gray-800 shadow-sm">
+                  <div v-if="props.recentActivity && props.recentActivity.length > 0">
+                    <div class="space-y-4" :class="{ 'max-h-96 overflow-y-auto pr-2': showAllActivities && props.recentActivity.length > 3 }">
+                      <div v-for="(activity, index) in displayedActivities" :key="activity.id" 
+                        class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-white dark:bg-gray-800 shadow-sm">
                         <div class="flex">
                           <div class="flex-shrink-0 mr-4">
-                            <div :class="getActivityIconClasses(activity.action)" v-html="getActivityIcon(activity.action)"></div>
+                            <div :class="getActivityIconClasses(activity.action)" v-html="getActivityIcon(activity.action)">
+                            </div>
                           </div>
                           <div class="flex-1">
                             <p class="text-sm font-medium text-gray-800 dark:text-gray-200">{{ activity.description }}</p>
                             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ formatDate(activity.created_at) }}</p>
+                            <!-- Show organization name if available -->
                             <div v-if="activity.metadata && activity.metadata.organization_name" class="mt-1">
                               <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
                                 {{ activity.metadata.organization_name }}
                               </span>
                             </div>
+                            <!-- Show file name for document activities -->
                             <div v-if="activity.metadata && activity.metadata.file_name && (activity.action === 'document_uploaded' || activity.action === 'document_deleted')" class="mt-1">
-                              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">📄 {{ activity.metadata.file_name }}</span>
+                              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
+                                📄 {{ activity.metadata.file_name }}
+                              </span>
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
-
-                    <!-- Toggle show all / show less when there are more than 3 activities -->
-                    <div v-if="props.recentActivity.length > 3" class="text-center mt-2">
-                      <button @click="showAllActivities = !showAllActivities" class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
-                        <span v-if="!showAllActivities">Show all</span>
-                        <span v-else>Show less</span>
+                    <!-- Show expand/collapse button if there are more than 3 activities -->
+                    <div v-if="props.recentActivity.length > 3" class="mt-4 text-center">
+                      <button
+                        @click="showAllActivities = !showAllActivities"
+                        class="inline-flex items-center text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors duration-200"
+                        aria-expanded="false"
+                      >
+                        <span v-if="!showAllActivities">Show All ({{ props.recentActivity.length }})</span>
+                        <span v-else>Show Less</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 transform transition-transform duration-200" :class="{ 'rotate-180': showAllActivities }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
                       </button>
                     </div>
                   </div>
-
                   <div v-else class="border border-gray-200 dark:border-gray-700 rounded-lg p-6 bg-gray-50 dark:bg-gray-700 text-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
