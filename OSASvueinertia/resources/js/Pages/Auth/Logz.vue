@@ -199,14 +199,20 @@ onBeforeUnmount(() => {
                 :class="isDarkMode ? 'text-white' : 'text-gray-100'"
             >
                 <!-- Header section -->
-                <div class="mb-6 sm:mb-8 md:mb-10 lg:mb-12 text-center sm:text-left">
-                    <!-- Main heading -->
-                    <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3" :class="isDarkMode ? 'text-white' : 'text-white'">
-                        Welcome to
-                        <span class="block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-green-400">
-                            LSPU ORBIT
-                        </span>
-                    </h1>
+                <div class="mb-6 sm:mb-8 md:mb-10 lg:mb-12 text-center sm:text-left relative">
+                    <!-- Main heading with logo -->
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:space-x-4">
+                        <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-1" :class="isDarkMode ? 'text-white' : 'text-white'">
+                            Welcome to
+                            <span class="block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-green-400">
+                                LSPU ORBIT
+                            </span>
+                        </h1>
+                        <!-- ApplicationLogo - Hidden on mobile, absolutely positioned on sm+ so it doesn't affect layout -->
+                        <div class="hidden sm:flex absolute inset-y-0 right-0 items-center justify-center pointer-events-none z-50" style="transform: translate(12px, -36px);">
+                            <ApplicationLogo class="w-44 h-44 md:w-52 md:h-52 lg:w-64 lg:h-64" />
+                        </div>
+                    </div>
                     
                     <!-- Colored accent line -->
                     <div class="flex mb-4 w-24 sm:w-32 mx-auto sm:mx-0">
