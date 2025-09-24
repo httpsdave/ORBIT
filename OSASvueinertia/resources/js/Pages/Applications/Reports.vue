@@ -158,6 +158,26 @@ const confirmDelete = () => {
   if (!deleteTarget.value) return
   
   const { reportId } = deleteTarget.value
+  
+  // Find the report being deleted and check if it's approved
+  let reportToDelete = null
+  for (const page of activityPages.value) {
+    for (const [type, report] of Object.entries(page.reports)) {
+      if (report && report.id === reportId) {
+        reportToDelete = report
+        break
+      }
+    }
+    if (reportToDelete) break
+  }
+  
+  if (reportToDelete && isReportApproved(reportToDelete)) {
+    showMessageWithType('Cannot delete an approved report.', 'error')
+    showDeleteModal.value = false
+    deleteTarget.value = null
+    return
+  }
+  
   showDeleteModal.value = false
   
   router.delete(`/applications/${props.application.id}/reports/${reportId}`, {
@@ -422,6 +442,14 @@ const viewReportFromDropdown = () => {
 
 const deleteReportFromDropdown = () => {
   if (activeDropdownReport.value) {
+    // Check if report is approved
+    if (isReportApproved(activeDropdownReport.value)) {
+      showMessageWithType('Cannot delete an approved report.', 'error')
+      activeDropdownReport.value = null
+      removeDropdownListeners()
+      return
+    }
+    
     // Find the report type and page number from the active dropdown report
     let reportType = null
     let pageNumber = null
@@ -445,6 +473,14 @@ const deleteReportFromDropdown = () => {
 
 const editReportFromDropdown = () => {
   if (activeDropdownReport.value) {
+    // Check if report is approved
+    if (isReportApproved(activeDropdownReport.value)) {
+      showMessageWithType('Cannot edit an approved report.', 'error')
+      activeDropdownReport.value = null
+      removeDropdownListeners()
+      return
+    }
+    
     // If already editing another report, show message and return
     if (editingReport.value) {
       showMessageWithType('Please finish editing the current report before editing another one.', 'error')
@@ -552,6 +588,12 @@ const hasFeedback = (report) => {
   return false
 }
 
+// Helper function to check if a report is approved
+const isReportApproved = (report) => {
+  if (!report || !report.status) return false
+  return report.status.toLowerCase() === 'approved'
+}
+
 const cancelEdit = () => {
   editingReport.value = null
   // Clear any selected editing files
@@ -577,6 +619,23 @@ const handleEditFileSelect = (event, activityPageNumber, reportType) => {
 }
 
 const updateReport = async (reportId, activityPageNumber, reportType) => {
+  // Find the report being updated and check if it's approved
+  let reportToUpdate = null
+  for (const page of activityPages.value) {
+    for (const [type, report] of Object.entries(page.reports)) {
+      if (report && report.id === reportId) {
+        reportToUpdate = report
+        break
+      }
+    }
+    if (reportToUpdate) break
+  }
+  
+  if (reportToUpdate && isReportApproved(reportToUpdate)) {
+    showMessageWithType('Cannot update an approved report.', 'error')
+    return
+  }
+  
   const editKey = `${activityPageNumber}-${reportType}`
   const file = editingFiles.value[editKey]
   
@@ -1005,8 +1064,9 @@ watch(showStatusModal, (val) => {
           </svg>
           View Feedback
         </button>
-        <!-- Edit Report -->
+        <!-- Edit Report - Only show if not approved -->
         <button 
+          v-if="!isReportApproved(activeDropdownReport)"
           @click="editReportFromDropdown()"
           class="w-full text-left px-3 py-1.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200 font-medium"
         >
@@ -1015,8 +1075,9 @@ watch(showStatusModal, (val) => {
           </svg>
           Edit Report
         </button>
-        <!-- Delete Report -->
+        <!-- Delete Report - Only show if not approved -->
         <button 
+          v-if="!isReportApproved(activeDropdownReport)"
           @click="deleteReportFromDropdown()"
           class="w-full text-left px-3 py-1.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 flex items-center gap-2 transition duration-200 border-t border-gray-100 dark:border-gray-600 mt-1 pt-1 font-medium"
         >

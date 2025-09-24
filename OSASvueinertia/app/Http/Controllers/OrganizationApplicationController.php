@@ -2137,6 +2137,12 @@ class OrganizationApplicationController extends Controller
 
             $report = $application->activityReports()->findOrFail($reportId);
 
+            // Check if report is approved - prevent updates to approved reports
+            if (strtolower($report->status) === 'approved') {
+                return redirect()->back()
+                    ->with('error', 'Cannot update an approved report.');
+            }
+
             // Validate the uploaded file
             $request->validate([
                 'report_file' => 'required|file|mimes:pdf|max:20480', // 20MB in KB
@@ -2191,6 +2197,12 @@ class OrganizationApplicationController extends Controller
             }
 
             $report = $application->activityReports()->findOrFail($reportId);
+
+            // Check if report is approved - prevent deletion of approved reports
+            if (strtolower($report->status) === 'approved') {
+                return redirect()->back()
+                    ->with('error', 'Cannot delete an approved report.');
+            }
 
             // Delete the file from storage - use public disk for persistence
             if ($report->file_path && Storage::disk('public')->exists($report->file_path)) {
