@@ -1104,15 +1104,15 @@ export default {
       eventContent: function(arg) {
         // Custom rendering for calendar events with responsive text truncation
         const title = arg.event.title;
-        const eventDate = dayjs(arg.event.start);
         const today = dayjs();
         
         // Get the full event object to check status
         const eventId = parseInt(arg.event.id);
         const fullEvent = events.value.find(e => e.id === eventId);
         
-        // Check event status and date
+        // Check event status and date - use the original event's start_date for more reliable parsing
         const isCancelledEvent = fullEvent?.status === 'cancelled';
+        const eventDate = fullEvent ? dayjs(fullEvent.start_date) : dayjs(arg.event.start);
         const isPastEvent = eventDate.isBefore(today, 'day');
         
         // Determine truncation length based on viewport width
