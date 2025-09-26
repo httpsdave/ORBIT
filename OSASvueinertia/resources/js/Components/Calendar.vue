@@ -223,8 +223,22 @@
       </div>
       <div class="space-y-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Event Title</label>
-          <input v-model="eventForm.title" type="text" class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" />
+          <div class="relative group">
+            <input 
+              v-model="eventForm.title" 
+              type="text" 
+              id="event-title"
+              class="peer w-full rounded-md border border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 sm:py-2.5 text-sm sm:text-base placeholder-transparent transition-all duration-300"
+              placeholder="Event Title"
+            />
+            <label 
+              for="event-title"
+              class="floating-label absolute left-3 top-2 sm:top-2.5 text-sm sm:text-base text-gray-500 dark:text-gray-400 pointer-events-none peer-focus:floating-label-active peer-[:not(:placeholder-shown)]:floating-label-active"
+              :class="eventForm.title ? 'floating-label-active' : ''"
+            >
+              Event Title
+            </label>
+          </div>
         </div>
         
         <!-- Date Fields Section -->
@@ -237,12 +251,41 @@
           </h4>
           <div class="grid grid-cols-2 gap-3 sm:gap-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Start Date</label>
-              <input v-model="eventForm.date" type="date" class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" />
+              <div class="relative group">
+                <input 
+                  v-model="eventForm.date" 
+                  type="date" 
+                  id="event-start-date"
+                  class="peer w-full rounded-md border border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 sm:py-2.5 text-sm sm:text-base placeholder-transparent transition-all duration-300"
+                  placeholder="Start Date"
+                />
+                <label 
+                  for="event-start-date"
+                  class="floating-label absolute left-3 top-2 sm:top-2.5 text-sm sm:text-base text-gray-500 dark:text-gray-400 pointer-events-none peer-focus:floating-label-active peer-[:not(:placeholder-shown)]:floating-label-active"
+                  :class="eventForm.date ? 'floating-label-active' : ''"
+                >
+                  Start Date
+                </label>
+              </div>
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">End Date</label>
-              <input v-model="eventForm.end_date" type="date" :min="eventForm.date" class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" />
+              <div class="relative group">
+                <input 
+                  v-model="eventForm.end_date" 
+                  type="date" 
+                  id="event-end-date"
+                  :min="eventForm.date"
+                  class="peer w-full rounded-md border border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 sm:py-2.5 text-sm sm:text-base placeholder-transparent transition-all duration-300"
+                  placeholder="End Date"
+                />
+                <label 
+                  for="event-end-date"
+                  class="floating-label absolute left-3 top-2 sm:top-2.5 text-sm sm:text-base text-gray-500 dark:text-gray-400 pointer-events-none peer-focus:floating-label-active peer-[:not(:placeholder-shown)]:floating-label-active"
+                  :class="eventForm.end_date ? 'floating-label-active' : ''"
+                >
+                  End Date
+                </label>
+              </div>
             </div>
           </div>
         </div>
@@ -257,8 +300,22 @@
           </h4>
           <div class="flex items-center gap-2 sm:gap-3">
             <div class="flex-shrink-0">
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Start Time</label>
-              <input v-model="eventForm.start_time" type="time" class="block w-28 sm:w-36 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" />
+              <div class="relative group">
+                <input 
+                  v-model="eventForm.start_time" 
+                  type="time" 
+                  id="event-start-time"
+                  class="peer w-28 sm:w-36 rounded-md border border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 sm:py-2.5 text-sm sm:text-base placeholder-transparent transition-all duration-300"
+                  placeholder="Start Time"
+                />
+                <label 
+                  for="event-start-time"
+                  class="floating-label absolute left-3 top-2 sm:top-2.5 text-sm sm:text-base text-gray-500 dark:text-gray-400 pointer-events-none peer-focus:floating-label-active peer-[:not(:placeholder-shown)]:floating-label-active"
+                  :class="eventForm.start_time ? 'floating-label-active' : ''"
+                >
+                  Start Time
+                </label>
+              </div>
             </div>
             
             <div class="flex-shrink-0 mt-6">
@@ -266,22 +323,78 @@
             </div>
             
             <div class="flex-shrink-0">
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">End Time</label>
-              <input v-model="eventForm.end_time" type="time" class="block w-28 sm:w-36 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" />
+              <div class="relative group">
+                <input 
+                  v-model="eventForm.end_time" 
+                  type="time" 
+                  id="event-end-time"
+                  class="peer w-28 sm:w-36 rounded-md border border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 sm:py-2.5 text-sm sm:text-base placeholder-transparent transition-all duration-300"
+                  placeholder="End Time"
+                />
+                <label 
+                  for="event-end-time"
+                  class="floating-label absolute left-3 top-2 sm:top-2.5 text-sm sm:text-base text-gray-500 dark:text-gray-400 pointer-events-none peer-focus:floating-label-active peer-[:not(:placeholder-shown)]:floating-label-active"
+                  :class="eventForm.end_time ? 'floating-label-active' : ''"
+                >
+                  End Time
+                </label>
+              </div>
             </div>
           </div>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
-          <textarea v-model="eventForm.description" rows="3" class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 resize-none"></textarea>
+          <div class="relative group">
+            <textarea 
+              v-model="eventForm.description" 
+              rows="3" 
+              id="event-description"
+              class="peer w-full rounded-md border border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 resize-none px-3 py-2 sm:py-2.5 text-sm sm:text-base placeholder-transparent transition-all duration-300"
+              placeholder="Description"
+            ></textarea>
+            <label 
+              for="event-description"
+              class="floating-label absolute left-3 top-2 sm:top-2.5 text-sm sm:text-base text-gray-500 dark:text-gray-400 pointer-events-none peer-focus:floating-label-active peer-[:not(:placeholder-shown)]:floating-label-active"
+              :class="eventForm.description ? 'floating-label-active' : ''"
+            >
+              Description
+            </label>
+          </div>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Location</label>
-          <input v-model="eventForm.location" type="text" class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" placeholder="Event location (optional)" />
+          <div class="relative group">
+            <input 
+              v-model="eventForm.location" 
+              type="text" 
+              id="event-location"
+              class="peer w-full rounded-md border border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 sm:py-2.5 text-sm sm:text-base placeholder-transparent transition-all duration-300"
+              placeholder="Location"
+            />
+            <label 
+              for="event-location"
+              class="floating-label absolute left-3 top-2 sm:top-2.5 text-sm sm:text-base text-gray-500 dark:text-gray-400 pointer-events-none peer-focus:floating-label-active peer-[:not(:placeholder-shown)]:floating-label-active"
+              :class="eventForm.location ? 'floating-label-active' : ''"
+            >
+              Location
+            </label>
+          </div>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Organization</label>
-          <input v-model="eventForm.organization" type="text" class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" placeholder="Organizing institution (optional)" />
+          <div class="relative group">
+            <input 
+              v-model="eventForm.organization" 
+              type="text" 
+              id="event-organization"
+              class="peer w-full rounded-md border border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 sm:py-2.5 text-sm sm:text-base placeholder-transparent transition-all duration-300"
+              placeholder="Organization"
+            />
+            <label 
+              for="event-organization"
+              class="floating-label absolute left-3 top-2 sm:top-2.5 text-sm sm:text-base text-gray-500 dark:text-gray-400 pointer-events-none peer-focus:floating-label-active peer-[:not(:placeholder-shown)]:floating-label-active"
+              :class="eventForm.organization ? 'floating-label-active' : ''"
+            >
+              Organization
+            </label>
+          </div>
         </div>
         <div class="pt-4 flex justify-end space-x-3">
           <button 
@@ -883,6 +996,66 @@
       background-color: rgba(59, 130, 246, 0.06);
       cursor: pointer;
       transform: translateY(-1px);
+    }
+
+    /* Floating label animations for modal inputs */
+    .floating-label {
+      transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+      transform-origin: left top;
+      will-change: transform, color, background-color;
+    }
+
+    .floating-label-active {
+      transform: translateY(-1.25rem) translateX(-0.5rem) scale(0.75) !important;
+      color: #3B82F6 !important;
+      background-color: rgba(255, 255, 255, 0.9) !important;
+      padding: 0.125rem 0.25rem !important;
+      border-radius: 0.25rem !important;
+    }
+
+    /* Dark mode floating label background */
+    .dark .floating-label-active {
+      background-color: rgba(31, 41, 55, 0.9) !important;
+      color: #60A5FA !important;
+    }
+
+    /* Peer-based animations for smooth transitions */
+    .peer:focus ~ .floating-label {
+      transform: translateY(-1.25rem) translateX(-0.5rem) scale(0.75);
+      color: #3B82F6;
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 0.125rem 0.25rem;
+      border-radius: 0.25rem;
+    }
+
+    .dark .peer:focus ~ .floating-label {
+      background-color: rgba(31, 41, 55, 0.9);
+      color: #60A5FA;
+    }
+
+    .peer:not(:placeholder-shown) ~ .floating-label {
+      transform: translateY(-1.25rem) translateX(-0.5rem) scale(0.75);
+      color: #3B82F6;
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 0.125rem 0.25rem;
+      border-radius: 0.25rem;
+    }
+
+    .dark .peer:not(:placeholder-shown) ~ .floating-label {
+      background-color: rgba(31, 41, 55, 0.9);
+      color: #60A5FA;
+    }
+
+    /* Responsive adjustments */
+    @media (min-width: 640px) {
+      .floating-label-active {
+        transform: translateY(-1.375rem) translateX(-0.5rem) scale(0.75) !important;
+      }
+      
+      .peer:focus ~ .floating-label,
+      .peer:not(:placeholder-shown) ~ .floating-label {
+        transform: translateY(-1.375rem) translateX(-0.5rem) scale(0.75);
+      }
     }
 
     /* Subtle indicator for admin clickable dates */
