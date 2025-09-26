@@ -4,7 +4,7 @@
     class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
     @click.self="cancel"
   >
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 max-w-md w-full mx-4 transform transition-all duration-300 scale-100">
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 max-w-lg w-full mx-4 transform transition-all duration-300 scale-100">
       <!-- Icon and Header -->
       <div class="flex items-center justify-center mb-4">
         <div class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center"
@@ -18,8 +18,11 @@
       </div>
 
       <div class="text-center mb-6">
-        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">{{ title }}</h3>
-        <p class="text-sm text-gray-600 dark:text-gray-400">{{ message }}</p>
+        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2 break-words">{{ title }}</h3>
+        <!-- Message container: allow long titles to wrap and modal to scroll if needed -->
+        <div class="text-sm text-gray-600 dark:text-gray-400 max-h-48 overflow-y-auto px-2">
+          <p class="whitespace-pre-line break-words">{{ message }}</p>
+        </div>
       </div>
 
       <!-- Colored banner -->
@@ -31,7 +34,7 @@
       </div>
 
       <!-- Action Buttons -->
-      <div class="flex justify-end space-x-3">
+  <div class="flex justify-end space-x-3 mt-3">
         <button 
           @click="cancel"
           class="inline-flex items-center justify-center px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-xl shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 hover:text-gray-900 dark:hover:text-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500 dark:focus:ring-gray-400 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-all duration-300 relative overflow-hidden group"

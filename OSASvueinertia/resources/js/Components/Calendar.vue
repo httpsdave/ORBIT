@@ -1219,6 +1219,8 @@ export default {
     
     const isEditing = ref(false);
     const currentEditId = ref(null);
+  // Track whether we came from viewing an event so we can return there on cancel
+  const wasViewingBeforeEdit = ref(false);
     const checkEventsTimer = ref(null);
     const showPastEventsModal = ref(false);
     
@@ -1486,6 +1488,10 @@ export default {
       if (event) {
         eventToDelete.value = event;
         deleteFromPastEvents.value = true;
+        // If the event details modal is open, close it before showing confirmation
+        if (showEventDetailsModal.value) {
+          showEventDetailsModal.value = false;
+        }
         showDeleteConfirmation.value = true;
         // Close the past events modal while showing confirmation
         showPastEventsModal.value = false;
@@ -1589,8 +1595,10 @@ export default {
     
     function editEvent(event) {
       if (!props.isAdmin) return; // Safety check
+      // Track if the user was viewing the event details so we can reopen on cancel
+      wasViewingBeforeEdit.value = !!showEventDetailsModal.value;
       // Close the event details modal if open
-      closeEventDetailsModal();
+      if (showEventDetailsModal.value) closeEventDetailsModal();
       // Switch to edit mode
       isEditing.value = true;
       currentEditId.value = event.id;
@@ -1708,8 +1716,15 @@ export default {
     }
     
     function cancelEdit() {
+      // If editing was started from viewing the event, after cancel we should return to view modal
+      const reopenView = wasViewingBeforeEdit.value && selectedEvent.value;
       resetForm();
       clearFormErrors();
+      wasViewingBeforeEdit.value = false;
+      if (reopenView) {
+        selectedEvent.value = events.value.find(e => e.id === currentEditId.value) || selectedEvent.value;
+        showEventDetailsModal.value = true;
+      }
     }
     
     function resetForm() {
@@ -1732,6 +1747,10 @@ export default {
       const event = events.value.find(e => e.id === eventId);
       if (event) {
         eventToDelete.value = event;
+        // If the event details modal is open, close it before showing confirmation
+        if (showEventDetailsModal.value) {
+          showEventDetailsModal.value = false;
+        }
         showDeleteConfirmation.value = true;
       }
     }
@@ -1803,9 +1822,14 @@ export default {
         showPastEventsModal.value = true;
         deleteFromPastEvents.value = false;
       }
-      
+      // Close delete confirmation and, if there was a selectedEvent, reopen the view details modal
       showDeleteConfirmation.value = false;
+      const reopenedEvent = eventToDelete.value || selectedEvent.value;
       eventToDelete.value = null;
+      if (reopenedEvent) {
+        selectedEvent.value = reopenedEvent;
+        showEventDetailsModal.value = true;
+      }
     }
     
     function showPastDateWarning(message, callback) {
@@ -1835,6 +1859,10 @@ export default {
       const event = events.value.find(e => e.id === eventId);
       if (event) {
         eventToCancel.value = event;
+        // If the event details modal is open, close it before showing confirmation
+        if (showEventDetailsModal.value) {
+          showEventDetailsModal.value = false;
+        }
         showCancelConfirmation.value = true;
       }
     }
@@ -1883,8 +1911,15 @@ export default {
     }
     
     function cancelCancelEvent() {
+      // Close cancel confirmation and, if there was a selectedEvent, reopen the event details modal
       showCancelConfirmation.value = false;
+      const reopenedEvent = eventToCancel.value || selectedEvent.value;
       eventToCancel.value = null;
+      if (reopenedEvent) {
+        selectedEvent.value = reopenedEvent;
+        // Reopen view modal
+        showEventDetailsModal.value = true;
+      }
     }
 
     
