@@ -480,10 +480,10 @@
       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
       @click.self="closeEventDetailsModal"
     >
-      <div class="bg-white rounded-lg shadow-lg p-6 max-w-md w-full mx-4">
+      <div class="bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-100 rounded-lg shadow-lg p-6 max-w-md w-full mx-4">
       <div class="flex justify-between items-center mb-4">
-        <h3 class="text-lg font-semibold text-gray-800 break-words overflow-wrap-anywhere max-w-[90%]">{{selectedEvent.title}}</h3>
-        <button @click="closeEventDetailsModal" class="text-gray-400 hover:text-gray-600 p-2 rounded-lg hover:bg-gray-100 transition-all duration-200">
+        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 break-words overflow-wrap-anywhere max-w-[90%]">{{selectedEvent.title}}</h3>
+        <button @click="closeEventDetailsModal" class="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-200 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
@@ -500,37 +500,37 @@
       
       <div class="space-y-4">
         <div class="flex space-x-4">
-          <div class="flex-shrink-0 bg-blue-50 rounded-lg p-3 text-center border-l-4 border-blue-500">
-            <span class="text-sm font-medium text-blue-500">{{ formatDate(selectedEvent.start_date, 'MMM') }}</span>
-            <p class="text-xl font-bold text-gray-800">{{ formatDate(selectedEvent.start_date, 'DD') }}</p>
+          <div class="flex-shrink-0 bg-blue-50 dark:bg-blue-900 rounded-lg p-3 text-center border-l-4 border-blue-500">
+            <span class="text-sm font-medium text-blue-500 dark:text-blue-200">{{ formatDate(selectedEvent.start_date, 'MMM') }}</span>
+            <p class="text-xl font-bold text-gray-800 dark:text-gray-100">{{ formatDate(selectedEvent.start_date, 'DD') }}</p>
           </div>
           <div>
-            <p class="font-medium text-gray-700">
+            <p class="font-medium text-gray-700 dark:text-gray-100">
               <template v-if="selectedEvent.end_date && formatDate(selectedEvent.start_date, 'YYYY-MM-DD') !== formatDate(selectedEvent.end_date, 'YYYY-MM-DD')">
                 {{ formatDate(selectedEvent.start_date, 'dddd, MMMM D, YYYY') }}<br>
-                <span class="text-gray-600">{{ formatDate(selectedEvent.start_date, 'h:mm A') }} - </span>
+                <span class="text-gray-600 dark:text-gray-300">{{ formatDate(selectedEvent.start_date, 'h:mm A') }} - </span>
                 <br>
                 {{ formatDate(selectedEvent.end_date, 'dddd, MMMM D, YYYY') }}<br>
-                <span class="text-gray-600">{{ formatDate(selectedEvent.end_date, 'h:mm A') }}</span>
+                <span class="text-gray-600 dark:text-gray-300">{{ formatDate(selectedEvent.end_date, 'h:mm A') }}</span>
               </template>
               <template v-else>
                 {{ formatDate(selectedEvent.start_date, 'dddd, MMMM D, YYYY') }}<br>
-                <span class="text-gray-600">{{ formatDate(selectedEvent.start_date, 'h:mm A') }} - {{ formatDate(selectedEvent.end_date || selectedEvent.start_date, 'h:mm A') }}</span>
+                <span class="text-gray-600 dark:text-gray-300">{{ formatDate(selectedEvent.start_date, 'h:mm A') }} - {{ formatDate(selectedEvent.end_date || selectedEvent.start_date, 'h:mm A') }}</span>
               </template>
             </p>
           </div>
         </div>
-        <div v-if="selectedEvent.description" class="mt-4 bg-gray-50 p-4 rounded-lg max-h-40 overflow-y-auto">
-          <p class="text-sm text-gray-600 font-medium mb-2">Description:</p>
-          <p class="text-gray-700 whitespace-pre-line break-words overflow-wrap-anywhere">{{selectedEvent.description}}</p>
+        <div v-if="selectedEvent.description" class="mt-4 bg-gray-50 dark:bg-gray-700 p-4 rounded-lg max-h-40 overflow-y-auto">
+          <p class="text-sm text-gray-600 dark:text-gray-300 font-medium mb-2">Description:</p>
+          <p class="text-gray-700 dark:text-gray-100 whitespace-pre-line break-words overflow-wrap-anywhere">{{selectedEvent.description}}</p>
         </div>
-        <div v-if="selectedEvent.location" class="mt-4 bg-blue-50 p-4 rounded-lg">
-          <p class="text-sm text-blue-600 font-medium mb-2">Location:</p>
-          <p class="text-gray-700 whitespace-pre-line break-words overflow-wrap-anywhere">{{selectedEvent.location}}</p>
+        <div v-if="selectedEvent.location" class="mt-4 bg-blue-50 dark:bg-blue-900 p-4 rounded-lg">
+          <p class="text-sm text-blue-600 dark:text-blue-200 font-medium mb-2">Location:</p>
+          <p class="text-gray-700 dark:text-gray-100 whitespace-pre-line break-words overflow-wrap-anywhere">{{selectedEvent.location}}</p>
         </div>
-        <div v-if="selectedEvent.organization" class="mt-4 bg-green-50 p-4 rounded-lg">
-          <p class="text-sm text-green-600 font-medium mb-2">Organization:</p>
-          <p class="text-gray-700 whitespace-pre-line break-words overflow-wrap-anywhere">{{selectedEvent.organization}}</p>
+        <div v-if="selectedEvent.organization" class="mt-4 bg-green-50 dark:bg-green-900 p-4 rounded-lg">
+          <p class="text-sm text-green-600 dark:text-green-200 font-medium mb-2">Organization:</p>
+          <p class="text-gray-700 dark:text-gray-100 whitespace-pre-line break-words overflow-wrap-anywhere">{{selectedEvent.organization}}</p>
         </div>
         <div v-if="isAdmin" class="flex justify-end space-x-2 mt-4">
           <button @click="editEvent(selectedEvent)" class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-sm font-medium text-white rounded-xl shadow-md hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group">
@@ -1276,8 +1276,9 @@ export default {
 
     // Prevent background scrolling when Create/Edit modal is open
     const isModalOpen = computed(() => {
-      // Modal is considered open when either extractedData (create) or isEditing (edit) is truthy
-      return !!(extractedData.value || isEditing.value);
+      // Modal is considered open when either extractedData (create), isEditing (edit),
+      // or showEventDetailsModal (view details) is truthy
+      return !!(extractedData.value || isEditing.value || showEventDetailsModal.value);
     });
 
     // Strong body lock: save scroll position, set body fixed to prevent background scroll/overscroll
