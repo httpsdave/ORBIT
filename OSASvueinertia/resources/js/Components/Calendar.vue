@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full pb-4 sm:pb-8 px-2 sm:px-0">
+  <div class="w-full pb-4 sm:pb-8 px-1 sm:px-0">
   
   <!-- Status Banner -->
   <StatusBanner
@@ -17,9 +17,9 @@
     <div class="w-1/4 h-1.5 bg-red-500 " style="animation-delay: 0.8s;"></div>
   </div>
   
-  <h1 class="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-gray-800 dark:text-gray-100 px-2 sm:px-0">Event Calendar</h1>
+  <h1 class="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-gray-800 dark:text-gray-100 px-1 sm:px-0">Event Calendar</h1>
   
-  <div class="mb-4 sm:mb-6 grid gap-4 sm:gap-6 md:grid-cols-2 px-2 sm:px-0">
+  <div class="mb-4 sm:mb-6 grid gap-4 sm:gap-6 md:grid-cols-2 px-1 sm:px-0">
     <!-- Left panel - only visible to admins -->
     <div v-if="isAdmin" class="md:col-span-1">
         <div v-if="isAdmin" class="md:col-span-1">
@@ -42,7 +42,7 @@
 </div>
 
 <!-- View Toggle and Actions - Mobile Optimized -->
-<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 gap-3 sm:gap-4 px-2 sm:px-0">
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 gap-3 sm:gap-4 px-1 sm:px-0">
   <!-- View Toggle Switch -->
   <div class="flex items-center bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
     <button 
@@ -88,7 +88,7 @@
 </div>
 
   <!-- Main Content Container with 3D Flip Animation - Mobile Optimized -->
-  <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden min-h-96 mx-2 sm:mx-0" style="perspective: 1000px;">
+  <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden min-h-96 mx-1 sm:mx-0" style="perspective: 1000px;">
     <!-- Calendar View -->
     <div 
       :class="[
@@ -105,7 +105,7 @@
          ]"
          style="backface-visibility: hidden; will-change: opacity;"
        >
-        <div class="p-3 sm:p-5">
+        <div class="p-2 sm:p-5">
           <!-- Custom calendar header with your color scheme -->
           <div class="mb-4 sm:mb-6">
             <!-- Colored banner for the calendar -->
@@ -2637,9 +2637,19 @@ function exportPastEventsCsv(pastEvents) {
     margin-bottom: 2rem;
   }
   
-  /* Fix calendar overflow on mobile */
+  /* Fix calendar overflow on mobile and optimize spacing */
   :deep(.fc) {
     font-size: 0.75rem;
+  }
+  
+  /* Reduce calendar internal padding on mobile */
+  :deep(.fc-header-toolbar) {
+    padding: 0.5rem 0;
+  }
+  
+  /* Optimize calendar table spacing */
+  :deep(.fc-daygrid-day) {
+    padding: 0.125rem;
   }
   
   :deep(.fc .fc-toolbar) {
@@ -2716,7 +2726,7 @@ function exportPastEventsCsv(pastEvents) {
 
 /* Additional mobile fixes */
 @media (max-width: 640px) {
-  /* Extra small screens */
+  /* Extra small screens - remove side margins completely */
   .main-content {
     padding-bottom: 3rem;
   }
@@ -2725,6 +2735,16 @@ function exportPastEventsCsv(pastEvents) {
   .flip-container {
     height: auto !important;
     min-height: auto !important;
+  }
+  
+  /* Remove any remaining side padding on very small screens */
+  :deep(.fc-toolbar) {
+    padding: 0.25rem;
+  }
+  
+  /* Optimize day cell size for mobile */
+  :deep(.fc-daygrid-day-frame) {
+    padding: 0.125rem;
   }
   
   /* Further reduce calendar font sizes */
@@ -2770,9 +2790,20 @@ function exportPastEventsCsv(pastEvents) {
     max-width: 100%;
   }
   
-  /* Adjust calendar wrapper padding */
+  /* Adjust calendar wrapper padding and ensure full width usage */
   .calendar-wrapper {
-    padding: 0.5rem;
+    padding: 0.25rem;
+    width: 100%;
+  }
+  
+  /* Ensure calendar table uses full available width */
+  :deep(.fc-scrollgrid) {
+    width: 100% !important;
+  }
+  
+  /* Optimize calendar cells for better space usage */
+  :deep(.fc-daygrid-day-top) {
+    padding: 0.125rem;
   }
 }
 
