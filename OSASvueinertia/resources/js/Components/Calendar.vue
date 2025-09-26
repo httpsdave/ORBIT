@@ -1273,6 +1273,65 @@ export default {
         formErrors[key] = '';
       });
     };
+
+    // Prevent background scrolling when Create/Edit modal is open
+    const isModalOpen = computed(() => {
+      // Modal is considered open when either extractedData (create) or isEditing (edit) is truthy
+      return !!(extractedData.value || isEditing.value);
+    });
+
+    // Strong body lock: save scroll position, set body fixed to prevent background scroll/overscroll
+    let _savedBodyScroll = null;
+    const lockBodyScroll = () => {
+      try {
+        // Save current scroll position
+        _savedBodyScroll = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
+        // Set fixed positioning to prevent scroll (keeps visual position)
+        document.body.style.position = 'fixed';
+        document.body.style.top = `-${_savedBodyScroll}px`;
+        document.body.style.left = '0';
+        document.body.style.right = '0';
+        document.body.style.width = '100%';
+        document.body.style.overflow = 'hidden';
+        // Improve mobile behavior
+        document.documentElement.style.touchAction = 'none';
+        document.documentElement.style.overscrollBehavior = 'none';
+      } catch (e) {
+        // ignore server-side or non-DOM environments
+      }
+    };
+
+    const unlockBodyScroll = () => {
+      try {
+        // Restore styles
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.left = '';
+        document.body.style.right = '';
+        document.body.style.width = '';
+        document.body.style.overflow = '';
+        document.documentElement.style.touchAction = '';
+        document.documentElement.style.overscrollBehavior = '';
+
+        // Restore scroll position
+        if (_savedBodyScroll !== null) {
+          window.scrollTo(0, _savedBodyScroll);
+          _savedBodyScroll = null;
+        }
+      } catch (e) {
+        // ignore
+      }
+    };
+
+    // Watch modal state and toggle body overflow
+    watch(isModalOpen, (open) => {
+      if (open) lockBodyScroll(); else unlockBodyScroll();
+    }, { immediate: true });
+
+    // Ensure body scroll is restored if component unmounts while modal is open
+    onUnmounted(() => {
+      unlockBodyScroll();
+    });
     
     // Filter out expired and cancelled events for display
     const filterExpiredEvents = () => {
