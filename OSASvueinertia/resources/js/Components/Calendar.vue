@@ -228,8 +228,14 @@
               v-model="eventForm.title" 
               type="text" 
               id="event-title"
-              class="peer w-full rounded-md border border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 sm:py-2.5 text-sm sm:text-base placeholder-transparent transition-all duration-300"
+              :class="[
+                'peer w-full rounded-md border shadow-sm focus:ring-2 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 sm:py-2.5 text-sm sm:text-base placeholder-transparent transition-all duration-300',
+                formErrors.title 
+                  ? 'border-red-300 dark:border-red-600 focus:border-red-500 dark:focus:border-red-400 focus:ring-red-200 dark:focus:ring-red-600' 
+                  : 'border-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-blue-200 dark:focus:ring-blue-600'
+              ]"
               placeholder="Event Title"
+              @input="formErrors.title = ''"
             />
             <label 
               for="event-title"
@@ -239,6 +245,7 @@
               Event Title
             </label>
           </div>
+          <p v-if="formErrors.title" class="mt-1 text-sm text-red-600 dark:text-red-400">{{ formErrors.title }}</p>
         </div>
         
         <!-- Date Fields Section -->
@@ -256,8 +263,14 @@
                   v-model="eventForm.date" 
                   type="date" 
                   id="event-start-date"
-                  class="peer w-full rounded-md border border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 sm:py-2.5 text-sm sm:text-base placeholder-transparent transition-all duration-300"
+                  :class="[
+                    'peer w-full rounded-md border shadow-sm focus:ring-2 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 sm:py-2.5 text-sm sm:text-base placeholder-transparent transition-all duration-300',
+                    formErrors.start_date 
+                      ? 'border-red-300 dark:border-red-600 focus:border-red-500 dark:focus:border-red-400 focus:ring-red-200 dark:focus:ring-red-600' 
+                      : 'border-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-blue-200 dark:focus:ring-blue-600'
+                  ]"
                   placeholder="Start Date"
+                  @input="formErrors.start_date = ''"
                 />
                 <label 
                   for="event-start-date"
@@ -267,6 +280,7 @@
                   Start Date
                 </label>
               </div>
+              <p v-if="formErrors.start_date" class="mt-1 text-sm text-red-600 dark:text-red-400">{{ formErrors.start_date }}</p>
             </div>
             <div>
               <div class="relative group">
@@ -275,8 +289,14 @@
                   type="date" 
                   id="event-end-date"
                   :min="eventForm.date"
-                  class="peer w-full rounded-md border border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 sm:py-2.5 text-sm sm:text-base placeholder-transparent transition-all duration-300"
+                  :class="[
+                    'peer w-full rounded-md border shadow-sm focus:ring-2 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 sm:py-2.5 text-sm sm:text-base placeholder-transparent transition-all duration-300',
+                    formErrors.end_date 
+                      ? 'border-red-300 dark:border-red-600 focus:border-red-500 dark:focus:border-red-400 focus:ring-red-200 dark:focus:ring-red-600' 
+                      : 'border-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-blue-200 dark:focus:ring-blue-600'
+                  ]"
                   placeholder="End Date"
+                  @input="formErrors.end_date = ''"
                 />
                 <label 
                   for="event-end-date"
@@ -286,6 +306,7 @@
                   End Date
                 </label>
               </div>
+              <p v-if="formErrors.end_date" class="mt-1 text-sm text-red-600 dark:text-red-400">{{ formErrors.end_date }}</p>
             </div>
           </div>
         </div>
@@ -305,8 +326,14 @@
                   v-model="eventForm.start_time" 
                   type="time" 
                   id="event-start-time"
-                  class="peer w-28 sm:w-36 rounded-md border border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 sm:py-2.5 text-sm sm:text-base placeholder-transparent transition-all duration-300"
+                  :class="[
+                    'peer w-28 sm:w-36 rounded-md border shadow-sm focus:ring-2 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 sm:py-2.5 text-sm sm:text-base placeholder-transparent transition-all duration-300',
+                    formErrors.start_time 
+                      ? 'border-red-300 dark:border-red-600 focus:border-red-500 dark:focus:border-red-400 focus:ring-red-200 dark:focus:ring-red-600' 
+                      : 'border-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-blue-200 dark:focus:ring-blue-600'
+                  ]"
                   placeholder="Start Time"
+                  @input="formErrors.start_time = ''"
                 />
                 <label 
                   for="event-start-time"
@@ -316,6 +343,7 @@
                   Start Time
                 </label>
               </div>
+              <p v-if="formErrors.start_time" class="mt-1 text-sm text-red-600 dark:text-red-400">{{ formErrors.start_time }}</p>
             </div>
             
             <div class="flex-shrink-0 mt-6">
@@ -328,8 +356,14 @@
                   v-model="eventForm.end_time" 
                   type="time" 
                   id="event-end-time"
-                  class="peer w-28 sm:w-36 rounded-md border border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 sm:py-2.5 text-sm sm:text-base placeholder-transparent transition-all duration-300"
+                  :class="[
+                    'peer w-28 sm:w-36 rounded-md border shadow-sm focus:ring-2 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 sm:py-2.5 text-sm sm:text-base placeholder-transparent transition-all duration-300',
+                    formErrors.end_time 
+                      ? 'border-red-300 dark:border-red-600 focus:border-red-500 dark:focus:border-red-400 focus:ring-red-200 dark:focus:ring-red-600' 
+                      : 'border-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-blue-200 dark:focus:ring-blue-600'
+                  ]"
                   placeholder="End Time"
+                  @input="formErrors.end_time = ''"
                 />
                 <label 
                   for="event-end-time"
@@ -339,6 +373,7 @@
                   End Time
                 </label>
               </div>
+              <p v-if="formErrors.end_time" class="mt-1 text-sm text-red-600 dark:text-red-400">{{ formErrors.end_time }}</p>
             </div>
           </div>
         </div>
@@ -348,8 +383,14 @@
               v-model="eventForm.description" 
               rows="3" 
               id="event-description"
-              class="peer w-full rounded-md border border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 resize-none px-3 py-2 sm:py-2.5 text-sm sm:text-base placeholder-transparent transition-all duration-300"
+              :class="[
+                'peer w-full rounded-md border shadow-sm focus:ring-2 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 resize-none px-3 py-2 sm:py-2.5 text-sm sm:text-base placeholder-transparent transition-all duration-300',
+                formErrors.description 
+                  ? 'border-red-300 dark:border-red-600 focus:border-red-500 dark:focus:border-red-400 focus:ring-red-200 dark:focus:ring-red-600' 
+                  : 'border-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-blue-200 dark:focus:ring-blue-600'
+              ]"
               placeholder="Description"
+              @input="formErrors.description = ''"
             ></textarea>
             <label 
               for="event-description"
@@ -359,6 +400,7 @@
               Description
             </label>
           </div>
+          <p v-if="formErrors.description" class="mt-1 text-sm text-red-600 dark:text-red-400">{{ formErrors.description }}</p>
         </div>
         <div>
           <div class="relative group">
@@ -366,8 +408,14 @@
               v-model="eventForm.location" 
               type="text" 
               id="event-location"
-              class="peer w-full rounded-md border border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 sm:py-2.5 text-sm sm:text-base placeholder-transparent transition-all duration-300"
+              :class="[
+                'peer w-full rounded-md border shadow-sm focus:ring-2 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 sm:py-2.5 text-sm sm:text-base placeholder-transparent transition-all duration-300',
+                formErrors.location 
+                  ? 'border-red-300 dark:border-red-600 focus:border-red-500 dark:focus:border-red-400 focus:ring-red-200 dark:focus:ring-red-600' 
+                  : 'border-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-blue-200 dark:focus:ring-blue-600'
+              ]"
               placeholder="Location"
+              @input="formErrors.location = ''"
             />
             <label 
               for="event-location"
@@ -377,6 +425,7 @@
               Location
             </label>
           </div>
+          <p v-if="formErrors.location" class="mt-1 text-sm text-red-600 dark:text-red-400">{{ formErrors.location }}</p>
         </div>
         <div>
           <div class="relative group">
@@ -384,8 +433,14 @@
               v-model="eventForm.organization" 
               type="text" 
               id="event-organization"
-              class="peer w-full rounded-md border border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-600 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 sm:py-2.5 text-sm sm:text-base placeholder-transparent transition-all duration-300"
+              :class="[
+                'peer w-full rounded-md border shadow-sm focus:ring-2 focus:ring-opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 sm:py-2.5 text-sm sm:text-base placeholder-transparent transition-all duration-300',
+                formErrors.organization 
+                  ? 'border-red-300 dark:border-red-600 focus:border-red-500 dark:focus:border-red-400 focus:ring-red-200 dark:focus:ring-red-600' 
+                  : 'border-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-blue-200 dark:focus:ring-blue-600'
+              ]"
               placeholder="Organization"
+              @input="formErrors.organization = ''"
             />
             <label 
               for="event-organization"
@@ -395,6 +450,7 @@
               Organization
             </label>
           </div>
+          <p v-if="formErrors.organization" class="mt-1 text-sm text-red-600 dark:text-red-400">{{ formErrors.organization }}</p>
         </div>
         <div class="pt-4 flex justify-end space-x-3">
           <button 
@@ -1200,6 +1256,24 @@ export default {
       organization: ''
     });
     
+    const formErrors = reactive({
+      title: '',
+      start_date: '',
+      end_date: '',
+      start_time: '',
+      end_time: '',
+      description: '',
+      location: '',
+      organization: ''
+    });
+    
+    // Clear form errors
+    const clearFormErrors = () => {
+      Object.keys(formErrors).forEach(key => {
+        formErrors[key] = '';
+      });
+    };
+    
     // Filter out expired and cancelled events for display
     const filterExpiredEvents = () => {
       // Show all events including cancelled ones - just filter by styling instead
@@ -1361,11 +1435,32 @@ export default {
     function saveEvent() {
       if (!props.isAdmin) return; // Safety check
       
+      // Clear previous errors
+      clearFormErrors();
+      
+      // Client-side validation
+      let hasErrors = false;
+      
+      if (!eventForm.title.trim()) {
+        formErrors.title = 'Event title is required';
+        hasErrors = true;
+      }
+      
+      if (!eventForm.date) {
+        formErrors.start_date = 'Start date is required';
+        hasErrors = true;
+      }
+      
+      // Stop if there are validation errors
+      if (hasErrors) {
+        return;
+      }
+      
       // Make sure end_date has a value, defaulting to start date if not provided
       const endDateStr = eventForm.end_date || eventForm.date;
       
-      const startDate = `${eventForm.date}T${eventForm.start_time || '00:00'}`;
-      const endDate = `${endDateStr}T${eventForm.end_time || '23:59'}`;
+      const startDate = `${eventForm.date}T${eventForm.start_time || '00:00'}:00`;
+      const endDate = `${endDateStr}T${eventForm.end_time || '23:59'}:00`;
       
       axios.post('/api/events', {
         title: eventForm.title,
@@ -1399,17 +1494,36 @@ export default {
         .catch(error => {
           if (error.response && error.response.status === 403) {
             alert('Unauthorized: You do not have permission to perform this action.');
-                      } else {
-              console.error('Error saving event:', error);
-              statusMessage.value = 'Failed to save event. Please try again.';
+          } else if (error.response && error.response.status === 422) {
+            // Handle validation errors
+            clearFormErrors();
+            if (error.response.data && error.response.data.errors) {
+              // Laravel validation errors format
+              Object.keys(error.response.data.errors).forEach(field => {
+                if (formErrors.hasOwnProperty(field)) {
+                  formErrors[field] = error.response.data.errors[field][0]; // Get first error message
+                }
+              });
+            } else if (error.response.data && error.response.data.message) {
+              // Single error message
+              statusMessage.value = error.response.data.message;
               showStatusBanner.value = true;
               statusType.value = 'error';
-              
-              // Auto-hide after 5 seconds
               setTimeout(() => {
                 showStatusBanner.value = false;
               }, 5000);
             }
+          } else {
+            // Handle other errors without console logging
+            statusMessage.value = 'Failed to save event. Please check your connection and try again.';
+            showStatusBanner.value = true;
+            statusType.value = 'error';
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+              showStatusBanner.value = false;
+            }, 5000);
+          }
         });
     }
     
@@ -1443,11 +1557,32 @@ export default {
     function updateEvent() {
       if (!props.isAdmin) return; // Safety check
       
+      // Clear previous errors
+      clearFormErrors();
+      
+      // Client-side validation
+      let hasErrors = false;
+      
+      if (!eventForm.title.trim()) {
+        formErrors.title = 'Event title is required';
+        hasErrors = true;
+      }
+      
+      if (!eventForm.date) {
+        formErrors.start_date = 'Start date is required';
+        hasErrors = true;
+      }
+      
+      // Stop if there are validation errors
+      if (hasErrors) {
+        return;
+      }
+      
       // Make sure end_date has a value, defaulting to start date if not provided
       const endDateStr = eventForm.end_date || eventForm.date;
       
-      const startDate = `${eventForm.date}T${eventForm.start_time || '00:00'}`;
-      const endDate = `${endDateStr}T${eventForm.end_time || '23:59'}`;
+      const startDate = `${eventForm.date}T${eventForm.start_time || '00:00'}:00`;
+      const endDate = `${endDateStr}T${eventForm.end_time || '23:59'}:00`;
       
       axios.put(`/api/events/${currentEditId.value}`, {
         title: eventForm.title,
@@ -1479,15 +1614,34 @@ export default {
         .catch(error => {
           if (error.response && error.response.status === 403) {
             alert('Unauthorized: You do not have permission to perform this action.');
-                      } else {
-              console.error('Error updating event:', error);
-              statusMessage.value = 'Failed to update event. Please try again.';
+          } else if (error.response && error.response.status === 422) {
+            // Handle validation errors
+            clearFormErrors();
+            if (error.response.data && error.response.data.errors) {
+              // Laravel validation errors format
+              Object.keys(error.response.data.errors).forEach(field => {
+                if (formErrors.hasOwnProperty(field)) {
+                  formErrors[field] = error.response.data.errors[field][0]; // Get first error message
+                }
+              });
+            } else if (error.response.data && error.response.data.message) {
+              // Single error message
+              statusMessage.value = error.response.data.message;
               showStatusBanner.value = true;
               statusType.value = 'error';
-              
-              // Auto-hide after 5 seconds
               setTimeout(() => {
                 showStatusBanner.value = false;
+              }, 5000);
+            }
+          } else {
+            // Handle other errors without console logging
+            statusMessage.value = 'Failed to update event. Please check your connection and try again.';
+            showStatusBanner.value = true;
+            statusType.value = 'error';
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+              showStatusBanner.value = false;
               }, 5000);
             }
         });
@@ -1495,6 +1649,7 @@ export default {
     
     function cancelEdit() {
       resetForm();
+      clearFormErrors();
     }
     
     function resetForm() {
@@ -2125,6 +2280,8 @@ function exportPastEventsCsv(pastEvents) {
       calendarOptions,
       extractedData,
       eventForm,
+      formErrors,
+      clearFormErrors,
       upcomingEvents,
       isEditing,
       isAdmin: props.isAdmin,
