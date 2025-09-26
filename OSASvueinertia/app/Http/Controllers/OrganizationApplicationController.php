@@ -1492,6 +1492,7 @@ class OrganizationApplicationController extends Controller
             'LSPU-OSAS-SF-009' => 'pdfs.organization_attendance',
             'LSPU-OSAS-SF-EVAL' => 'pdfs.organization_evaluation',
             'LSPU-OSAS-SF-EVALSHEET' => 'pdfs.organization_evalsheet',
+            'LSPU-OSAS-SF-STATUS' => 'pdfs.organization_statusreport',
         ];
 
         if (!isset($templateMap[$form_type])) {
@@ -1708,6 +1709,80 @@ class OrganizationApplicationController extends Controller
                     'form_type' => 'LSPU-OSAS-SF-EVALSHEET',
                 ],
             ],
+            'LSPU-OSAS-SF-STATUS' => [
+                'application' => (object)[
+                    'organization_name' => 'Sample Data',
+                    'president_name' => 'Sample Data',
+                    'coordinator_name' => 'Sample Data',
+                    'director_name' => 'Sample Data',
+                    'academic_year_start' => '2024',
+                    'academic_year_end' => '2025',
+                    'report_date' => now(),
+                    'form_type' => 'LSPU-OSAS-SF-STATUS',
+                ],
+                'activities' => [
+                    [
+                        'title' => 'Clean up Drive',
+                        'planned_date_from' => '2024-08-16',
+                        'planned_date_to' => '2024-08-16',
+                        'actual_date_from' => '2024-08-16',
+                        'actual_date_to' => '2024-08-16',
+                        'proposed_budget' => '0',
+                        'actual_expenditure' => '0',
+                        'target_male' => '40',
+                        'target_female' => '40',
+                        'actual_male' => '40',
+                        'actual_female' => '40',
+                        'status' => 'Completed',
+                        'justification' => '',
+                    ],
+                    [
+                        'title' => 'Freshmen Orientation',
+                        'planned_date_from' => '2024-08-28',
+                        'planned_date_to' => '2024-08-28',
+                        'actual_date_from' => '2024-08-28',
+                        'actual_date_to' => '2024-08-28',
+                        'proposed_budget' => '5000',
+                        'actual_expenditure' => '3154',
+                        'target_male' => '171',
+                        'target_female' => '171',
+                        'actual_male' => '197',
+                        'actual_female' => '197',
+                        'status' => 'Completed',
+                        'justification' => '',
+                    ],
+                    [
+                        'title' => 'Teacher\'s Day Appreciation',
+                        'planned_date_from' => '2024-10-01',
+                        'planned_date_to' => '2024-10-01',
+                        'actual_date_from' => '',
+                        'actual_date_to' => '',
+                        'proposed_budget' => '12000',
+                        'actual_expenditure' => '',
+                        'target_male' => '',
+                        'target_female' => '',
+                        'actual_male' => '',
+                        'actual_female' => '',
+                        'status' => 'Cancelled',
+                        'justification' => 'The activity was not conducted due to scheduling conflicts, as faculty members were occupied with BSCS accreditation preparations.',
+                    ],
+                    [
+                        'title' => 'Mobile Legend Campus Clash',
+                        'planned_date_from' => '2025-01-01',
+                        'planned_date_to' => '2025-01-01',
+                        'actual_date_from' => '2025-05-20',
+                        'actual_date_to' => '2025-05-20',
+                        'proposed_budget' => '0',
+                        'actual_expenditure' => '0',
+                        'target_male' => '60',
+                        'target_female' => '60',
+                        'actual_male' => '60',
+                        'actual_female' => '60',
+                        'status' => 'Completed Late',
+                        'justification' => 'The activity was completed later than scheduled as it was integrated into the CCS Fest.',
+                    ],
+                ],
+            ],
         ];
 
         $template = $templateMap[$form_type];
@@ -1742,8 +1817,9 @@ class OrganizationApplicationController extends Controller
             }
         }
 
+        $orientation = ($form_type === 'LSPU-OSAS-SF-STATUS') ? 'landscape' : 'portrait';
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView($template, $data)
-            ->setPaper('A4', 'portrait');
+            ->setPaper('A4', $orientation);
 
         $action = $request->query('action', 'view');
         $filename = 'Preview_' . $form_type . '.pdf';
