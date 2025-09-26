@@ -1276,11 +1276,17 @@ export default {
       });
     };
 
-    // Prevent background scrolling when Create/Edit modal is open
+    // Prevent background scrolling when any modal is open
     const isModalOpen = computed(() => {
-      // Modal is considered open when either extractedData (create), isEditing (edit),
-      // or showEventDetailsModal (view details) is truthy
-      return !!(extractedData.value || isEditing.value || showEventDetailsModal.value);
+      // Modal is considered open when any of these are truthy:
+      // - extractedData (create modal)
+      // - isEditing (edit modal) 
+      // - showEventDetailsModal (view details modal)
+      // - showDeleteConfirmation (delete confirmation modal)
+      // - showCancelConfirmation (cancel event confirmation modal)
+      // - showPastDateConfirmation (past date warning modal)
+      return !!(extractedData.value || isEditing.value || showEventDetailsModal.value || 
+                showDeleteConfirmation.value || showCancelConfirmation.value || showPastDateConfirmation.value);
     });
 
     // Strong body lock: save scroll position, set body fixed to prevent background scroll/overscroll
