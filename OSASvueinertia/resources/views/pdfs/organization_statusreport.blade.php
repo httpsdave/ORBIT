@@ -31,6 +31,8 @@
             font-size: 13px;
             margin: 0 0 0.5cm 0;
             padding-top: 0.3cm;
+            position: relative;
+            top: 40px;
         }
 
         .content {
@@ -39,14 +41,14 @@
 
         .logo {
             position: absolute;
-            top: -0.3cm;
-            left: -1cm;
-            width: 200px;
+            top: calc(-0.5cm );
+            left: -2cm;
+            width: 250px;
             height: auto;
         }
 
         .university-name {
-            max-width: 35%;
+            max-width: 23%;
             height: auto;
             margin: 4px 0;
             display: inline-block;
@@ -127,6 +129,20 @@
             padding-right: 100px;
         }
 
+        .signature {
+            margin-top: 15px;
+        }
+        
+        .signature p {
+            margin: 3px 0;
+        }
+
+        /* Shift the entire signatures/approval block down by 20px visually without affecting layout flow */
+        .signatures-wrapper {
+            position: relative;
+            top: 20px;
+        }
+
         .signature-line {
             display: inline-block;
             min-width: 200px;
@@ -141,6 +157,49 @@
             width: 200px;
             text-align: center;
             margin-top: 5px;
+        }
+
+        .title-text {
+            display: block;
+            width: 200px;
+            text-align: center;
+            white-space: nowrap;
+            font-size: 11pt;
+        }
+
+        .long-title {
+            width: 260px;
+            font-size: 11pt;
+        }
+
+        .left-align {
+            text-align: left;
+        }
+        
+        .left-align .signature-line {
+            text-align: center;
+        }
+        
+        .left-align .title-text {
+            margin-right: auto;
+        }
+
+        .center-align {
+            text-align: center;
+        }
+        
+        .center-align .signature-line {
+            text-align: center;
+        }
+        
+        .center-align .title-text {
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .respectfully-yours {
+            text-align: right;
+            padding-right: 110px;
         }
 
         .footer {
@@ -341,23 +400,49 @@
             </tbody>
         </table>
 
-        <div class="signature-section">
-            <p>Respectfully submitted,</p>
-            <div style="margin-top: 30px;">
-                <p><span class="signature-line"><strong>{{ isset($application->president_name) ? $application->president_name : 'ORGANIZATION PRESIDENT NAME' }}</strong></span></p>
-                <p><span class="signature-title">Organization President</span></p>
+        <div class="signatures-wrapper">
+            <div class="section left-align" style="margin-top: 40px;">
+                <p>Respectfully yours,</p>
             </div>
-            <div style="margin-top: 20px;">
-                <p><span class="signature-line"><strong>{{ isset($application->organization_name) ? $application->organization_name : 'ORGANIZATION NAME' }}</strong></span></p>
-                <p><span class="signature-title">Name of Organization</span></p>
+
+            <div class="signature left-align">
+                <p style="margin:0 0 1px 0;"><span class="signature-line"><strong>{{ $application->president_name ?? '' }}</strong></span></p>
+                <p style="text-align:left; margin-top: -12px;"><span class="title-text">Organization President</span></p>
+            </div>
+
+            <div class="section left-align" style="margin-top: 30px;">
+                <p><strong>NOTED:</strong></p>
+            </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div class="signature left-align" style="flex: 0 0 auto;">
+                <p style="margin:0 0 1px 0;"><span class="signature-line" style="min-width:220px;"><strong>{{ $application->adviser_name ?? '' }}</strong></span></p>
+                <p style="margin-top: -12px;"><span class="title-text">Adviser, Student Organization</span></p>
+            </div>
+
+            <div style="flex: 0 0 auto; text-align: right; position: relative; top: -60px;">
+                <div class="signature right-align" style="display: inline-block;">
+                    <p style="margin:0 0 1px 0;"><span class="signature-line" style="min-width:220px;"><strong>{{ $application->dean_name ?? '' }}</strong></span></p>
+                    <p style="margin-top: -12px; text-align: right;"><span class="title-text">Dean/Assoc. Dean of College</span></p>
+                </div>
+            </div>
+        </div>            <div class="section center-align" style="margin-top: 30px; margin-bottom: 0;">
+                <p style="margin-bottom: 0;"><strong>Recommending Approval:</strong></p>
+            </div>
+            <div class="signature center-align" style="margin-top: 0;">
+                <p style="margin-bottom: 0; margin-top: -10px;"><strong><span class="signature-line" style="min-width:270px;">{{ isset($application->coordinator_name) ? $application->coordinator_name : 'AL JOSHUA VILLAREAL' }}</span></strong></p>
+                <p style="margin-top: -8px; margin-bottom: 0;"><span class="title-text long-title">Coordinator, Student Organization Unit</span></p>
+            </div>
+
+            <div class="section center-align" style="margin-top: 30px; margin-bottom: 0;">
+                <p style="margin-bottom: 0;"><strong>Approved/Disapproved:</strong></p>
+            </div>
+            <div class="signature center-align" style="margin-top: 0;">
+                <p style="margin-bottom: 0; margin-top: -6px;"><strong><span class="signature-line" style="min-width:380px;">{{ isset($application->director_name) ? $application->director_name : 'DR. ALBERTO S. CASTILLO' }}</span></strong></p>
+                <p style="margin-top: -8px; margin-bottom: 0;"><span class="title-text long-title">Director/Chairperson, Office of Student Affairs and Services</span></p>
             </div>
         </div>
     </div>
 
-    <div class="footer">
-        <div class="footer-left">LSPU-OSAS-SF-STATUS</div>
-        <div class="footer-center">Rev.1</div>
-        <div class="footer-right">26 September 2025</div>
-    </div>
 </body>
 </html>
