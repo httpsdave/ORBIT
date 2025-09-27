@@ -1503,12 +1503,12 @@ class OrganizationApplicationController extends Controller
         $sampleData = [
             'LSPU-OSAS-SF-001' => [
                 'application' => (object)[
-                    'organization_name' => 'Sample Data',
-                    'president_name' => 'Sample Data',
-                    'adviser_name' => 'Sample Data',
-                    'dean_name' => 'Sample Data',
-                    'coordinator_name' => 'Sample Data',
-                    'director_name' => 'Sample Data',
+                    'organization_name' => '',
+                    'president_name' => '',
+                    'adviser_name' => '',
+                    'dean_name' => '',
+                    'coordinator_name' => '',
+                    'director_name' => '',
                     'application_date' => now(),
                     'form_type' => 'LSPU-OSAS-SF-001',
                 ],
