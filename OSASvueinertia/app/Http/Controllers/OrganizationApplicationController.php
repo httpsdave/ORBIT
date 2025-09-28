@@ -1712,7 +1712,7 @@ class OrganizationApplicationController extends Controller
             'LSPU-OSAS-SF-STATUS' => [
                 'application' => (object)[
                     'organization_name' => 'Sample Data',
-                    'president_name' => 'Sample Data',
+                    'president_name' => '',
                     'coordinator_name' => 'Sample Data',
                     'director_name' => 'Sample Data',
                     'academic_year_start' => '2024',
