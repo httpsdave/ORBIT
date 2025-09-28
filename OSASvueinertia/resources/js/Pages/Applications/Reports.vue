@@ -760,11 +760,13 @@ watch(showStatusModal, (val) => {
             <div class="p-6">
               <!-- Activity Header -->
               <div class="border-b dark:border-gray-700 pb-4 mb-6">
-                <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                  Activity {{ page.pageNumber }}
+                <h2 
+                  class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2 truncate"
+                  :title="page.activityData?.name && page.activityData.name.length > 50 ? page.activityData.name : undefined"
+                >
+                  {{ page.activityData?.name || `Activity ${page.pageNumber}` }}
                 </h2>
                 <div v-if="page.activityData" class="text-sm text-gray-600 dark:text-gray-400">
-                  <p><strong>Activity:</strong> {{ page.activityData.name || 'Not specified' }}</p>
                   <p><strong>Target Date:</strong> {{ page.activityData.target_date || 'Not specified' }}</p>
                   <p><strong>Target No. of Participants:</strong> {{ page.activityData.target_participants || 'Not specified' }}</p>
                 </div>
