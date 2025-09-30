@@ -1,5 +1,10 @@
+[variables]
+UPLOAD_MAX_FILESIZE = '50M'
+POST_MAX_SIZE = '50M'
+
 [phases.setup]
 nixPkgs = ['...', 'nodejs_18']
+cmds = ['UPLOAD_INI_PATH=$(find /nix/store/*-php-*/lib -name php.ini -print0 | head -z -n 1 | rev | cut -c 9- | rev)/upload.ini; echo "upload_max_filesize=${UPLOAD_MAX_FILESIZE};" >> $UPLOAD_INI_PATH; echo "post_max_size=${POST_MAX_SIZE};" >> $UPLOAD_INI_PATH']
 
 [phases.install]
 dependsOn = ['setup']
@@ -14,8 +19,7 @@ dependsOn = ['install']
 cmds = [
     'php artisan config:clear',
     'php artisan route:clear',
-    'php artisan view:clear'
+    'php artisan view:clear',
+    'php artisan migrate --force',
+    'php artisan storage:link'
 ]
-
-[start]
-cmd = 'bash startup.sh'
