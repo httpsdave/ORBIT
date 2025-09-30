@@ -246,10 +246,10 @@ const handleFileDrop = (e) => {
         return;
     }
     
-    // Check file size (10MB = 10 * 1024 * 1024 bytes)
-    const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+    // Check file size (20MB = 20 * 1024 * 1024 bytes)
+    const maxSize = 20 * 1024 * 1024; // 20MB in bytes
     if (file.size > maxSize) {
-        uploadError.value = 'The file you\'re attempting to upload is over the limit (10MB). Please compress your file and try again.';
+        uploadError.value = 'The file you\'re attempting to upload is over the limit (20MB). Please compress your file and try again.';
         return;
     }
     
@@ -270,10 +270,10 @@ const handleFileChange = (e) => {
         return;
     }
     
-    // Check file size (10MB = 10 * 1024 * 1024 bytes)
-    const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+    // Check file size (20MB = 20 * 1024 * 1024 bytes)
+    const maxSize = 20 * 1024 * 1024; // 20MB in bytes
     if (file.size > maxSize) {
-        uploadError.value = 'The file you\'re attempting to upload is over the limit (10MB). Please compress your file and try again.';
+        uploadError.value = 'The file you\'re attempting to upload is over the limit (20MB). Please compress your file and try again.';
         return;
     }
     
@@ -287,9 +287,9 @@ const handleDirectUploadSubmit = () => {
     }
     
     // Double-check file size before submitting
-    const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+    const maxSize = 20 * 1024 * 1024; // 20MB in bytes
     if (uploadFile.value.size > maxSize) {
-        uploadError.value = 'The file you\'re attempting to upload is over the limit (10MB). Please compress your file and try again.';
+        uploadError.value = 'The file you\'re attempting to upload is over the limit (20MB). Please compress your file and try again.';
         return;
     }
     
@@ -346,7 +346,7 @@ const handleDirectUploadSubmit = () => {
           </div>
           <div v-else>
             <p class="text-gray-500">Drag and drop a PDF file here, or click to select</p>
-            <p class="text-xs text-gray-400 mt-1">Maximum file size: 10MB</p>
+            <p class="text-xs text-gray-400 mt-1">Maximum file size: 20MB</p>
           </div>
           <div v-if="uploadError" class="text-red-600 mt-2">{{ uploadError }}</div>
           <div v-if="uploadProgress > 0 && uploadProgress < 100" class="mt-2 w-full bg-gray-200 rounded-full h-2.5">

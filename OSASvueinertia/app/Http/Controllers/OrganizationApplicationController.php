@@ -143,7 +143,7 @@ class OrganizationApplicationController extends Controller
             'dean_suffix' => 'nullable|string|max:50',
             'coordinator_name' => 'required|string|max:255',
             'status' => 'string|in:Pending,Approved,Disapproved',
-            'signed_document' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240', // Add validation for signed document
+            'signed_document' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:20480', // 20MB limit for signed document
         ];
         
         // Add adviser fields for non-commitment forms
@@ -560,7 +560,7 @@ class OrganizationApplicationController extends Controller
             ];
             $column = $columnMap[$application->form_type];
             $validated = $request->validate([
-                'file' => 'required|file|mimes:pdf|max:10240',
+                'file' => 'required|file|mimes:pdf|max:20480', // 20MB limit
             ]);
             // Delete old file if exists
             if ($application->$column) {
@@ -581,7 +581,7 @@ class OrganizationApplicationController extends Controller
             'dean_prefix' => 'nullable|string|max:50',
             'dean_suffix' => 'nullable|string|max:50',
             'coordinator_name' => ($application->form_type === 'LSPU-OSAS-SF-006' || $application->form_type === 'LSPU-OSAS-SF-EVAL') ? 'nullable|string|max:255' : 'required|string|max:255',
-            'signed_document' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
+            'signed_document' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:20480', // 20MB limit
         ];
         
         // Add adviser fields for non-commitment forms
@@ -932,11 +932,11 @@ class OrganizationApplicationController extends Controller
             return redirect()->back()->with('error', 'You cannot upload a signed document after approval.');
         }
         
-        // Only allow PDF - 10MB limit
+        // Only allow PDF - 20MB limit
         $request->validate([
-            'signed_document' => 'required|file|mimes:pdf|max:10240' // 10MB limit
+            'signed_document' => 'required|file|mimes:pdf|max:20480' // 20MB limit
         ], [
-            'signed_document.max' => 'The file you\'re attempting to upload is over the limit (10MB). Please compress your file and try again.',
+            'signed_document.max' => 'The file you\'re attempting to upload is over the limit (20MB). Please compress your file and try again.',
             'signed_document.mimes' => 'Only PDF files are allowed.',
             'signed_document.required' => 'Please select a file to upload.'
         ]);
@@ -1854,9 +1854,9 @@ class OrganizationApplicationController extends Controller
     {
         $request->validate([
             'form_type' => 'required|string|in:LSPU-OSAS-SF-ACCOMPLISHMENT,LSPU-OSAS-SF-NARRATIVE,LSPU-OSAS-SF-BYLAWS,LSPU-OSAS-SF-FINANCIAL,LSPU-ACAD-RL', // Added LSPU-ACAD-RL
-            'file' => 'required|file|mimes:pdf|max:10240',
+            'file' => 'required|file|mimes:pdf|max:20480', // 20MB limit
         ], [
-            'file.max' => 'The file you\'re attempting to upload is over the limit (10MB). Please compress your file and try again.',
+            'file.max' => 'The file you\'re attempting to upload is over the limit (20MB). Please compress your file and try again.',
             'file.mimes' => 'Only PDF files are allowed.',
             'file.required' => 'Please select a file to upload.',
             'form_type.required' => 'Form type is required.',
