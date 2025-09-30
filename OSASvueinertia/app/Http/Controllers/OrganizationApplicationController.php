@@ -932,9 +932,13 @@ class OrganizationApplicationController extends Controller
             return redirect()->back()->with('error', 'You cannot upload a signed document after approval.');
         }
         
-        // Only allow PDF
+        // Only allow PDF - 10MB limit
         $request->validate([
-            'signed_document' => 'required|file|mimes:pdf|max:20480' // Updated to 20MB
+            'signed_document' => 'required|file|mimes:pdf|max:10240' // 10MB limit
+        ], [
+            'signed_document.max' => 'The file you\'re attempting to upload is over the limit (10MB). Please compress your file and try again.',
+            'signed_document.mimes' => 'Only PDF files are allowed.',
+            'signed_document.required' => 'Please select a file to upload.'
         ]);
         
         // Delete old document if exists
@@ -1851,6 +1855,12 @@ class OrganizationApplicationController extends Controller
         $request->validate([
             'form_type' => 'required|string|in:LSPU-OSAS-SF-ACCOMPLISHMENT,LSPU-OSAS-SF-NARRATIVE,LSPU-OSAS-SF-BYLAWS,LSPU-OSAS-SF-FINANCIAL,LSPU-ACAD-RL', // Added LSPU-ACAD-RL
             'file' => 'required|file|mimes:pdf|max:10240',
+        ], [
+            'file.max' => 'The file you\'re attempting to upload is over the limit (10MB). Please compress your file and try again.',
+            'file.mimes' => 'Only PDF files are allowed.',
+            'file.required' => 'Please select a file to upload.',
+            'form_type.required' => 'Form type is required.',
+            'form_type.in' => 'Invalid form type selected.'
         ]);
 
         $user = $request->user();

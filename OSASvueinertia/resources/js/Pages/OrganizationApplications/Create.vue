@@ -234,27 +234,65 @@ const handleFormSubmitted = (data) => {
 const handleFileDrop = (e) => {
     e.preventDefault();
     const file = e.dataTransfer.files[0];
-    if (file && file.type === 'application/pdf') {
-        uploadFile.value = file;
+    
+    if (!file) {
         uploadError.value = '';
-    } else {
-        uploadError.value = 'Please upload a PDF file.';
+        return;
     }
+    
+    // Check file type
+    if (file.type !== 'application/pdf') {
+        uploadError.value = 'Only PDF files are allowed.';
+        return;
+    }
+    
+    // Check file size (10MB = 10 * 1024 * 1024 bytes)
+    const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+    if (file.size > maxSize) {
+        uploadError.value = 'The file you\'re attempting to upload is over the limit (10MB). Please compress your file and try again.';
+        return;
+    }
+    
+    uploadFile.value = file;
+    uploadError.value = '';
 };
 const handleFileChange = (e) => {
     const file = e.target.files[0];
-    if (file && file.type === 'application/pdf') {
-        uploadFile.value = file;
+    
+    if (!file) {
         uploadError.value = '';
-    } else {
-        uploadError.value = 'Please upload a PDF file.';
+        return;
     }
+    
+    // Check file type
+    if (file.type !== 'application/pdf') {
+        uploadError.value = 'Only PDF files are allowed.';
+        return;
+    }
+    
+    // Check file size (10MB = 10 * 1024 * 1024 bytes)
+    const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+    if (file.size > maxSize) {
+        uploadError.value = 'The file you\'re attempting to upload is over the limit (10MB). Please compress your file and try again.';
+        return;
+    }
+    
+    uploadFile.value = file;
+    uploadError.value = '';
 };
 const handleDirectUploadSubmit = () => {
     if (!uploadFile.value) {
         uploadError.value = 'Please select a PDF file.';
         return;
     }
+    
+    // Double-check file size before submitting
+    const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+    if (uploadFile.value.size > maxSize) {
+        uploadError.value = 'The file you\'re attempting to upload is over the limit (10MB). Please compress your file and try again.';
+        return;
+    }
+    
     uploadError.value = '';
     uploadProgress.value = 0;
     const formData = new FormData();
@@ -302,9 +340,13 @@ const handleDirectUploadSubmit = () => {
             >
               {{ uploadFile.name }}
             </div>
+            <div class="text-sm text-gray-500 mt-1">
+              Size: {{ (uploadFile.size / (1024 * 1024)).toFixed(2) }} MB
+            </div>
           </div>
           <div v-else>
             <p class="text-gray-500">Drag and drop a PDF file here, or click to select</p>
+            <p class="text-xs text-gray-400 mt-1">Maximum file size: 10MB</p>
           </div>
           <div v-if="uploadError" class="text-red-600 mt-2">{{ uploadError }}</div>
           <div v-if="uploadProgress > 0 && uploadProgress < 100" class="mt-2 w-full bg-gray-200 rounded-full h-2.5">
