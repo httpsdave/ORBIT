@@ -21,6 +21,7 @@ class OrganizationApplicationController extends Controller
     public function index(Request $request)
 {
     $query = OrganizationApplication::query();
+    $perPage = $request->get('per_page', 20);
     
     // Filter by archive status
     if ($request->filled('archive_filter')) {
@@ -33,6 +34,38 @@ class OrganizationApplicationController extends Controller
         $query->active(); // Default to active applications
     }
     
+    // Apply search filter
+    if ($request->filled('search')) {
+        $search = $request->get('search');
+        $query->where(function($q) use ($search) {
+            $q->where('form_type', 'like', "%{$search}%")
+              ->orWhere('status', 'like', "%{$search}%")
+              ->orWhereHas('user', function($userQuery) use ($search) {
+                  $userQuery->where('name', 'like', "%{$search}%");
+              });
+        });
+    }
+    
+    // Apply status filter
+    if ($request->filled('status_filter')) {
+        $statusFilter = $request->get('status_filter');
+        if (strtolower($statusFilter) === 'disapproved') {
+            $query->whereIn('status', ['rejected', 'disapproved', 'Disapproved', 'Rejected']);
+        } else {
+            $query->where('status', 'like', "%{$statusFilter}%");
+        }
+    }
+    
+    // Apply form type filter
+    if ($request->filled('form_type_filter')) {
+        $query->where('form_type', $request->get('form_type_filter'));
+    }
+    
+    // Apply organization filter (admin only)
+    if ($request->filled('organization_filter')) {
+        $query->where('user_id', $request->get('organization_filter'));
+    }
+    
     // If user is admin, show all applications or filter by user
     if (auth()->user()->isAdmin()) {
         // Apply user filter if provided
@@ -40,9 +73,9 @@ class OrganizationApplicationController extends Controller
             $query->where('user_id', $request->user_filter);
         }
         
-        $applications = $query->with('user')
+        $paginatedApplications = $query->with('user')
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->paginate($perPage);
         
         // Get all users who have submitted applications for the filter dropdown
         $users = \App\Models\User::whereHas('organizationApplications')
@@ -52,15 +85,15 @@ class OrganizationApplicationController extends Controller
             
     } else {
         // For regular users, only show their own applications
-        $applications = $query->where('user_id', auth()->id())
+        $paginatedApplications = $query->where('user_id', auth()->id())
             ->with('user')
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->paginate($perPage);
         $users = collect(); // Empty collection for non-admins
     }
     
     return Inertia::render('OrganizationApplications/Index', [
-        'applications' => $applications,
+        'applications' => $paginatedApplications->items(),
         'users' => $users,
         'currentUserFilter' => $request->user_filter,
         'currentArchiveFilter' => $request->archive_filter ?? 'active',
@@ -68,8 +101,86 @@ class OrganizationApplicationController extends Controller
         'isAdmin' => auth()->user()->isAdmin(),
         'successMessage' => session('success'),
         'errorMessage' => session('error'),
+        'currentPage' => $paginatedApplications->currentPage(),
+        'hasMorePages' => $paginatedApplications->hasMorePages(),
+        'perPage' => $perPage,
     ]);
 }
+    /**
+     * Load more applications for infinite scroll
+     */
+    public function loadMore(Request $request)
+    {
+        $query = OrganizationApplication::query();
+        $perPage = $request->get('per_page', 20);
+        $page = $request->get('page', 1);
+        
+        // Filter by archive status
+        if ($request->filled('archive_filter')) {
+            if ($request->archive_filter === 'archived') {
+                $query->archived();
+            } else {
+                $query->active();
+            }
+        } else {
+            $query->active();
+        }
+        
+        // Apply search filter
+        if ($request->filled('search')) {
+            $search = $request->get('search');
+            $query->where(function($q) use ($search) {
+                $q->where('form_type', 'like', "%{$search}%")
+                  ->orWhere('status', 'like', "%{$search}%")
+                  ->orWhereHas('user', function($userQuery) use ($search) {
+                      $userQuery->where('name', 'like', "%{$search}%");
+                  });
+            });
+        }
+        
+        // Apply status filter
+        if ($request->filled('status_filter')) {
+            $statusFilter = $request->get('status_filter');
+            if (strtolower($statusFilter) === 'disapproved') {
+                $query->whereIn('status', ['rejected', 'disapproved', 'Disapproved', 'Rejected']);
+            } else {
+                $query->where('status', 'like', "%{$statusFilter}%");
+            }
+        }
+        
+        // Apply form type filter
+        if ($request->filled('form_type_filter')) {
+            $query->where('form_type', $request->get('form_type_filter'));
+        }
+        
+        // Apply organization filter (admin only)
+        if ($request->filled('organization_filter')) {
+            $query->where('user_id', $request->get('organization_filter'));
+        }
+        
+        // Apply user permissions
+        if (auth()->user()->isAdmin()) {
+            // Apply user filter if provided
+            if ($request->filled('user_filter')) {
+                $query->where('user_id', $request->user_filter);
+            }
+        } else {
+            // For regular users, only show their own applications
+            $query->where('user_id', auth()->id());
+        }
+        
+        $paginatedApplications = $query->with('user')
+            ->orderBy('created_at', 'desc')
+            ->paginate($perPage, ['*'], 'page', $page);
+        
+        return response()->json([
+            'applications' => $paginatedApplications->items(),
+            'currentPage' => $paginatedApplications->currentPage(),
+            'hasMorePages' => $paginatedApplications->hasMorePages(),
+            'perPage' => $perPage,
+        ]);
+    }
+
     /**
      * Clear saved form data for the authenticated user
      */

@@ -124,6 +124,7 @@ Route::middleware(['auth'])->group(function () {
     
     // Applications routes
     Route::get('/applications', [OrganizationApplicationController::class, 'index'])->name('applications.index');
+    Route::get('/applications/load-more', [OrganizationApplicationController::class, 'loadMore'])->name('applications.load-more');
     Route::get('/applications/select-form', [OrganizationApplicationController::class, 'selectForm'])->name('applications.select-form');
     Route::get('/applications/create', [OrganizationApplicationController::class, 'create'])->name('applications.create');
     Route::post('/applications', [OrganizationApplicationController::class, 'store'])->name('applications.store');

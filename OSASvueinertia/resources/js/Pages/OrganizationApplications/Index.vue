@@ -76,9 +76,25 @@ const props = defineProps({
   users: Array,
   currentUserFilter: String,
   updateMessage: String,
+  currentPage: {
+    type: Number,
+    default: 1
+  },
+  hasMorePages: {
+    type: Boolean,
+    default: false
+  },
+  perPage: {
+    type: Number,
+    default: 20
+  }
 });
 
-
+// Infinite scroll state
+const allApplications = ref([...props.applications]);
+const isLoadingMore = ref(false);
+const currentPage = ref(props.currentPage);
+const hasMorePages = ref(props.hasMorePages);
 
 // Only set showMessage to true on first mount if a prop is present
 const showMessage = ref(!!(props.successMessage || props.updateMessage || props.errorMessage));
@@ -180,7 +196,7 @@ const organizationOptions = computed(() => {
 
 // Combined filter function
 const filterApplications = () => {
-  let filtered = [...props.applications];
+  let filtered = [...allApplications.value];
   
   // Search filter (by form type, form name, and status)
   if (searchQuery.value) {
@@ -222,7 +238,16 @@ const clearAllFilters = () => {
   statusFilter.value = '';
   formTypeFilter.value = '';
   organizationFilter.value = '';
+  // Reset pagination when filters change
+  resetPagination();
   filterApplications();
+};
+
+// Reset pagination to initial state
+const resetPagination = () => {
+  currentPage.value = 1;
+  hasMorePages.value = props.hasMorePages;
+  allApplications.value = [...props.applications];
 };
 
 // Check if any filters are active
@@ -232,12 +257,14 @@ const hasActiveFilters = computed(() => {
 
 const clearSearch = () => {
     searchQuery.value = '';
+    resetPagination();
     filterApplications();
 };
 
 // Helper to set status filter from pill buttons
 const setStatusFilter = (val) => {
   statusFilter.value = val;
+  resetPagination();
   filterApplications();
 };
 
@@ -261,7 +288,7 @@ watch(showMessage, (val) => {
 });
 
 onMounted(() => {
-  filteredApplications.value = props.applications;
+  filteredApplications.value = allApplications.value;
   if (showMessage.value) {
     startBannerTimeout();
   }
@@ -277,14 +304,20 @@ onMounted(() => {
   window.addEventListener('inertia:navigate', handler);
   // register back-to-top scroll listener
   window.addEventListener('scroll', onScroll, { passive: true });
+  // register infinite scroll listener
+  window.addEventListener('scroll', handleScroll, { passive: true });
+  
   onUnmounted(() => {
     window.removeEventListener('inertia:navigate', handler);
     window.removeEventListener('scroll', onScroll);
+    window.removeEventListener('scroll', handleScroll);
   });
 });
 
 // Watch for filter changes
 watch([searchQuery, statusFilter, formTypeFilter, organizationFilter], () => {
+  // Reset pagination when filters change
+  resetPagination();
   filterApplications();
 }, { immediate: true });
 
@@ -295,6 +328,22 @@ watch(showPreviewModal, (val) => {
   } else {
     document.body.classList.remove('overflow-hidden');
   }
+});
+
+// Watch for changes in props to update local state
+watch(() => props.applications, (newApplications) => {
+  if (newApplications) {
+    allApplications.value = [...newApplications];
+    filterApplications();
+  }
+}, { deep: true });
+
+watch(() => props.hasMorePages, (newValue) => {
+  hasMorePages.value = newValue;
+});
+
+watch(() => props.currentPage, (newValue) => {
+  currentPage.value = newValue;
 });
 
 const deleteApplication = (id) => {
@@ -451,7 +500,83 @@ const handleSubmitLink = (submitResult) => {
 };
 
 const refreshApplications = () => {
-  filteredApplications.value = [...props.applications];
+  // Reset to the initial state and re-fetch first page
+  resetPagination();
+  filterApplications();
+  
+  // Optionally reload the first page via Inertia
+  router.reload({ only: ['applications', 'currentPage', 'hasMorePages'], preserveScroll: true });
+};
+
+// Infinite scroll functionality
+const loadMoreApplications = async () => {
+  if (isLoadingMore.value || !hasMorePages.value) return;
+  
+  isLoadingMore.value = true;
+  
+  try {
+    const params = new URLSearchParams({
+      page: (currentPage.value + 1).toString(),
+      per_page: props.perPage.toString()
+    });
+    
+    // Add current filters to maintain consistency - but only if they actually have values
+    if (statusFilter.value) params.append('status_filter', statusFilter.value);
+    if (formTypeFilter.value) params.append('form_type_filter', formTypeFilter.value);
+    if (organizationFilter.value) params.append('organization_filter', organizationFilter.value);
+    if (searchQuery.value.trim()) params.append('search', searchQuery.value.trim());
+    
+    const response = await fetch(`/applications/load-more?${params.toString()}`, {
+      headers: {
+        'Accept': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+      }
+    });
+    
+    if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    
+    const data = await response.json();
+    
+    // Only proceed if we got valid data
+    if (data.applications && Array.isArray(data.applications)) {
+      // Append new applications to the existing list, avoiding duplicates
+      const existingIds = new Set(allApplications.value.map(app => app.id));
+      const newApplications = data.applications.filter(app => !existingIds.has(app.id));
+      
+      allApplications.value = [...allApplications.value, ...newApplications];
+      currentPage.value = data.currentPage;
+      hasMorePages.value = data.hasMorePages;
+      
+      // Re-filter with updated data
+      filterApplications();
+    }
+    
+  } catch (error) {
+    console.error('Error loading more applications:', error);
+    localMessage.value = 'Failed to load more applications. Please try again.';
+    statusType.value = 'error';
+    showMessage.value = true;
+    setTimeout(() => {
+      showMessage.value = false;
+    }, 5000);
+  } finally {
+    isLoadingMore.value = false;
+  }
+};
+
+// Scroll detection for infinite scroll
+const handleScroll = () => {
+  // Throttle scroll events to avoid excessive calls
+  if (isLoadingMore.value) return;
+  
+  const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+  const windowHeight = window.innerHeight;
+  const documentHeight = document.documentElement.scrollHeight;
+  
+  // Load more when user is 200px from bottom and there are more pages
+  if (hasMorePages.value && scrollTop + windowHeight >= documentHeight - 200) {
+    loadMoreApplications();
+  }
 };
 
 const openEndYearModal = () => {
@@ -834,6 +959,17 @@ const confirmClearData = () => {
           @confirmDeleteDocument="handleConfirmDeleteDocument"
         />
         <NoApplicationsMessage v-else />
+        
+        <!-- Infinite scroll loading indicator -->
+        <div v-if="isLoadingMore" class="flex justify-center py-8">
+          <div class="flex items-center space-x-2 text-gray-600 dark:text-gray-400">
+            <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span class="text-sm font-medium">Loading more applications...</span>
+          </div>
+        </div>
       </div>
     </div>
 
