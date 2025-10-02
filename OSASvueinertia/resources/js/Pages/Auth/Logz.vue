@@ -35,6 +35,33 @@ const gradientIndex = ref(0);
 const gradientInterval = ref(null);
 const windowWidth = ref(0);
 
+// Enhanced error handling and user feedback
+const showError = ref(false);
+const errorMessage = ref('');
+const capsLockOn = ref(false);
+const clientErrors = ref({});
+
+// Form validation
+const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+};
+
+const validateForm = () => {
+    const errors = {};
+    if (!form.email) {
+        errors.email = 'Email is required';
+    } else if (!validateEmail(form.email)) {
+        errors.email = 'Please enter a valid email address';
+    }
+    if (!form.password) {
+        errors.password = 'Password is required';
+    } else if (form.password.length < 6) {
+        errors.password = 'Password must be at least 6 characters';
+    }
+    return errors;
+};
+
 // Track window width for responsive behavior
 const updateWindowWidth = () => {
     windowWidth.value = window.innerWidth;
@@ -54,19 +81,58 @@ const togglePasswordVisibility = () => {
     passwordVisible.value = !passwordVisible.value;
 };
 
+// Enhanced submit with validation and error handling
 const submit = () => {
-    if (form.processing) return;
+    if (form.processing || isLoading.value) return;
+    
+    // Clear previous errors
+    clientErrors.value = {};
+    showError.value = false;
+    
+    // Client-side validation
+    const errors = validateForm();
+    if (Object.keys(errors).length > 0) {
+        clientErrors.value = errors;
+        return;
+    }
     
     isLoading.value = true;
-    startLoading('login-form'); // Show loading bar for manual form submission
+    startLoading('login-form');
     
     form.post(route('login'), {
+        onError: (errors) => {
+            if (errors.email && errors.email.includes('rate limit')) {
+                errorMessage.value = 'Too many login attempts. Please try again later.';
+                showError.value = true;
+            } else if (errors.email && errors.email.includes('credentials')) {
+                errorMessage.value = 'Invalid email or password. Please check your credentials.';
+                showError.value = true;
+            } else if (Object.keys(errors).length > 0) {
+                errorMessage.value = 'Login failed. Please check your credentials and try again.';
+                showError.value = true;
+            }
+        },
         onFinish: () => {
             isLoading.value = false;
-            stopLoading('login-form'); // Hide loading bar
+            stopLoading('login-form');
             form.reset('password');
         },
     });
+};
+
+// Caps lock detection
+const detectCapsLock = (event) => {
+    capsLockOn.value = event.getModifierState('CapsLock');
+};
+
+// Clear client-side errors when user starts typing
+const clearClientError = (field) => {
+    if (clientErrors.value[field]) {
+        delete clientErrors.value[field];
+    }
+    if (showError.value) {
+        showError.value = false;
+    }
 };
 
 const startSlideshow = () => {
@@ -228,6 +294,23 @@ onBeforeUnmount(() => {
                     </p>
                 </div>
                 
+                <!-- Global Error Display -->
+                <div v-if="showError" class="mb-4 sm:mb-6 p-3 sm:p-4 bg-red-500 bg-opacity-20 border-l-4 border-red-500 text-red-400 text-xs sm:text-sm font-medium animate-fadeIn backdrop-blur-sm rounded-r-lg">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 sm:mr-3 flex-shrink-0">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                            </svg>
+                            {{ errorMessage }}
+                        </div>
+                        <button @click="showError = false" class="ml-2 text-red-400 hover:text-red-300">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
                 <!-- Status message -->
                 <div v-if="status" class="mb-4 sm:mb-6 p-3 sm:p-4 bg-green-500 bg-opacity-20 border-l-4 border-green-500 text-green-400 text-xs sm:text-sm font-medium animate-fadeIn backdrop-blur-sm rounded-r-lg">
                     <div class="flex items-center">
@@ -236,6 +319,16 @@ onBeforeUnmount(() => {
                             <polyline points="22,4 12,14.01 9,11.01"></polyline>
                         </svg>
                         {{ status }}
+                    </div>
+                </div>
+
+                <!-- Caps Lock Warning -->
+                <div v-if="capsLockOn" class="mb-4 p-3 bg-yellow-500 bg-opacity-20 border-l-4 border-yellow-500 text-yellow-400 text-xs sm:text-sm font-medium animate-fadeIn backdrop-blur-sm rounded-r-lg">
+                    <div class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 sm:mr-3 flex-shrink-0">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                        </svg>
+                        Caps Lock is on
                     </div>
                 </div>
 
@@ -248,11 +341,14 @@ onBeforeUnmount(() => {
                                 type="email"
                                 class="peer pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 text-sm sm:text-base rounded-lg w-full border-0 focus:border-blue-400 focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 transition-all duration-300 bg-white bg-opacity-10 backdrop-blur-sm text-white placeholder-transparent"
                                 v-model="form.email"
+                                @input="clearClientError('email')"
                                 placeholder="Email Address"
                                 required
                                 autofocus
                                 autocomplete="username"
                                 aria-label="Email address"
+                                :aria-describedby="(form.errors.email || clientErrors.email) ? 'email-error' : null"
+                                :aria-invalid="(form.errors.email || clientErrors.email) ? 'true' : 'false'"
                             />
                             <label 
                                 for="email" 
@@ -270,7 +366,7 @@ onBeforeUnmount(() => {
                                 </svg>
                             </div>
                         </div>
-                        <InputError class="mt-2 text-red-400 text-sm" :message="form.errors.email" />
+                        <InputError id="email-error" class="mt-2 text-red-400 text-sm" :message="form.errors.email || clientErrors.email" />
                     </div>
 
                     <div>
@@ -285,10 +381,15 @@ onBeforeUnmount(() => {
                                         : 'bg-gray-800 bg-opacity-80 text-white'
                                 ]"
                                 v-model="form.password"
+                                @input="clearClientError('password')"
+                                @keydown="detectCapsLock"
+                                @keyup="detectCapsLock"
                                 placeholder="Password"
                                 required
                                 autocomplete="current-password"
                                 aria-label="Password"
+                                :aria-describedby="(form.errors.password || clientErrors.password) ? 'password-error' : capsLockOn ? 'caps-lock-warning' : null"
+                                :aria-invalid="(form.errors.password || clientErrors.password) ? 'true' : 'false'"
                             />
                             <label 
                                 for="password" 
@@ -322,7 +423,7 @@ onBeforeUnmount(() => {
                                 </svg>
                             </button>
                         </div>
-                        <InputError class="mt-2 text-red-400 text-sm" :message="form.errors.password" />
+                        <InputError id="password-error" class="mt-2 text-red-400 text-sm" :message="form.errors.password || clientErrors.password" />
                     </div>
 
                     <!-- Remember me and forgot password -->
@@ -552,6 +653,41 @@ button:hover:not(:disabled) {
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 300ms;
+}
+
+/* Enhanced focus states for better accessibility */
+input:focus-visible, button:focus-visible, a:focus-visible {
+  outline: 2px solid #60a5fa;
+  outline-offset: 2px;
+  border-radius: 0.5rem;
+}
+
+/* Error state styling */
+input[aria-invalid="true"] {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 1px #ef4444 !important;
+}
+
+/* Success state for valid inputs */
+input:valid:not(:placeholder-shown) {
+  border-color: #10b981;
+}
+
+/* Loading state improvements */
+.loading-overlay {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* Animation for error messages */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+.error-shake {
+  animation: shake 0.5s ease-in-out;
 }
 
 /* Fix autofill styling to maintain consistent appearance */
