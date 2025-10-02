@@ -211,6 +211,61 @@ const activeTab = ref('applications');
 // Activity expansion state
 const showAllActivities = ref(false);
 
+// Calendar generation for when no events exist
+const currentMonth = ref(new Date());
+
+const generateCalendar = computed(() => {
+    const year = currentMonth.value.getFullYear();
+    const month = currentMonth.value.getMonth();
+    
+    // Get first day of month and last day of month
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    
+    // Get day of week for first day (0 = Sunday)
+    const firstDayOfWeek = firstDay.getDay();
+    
+    // Calculate total cells needed
+    const daysInMonth = lastDay.getDate();
+    const weeks = [];
+    let currentWeek = [];
+    
+    // Fill in empty cells before first day
+    for (let i = 0; i < firstDayOfWeek; i++) {
+        currentWeek.push(null);
+    }
+    
+    // Fill in the days
+    for (let day = 1; day <= daysInMonth; day++) {
+        currentWeek.push(day);
+        
+        // If week is complete (7 days) or last day of month
+        if (currentWeek.length === 7 || day === daysInMonth) {
+            // Fill remaining cells if needed
+            while (currentWeek.length < 7) {
+                currentWeek.push(null);
+            }
+            weeks.push([...currentWeek]);
+            currentWeek = [];
+        }
+    }
+    
+    return {
+        weeks,
+        monthName: firstDay.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+    };
+});
+
+const isToday = (day) => {
+    if (!day) return false;
+    const today = new Date();
+    const year = currentMonth.value.getFullYear();
+    const month = currentMonth.value.getMonth();
+    return today.getDate() === day && 
+           today.getMonth() === month && 
+           today.getFullYear() === year;
+};
+
 // Computed property for displayed activities
 const displayedActivities = computed(() => {
   if (!props.recentActivity || props.recentActivity.length === 0) return [];
@@ -550,15 +605,50 @@ const displayedActivities = computed(() => {
                   </div>
                 </div>
                 
-                <div v-else-if="!props.todayEvent" class="text-center py-12 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                  <p class="mt-4 text-gray-600 dark:text-gray-400">No upcoming events scheduled</p>
-                  <Link :href="route('calendar')" class="inline-block mt-3 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-sm font-medium text-white rounded-xl shadow-md hover:shadow-blue-300/30 hover:from-blue-400 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 active:from-blue-600 active:to-blue-700 transition-all duration-300 relative overflow-hidden group">
-                    <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
-                    View Calendar
-                  </Link>
+                <div v-else-if="!props.todayEvent" class="border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-700">
+                  <!-- Mini Calendar View -->
+                  <div class="p-4">
+                    <div class="text-center mb-3">
+                      <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300">{{ generateCalendar.monthName }}</h4>
+                    </div>
+                    
+                    <!-- Calendar Grid -->
+                    <div class="grid grid-cols-7 gap-1 text-center text-xs">
+                      <!-- Day headers -->
+                      <div class="font-semibold text-gray-600 dark:text-gray-400 py-1">Su</div>
+                      <div class="font-semibold text-gray-600 dark:text-gray-400 py-1">Mo</div>
+                      <div class="font-semibold text-gray-600 dark:text-gray-400 py-1">Tu</div>
+                      <div class="font-semibold text-gray-600 dark:text-gray-400 py-1">We</div>
+                      <div class="font-semibold text-gray-600 dark:text-gray-400 py-1">Th</div>
+                      <div class="font-semibold text-gray-600 dark:text-gray-400 py-1">Fr</div>
+                      <div class="font-semibold text-gray-600 dark:text-gray-400 py-1">Sa</div>
+                      
+                      <!-- Calendar days -->
+                      <template v-for="(week, weekIndex) in generateCalendar.weeks" :key="`week-${weekIndex}`">
+                        <div 
+                          v-for="(day, dayIndex) in week" 
+                          :key="`day-${weekIndex}-${dayIndex}`"
+                          :class="[
+                            'py-1 rounded',
+                            day ? 'text-gray-700 dark:text-gray-300' : 'text-transparent',
+                            isToday(day) ? 'bg-blue-500 text-white font-bold' : '',
+                            day && !isToday(day) ? 'hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer' : ''
+                          ]"
+                        >
+                          {{ day || '-' }}
+                        </div>
+                      </template>
+                    </div>
+                  </div>
+                  
+                  <!-- No events message and action button -->
+                  <div class="p-4 border-t border-gray-200 dark:border-gray-600 text-center">
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">No upcoming events scheduled</p>
+                    <Link :href="route('calendar')" class="inline-block px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-sm font-medium text-white rounded-xl shadow-md hover:shadow-blue-300/30 hover:from-blue-400 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 active:from-blue-600 active:to-blue-700 transition-all duration-300 relative overflow-hidden group">
+                      <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
+                      View Calendar
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>
