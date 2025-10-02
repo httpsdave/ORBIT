@@ -87,12 +87,21 @@ const props = defineProps({
   perPage: {
     type: Number,
     default: 20
+  },
+  allStatuses: {
+    type: Array,
+    default: () => []
+  },
+  allFormTypes: {
+    type: Array,
+    default: () => []
   }
 });
 
 // Infinite scroll state
 const allApplications = ref([...props.applications]);
 const isLoadingMore = ref(false);
+const isFiltering = ref(false);
 const currentPage = ref(props.currentPage);
 const hasMorePages = ref(props.hasMorePages);
 
@@ -158,14 +167,19 @@ const applicationToDelete = ref(null);
 const showClearDataModal = ref(false);
 const isClearingData = ref(false);
 
-// Get unique values for filter options
+// Get unique values for filter options from server-provided data
 const statusOptions = computed(() => {
-  const statuses = [...new Set(props.applications.map(app => app.status))];
+  const statuses = props.allStatuses && props.allStatuses.length > 0 
+    ? props.allStatuses 
+    : [...new Set(props.applications.map(app => app.status))];
   return statuses.map(status => ({ value: status, label: status }));
 });
 
 const formTypeOptions = computed(() => {
-  const types = [...new Set(props.applications.map(app => app.form_type))];
+  const types = props.allFormTypes && props.allFormTypes.length > 0 
+    ? props.allFormTypes 
+    : [...new Set(props.applications.map(app => app.form_type))];
+  
   // Sort by numeric part if present, otherwise put at end
   const sortedTypes = types.slice().sort((a, b) => {
     const numA = a.match(/-(\d{3})$/)?.[1];
@@ -194,60 +208,83 @@ const organizationOptions = computed(() => {
   return props.users.map(user => ({ value: user.id.toString(), label: user.name }));
 });
 
-// Combined filter function
-const filterApplications = () => {
-  let filtered = [...allApplications.value];
-  
-  // Search filter (by form type, form name, and status)
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase();
-    filtered = filtered.filter(app => {
-      const formTypeMatch = app.form_type?.toLowerCase().includes(query);
-      const formNameMatch = (formTemplates.find(f => f.type === app.form_type)?.label.toLowerCase() || '').includes(query);
-      const statusMatch = app.status?.toLowerCase().includes(query);
-      return formTypeMatch || formNameMatch || statusMatch;
+// Combined filter function - now triggers server-side filtering
+const filterApplications = async () => {
+  // When filters are applied, we need to reload from server with filters
+  if (hasActiveFilters.value) {
+    await reloadWithFilters();
+  } else {
+    // No filters, just show all loaded applications
+    filteredApplications.value = [...allApplications.value];
+  }
+};
+
+// Reload applications from server with current filters
+const reloadWithFilters = async () => {
+  isFiltering.value = true;
+  try {
+    const params = new URLSearchParams({
+      page: 1,
+      per_page: props.perPage.toString()
     });
-  }
-  
-  // Status filter (case-insensitive). Support 'Disapproved' which may be stored as 'rejected' or 'disapproved'.
-  if (statusFilter.value) {
-    const sf = statusFilter.value.toLowerCase();
-    if (sf === 'disapproved') {
-      filtered = filtered.filter(app => ['rejected', 'disapproved'].includes((app.status || '').toLowerCase()));
-    } else {
-      filtered = filtered.filter(app => (app.status || '').toLowerCase() === sf);
+    
+    // Add current filters
+    if (statusFilter.value) params.append('status_filter', statusFilter.value);
+    if (formTypeFilter.value) params.append('form_type_filter', formTypeFilter.value);
+    if (organizationFilter.value) params.append('organization_filter', organizationFilter.value);
+    if (searchQuery.value.trim()) params.append('search', searchQuery.value.trim());
+    
+    const response = await fetch(`/applications/load-more?${params.toString()}`, {
+      headers: {
+        'Accept': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+      }
+    });
+    
+    if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    
+    const data = await response.json();
+    
+    if (data.applications && Array.isArray(data.applications)) {
+      // Replace all applications with filtered results
+      allApplications.value = [...data.applications];
+      filteredApplications.value = [...data.applications];
+      currentPage.value = data.currentPage;
+      hasMorePages.value = data.hasMorePages;
     }
+    
+  } catch (error) {
+    console.error('Error filtering applications:', error);
+    localMessage.value = 'Failed to filter applications. Please try again.';
+    statusType.value = 'error';
+    showMessage.value = true;
+    setTimeout(() => {
+      showMessage.value = false;
+    }, 5000);
+  } finally {
+    isFiltering.value = false;
   }
-  
-  // Form type filter
-  if (formTypeFilter.value) {
-    filtered = filtered.filter(app => app.form_type === formTypeFilter.value);
-  }
-  
-  // Organization filter
-  if (organizationFilter.value) {
-    filtered = filtered.filter(app => app.user_id?.toString() === organizationFilter.value);
-  }
-  
-  filteredApplications.value = filtered;
 };
 
 // Clear all filters
-const clearAllFilters = () => {
+const clearAllFilters = async () => {
   searchQuery.value = '';
   statusFilter.value = '';
   formTypeFilter.value = '';
   organizationFilter.value = '';
   // Reset pagination when filters change
   resetPagination();
-  filterApplications();
+  await filterApplications();
 };
 
 // Reset pagination to initial state
 const resetPagination = () => {
   currentPage.value = 1;
   hasMorePages.value = props.hasMorePages;
-  allApplications.value = [...props.applications];
+  // Only reset to props if no filters are active, otherwise let reloadWithFilters handle it
+  if (!hasActiveFilters.value) {
+    allApplications.value = [...props.applications];
+  }
 };
 
 // Check if any filters are active
@@ -255,17 +292,17 @@ const hasActiveFilters = computed(() => {
   return searchQuery.value || statusFilter.value || formTypeFilter.value || organizationFilter.value;
 });
 
-const clearSearch = () => {
+const clearSearch = async () => {
     searchQuery.value = '';
     resetPagination();
-    filterApplications();
+    await filterApplications();
 };
 
 // Helper to set status filter from pill buttons
-const setStatusFilter = (val) => {
+const setStatusFilter = async (val) => {
   statusFilter.value = val;
   resetPagination();
-  filterApplications();
+  await filterApplications();
 };
 
 let bannerTimeout = null;
@@ -314,11 +351,17 @@ onMounted(() => {
   });
 });
 
-// Watch for filter changes
+// Watch for filter changes with debouncing
+let filterTimeout = null;
 watch([searchQuery, statusFilter, formTypeFilter, organizationFilter], () => {
   // Reset pagination when filters change
   resetPagination();
-  filterApplications();
+  
+  // Debounce filter changes to avoid excessive API calls
+  if (filterTimeout) clearTimeout(filterTimeout);
+  filterTimeout = setTimeout(async () => {
+    await filterApplications();
+  }, 300); // 300ms debounce
 }, { immediate: true });
 
 // Watch for modal open/close to lock body scroll
@@ -499,18 +542,22 @@ const handleSubmitLink = (submitResult) => {
   }
 };
 
-const refreshApplications = () => {
+const refreshApplications = async () => {
   // Reset to the initial state and re-fetch first page
   resetPagination();
-  filterApplications();
   
-  // Optionally reload the first page via Inertia
-  router.reload({ only: ['applications', 'currentPage', 'hasMorePages'], preserveScroll: true });
+  // If we have active filters, reload with filters, otherwise reload via Inertia
+  if (hasActiveFilters.value) {
+    await filterApplications();
+  } else {
+    // Reload the first page via Inertia for unfiltered data
+    router.reload({ only: ['applications', 'currentPage', 'hasMorePages'], preserveScroll: true });
+  }
 };
 
 // Infinite scroll functionality
 const loadMoreApplications = async () => {
-  if (isLoadingMore.value || !hasMorePages.value) return;
+  if (isLoadingMore.value || !hasMorePages.value || isFiltering.value) return;
   
   isLoadingMore.value = true;
   
@@ -544,11 +591,9 @@ const loadMoreApplications = async () => {
       const newApplications = data.applications.filter(app => !existingIds.has(app.id));
       
       allApplications.value = [...allApplications.value, ...newApplications];
+      filteredApplications.value = [...allApplications.value]; // Update filtered list too
       currentPage.value = data.currentPage;
       hasMorePages.value = data.hasMorePages;
-      
-      // Re-filter with updated data
-      filterApplications();
     }
     
   } catch (error) {
@@ -567,7 +612,7 @@ const loadMoreApplications = async () => {
 // Scroll detection for infinite scroll
 const handleScroll = () => {
   // Throttle scroll events to avoid excessive calls
-  if (isLoadingMore.value) return;
+  if (isLoadingMore.value || isFiltering.value) return;
   
   const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
   const windowHeight = window.innerHeight;
@@ -960,8 +1005,19 @@ const confirmClearData = () => {
         />
         <NoApplicationsMessage v-else />
         
+        <!-- Filtering loading indicator -->
+        <div v-if="isFiltering" class="flex justify-center py-8">
+          <div class="flex items-center space-x-2 text-gray-600 dark:text-gray-400">
+            <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span class="text-sm font-medium">Filtering applications...</span>
+          </div>
+        </div>
+        
         <!-- Infinite scroll loading indicator -->
-        <div v-if="isLoadingMore" class="flex justify-center py-8">
+        <div v-else-if="isLoadingMore" class="flex justify-center py-8">
           <div class="flex items-center space-x-2 text-gray-600 dark:text-gray-400">
             <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>

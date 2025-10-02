@@ -40,6 +40,7 @@ class OrganizationApplicationController extends Controller
         $query->where(function($q) use ($search) {
             $q->where('form_type', 'like', "%{$search}%")
               ->orWhere('status', 'like', "%{$search}%")
+              ->orWhere('organization_name', 'like', "%{$search}%")
               ->orWhereHas('user', function($userQuery) use ($search) {
                   $userQuery->where('name', 'like', "%{$search}%");
               });
@@ -52,7 +53,8 @@ class OrganizationApplicationController extends Controller
         if (strtolower($statusFilter) === 'disapproved') {
             $query->whereIn('status', ['rejected', 'disapproved', 'Disapproved', 'Rejected']);
         } else {
-            $query->where('status', 'like', "%{$statusFilter}%");
+            // Use exact match for better filtering
+            $query->where('status', $statusFilter);
         }
     }
     
@@ -92,6 +94,29 @@ class OrganizationApplicationController extends Controller
         $users = collect(); // Empty collection for non-admins
     }
     
+    // Get filter options from all applications (not just paginated)
+    $allApplicationsQuery = OrganizationApplication::query();
+    if ($request->filled('archive_filter')) {
+        if ($request->archive_filter === 'archived') {
+            $allApplicationsQuery->archived();
+        } else {
+            $allApplicationsQuery->active();
+        }
+    } else {
+        $allApplicationsQuery->active();
+    }
+    
+    if (auth()->user()->isAdmin()) {
+        if ($request->filled('user_filter')) {
+            $allApplicationsQuery->where('user_id', $request->user_filter);
+        }
+    } else {
+        $allApplicationsQuery->where('user_id', auth()->id());
+    }
+    
+    $allStatuses = $allApplicationsQuery->distinct()->pluck('status')->filter()->values();
+    $allFormTypes = $allApplicationsQuery->distinct()->pluck('form_type')->filter()->values();
+
     return Inertia::render('OrganizationApplications/Index', [
         'applications' => $paginatedApplications->items(),
         'users' => $users,
@@ -104,6 +129,8 @@ class OrganizationApplicationController extends Controller
         'currentPage' => $paginatedApplications->currentPage(),
         'hasMorePages' => $paginatedApplications->hasMorePages(),
         'perPage' => $perPage,
+        'allStatuses' => $allStatuses,
+        'allFormTypes' => $allFormTypes,
     ]);
 }
     /**
@@ -132,6 +159,7 @@ class OrganizationApplicationController extends Controller
             $query->where(function($q) use ($search) {
                 $q->where('form_type', 'like', "%{$search}%")
                   ->orWhere('status', 'like', "%{$search}%")
+                  ->orWhere('organization_name', 'like', "%{$search}%")
                   ->orWhereHas('user', function($userQuery) use ($search) {
                       $userQuery->where('name', 'like', "%{$search}%");
                   });
@@ -144,7 +172,8 @@ class OrganizationApplicationController extends Controller
             if (strtolower($statusFilter) === 'disapproved') {
                 $query->whereIn('status', ['rejected', 'disapproved', 'Disapproved', 'Rejected']);
             } else {
-                $query->where('status', 'like', "%{$statusFilter}%");
+                // Use exact match for better filtering
+                $query->where('status', $statusFilter);
             }
         }
         
