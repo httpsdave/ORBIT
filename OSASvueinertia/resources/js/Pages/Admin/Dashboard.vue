@@ -645,7 +645,8 @@ function exportAdvisersToCSV() {
                                         : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600'
                                 ]"
                             >
-                                Bar
+                                <span class="hidden sm:inline">Members</span>
+                                <span class="sm:hidden">👥</span>
                             </button>
                             <button 
                                 @click="activeChart = 'pie'" 
@@ -656,7 +657,8 @@ function exportAdvisersToCSV() {
                                         : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600'
                                 ]"
                             >
-                                Pie
+                                <span class="hidden sm:inline">Colleges</span>
+                                <span class="sm:hidden">🏫</span>
                             </button>
                             <button 
                                 @click="activeChart = 'advisers'" 
@@ -667,7 +669,8 @@ function exportAdvisersToCSV() {
                                         : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600'
                                 ]"
                             >
-                                Advisers
+                                <span class="hidden sm:inline">Advisers</span>
+                                <span class="sm:hidden">👨‍🏫</span>
                             </button>
                         </div>
                     </div>
@@ -686,6 +689,7 @@ function exportAdvisersToCSV() {
                         />
                     </div>
                     <div v-else-if="activeChart === 'advisers'" class="overflow-x-auto">
+                        <!-- Export Button - Only show when data exists -->
                         <button
                             v-if="props.advisersData && props.advisersData.length > 0"
                             @click="exportAdvisersToCSV"
@@ -699,7 +703,9 @@ function exportAdvisersToCSV() {
                             </svg>
                             Export CSV
                         </button>
-                        <div class="overflow-x-auto">
+
+                        <!-- Table with data or empty state -->
+                        <div v-if="props.advisersData && props.advisersData.length > 0" class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                                 <thead>
                                     <tr>
@@ -726,6 +732,19 @@ function exportAdvisersToCSV() {
                                     </tr>
                                 </tbody>
                             </table>
+                        </div>
+
+                        <!-- Empty State -->
+                        <div v-else class="flex flex-col items-center justify-center py-12 px-4 text-center">
+                            <div class="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                            </div>
+                            <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">No Data Available</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 max-w-sm">
+                                There are currently no adviser records to display. Check back later or contact your administrator.
+                            </p>
                         </div>
                     </div>
                 </div>
