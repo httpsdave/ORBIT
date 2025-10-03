@@ -113,36 +113,52 @@ class DashboardController extends Controller
         // Get the authenticated user's name
         $userName = auth()->user()->name;
 
-        // Get advisers data: organization name (user name), adviser_name, second_adviser, and member/officer counts from latest approved forms
+        // Get advisers data: organization name (user name), adviser_name, second_adviser, and member/officer counts from all approved forms
         $users = \App\Models\User::all();
         $advisersData = $users->map(function($user) {
-            // Latest approved List of Members form
-            $latestMembersApp = \App\Models\OrganizationApplication::withCount(['members'])
+            // Get ALL approved List of Members forms and sum their member counts
+            $allMembersApps = \App\Models\OrganizationApplication::withCount(['members'])
                 ->where('user_id', $user->id)
                 ->where('status', 'Approved')
                 ->where('form_type', 'LSPU-OSAS-SF-005')
-                ->orderByDesc('created_at')
-                ->first();
-            // Latest approved List of Officers form
-            $latestOfficersApp = \App\Models\OrganizationApplication::withCount(['officers'])
+                ->get();
+            
+            // Get ALL approved List of Officers forms and sum their officer counts
+            $allOfficersApps = \App\Models\OrganizationApplication::withCount(['officers'])
                 ->where('user_id', $user->id)
                 ->where('status', 'Approved')
                 ->where('form_type', 'LSPU-OSAS-SF-007')
-                ->orderByDesc('created_at')
-                ->first();
+                ->get();
+            
+            // Calculate total member count from all approved submissions
+            $totalMembersCount = $allMembersApps->sum('members_count');
+            
+            // Calculate total officer count from all approved submissions
+            $totalOfficersCount = $allOfficersApps->sum('officers_count');
+            
+            // Get the latest approved form for adviser info (prefer members, fallback to officers)
+            $latestMembersApp = $allMembersApps->sortByDesc('created_at')->first();
+            $latestOfficersApp = $allOfficersApps->sortByDesc('created_at')->first();
+            
             // Use adviser/second adviser from the latest of either form (prefer members, fallback to officers)
             $adviser_name = $latestMembersApp->adviser_name ?? $latestOfficersApp->adviser_name ?? null;
+            $adviser_prefix = $latestMembersApp->adviser_prefix ?? $latestOfficersApp->adviser_prefix ?? null;
+            $adviser_suffix = $latestMembersApp->adviser_suffix ?? $latestOfficersApp->adviser_suffix ?? null;
             $second_adviser = $latestMembersApp->second_adviser ?? $latestOfficersApp->second_adviser ?? null;
-            // Only show if at least one count exists
-            if (!$latestMembersApp && !$latestOfficersApp) {
+            
+            // Only show if at least one approved form exists
+            if ($allMembersApps->isEmpty() && $allOfficersApps->isEmpty()) {
                 return null;
             }
+            
             return [
                 'organization' => $user->name,
                 'adviser_name' => $adviser_name,
+                'adviser_prefix' => $adviser_prefix,
+                'adviser_suffix' => $adviser_suffix,
                 'second_adviser' => $second_adviser,
-                'members_count' => $latestMembersApp->members_count ?? null,
-                'officers_count' => $latestOfficersApp->officers_count ?? null,
+                'members_count' => $totalMembersCount > 0 ? $totalMembersCount : null,
+                'officers_count' => $totalOfficersCount > 0 ? $totalOfficersCount : null,
             ];
         })->filter()->values();
 
