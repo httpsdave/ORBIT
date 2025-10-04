@@ -1,0 +1,20 @@
+# Railway Environment Variables for PHP Configuration
+# Add these to your Railway deployment environment variables
+
+PHP_MAX_INPUT_VARS=3000
+PHP_MAX_MULTIPART_BODY_PARTS=3000
+PHP_MEMORY_LIMIT=256M
+PHP_MAX_EXECUTION_TIME=300
+PHP_UPLOAD_MAX_FILESIZE=20M
+PHP_POST_MAX_SIZE=50M
+PHP_MAX_FILE_UPLOADS=50
+
+# Alternative: If Railway doesn't support PHP_* env vars, 
+# these values should be set in your server's php.ini file:
+# max_input_vars = 3000
+# max_multipart_body_parts = 3000
+# memory_limit = 256M
+# max_execution_time = 300
+# upload_max_filesize = 20M
+# post_max_size = 50M
+# max_file_uploads = 50

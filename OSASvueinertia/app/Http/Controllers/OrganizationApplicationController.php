@@ -795,6 +795,11 @@ class OrganizationApplicationController extends Controller
                 'second_adviser_prefix' => 'nullable|string|max:10',
                 'second_adviser_suffix' => 'nullable|string|max:15',
                 'director_name' => 'required|string|max:255',
+                'members' => 'required|array|min:1|max:304',
+                'members.*.student_name' => 'required|string|max:255',
+                'members.*.student_number' => 'required|string|max:50',
+                'members.*.course_year_section' => 'required|string|max:255',
+                'members.*.photo_path' => 'nullable',
             ]);
             
             // Special handling for members below

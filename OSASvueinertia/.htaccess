@@ -1,0 +1,13 @@
+# PHP Configuration for handling large forms with many members
+# Increase input variable limits for List of Members form (up to 304 members)
+php_value max_input_vars 3000
+php_value max_multipart_body_parts 3000
+
+# Increase memory and execution limits for processing large forms
+php_value memory_limit 256M
+php_value max_execution_time 300
+
+# Increase file upload limits
+php_value upload_max_filesize 20M
+php_value post_max_size 50M
+php_value max_file_uploads 50
