@@ -159,53 +159,9 @@ const handleFormSubmitted = (data) => {
   console.log('Submitting update for application ID:', props.application.id);
   console.log('Update data:', data);
 
-  // Convert to FormData for file uploads
-  const formData = new FormData();
-  for (const key in data) {
-    if (key === 'ratings' && Array.isArray(data[key])) {
-      // Ensure ratings are strings
-      data[key].forEach((rating, idx) => {
-        let stringRating = rating;
-        if (rating !== null && rating !== undefined && rating !== '') {
-          stringRating = rating.toString();
-          // Convert single digit to X.0 format
-          if (/^[1-5]$/.test(stringRating)) {
-            stringRating = stringRating + '.0';
-          }
-          // Ensure proper decimal format
-          if (/^[1-4]$/.test(stringRating[0])) {
-            const decimal = stringRating.includes('.') ? stringRating.split('.')[1] : '0';
-            stringRating = `${stringRating[0]}.${decimal}`;
-          } else if (stringRating[0] === '5') {
-            stringRating = '5.0';
-          }
-        }
-        formData.append(`ratings[${idx}]`, stringRating);
-      });
-    } else if (Array.isArray(data[key])) {
-      data[key].forEach((item, idx) => {
-        for (const subKey in item) {
-          if (item[subKey] !== null && item[subKey] !== undefined) {
-            formData.append(`${key}[${idx}][${subKey}]`, item[subKey]);
-          }
-        }
-      });
-    } else {
-      if (data[key] !== null && data[key] !== undefined) {
-        formData.append(key, data[key]);
-      }
-    }
-  }
-  // Add _method=PUT for Laravel method spoofing
-  formData.append('_method', 'PUT');
-
-  // For debugging - log the FormData contents
-  for (let [key, value] of formData.entries()) {
-    console.log(`${key}: ${value}`);
-  }
-
-  router.post(`/applications/${props.application.id}`, formData, {
-    forceFormData: true,
+  // Use router.put with JSON payload instead of FormData to avoid PHP input limits
+  // This is more efficient for large member arrays than manually building FormData
+  router.put(`/applications/${props.application.id}`, data, {
     preserveScroll: true,
     onSuccess: () => {
       // Do NOT call router.visit here! The backend will redirect to /applications with the flash message.
