@@ -349,10 +349,10 @@ const handleDropdownAction = (user, action) => {
         </template>
 
         <div class="py-3 sm:py-6 md:py-12 w-full">
-            <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 w-full">
+            <div class="max-w-7xl mx-auto px-1 sm:px-6 lg:px-8 w-full">
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg min-w-0 w-full">
-                    <div class="p-3 sm:p-4 lg:p-6 w-full">
-                        <div class="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-gray-100 dark:border-gray-700">
+                    <div class="p-2 sm:p-4 lg:p-6 w-full">
+                        <div class="flex flex-col space-y-2 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between mb-3 sm:mb-6 pb-2 sm:pb-4 border-b border-gray-100 dark:border-gray-700">
                             <div>
                                 <h3 class="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100">
                                     All Users
@@ -372,7 +372,7 @@ const handleDropdownAction = (user, action) => {
                         </div>
 
                         <!-- Search Bar -->
-                        <div class="mb-6">
+                        <div class="mb-3 sm:mb-6">
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -382,7 +382,7 @@ const handleDropdownAction = (user, action) => {
                                 <input
                                     type="text"
                                     v-model="searchQuery"
-                                    class="block w-full pl-10 pr-10 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 transition duration-150 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+                                    class="block w-full pl-12 pr-12 py-3 border border-gray-300 dark:border-gray-600 rounded-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 transition duration-150 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
                                     placeholder="Search users by name, email, or role..."
                                 />
                                 <div v-if="searchQuery" class="absolute inset-y-0 right-0 pr-3 flex items-center">
@@ -396,10 +396,10 @@ const handleDropdownAction = (user, action) => {
                         </div>
                         
                         <!-- Mobile Card View (hidden on desktop) -->
-                        <div class="block md:hidden space-y-3">
-                            <div v-for="user in filteredUsers" :key="`mobile-${user.id}`" class="bg-white dark:bg-gray-700 rounded-lg p-3 border border-gray-200 dark:border-gray-600 shadow-sm">
-                                <div class="flex items-start justify-between mb-3">
-                                    <div class="flex items-center space-x-3 flex-1 min-w-0">
+                        <div class="block md:hidden space-y-2">
+                            <div v-for="user in filteredUsers" :key="`mobile-${user.id}`" class="bg-white dark:bg-gray-700 rounded-lg p-2 border border-gray-200 dark:border-gray-600 shadow-sm">
+                                <div class="flex items-start justify-between mb-2">
+                                    <div class="flex items-center space-x-2 flex-1 min-w-0">
                                         <template v-if="user.profile_photo_url">
                                             <img
                                                 :src="user.profile_photo_url"
