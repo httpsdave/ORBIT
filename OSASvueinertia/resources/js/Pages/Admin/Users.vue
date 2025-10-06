@@ -60,6 +60,12 @@ const form = useForm({
     // student_org_id: '', // Removed
 });
 
+// Client-side validation errors
+const validationErrors = ref({
+    password: '',
+    password_confirmation: '',
+});
+
 const editForm = useForm({
     name: '',
     email: '',
@@ -118,7 +124,36 @@ const watchRoleChange = () => {
     // No longer needed since student_org_id is removed
 };
 
+// Validate password on the client side
+const validatePassword = () => {
+    validationErrors.value.password = '';
+    validationErrors.value.password_confirmation = '';
+
+    // Check password length
+    if (form.password.length < 8) {
+        validationErrors.value.password = 'Password must be at least 8 characters';
+        return false;
+    }
+
+    // Check if passwords match
+    if (form.password !== form.password_confirmation) {
+        validationErrors.value.password_confirmation = 'Passwords do not match';
+        return false;
+    }
+
+    return true;
+};
+
 const createUser = () => {
+    // Clear previous validation errors
+    validationErrors.value.password = '';
+    validationErrors.value.password_confirmation = '';
+
+    // Validate password before submission
+    if (!validatePassword()) {
+        return;
+    }
+
     form.post(route('admin.users.store'), {
         preserveScroll: true,
         onSuccess: () => {
@@ -127,7 +162,13 @@ const createUser = () => {
             // Reset password visibility toggles
             showPassword.value = false;
             showConfirmPassword.value = false;
+            // Clear validation errors
+            validationErrors.value.password = '';
+            validationErrors.value.password_confirmation = '';
         },
+        onError: () => {
+            // Keep the modal open on server-side validation errors
+        }
     });
 };
 
@@ -170,6 +211,9 @@ const cancelCreate = () => {
     // Reset password visibility toggles
     showPassword.value = false;
     showConfirmPassword.value = false;
+    // Clear client-side validation errors
+    validationErrors.value.password = '';
+    validationErrors.value.password_confirmation = '';
 };
 
 const confirmUserDeletion = (user) => {
@@ -548,7 +592,8 @@ const handleDropdownAction = (user, action) => {
                                 class="mt-1 block w-full text-sm pr-10"
                                 v-model="form.password"
                                 required
-                                placeholder="Enter password"
+                                placeholder="Enter password (minimum 8 characters)"
+                                @input="() => { validationErrors.password = ''; validationErrors.password_confirmation = ''; }"
                             />
                             <button
                                 type="button"
@@ -564,7 +609,7 @@ const handleDropdownAction = (user, action) => {
                                 </svg>
                             </button>
                         </div>
-                        <InputError class="mt-2" :message="form.errors.password" />
+                        <InputError class="mt-2" :message="validationErrors.password || form.errors.password" />
                     </div>
 
                     <div>
@@ -577,6 +622,7 @@ const handleDropdownAction = (user, action) => {
                                 v-model="form.password_confirmation"
                                 required
                                 placeholder="Confirm password"
+                                @input="() => { validationErrors.password_confirmation = ''; }"
                             />
                             <button
                                 type="button"
@@ -592,7 +638,7 @@ const handleDropdownAction = (user, action) => {
                                 </svg>
                             </button>
                         </div>
-                        <InputError class="mt-2" :message="form.errors.password_confirmation" />
+                        <InputError class="mt-2" :message="validationErrors.password_confirmation || form.errors.password_confirmation" />
                     </div>
 
                     <div>

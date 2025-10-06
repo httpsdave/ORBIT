@@ -47,7 +47,7 @@ class UserController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'password' => ['required', 'confirmed', 'min:8'],
             'role_id' => 'required|exists:roles,id',
         ]);
 
@@ -78,7 +78,7 @@ class UserController extends Controller
 
         // Only validate password if it's provided
         if ($request->filled('password')) {
-            $rules['password'] = ['required', 'confirmed', Rules\Password::defaults()];
+            $rules['password'] = ['required', 'confirmed', 'min:8'];
         }
 
         $request->validate($rules);
