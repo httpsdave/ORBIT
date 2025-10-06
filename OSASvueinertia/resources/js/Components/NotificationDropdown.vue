@@ -34,12 +34,20 @@
       </span>
     </button>
 
-    <!-- Dropdown Menu -->
-    <div 
-      v-show="isOpen"
-      class="absolute right-0 mt-2 w-64 sm:w-72 md:w-80 max-w-[calc(100vw-1rem)] bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 z-50 overflow-hidden"
-      @click.stop
+    <!-- Dropdown Menu with smooth animation -->
+    <Transition
+      enter-active-class="transition-all duration-200 ease-out"
+      enter-from-class="opacity-0 -translate-y-2 scale-95"
+      enter-to-class="opacity-100 translate-y-0 scale-100"
+      leave-active-class="transition-all duration-150 ease-in"
+      leave-from-class="opacity-100 translate-y-0 scale-100"
+      leave-to-class="opacity-0 -translate-y-2 scale-95"
     >
+      <div 
+        v-show="isOpen"
+        class="absolute right-0 mt-2 w-64 sm:w-72 md:w-80 max-w-[calc(100vw-1rem)] bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 z-50 overflow-hidden"
+        @click.stop
+      >
       <!-- Header -->
       <div class="px-3 sm:px-4 py-3 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
         <div class="flex items-center justify-between">
@@ -142,7 +150,8 @@
           View all notifications
         </button>
       </div>
-    </div>
+      </div>
+    </Transition>
   </div>
 </template>
 
