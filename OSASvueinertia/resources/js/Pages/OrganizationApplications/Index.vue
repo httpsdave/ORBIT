@@ -150,6 +150,7 @@ const activeDropdown = ref(null);
 const statusFilter = ref('');
 const formTypeFilter = ref('');
 const organizationFilter = ref('');
+const planSortFilter = ref('target_date'); // 'submission_date' or 'target_date'
 
 // Status update variables
 const showStatusModal = ref(false);
@@ -212,14 +213,70 @@ const organizationOptions = computed(() => {
   return props.users.map(user => ({ value: user.id.toString(), label: user.name }));
 });
 
+// Helper function to get earliest target date from Plan of Activities
+const getEarliestTargetDate = (app) => {
+  if (app.form_type !== 'LSPU-OSAS-SF-004' || !app.activities || !Array.isArray(app.activities)) {
+    return null;
+  }
+  
+  const validDates = app.activities
+    .map(activity => activity.target_date)
+    .filter(date => date && date !== '')
+    .map(date => new Date(date))
+    .filter(date => !isNaN(date.getTime()));
+  
+  if (validDates.length === 0) return null;
+  
+  return new Date(Math.min(...validDates));
+};
+
+// Helper function to sort applications with Plan of Activities prioritized by target date
+const sortApplications = (applications) => {
+  // If sorting by submission date, don't apply any custom sorting
+  if (planSortFilter.value === 'submission_date') {
+    return [...applications];
+  }
+  
+  // Otherwise, sort by target date (nearest first)
+  return [...applications].sort((a, b) => {
+    const isPlanA = a.form_type === 'LSPU-OSAS-SF-004';
+    const isPlanB = b.form_type === 'LSPU-OSAS-SF-004';
+    
+    // If both are Plan of Activities, sort by earliest target date
+    if (isPlanA && isPlanB) {
+      const dateA = getEarliestTargetDate(a);
+      const dateB = getEarliestTargetDate(b);
+      
+      // If both have target dates, sort by nearest (earliest) first
+      if (dateA && dateB) {
+        return dateA - dateB;
+      }
+      
+      // If only one has a target date, prioritize the one with a date
+      if (dateA) return -1;
+      if (dateB) return 1;
+      
+      // If neither has target dates, maintain original order
+      return 0;
+    }
+    
+    // If only one is Plan of Activities, prioritize it
+    if (isPlanA) return -1;
+    if (isPlanB) return 1;
+    
+    // For non-Plan applications, maintain original order
+    return 0;
+  });
+};
+
 // Combined filter function - now triggers server-side filtering
 const filterApplications = async () => {
   // When filters are applied, we need to reload from server with filters
   if (hasActiveFilters.value) {
     await reloadWithFilters();
   } else {
-    // No filters, just show all loaded applications
-    filteredApplications.value = [...allApplications.value];
+    // No filters, sort and show all loaded applications
+    filteredApplications.value = sortApplications([...allApplications.value]);
   }
 };
 
@@ -250,9 +307,9 @@ const reloadWithFilters = async () => {
     const data = await response.json();
     
     if (data.applications && Array.isArray(data.applications)) {
-      // Replace all applications with filtered results
+      // Replace all applications with filtered results and apply sorting
       allApplications.value = [...data.applications];
-      filteredApplications.value = [...data.applications];
+      filteredApplications.value = sortApplications([...data.applications]);
       currentPage.value = data.currentPage;
       hasMorePages.value = data.hasMorePages;
     }
@@ -329,7 +386,7 @@ watch(showMessage, (val) => {
 });
 
 onMounted(() => {
-  filteredApplications.value = allApplications.value;
+  filteredApplications.value = sortApplications([...allApplications.value]);
   if (showMessage.value) {
     startBannerTimeout();
   }
@@ -357,9 +414,16 @@ onMounted(() => {
 
 // Watch for filter changes with debouncing
 let filterTimeout = null;
-watch([searchQuery, statusFilter, formTypeFilter, organizationFilter], () => {
-  // Reset pagination when filters change
-  resetPagination();
+watch([searchQuery, statusFilter, formTypeFilter, organizationFilter, planSortFilter], ([newSearch, newStatus, newFormType, newOrg, newPlanSort], [oldSearch, oldStatus, oldFormType, oldOrg, oldPlanSort]) => {
+  // Only reset pagination if non-sort filters changed
+  const nonSortFiltersChanged = newSearch !== oldSearch || 
+                                 newStatus !== oldStatus || 
+                                 newFormType !== oldFormType || 
+                                 newOrg !== oldOrg;
+  
+  if (nonSortFiltersChanged) {
+    resetPagination();
+  }
   
   // Debounce filter changes to avoid excessive API calls
   if (filterTimeout) clearTimeout(filterTimeout);
@@ -595,7 +659,7 @@ const loadMoreApplications = async () => {
       const newApplications = data.applications.filter(app => !existingIds.has(app.id));
       
       allApplications.value = [...allApplications.value, ...newApplications];
-      filteredApplications.value = [...allApplications.value]; // Update filtered list too
+      filteredApplications.value = sortApplications([...allApplications.value]); // Apply sorting after appending
       currentPage.value = data.currentPage;
       hasMorePages.value = data.hasMorePages;
     }
@@ -900,12 +964,24 @@ const confirmClearData = () => {
       </div>
 
       <!-- Status pill buttons (All | Pending | Approved | Disapproved) - placed under search bar on the right -->
-      <div v-if="!isAdmin" class="flex justify-center sm:justify-end mt-2 px-2 sm:px-0">
+      <div v-if="!isAdmin" class="flex flex-col sm:flex-row justify-center sm:justify-end gap-2 mt-2 px-2 sm:px-0">
         <div class="inline-flex rounded-full bg-gray-100 dark:bg-gray-800 p-0.5 sm:p-1 w-full max-w-xs sm:max-w-none sm:w-auto">
           <button @click="setStatusFilter('')" :class="['flex-1 sm:flex-none px-1.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-medium text-center', !statusFilter ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow' : 'text-gray-600 dark:text-gray-300']">All</button>
           <button @click="setStatusFilter('pending')" :class="['flex-1 sm:flex-none px-1.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-medium text-center', statusFilter && statusFilter.toLowerCase() === 'pending' ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow' : 'text-gray-600 dark:text-gray-300']">Pending</button>
           <button @click="setStatusFilter('approved')" :class="['flex-1 sm:flex-none px-1.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-medium text-center', statusFilter && statusFilter.toLowerCase() === 'approved' ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow' : 'text-gray-600 dark:text-gray-300']">Approved</button>
           <button @click="setStatusFilter('disapproved')" :class="['flex-1 sm:flex-none px-1.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-medium text-center', statusFilter && statusFilter.toLowerCase() === 'disapproved' ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow' : 'text-gray-600 dark:text-gray-300']">Disapproved</button>
+        </div>
+        
+        <!-- Plan of Activities Sort Filter for non-admin -->
+        <div class="flex justify-center sm:justify-end">
+          <select 
+            v-model="planSortFilter"
+            class="pl-3 pr-8 py-1.5 border border-gray-300 dark:border-gray-600 rounded-full text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm"
+            title="Sort Plan of Activities submissions"
+          >
+            <option value="submission_date">Plan: By Submission</option>
+            <option value="target_date">Plan: By Target Date</option>
+          </select>
         </div>
       </div>
 
@@ -957,6 +1033,18 @@ const confirmClearData = () => {
             >
               {{ option.label.length > 20 ? option.label.substring(0, 20) + '...' : option.label }}
             </option>
+          </select>
+        </div>
+
+        <!-- Plan of Activities Sort Filter -->
+        <div class="min-w-0 flex-shrink-0">
+          <select 
+            v-model="planSortFilter"
+            class="pl-3 pr-8 py-1.5 border border-gray-300 dark:border-gray-600 rounded-full text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm"
+            title="Sort Plan of Activities submissions"
+          >
+            <option value="submission_date">Plan: By Submission</option>
+            <option value="target_date">Plan: By Target Date</option>
           </select>
         </div>
 

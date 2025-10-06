@@ -75,7 +75,7 @@ class OrganizationApplicationController extends Controller
             $query->where('user_id', $request->user_filter);
         }
         
-        $paginatedApplications = $query->with('user')
+        $paginatedApplications = $query->with(['user', 'activities'])
             ->orderBy('created_at', 'desc')
             ->paginate($perPage);
         
@@ -88,7 +88,7 @@ class OrganizationApplicationController extends Controller
     } else {
         // For regular users, only show their own applications
         $paginatedApplications = $query->where('user_id', auth()->id())
-            ->with('user')
+            ->with(['user', 'activities'])
             ->orderBy('created_at', 'desc')
             ->paginate($perPage);
         $users = collect(); // Empty collection for non-admins
@@ -198,7 +198,7 @@ class OrganizationApplicationController extends Controller
             $query->where('user_id', auth()->id());
         }
         
-        $paginatedApplications = $query->with('user')
+        $paginatedApplications = $query->with(['user', 'activities'])
             ->orderBy('created_at', 'desc')
             ->paginate($perPage, ['*'], 'page', $page);
         
