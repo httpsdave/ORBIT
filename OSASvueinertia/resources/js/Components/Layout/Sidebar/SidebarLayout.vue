@@ -500,14 +500,22 @@ onUnmounted(() => {
               </svg>
             </button>
             
-            <!-- Dropdown Menu -->
-            <div 
-              v-show="isDropdownOpen"
-              :class="[
-                'absolute bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden z-50 w-56 max-w-xs mt-2',
-                'right-0'
-              ]"
+            <!-- Dropdown Menu with smooth animation -->
+            <Transition
+              enter-active-class="transition-all duration-200 ease-out"
+              enter-from-class="opacity-0 -translate-y-2 scale-95"
+              enter-to-class="opacity-100 translate-y-0 scale-100"
+              leave-active-class="transition-all duration-150 ease-in"
+              leave-from-class="opacity-100 translate-y-0 scale-100"
+              leave-to-class="opacity-0 -translate-y-2 scale-95"
             >
+              <div 
+                v-show="isDropdownOpen"
+                :class="[
+                  'absolute bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden z-50 w-56 max-w-xs mt-2',
+                  'right-0'
+                ]"
+              >
               <div class="py-2 px-4 border-b border-gray-100 dark:border-gray-700">
                 <div class="text-sm font-medium text-gray-800 dark:text-gray-200 truncate relative group/dropdown-name" :title="user?.name || 'User'">
                   {{ user?.name || 'User' }}
@@ -593,7 +601,8 @@ onUnmounted(() => {
                   <span class="ml-3">Sign Out</span>
                 </button>
               </div>
-            </div>
+              </div>
+            </Transition>
           </div>
           
           <!-- Fallback if no user is available -->
