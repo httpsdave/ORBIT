@@ -964,24 +964,12 @@ const confirmClearData = () => {
       </div>
 
       <!-- Status pill buttons (All | Pending | Approved | Disapproved) - placed under search bar on the right -->
-      <div v-if="!isAdmin" class="flex flex-col sm:flex-row justify-center sm:justify-end gap-2 mt-2 px-2 sm:px-0">
+      <div v-if="!isAdmin" class="flex justify-center sm:justify-end mt-2 px-2 sm:px-0">
         <div class="inline-flex rounded-full bg-gray-100 dark:bg-gray-800 p-0.5 sm:p-1 w-full max-w-xs sm:max-w-none sm:w-auto">
           <button @click="setStatusFilter('')" :class="['flex-1 sm:flex-none px-1.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-medium text-center', !statusFilter ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow' : 'text-gray-600 dark:text-gray-300']">All</button>
           <button @click="setStatusFilter('pending')" :class="['flex-1 sm:flex-none px-1.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-medium text-center', statusFilter && statusFilter.toLowerCase() === 'pending' ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow' : 'text-gray-600 dark:text-gray-300']">Pending</button>
           <button @click="setStatusFilter('approved')" :class="['flex-1 sm:flex-none px-1.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-medium text-center', statusFilter && statusFilter.toLowerCase() === 'approved' ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow' : 'text-gray-600 dark:text-gray-300']">Approved</button>
           <button @click="setStatusFilter('disapproved')" :class="['flex-1 sm:flex-none px-1.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-medium text-center', statusFilter && statusFilter.toLowerCase() === 'disapproved' ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow' : 'text-gray-600 dark:text-gray-300']">Disapproved</button>
-        </div>
-        
-        <!-- Plan of Activities Sort Filter for non-admin -->
-        <div class="flex justify-center sm:justify-end">
-          <select 
-            v-model="planSortFilter"
-            class="pl-3 pr-8 py-1.5 border border-gray-300 dark:border-gray-600 rounded-full text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm"
-            title="Sort Plan of Activities submissions"
-          >
-            <option value="submission_date">Plan: By Submission</option>
-            <option value="target_date">Plan: By Target Date</option>
-          </select>
         </div>
       </div>
 
@@ -1036,15 +1024,15 @@ const confirmClearData = () => {
           </select>
         </div>
 
-        <!-- Plan of Activities Sort Filter -->
-        <div class="min-w-0 flex-shrink-0">
+        <!-- Plan of Activities Sort Filter - Only show when Plan of Activities form type is selected -->
+        <div v-if="formTypeFilter === 'LSPU-OSAS-SF-004'" class="min-w-0 flex-shrink-0">
           <select 
             v-model="planSortFilter"
             class="pl-3 pr-8 py-1.5 border border-gray-300 dark:border-gray-600 rounded-full text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm"
             title="Sort Plan of Activities submissions"
           >
-            <option value="submission_date">Plan: By Submission</option>
-            <option value="target_date">Plan: By Target Date</option>
+            <option value="submission_date">Sort: By Submission</option>
+            <option value="target_date">Sort: By Target Date</option>
           </select>
         </div>
 
