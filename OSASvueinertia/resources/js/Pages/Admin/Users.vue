@@ -81,7 +81,10 @@ const dropdownPosition = ref({ top: 0, left: 0 });
 const dropdownButtonEl = ref(null);
 const dropdownRef = ref(null);
 const dropdownDirection = ref('down');
-const activeMobileDropdownId = ref(null);
+
+// Mobile modal state
+const showMobileActionsModal = ref(false);
+const selectedMobileUser = ref(null);
 
 // Back-to-top button state and handler
 const showBackToTop = ref(false);
@@ -102,13 +105,11 @@ const scrollToTop = (e) => {
 onMounted(() => {
     window.addEventListener('scroll', onScroll, { passive: true });
     document.addEventListener('click', closeDropdowns);
-    document.addEventListener('click', closeMobileDropdowns);
 });
 
 onUnmounted(() => {
     window.removeEventListener('scroll', onScroll);
     document.removeEventListener('click', closeDropdowns);
-    document.removeEventListener('click', closeMobileDropdowns);
     removeDropdownListeners();
 });
 
@@ -235,12 +236,9 @@ const deleteUser = () => {
 
 // Dropdown functionality (similar to ApplicationsTable)
 const toggleDropdown = (user, event) => {
-    if (window.innerWidth < 640) { // Mobile: show inline dropdown
-        if (activeMobileDropdownId.value === user.id) {
-            activeMobileDropdownId.value = null;
-        } else {
-            activeMobileDropdownId.value = user.id;
-        }
+    if (window.innerWidth < 640) { // Mobile: show modal popup
+        selectedMobileUser.value = user;
+        showMobileActionsModal.value = true;
         return;
     }
     // Desktop: floating dropdown
@@ -304,20 +302,9 @@ const closeDropdowns = (event) => {
     }
 };
 
-const closeMobileDropdowns = (event) => {
-    if (window.innerWidth >= 640) return;
-    if (
-        activeMobileDropdownId.value &&
-        !event.target.closest('.mobile-dropdown-menu')
-    ) {
-        activeMobileDropdownId.value = null;
-    }
-};
-
 const handleDropdownAction = (user, action) => {
     // Close dropdown
     activeDropdownUser.value = null;
-    activeMobileDropdownId.value = null;
     
     // Handle specific actions
     switch(action) {
@@ -328,6 +315,31 @@ const handleDropdownAction = (user, action) => {
             confirmUserDeletion(user);
             break;
     }
+};
+
+// Mobile modal action handlers
+const handleMobileAction = (action) => {
+    const user = selectedMobileUser.value;
+    if (!user) return;
+    
+    // Close mobile modal
+    showMobileActionsModal.value = false;
+    selectedMobileUser.value = null;
+    
+    // Handle specific actions
+    switch(action) {
+        case 'edit':
+            confirmUserEdit(user);
+            break;
+        case 'delete':
+            confirmUserDeletion(user);
+            break;
+    }
+};
+
+const closeMobileActionsModal = () => {
+    showMobileActionsModal.value = false;
+    selectedMobileUser.value = null;
 };
 </script>
 
@@ -441,26 +453,7 @@ const handleDropdownAction = (user, action) => {
                                         </span>
                                     </button>
                                 </div>
-                                
-                                <!-- MOBILE INLINE DROPDOWN -->
-                                <div v-if="activeMobileDropdownId === user.id" class="mobile-dropdown-menu mt-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg shadow p-3 flex flex-col gap-2 z-10" @click.stop>
-                                    <button @click="handleDropdownAction(user, 'edit')" class="w-full text-left px-2 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                        </svg>
-                                        Edit
-                                    </button>
-                                    <button 
-                                        v-if="user.id !== $page.props.auth.user.id"
-                                        @click="handleDropdownAction(user, 'delete')" 
-                                        class="w-full text-left px-2 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 flex items-center gap-2 transition duration-200 border-t border-gray-100 dark:border-gray-600 mt-1 pt-1"
-                                    >
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                        </svg>
-                                        Delete
-                                    </button>
-                                </div>
+
                             </div>
                             <div v-if="filteredUsers.length === 0" class="text-center py-8 text-gray-500 dark:text-gray-400 text-sm">
                                 {{ searchQuery ? 'No users found matching your search.' : 'No users found.' }}
@@ -830,6 +823,73 @@ const handleDropdownAction = (user, action) => {
                 </svg>
                 Delete
             </button>
+        </div>
+    </Teleport>
+
+    <!-- Mobile Actions Modal -->
+    <Teleport to="body">
+        <div v-if="showMobileActionsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-end justify-center z-50" @click="closeMobileActionsModal">
+            <div class="bg-white dark:bg-gray-800 w-full max-w-sm rounded-t-lg shadow-xl transform transition-transform duration-300 ease-out" @click.stop>
+                <!-- Modal Header -->
+                <div class="px-3 py-2 border-b border-gray-200 dark:border-gray-700">
+                    <div class="flex items-center space-x-2">
+                        <template v-if="selectedMobileUser && selectedMobileUser.profile_photo_url">
+                            <img
+                                :src="selectedMobileUser.profile_photo_url"
+                                alt="Avatar"
+                                class="w-8 h-8 rounded-full object-cover border border-blue-200 shadow-sm"
+                            />
+                        </template>
+                        <template v-else-if="selectedMobileUser">
+                            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-green-400 flex items-center justify-center text-white font-medium shadow-inner text-xs">
+                                {{ selectedMobileUser.name.charAt(0).toUpperCase() }}
+                            </div>
+                        </template>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                                {{ selectedMobileUser ? selectedMobileUser.name : '' }}
+                            </h3>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 truncate">
+                                {{ selectedMobileUser ? selectedMobileUser.email : '' }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Modal Actions -->
+                <div class="py-1">
+                    <button 
+                        @click="handleMobileAction('edit')"
+                        class="w-full flex items-center px-3 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600 dark:text-blue-400 mr-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                        <span class="text-sm text-gray-900 dark:text-gray-100">Edit User</span>
+                    </button>
+                    
+                    <button 
+                        v-if="selectedMobileUser && selectedMobileUser.id !== $page.props.auth.user.id"
+                        @click="handleMobileAction('delete')"
+                        class="w-full flex items-center px-3 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-600 dark:text-red-400 mr-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                        <span class="text-sm text-red-600 dark:text-red-400">Delete User</span>
+                    </button>
+                </div>
+                
+                <!-- Cancel Button -->
+                <div class="px-3 py-2 border-t border-gray-200 dark:border-gray-700">
+                    <button 
+                        @click="closeMobileActionsModal"
+                        class="w-full py-1.5 text-center text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors duration-200"
+                    >
+                        Cancel
+                    </button>
+                </div>
+            </div>
         </div>
     </Teleport>
 
