@@ -756,10 +756,14 @@ watch(showPreviewModal, (val) => {
                   allowfullscreen
                   title="PDF Preview"
                 >
-                  <p>Your browser does not support PDFs. 
-                     <a :href="getViewUrl(previewApp)" class="text-blue-600 hover:underline">Download the PDF</a>.
-                  </p>
                 </iframe>
+                <!-- Fallback message for browsers that don't support iframes (shown outside iframe) -->
+                <div v-if="previewApp" class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <p class="text-gray-500 text-sm pointer-events-auto hidden">
+                    Your browser does not support PDFs. 
+                    <a :href="getViewUrl(previewApp)" class="text-blue-600 hover:underline">Download the PDF</a>.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
