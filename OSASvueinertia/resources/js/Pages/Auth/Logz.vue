@@ -186,13 +186,13 @@ onBeforeUnmount(() => {
     <!-- Full screen container with split layout -->
     <div class="min-h-screen flex relative overflow-hidden">
         <!-- Background slideshow for left side -->
-        <div class="absolute inset-0 right-20 sm:right-24 md:right-32 lg:right-40 xl:right-48 z-0">
-            <transition-group name="fade">
+        <div class="absolute inset-0 right-20 sm:right-24 md:right-32 lg:right-40 xl:right-48 z-0 bg-gray-900">
+            <transition-group name="slideshow-fade">
                 <div 
                     v-for="(image, index) in slideshowImages" 
                     :key="index" 
                     v-show="activeSlide === index"
-                    class="absolute inset-0 bg-cover bg-center transition-opacity duration-1000"
+                    class="absolute inset-0 bg-cover bg-center"
                     :style="{ backgroundImage: `url(${image})`, filter: isDarkMode ? 'brightness(0.3) contrast(1.2)' : 'brightness(0.4) contrast(1.1)' }"
                 >
                 </div>
@@ -626,15 +626,28 @@ onBeforeUnmount(() => {
   }
 }
 
-/* Slideshow transition */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 1s ease;
+/* Slideshow transition - smooth crossfade */
+.slideshow-fade-enter-active {
+  transition: opacity 2s ease-in-out;
 }
 
-.fade-enter-from,
-.fade-leave-to {
+.slideshow-fade-leave-active {
+  transition: opacity 2s ease-in-out;
+}
+
+.slideshow-fade-enter-from {
   opacity: 0;
+}
+
+.slideshow-fade-leave-to {
+  opacity: 0;
+}
+
+.slideshow-fade-enter-active,
+.slideshow-fade-leave-active {
+  position: absolute;
+  width: 100%;
+  height: 100%;
 }
 
 /* Improve focus visibility for accessibility */
