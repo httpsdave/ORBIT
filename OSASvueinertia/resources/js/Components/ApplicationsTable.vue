@@ -23,6 +23,10 @@ const dropdownRef = ref(null);
 const dropdownDirection = ref('down'); // 'down' or 'up'
 const activeMobileDropdownId = ref(null); // For mobile card dropdown
 
+// Mobile modal state
+const showMobileActionsModal = ref(false);
+const selectedMobileApp = ref(null);
+
 const showPreviewModal = ref(false);
 const previewApp = ref(null);
 
@@ -114,21 +118,6 @@ const formatTime = (dateString) => {
 };
 
 // Add this function to your methods
-const getDropdownPosition = (appId) => {
-  // Find the button element that triggered this dropdown
-  const buttonElement = document.querySelector(`[data-dropdown-trigger="${appId}"]`);
-  
-  if (!buttonElement) return { top: '0px', right: '0px' };
-  
-  const rect = buttonElement.getBoundingClientRect();
-  
-  // Position dropdown relative to the button
-  return {
-    top: `${rect.bottom + window.scrollY + 5}px`, // 5px padding below button
-    left: `${rect.right - 192 + window.scrollX}px`, // 192px = 48px (dropdown width) * 4
-  };
-};
-
 const getPdfRoute = (app, action = 'download') => {
   const queryParams = action === 'view' ? '?action=view' : '';
 
@@ -177,12 +166,9 @@ const toggleDropdown = (app, event) => {
     return;
   }
   
-  if (window.innerWidth < 640) { // Mobile: show inline dropdown
-    if (activeMobileDropdownId.value === app.id) {
-      activeMobileDropdownId.value = null;
-    } else {
-      activeMobileDropdownId.value = app.id;
-    }
+  if (window.innerWidth < 640) { // Mobile: show modal popup
+    selectedMobileApp.value = app;
+    showMobileActionsModal.value = true;
     return;
   }
   // Desktop/table: floating dropdown
@@ -244,6 +230,8 @@ const openUploadModal = (app) => {
   selectedApplicationForUpload.value = app;
   activeDropdownApp.value = null;
   activeMobileDropdownId.value = null;
+  showMobileActionsModal.value = false;
+  selectedMobileApp.value = null;
   showUploadModal.value = true;
 };
 
@@ -344,6 +332,8 @@ const submitLink = (linkUrl) => {
 // Function to delete document
 const deleteDocument = (appId) => {
   activeDropdownApp.value = null;
+  showMobileActionsModal.value = false;
+  selectedMobileApp.value = null;
   emit('confirmDeleteDocument', appId);
 };
 
@@ -363,15 +353,62 @@ const handleAction = (app, action) => {
   }
 };
 
+// Mobile modal action handlers
+const handleMobileAction = (action) => {
+  const app = selectedMobileApp.value;
+  if (!app) return;
+  
+  // Close mobile modal
+  showMobileActionsModal.value = false;
+  selectedMobileApp.value = null;
+  
+  // Handle specific actions
+  switch(action) {
+    case 'updateStatus':
+      emit('openStatusModal', app);
+      break;
+    case 'uploadDocument':
+      openUploadModal(app);
+      break;
+    case 'deleteDocument':
+      emit('confirmDeleteDocument', app.id);
+      break;
+    case 'viewSignedDocument':
+      viewSignedDocument(app);
+      break;
+    case 'viewFeedback':
+      viewFeedback(app);
+      break;
+    case 'edit':
+      // Navigate to edit page
+      window.location.href = `/applications/${app.id}/edit`;
+      break;
+    case 'downloadPdf':
+      // Download PDF
+      const pdfRoute = getPdfRoute(app);
+      const reportPath = getReportPath(app);
+      if (pdfRoute || reportPath) {
+        window.open(pdfRoute ? pdfRoute : `/storage/${reportPath}`, '_blank');
+      }
+      break;
+    case 'delete':
+      emit('deleteApplication', app.id);
+      break;
+  }
+};
+
+const closeMobileActionsModal = () => {
+  showMobileActionsModal.value = false;
+  selectedMobileApp.value = null;
+};
+
 // Add this after your existing refs
 onMounted(() => {
   document.addEventListener('click', closeDropdowns);
-  document.addEventListener('click', closeMobileDropdowns);
 });
 
 onUnmounted(() => {
   document.removeEventListener('click', closeDropdowns);
-  document.removeEventListener('click', closeMobileDropdowns);
   removeDropdownListeners();
 });
 
@@ -437,17 +474,6 @@ const getViewUrl = (app) => {
   // Otherwise, use the generated PDF route (if available)
   const pdfRoute = getPdfRoute(app, 'view');
   return pdfRoute ? pdfRoute : '#';
-};
-
-// Add for mobile dropdown close on outside click
-const closeMobileDropdowns = (event) => {
-  if (window.innerWidth >= 640) return;
-  if (
-    activeMobileDropdownId.value &&
-    !event.target.closest('.mobile-dropdown-menu')
-  ) {
-    activeMobileDropdownId.value = null;
-  }
 };
 
 // Add this method in <script setup>
@@ -543,6 +569,8 @@ const viewSignedDocument = (app) => {
     // Close any open dropdowns
     activeDropdownApp.value = null;
     activeMobileDropdownId.value = null;
+    showMobileActionsModal.value = false;
+    selectedMobileApp.value = null;
     
     if (getSignedDocumentType(app) === 'link') {
       // Show confirmation modal for links
@@ -575,6 +603,8 @@ const viewFeedback = (app) => {
   // Close any open dropdowns
   activeDropdownApp.value = null;
   activeMobileDropdownId.value = null;
+  showMobileActionsModal.value = false;
+  selectedMobileApp.value = null;
   
   // Navigate to the feedback view page
   router.visit(`/applications/${app.id}/feedback`);
@@ -727,76 +757,6 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
               <path d="M2.458 12C3.732 7.943 7.523 5 12 5s8.268 2.943 9.542 7c-1.274 4.057-5.065 7-9.542 7s-8.268-2.943-9.542-7z" />
             </svg>
             View Reports
-          </button>
-        </div>
-        
-        <!-- MOBILE INLINE DROPDOWN -->
-        <div v-if="activeMobileDropdownId === app.id" class="mobile-dropdown-menu mt-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg shadow p-3 flex flex-col gap-2 z-10" @click.stop>
-          <button v-if="isAdmin" @click="activeMobileDropdownId = null; handleAction(app, 'updateStatus')" class="w-full text-left px-2 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-600 dark:text-purple-400" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3-9a1 1 0 10-2 0v4a1 1 0 102 0V9z" clip-rule="evenodd" />
-              <path d="M10 6a1 1 0 100 2 1 1 0 000-2z" />
-            </svg>
-            Update Status
-          </button>
-          <button v-if="!hasSignedDocument(app)" @click="openUploadModal(app)" class="w-full text-left px-2 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-600 dark:text-indigo-400" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-            </svg>
-            Upload Document
-          </button>
-          <button v-if="hasSignedDocument(app) && app.status.toLowerCase() !== 'approved'" @click="activeMobileDropdownId = null; deleteDocument(app.id)" class="w-full text-left px-2 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-orange-600" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zm3 8a1 1 0 11-2 0 1 1 0 012 0zm-8 2a1 1 0 100 2h10a1 1 0 100-2H4z" clip-rule="evenodd" />
-            </svg>
-            Delete Document
-          </button>
-          <button v-if="hasSignedDocument(app)" @click="activeMobileDropdownId = null; viewSignedDocument(app)" class="w-full text-left px-2 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-teal-600 dark:text-teal-400" viewBox="0 0 20 20" fill="currentColor">
-              <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2h-1.528A6 6 0 004 9.528V4z" />
-              <path fill-rule="evenodd" d="M8 10a4 4 0 00-3.446 6.032l-1.261 1.26a1 1 0 101.415 1.415l1.261-1.261A4 4 0 006 10z" clip-rule="evenodd" />
-            </svg>
-            {{ getSignedDocumentType(app) === 'link' ? 'Open Link' : 'View Document' }}
-          </button>
-          <button v-if="hasFeedback(app)" @click="activeMobileDropdownId = null; viewFeedback(app)" class="w-full text-left px-2 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-600 dark:text-purple-400" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd" />
-            </svg>
-            View Feedback
-          </button>
-          <Link v-if="isAdmin || (!isAdmin && app.status !== 'Approved')" :href="`/applications/${app.id}/edit`" @click="activeMobileDropdownId = null" class="w-full text-left px-2 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-500 dark:text-amber-400" viewBox="0 0 20 20" fill="currentColor">
-              <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-            </svg>
-            Edit Application
-          </Link>
-          <a 
-            v-if="getPdfRoute(app) || getReportPath(app)"
-            :href="getPdfRoute(app) ? getPdfRoute(app) : (`/storage/${getReportPath(app)}`)"
-            @click="activeMobileDropdownId = null" 
-            class="w-full text-left px-2 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200 cursor-pointer"
-            target="_blank"
-            download
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600 dark:text-blue-400" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
-            </svg>
-            Download PDF
-          </a>
-          <span
-            v-else
-            class="w-full text-left px-2 py-2 text-sm text-gray-400 dark:text-gray-500 flex items-center gap-2 cursor-not-allowed"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 dark:text-gray-500" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
-            </svg>
-            Download PDF
-          </span>
-          <button v-if="isAdmin || (!isAdmin && app.status !== 'Approved')" @click="activeMobileDropdownId = null; handleAction(app, 'delete')" class="w-full text-left px-2 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 flex items-center gap-2 transition duration-200 border-t border-gray-100 dark:border-gray-600 mt-1 pt-1">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-            </svg>
-            Delete Application
           </button>
         </div>
         
@@ -1209,6 +1169,135 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
         </div>
       </div>
     </transition>
+    </Teleport>
+
+    <!-- Mobile Actions Modal -->
+    <Teleport to="body">
+        <div v-if="showMobileActionsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-end justify-center z-50" @click="closeMobileActionsModal">
+            <div class="bg-white dark:bg-gray-800 w-full max-w-sm rounded-t-lg shadow-xl transform transition-transform duration-300 ease-out" @click.stop>
+                <!-- Modal Header -->
+                <div class="px-3 py-2 border-b border-gray-200 dark:border-gray-700">
+                    <div class="flex items-center space-x-2">
+                        <div class="flex-shrink-0 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full p-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor">
+                                <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h168q13-36 43.5-58t68.5-22q38 0 68.5 22t43.5 58h168q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm80-80h280v-80H280v80Zm0-160h400v-80H280v80Zm0-160h400v-80H280v80Zm200-190q13 0 21.5-8.5T510-820q0-13-8.5-21.5T480-850q-13 0-21.5 8.5T450-820q0 13 8.5 21.5T480-790ZM200-200v-560 560Z"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                                {{ selectedMobileApp ? formTypeToName(selectedMobileApp.form_type) : '' }}
+                            </h3>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 truncate">
+                                {{ selectedMobileApp ? selectedMobileApp.form_type : '' }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Modal Actions -->
+                <div class="py-1">
+                    <button 
+                        v-if="isAdmin && selectedMobileApp"
+                        @click="handleMobileAction('updateStatus')"
+                        class="w-full flex items-center px-3 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-600 dark:text-purple-400 mr-2.5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3-9a1 1 0 10-2 0v4a1 1 0 102 0V9z" clip-rule="evenodd" />
+                            <path d="M10 6a1 1 0 100 2 1 1 0 000-2z" />
+                        </svg>
+                        <span class="text-sm text-gray-900 dark:text-gray-100">Update Status</span>
+                    </button>
+
+                    <button 
+                        v-if="selectedMobileApp && !hasSignedDocument(selectedMobileApp)"
+                        @click="handleMobileAction('uploadDocument')"
+                        class="w-full flex items-center px-3 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-600 dark:text-indigo-400 mr-2.5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                        </svg>
+                        <span class="text-sm text-gray-900 dark:text-gray-100">Upload Document</span>
+                    </button>
+
+                    <button 
+                        v-if="selectedMobileApp && hasSignedDocument(selectedMobileApp) && selectedMobileApp.status.toLowerCase() !== 'approved'"
+                        @click="handleMobileAction('deleteDocument')"
+                        class="w-full flex items-center px-3 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-orange-600 dark:text-orange-400 mr-2.5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zm3 8a1 1 0 11-2 0 1 1 0 012 0zm-8 2a1 1 0 100 2h10a1 1 0 100-2H4z" clip-rule="evenodd" />
+                        </svg>
+                        <span class="text-sm text-gray-900 dark:text-gray-100">Delete Document</span>
+                    </button>
+
+                    <button 
+                        v-if="selectedMobileApp && hasSignedDocument(selectedMobileApp)"
+                        @click="handleMobileAction('viewSignedDocument')"
+                        class="w-full flex items-center px-3 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-teal-600 dark:text-teal-400 mr-2.5" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2h-1.528A6 6 0 004 9.528V4z" />
+                            <path fill-rule="evenodd" d="M8 10a4 4 0 00-3.446 6.032l-1.261 1.26a1 1 0 101.415 1.415l1.261-1.261A4 4 0 006 10z" clip-rule="evenodd" />
+                        </svg>
+                        <span class="text-sm text-gray-900 dark:text-gray-100">{{ selectedMobileApp && getSignedDocumentType(selectedMobileApp) === 'link' ? 'Open Link' : 'View Document' }}</span>
+                    </button>
+
+                    <button 
+                        v-if="selectedMobileApp && hasFeedback(selectedMobileApp)"
+                        @click="handleMobileAction('viewFeedback')"
+                        class="w-full flex items-center px-3 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-600 dark:text-purple-400 mr-2.5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd" />
+                        </svg>
+                        <span class="text-sm text-gray-900 dark:text-gray-100">View Feedback</span>
+                    </button>
+
+                    <button 
+                        v-if="selectedMobileApp && (isAdmin || (!isAdmin && selectedMobileApp.status !== 'Approved'))"
+                        @click="handleMobileAction('edit')"
+                        class="w-full flex items-center px-3 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-500 dark:text-amber-400 mr-2.5" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                        </svg>
+                        <span class="text-sm text-gray-900 dark:text-gray-100">Edit Application</span>
+                    </button>
+
+                    <button 
+                        v-if="selectedMobileApp && (getPdfRoute(selectedMobileApp) || getReportPath(selectedMobileApp))"
+                        @click="handleMobileAction('downloadPdf')"
+                        class="w-full flex items-center px-3 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600 dark:text-blue-400 mr-2.5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                        <span class="text-sm text-gray-900 dark:text-gray-100">Download PDF</span>
+                    </button>
+
+                    <button 
+                        v-if="selectedMobileApp && (isAdmin || (!isAdmin && selectedMobileApp.status !== 'Approved'))"
+                        @click="handleMobileAction('delete')"
+                        class="w-full flex items-center px-3 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-600 dark:text-red-400 mr-2.5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                        </svg>
+                        <span class="text-sm text-red-600 dark:text-red-400">Delete Application</span>
+                    </button>
+                </div>
+                
+                <!-- Cancel Button -->
+                <div class="px-3 py-2 border-t border-gray-200 dark:border-gray-700">
+                    <button 
+                        @click="closeMobileActionsModal"
+                        class="w-full py-1.5 text-center text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors duration-200"
+                    >
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
     </Teleport>
   </div>
 </template>
