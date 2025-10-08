@@ -21,7 +21,6 @@ const dropdownPosition = ref({ top: 0, left: 0 });
 const dropdownButtonEl = ref(null);
 const dropdownRef = ref(null);
 const dropdownDirection = ref('down'); // 'down' or 'up'
-const activeMobileDropdownId = ref(null); // For mobile card dropdown
 
 // Mobile modal state
 const showMobileActionsModal = ref(false);
@@ -229,7 +228,6 @@ function removeDropdownListeners() {
 const openUploadModal = (app) => {
   selectedApplicationForUpload.value = app;
   activeDropdownApp.value = null;
-  activeMobileDropdownId.value = null;
   showMobileActionsModal.value = false;
   selectedMobileApp.value = null;
   showUploadModal.value = true;
@@ -568,7 +566,6 @@ const viewSignedDocument = (app) => {
   if (hasSignedDocument(app)) {
     // Close any open dropdowns
     activeDropdownApp.value = null;
-    activeMobileDropdownId.value = null;
     showMobileActionsModal.value = false;
     selectedMobileApp.value = null;
     
@@ -602,7 +599,6 @@ const closeLinkConfirmationModal = () => {
 const viewFeedback = (app) => {
   // Close any open dropdowns
   activeDropdownApp.value = null;
-  activeMobileDropdownId.value = null;
   showMobileActionsModal.value = false;
   selectedMobileApp.value = null;
   
@@ -654,7 +650,8 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
   if (newVal) {
     // Close any open dropdowns when preview modal opens
     activeDropdownApp.value = null;
-    activeMobileDropdownId.value = null;
+    showMobileActionsModal.value = false;
+    selectedMobileApp.value = null;
     dropdownButtonEl.value = null;
     removeDropdownListeners();
   }
@@ -1173,8 +1170,24 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
 
     <!-- Mobile Actions Modal -->
     <Teleport to="body">
-        <div v-if="showMobileActionsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-end justify-center z-50" @click="closeMobileActionsModal">
-            <div class="bg-white dark:bg-gray-800 w-full max-w-sm rounded-t-lg shadow-xl transform transition-transform duration-300 ease-out" @click.stop>
+        <transition
+            enter-active-class="transition-opacity ease-out duration-200"
+            enter-from-class="opacity-0"
+            enter-to-class="opacity-100"
+            leave-active-class="transition-opacity ease-in duration-150"
+            leave-from-class="opacity-100"
+            leave-to-class="opacity-0"
+        >
+            <div v-if="showMobileActionsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-end justify-center z-50" @click="closeMobileActionsModal">
+                <transition
+                    enter-active-class="transition-transform ease-out duration-250"
+                    enter-from-class="translate-y-full"
+                    enter-to-class="translate-y-0"
+                    leave-active-class="transition-transform ease-in duration-200"
+                    leave-from-class="translate-y-0"
+                    leave-to-class="translate-y-full"
+                >
+                    <div v-if="showMobileActionsModal" class="bg-white dark:bg-gray-800 w-full max-w-sm rounded-t-lg shadow-xl" @click.stop>
                 <!-- Modal Header -->
                 <div class="px-3 py-2 border-b border-gray-200 dark:border-gray-700">
                     <div class="flex items-center space-x-2">
@@ -1199,7 +1212,7 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
                     <button 
                         v-if="isAdmin && selectedMobileApp"
                         @click="handleMobileAction('updateStatus')"
-                        class="w-full flex items-center px-3 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
+                        class="w-full flex items-center px-3 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-150 active:scale-[0.98]"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-600 dark:text-purple-400 mr-2.5" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3-9a1 1 0 10-2 0v4a1 1 0 102 0V9z" clip-rule="evenodd" />
@@ -1211,7 +1224,7 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
                     <button 
                         v-if="selectedMobileApp && !hasSignedDocument(selectedMobileApp)"
                         @click="handleMobileAction('uploadDocument')"
-                        class="w-full flex items-center px-3 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
+                        class="w-full flex items-center px-3 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-150 active:scale-[0.98]"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-600 dark:text-indigo-400 mr-2.5" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
@@ -1222,7 +1235,7 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
                     <button 
                         v-if="selectedMobileApp && hasSignedDocument(selectedMobileApp) && selectedMobileApp.status.toLowerCase() !== 'approved'"
                         @click="handleMobileAction('deleteDocument')"
-                        class="w-full flex items-center px-3 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
+                        class="w-full flex items-center px-3 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-150 active:scale-[0.98]"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-orange-600 dark:text-orange-400 mr-2.5" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zm3 8a1 1 0 11-2 0 1 1 0 012 0zm-8 2a1 1 0 100 2h10a1 1 0 100-2H4z" clip-rule="evenodd" />
@@ -1233,7 +1246,7 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
                     <button 
                         v-if="selectedMobileApp && hasSignedDocument(selectedMobileApp)"
                         @click="handleMobileAction('viewSignedDocument')"
-                        class="w-full flex items-center px-3 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
+                        class="w-full flex items-center px-3 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-150 active:scale-[0.98]"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-teal-600 dark:text-teal-400 mr-2.5" viewBox="0 0 20 20" fill="currentColor">
                             <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2h-1.528A6 6 0 004 9.528V4z" />
@@ -1245,7 +1258,7 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
                     <button 
                         v-if="selectedMobileApp && hasFeedback(selectedMobileApp)"
                         @click="handleMobileAction('viewFeedback')"
-                        class="w-full flex items-center px-3 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
+                        class="w-full flex items-center px-3 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-150 active:scale-[0.98]"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-600 dark:text-purple-400 mr-2.5" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd" />
@@ -1256,7 +1269,7 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
                     <button 
                         v-if="selectedMobileApp && (isAdmin || (!isAdmin && selectedMobileApp.status !== 'Approved'))"
                         @click="handleMobileAction('edit')"
-                        class="w-full flex items-center px-3 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
+                        class="w-full flex items-center px-3 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-150 active:scale-[0.98]"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-500 dark:text-amber-400 mr-2.5" viewBox="0 0 20 20" fill="currentColor">
                             <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
@@ -1267,7 +1280,7 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
                     <button 
                         v-if="selectedMobileApp && (getPdfRoute(selectedMobileApp) || getReportPath(selectedMobileApp))"
                         @click="handleMobileAction('downloadPdf')"
-                        class="w-full flex items-center px-3 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
+                        class="w-full flex items-center px-3 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-150 active:scale-[0.98]"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600 dark:text-blue-400 mr-2.5" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -1278,7 +1291,7 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
                     <button 
                         v-if="selectedMobileApp && (isAdmin || (!isAdmin && selectedMobileApp.status !== 'Approved'))"
                         @click="handleMobileAction('delete')"
-                        class="w-full flex items-center px-3 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
+                        class="w-full flex items-center px-3 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-150 active:scale-[0.98]"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-600 dark:text-red-400 mr-2.5" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
@@ -1297,7 +1310,9 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
                     </button>
                 </div>
             </div>
-        </div>
+                </transition>
+            </div>
+        </transition>
     </Teleport>
   </div>
 </template>
