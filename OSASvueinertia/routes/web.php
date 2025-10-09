@@ -252,6 +252,9 @@ Route::middleware(['auth'])->group(function () {
         Route::patch('/notifications/{notification}/toggle-active', [NotificationController::class, 'toggleActive'])->name('admin.notifications.toggle-active');
         Route::patch('/notifications/{id}/mark-read', [NotificationController::class, 'markAsRead']);
 
+        // Admin Plan of Activities Management Routes
+        Route::get('/plan-of-activities', [\App\Http\Controllers\Admin\PlanOfActivitiesController::class, 'index'])->name('admin.plan-of-activities.index');
+
         // Admin Archive Management Routes
         Route::get('/archive', [\App\Http\Controllers\Admin\ArchiveController::class, 'index'])->name('admin.archive.index');
         Route::post('/archive/end-year', [\App\Http\Controllers\Admin\ArchiveController::class, 'endYear'])->name('admin.archive.end-year');
