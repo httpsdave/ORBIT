@@ -226,6 +226,80 @@ const isPastDate = (dateString) => {
           </div>
         </div>
 
+        <!-- Top Pagination Controls -->
+        <div v-if="totalPages > 1" class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 mt-6 px-4 py-3">
+          <div class="flex items-center justify-between">
+            <!-- Page Info -->
+            <div class="text-sm text-gray-600 dark:text-gray-400">
+              Page <span class="font-semibold text-gray-900 dark:text-gray-100">{{ currentPage }}</span> of <span class="font-semibold text-gray-900 dark:text-gray-100">{{ totalPages }}</span>
+            </div>
+
+            <!-- Pagination Buttons -->
+            <nav class="flex items-center gap-1" aria-label="Pagination">
+              <!-- Previous Button -->
+              <button 
+                @click="prevPage" 
+                :disabled="currentPage === 1"
+                :class="[
+                  'inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-lg transition-all duration-200',
+                  currentPage === 1
+                    ? 'text-gray-400 dark:text-gray-600 cursor-not-allowed'
+                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                ]"
+                aria-label="Previous page"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              
+              <!-- Page Numbers -->
+              <div class="hidden sm:flex items-center gap-1">
+                <button 
+                  v-for="page in visiblePages" 
+                  :key="page"
+                  @click="page === '...' ? null : goToPage(page)"
+                  :disabled="page === '...'"
+                  :class="[
+                    'min-w-[2rem] px-3 py-1.5 text-sm font-medium rounded-lg transition-all duration-200',
+                    page === '...' 
+                      ? 'text-gray-400 dark:text-gray-600 cursor-default' 
+                      : currentPage === page 
+                        ? 'bg-blue-600 text-white shadow-sm' 
+                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                  ]"
+                  :aria-label="page === '...' ? 'More pages' : `Go to page ${page}`"
+                  :aria-current="currentPage === page ? 'page' : undefined"
+                >
+                  {{ page }}
+                </button>
+              </div>
+
+              <!-- Mobile: Current Page Display -->
+              <div class="sm:hidden px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300">
+                {{ currentPage }} / {{ totalPages }}
+              </div>
+              
+              <!-- Next Button -->
+              <button 
+                @click="nextPage" 
+                :disabled="currentPage === totalPages"
+                :class="[
+                  'inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-lg transition-all duration-200',
+                  currentPage === totalPages
+                    ? 'text-gray-400 dark:text-gray-600 cursor-not-allowed'
+                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                ]"
+                aria-label="Next page"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </nav>
+          </div>
+        </div>
+
         <!-- Activities Table -->
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
           <div class="overflow-x-auto">
@@ -362,51 +436,77 @@ const isPastDate = (dateString) => {
           </div>
         </div>
 
-        <!-- Pagination Controls -->
-        <div v-if="totalPages > 1" class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 mt-4 p-4">
-          <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <!-- Bottom Pagination Controls -->
+        <div v-if="totalPages > 1" class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 mt-4 px-4 py-3">
+          <div class="flex items-center justify-between">
             <!-- Page Info -->
             <div class="text-sm text-gray-600 dark:text-gray-400">
-              Page <span class="font-semibold">{{ currentPage }}</span> of <span class="font-semibold">{{ totalPages }}</span>
+              Page <span class="font-semibold text-gray-900 dark:text-gray-100">{{ currentPage }}</span> of <span class="font-semibold text-gray-900 dark:text-gray-100">{{ totalPages }}</span>
             </div>
 
             <!-- Pagination Buttons -->
-            <div class="flex items-center gap-2">
+            <nav class="flex items-center gap-1" aria-label="Pagination">
+              <!-- Previous Button -->
               <button 
                 @click="prevPage" 
                 :disabled="currentPage === 1"
-                class="px-4 py-2 bg-blue-500 text-white rounded-lg disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed hover:bg-blue-600 transition-colors duration-200 text-sm font-medium"
+                :class="[
+                  'inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-lg transition-all duration-200',
+                  currentPage === 1
+                    ? 'text-gray-400 dark:text-gray-600 cursor-not-allowed'
+                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                ]"
+                aria-label="Previous page"
               >
-                Previous
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
               </button>
               
-              <div class="flex gap-1">
+              <!-- Page Numbers -->
+              <div class="hidden sm:flex items-center gap-1">
                 <button 
                   v-for="page in visiblePages" 
                   :key="page"
                   @click="page === '...' ? null : goToPage(page)"
                   :disabled="page === '...'"
                   :class="[
-                    'px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200',
+                    'min-w-[2rem] px-3 py-1.5 text-sm font-medium rounded-lg transition-all duration-200',
                     page === '...' 
-                      ? 'text-gray-400 dark:text-gray-500 cursor-default' 
+                      ? 'text-gray-400 dark:text-gray-600 cursor-default' 
                       : currentPage === page 
                         ? 'bg-blue-600 text-white shadow-sm' 
-                        : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
+                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                   ]"
+                  :aria-label="page === '...' ? 'More pages' : `Go to page ${page}`"
+                  :aria-current="currentPage === page ? 'page' : undefined"
                 >
                   {{ page }}
                 </button>
               </div>
+
+              <!-- Mobile: Current Page Display -->
+              <div class="sm:hidden px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300">
+                {{ currentPage }} / {{ totalPages }}
+              </div>
               
+              <!-- Next Button -->
               <button 
                 @click="nextPage" 
                 :disabled="currentPage === totalPages"
-                class="px-4 py-2 bg-blue-500 text-white rounded-lg disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed hover:bg-blue-600 transition-colors duration-200 text-sm font-medium"
+                :class="[
+                  'inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-lg transition-all duration-200',
+                  currentPage === totalPages
+                    ? 'text-gray-400 dark:text-gray-600 cursor-not-allowed'
+                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                ]"
+                aria-label="Next page"
               >
-                Next
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
               </button>
-            </div>
+            </nav>
           </div>
         </div>
 
