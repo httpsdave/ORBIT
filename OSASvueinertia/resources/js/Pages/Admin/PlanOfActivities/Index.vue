@@ -196,9 +196,16 @@ const isPastDate = (dateString) => {
                 >
                   <td class="px-6 py-4 whitespace-nowrap">
                     <div class="flex items-center">
-                      <div>
-                        <div class="text-sm font-medium text-gray-900 dark:text-white">
+                      <div class="max-w-xs">
+                        <div class="text-sm font-medium text-gray-900 dark:text-white truncate relative group/org">
                           {{ activity.organization }}
+                          <!-- Tooltip for full organization name -->
+                          <span 
+                            v-if="activity.organization.length > 30"
+                            class="absolute left-0 bottom-full mb-2 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded py-2 px-3 opacity-0 group-hover/org:opacity-100 transition-opacity duration-300 whitespace-normal w-64 z-50 pointer-events-none shadow-lg"
+                          >
+                            {{ activity.organization }}
+                          </span>
                         </div>
                         <Link 
                           :href="`/applications/${activity.application_id}/reports`"
