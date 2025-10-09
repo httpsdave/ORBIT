@@ -234,15 +234,10 @@ const isPastDate = (dateString) => {
     <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Header Section -->
-        <div class="mb-8">
+          <div class="mb-8">
           <div class="flex items-center justify-between mb-2">
             <div>
-              <h1 class="text-3xl font-bold text-gray-900 dark:text-white flex items-center">
-                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-green-500 flex items-center justify-center mr-3 shadow-lg">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-                  </svg>
-                </div>
+              <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
                 Plan of Activities
               </h1>
               <p class="text-gray-600 dark:text-gray-400 mt-1">
@@ -681,7 +676,7 @@ const isPastDate = (dateString) => {
           </div>
         </div>
 
-        <!-- Bottom Pagination Controls -->
+        <!-- Bottom Pagination Controls - Minimalist Design -->
         <div v-if="totalPages > 1" class="flex items-center justify-between mt-6 px-2">
           <!-- Page Info -->
           <div class="text-sm text-gray-600 dark:text-gray-400">
@@ -689,16 +684,16 @@ const isPastDate = (dateString) => {
           </div>
 
           <!-- Pagination Buttons -->
-          <nav class="flex items-center gap-1" aria-label="Pagination">
+          <nav class="flex items-center gap-2" aria-label="Pagination">
             <!-- Previous Button -->
             <button 
               @click="prevPage" 
               :disabled="currentPage === 1"
               :class="[
-                'inline-flex items-center justify-center w-8 h-8 text-sm font-medium rounded-lg transition-all duration-200 border',
+                'inline-flex items-center justify-center p-1 text-sm font-medium transition-colors duration-200',
                 currentPage === 1
-                  ? 'text-gray-400 dark:text-gray-600 border-gray-200 dark:border-gray-700 cursor-not-allowed'
-                  : 'text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-600 hover:text-white hover:border-transparent'
+                  ? 'text-gray-300 dark:text-gray-700 cursor-not-allowed'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400'
               ]"
               aria-label="Previous page"
             >
@@ -715,12 +710,12 @@ const isPastDate = (dateString) => {
                 @click="page === '...' ? null : goToPage(page)"
                 :disabled="page === '...'"
                 :class="[
-                  'min-w-[2rem] h-8 px-3 text-sm font-medium rounded-lg transition-all duration-200 border',
+                  'min-w-[2rem] px-2 py-1 text-sm font-medium transition-colors duration-200',
                   page === '...' 
-                    ? 'text-gray-400 dark:text-gray-600 border-transparent cursor-default' 
+                    ? 'text-gray-400 dark:text-gray-600 cursor-default' 
                     : currentPage === page 
-                      ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white border-transparent shadow-md' 
-                      : 'text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-600 hover:text-white hover:border-transparent'
+                      ? 'text-blue-600 dark:text-blue-400 font-bold' 
+                      : 'text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400'
                 ]"
                 :aria-label="page === '...' ? 'More pages' : `Go to page ${page}`"
                 :aria-current="currentPage === page ? 'page' : undefined"
@@ -730,7 +725,7 @@ const isPastDate = (dateString) => {
             </div>
 
             <!-- Mobile: Current Page Display -->
-            <div class="sm:hidden px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300">
+            <div class="sm:hidden px-2 py-1 text-sm font-medium text-gray-700 dark:text-gray-300">
               {{ currentPage }} / {{ totalPages }}
             </div>
             
@@ -739,10 +734,10 @@ const isPastDate = (dateString) => {
               @click="nextPage" 
               :disabled="currentPage === totalPages"
               :class="[
-                'inline-flex items-center justify-center w-8 h-8 text-sm font-medium rounded-lg transition-all duration-200 border',
+                'inline-flex items-center justify-center p-1 text-sm font-medium transition-colors duration-200',
                 currentPage === totalPages
-                  ? 'text-gray-400 dark:text-gray-600 border-gray-200 dark:border-gray-700 cursor-not-allowed'
-                  : 'text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-600 hover:text-white hover:border-transparent'
+                  ? 'text-gray-300 dark:text-gray-700 cursor-not-allowed'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400'
               ]"
               aria-label="Next page"
             >
