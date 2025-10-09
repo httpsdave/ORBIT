@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { Head, Link } from '@inertiajs/vue3';
 import SidebarLayout from '@/Components/Layout/Sidebar/SidebarLayout.vue';
 
@@ -21,6 +21,7 @@ const props = defineProps({
 // Search and filter state
 const searchQuery = ref('');
 const statusFilter = ref('all');
+const dateFilter = ref('nearest'); // 'nearest', 'upcoming', 'past', 'submission-newest', 'submission-oldest'
 
 // Pagination state
 const currentPage = ref(1);
@@ -47,6 +48,54 @@ const filteredActivities = computed(() => {
     filtered = filtered.filter(activity => 
       activity.status.toLowerCase() === statusFilter.value.toLowerCase()
     );
+  }
+
+  // Apply date sorting/filtering
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  if (dateFilter.value === 'upcoming') {
+    // Only show upcoming events
+    filtered = filtered.filter(activity => {
+      const targetDate = new Date(activity.target_date);
+      targetDate.setHours(0, 0, 0, 0);
+      return targetDate >= today;
+    });
+    // Sort by target date ascending (soonest first)
+    filtered.sort((a, b) => new Date(a.target_date) - new Date(b.target_date));
+  } else if (dateFilter.value === 'past') {
+    // Only show past events
+    filtered = filtered.filter(activity => {
+      const targetDate = new Date(activity.target_date);
+      targetDate.setHours(0, 0, 0, 0);
+      return targetDate < today;
+    });
+    // Sort by target date descending (most recent past first)
+    filtered.sort((a, b) => new Date(b.target_date) - new Date(a.target_date));
+  } else if (dateFilter.value === 'submission-newest') {
+    // Sort by submission date descending (newest first)
+    filtered.sort((a, b) => new Date(b.target_date) - new Date(a.target_date));
+  } else if (dateFilter.value === 'submission-oldest') {
+    // Sort by submission date ascending (oldest first)
+    filtered.sort((a, b) => new Date(a.target_date) - new Date(b.target_date));
+  } else {
+    // Default: 'nearest' - sort by proximity to today (nearest events first)
+    filtered.sort((a, b) => {
+      const dateA = new Date(a.target_date);
+      const dateB = new Date(b.target_date);
+      
+      // Calculate absolute difference from today
+      const diffA = Math.abs(today - dateA);
+      const diffB = Math.abs(today - dateB);
+      
+      // If different distances, closer one comes first
+      if (diffA !== diffB) {
+        return diffA - diffB;
+      }
+      
+      // If same distance, upcoming before past
+      return dateB - dateA;
+    });
   }
 
   return filtered;
@@ -118,6 +167,11 @@ const prevPage = () => {
   }
 };
 
+// Watch for filter changes and reset to page 1
+watch([searchQuery, statusFilter, dateFilter], () => {
+  currentPage.value = 1;
+});
+
 // Format currency
 const formatCurrency = (amount) => {
   if (!amount || amount === 'N/A') return 'N/A';
@@ -178,7 +232,7 @@ const isPastDate = (dateString) => {
 
           <!-- Filters Section -->
           <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 mt-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
               <!-- Search Input -->
               <div>
                 <label for="search" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -212,6 +266,24 @@ const isPastDate = (dateString) => {
                   <option value="approved">Approved</option>
                   <option value="pending">Pending</option>
                   <option value="disapproved">Disapproved</option>
+                </select>
+              </div>
+
+              <!-- Date Filter -->
+              <div>
+                <label for="dateFilter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Sort by Date
+                </label>
+                <select
+                  id="dateFilter"
+                  v-model="dateFilter"
+                  class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                >
+                  <option value="nearest">Nearest Events (Default)</option>
+                  <option value="upcoming">Upcoming Events Only</option>
+                  <option value="past">Past Events Only</option>
+                  <option value="submission-newest">Newest Submission First</option>
+                  <option value="submission-oldest">Oldest Submission First</option>
                 </select>
               </div>
             </div>
