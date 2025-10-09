@@ -22,6 +22,10 @@ const props = defineProps({
 const searchQuery = ref('');
 const statusFilter = ref('all');
 
+// Pagination state
+const currentPage = ref(1);
+const activitiesPerPage = 50;
+
 // Filtered activities based on search and status
 const filteredActivities = computed(() => {
   let filtered = props.activities;
@@ -47,6 +51,72 @@ const filteredActivities = computed(() => {
 
   return filtered;
 });
+
+// Pagination computed properties
+const totalPages = computed(() => Math.ceil(filteredActivities.value.length / activitiesPerPage));
+const startIndex = computed(() => (currentPage.value - 1) * activitiesPerPage);
+const endIndex = computed(() => Math.min(startIndex.value + activitiesPerPage, filteredActivities.value.length));
+const currentPageActivities = computed(() => {
+  return filteredActivities.value.slice(startIndex.value, endIndex.value);
+});
+
+// Visible pages for pagination controls
+const visiblePages = computed(() => {
+  const total = totalPages.value;
+  const current = currentPage.value;
+  const delta = 2; // Number of pages to show on each side of current page
+  
+  if (total <= 7) {
+    // If 7 or fewer pages, show all
+    return Array.from({ length: total }, (_, i) => i + 1);
+  }
+  
+  const range = [];
+  const rangeWithDots = [];
+  
+  for (let i = Math.max(2, current - delta); i <= Math.min(total - 1, current + delta); i++) {
+    range.push(i);
+  }
+  
+  if (current - delta > 2) {
+    rangeWithDots.push(1, '...');
+  } else {
+    rangeWithDots.push(1);
+  }
+  
+  rangeWithDots.push(...range);
+  
+  if (current + delta < total - 1) {
+    rangeWithDots.push('...', total);
+  } else {
+    rangeWithDots.push(total);
+  }
+  
+  return rangeWithDots;
+});
+
+// Navigation functions
+const goToPage = (page) => {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page;
+    // Scroll to top of table
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+};
+
+const nextPage = () => {
+  if (currentPage.value < totalPages.value) {
+    currentPage.value++;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+};
+
+const prevPage = () => {
+  if (currentPage.value > 1) {
+    currentPage.value--;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+};
 
 // Format currency
 const formatCurrency = (amount) => {
@@ -85,7 +155,7 @@ const isPastDate = (dateString) => {
   <Head title="Plan of Activities" />
 
   <SidebarLayout :is-admin="isAdmin">
-    <div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800">
+    <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Header Section -->
         <div class="mb-8">
@@ -148,7 +218,10 @@ const isPastDate = (dateString) => {
 
             <!-- Results count -->
             <div class="mt-4 text-sm text-gray-600 dark:text-gray-400">
-              Showing <span class="font-semibold">{{ filteredActivities.length }}</span> of {{ totalActivities }} activities
+              Showing <span class="font-semibold">{{ startIndex + 1 }}-{{ endIndex }}</span> of <span class="font-semibold">{{ filteredActivities.length }}</span> activities
+              <span v-if="filteredActivities.length !== totalActivities" class="ml-2 text-gray-500">
+                (filtered from {{ totalActivities }} total)
+              </span>
             </div>
           </div>
         </div>
@@ -190,7 +263,7 @@ const isPastDate = (dateString) => {
               </thead>
               <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                 <tr 
-                  v-for="activity in filteredActivities" 
+                  v-for="activity in currentPageActivities" 
                   :key="activity.id"
                   class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150"
                 >
@@ -273,7 +346,7 @@ const isPastDate = (dateString) => {
                 </tr>
                 
                 <!-- Empty State -->
-                <tr v-if="filteredActivities.length === 0">
+                <tr v-if="currentPageActivities.length === 0">
                   <td colspan="9" class="px-6 py-12 text-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -286,6 +359,54 @@ const isPastDate = (dateString) => {
                 </tr>
               </tbody>
             </table>
+          </div>
+        </div>
+
+        <!-- Pagination Controls -->
+        <div v-if="totalPages > 1" class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 mt-4 p-4">
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <!-- Page Info -->
+            <div class="text-sm text-gray-600 dark:text-gray-400">
+              Page <span class="font-semibold">{{ currentPage }}</span> of <span class="font-semibold">{{ totalPages }}</span>
+            </div>
+
+            <!-- Pagination Buttons -->
+            <div class="flex items-center gap-2">
+              <button 
+                @click="prevPage" 
+                :disabled="currentPage === 1"
+                class="px-4 py-2 bg-blue-500 text-white rounded-lg disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed hover:bg-blue-600 transition-colors duration-200 text-sm font-medium"
+              >
+                Previous
+              </button>
+              
+              <div class="flex gap-1">
+                <button 
+                  v-for="page in visiblePages" 
+                  :key="page"
+                  @click="page === '...' ? null : goToPage(page)"
+                  :disabled="page === '...'"
+                  :class="[
+                    'px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200',
+                    page === '...' 
+                      ? 'text-gray-400 dark:text-gray-500 cursor-default' 
+                      : currentPage === page 
+                        ? 'bg-blue-600 text-white shadow-sm' 
+                        : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
+                  ]"
+                >
+                  {{ page }}
+                </button>
+              </div>
+              
+              <button 
+                @click="nextPage" 
+                :disabled="currentPage === totalPages"
+                class="px-4 py-2 bg-blue-500 text-white rounded-lg disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed hover:bg-blue-600 transition-colors duration-200 text-sm font-medium"
+              >
+                Next
+              </button>
+            </div>
           </div>
         </div>
 
