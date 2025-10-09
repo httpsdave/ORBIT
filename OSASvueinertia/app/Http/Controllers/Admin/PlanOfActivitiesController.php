@@ -27,10 +27,10 @@ class PlanOfActivitiesController extends Controller
                     'id' => $activity->id,
                     'application_id' => $application->id,
                     'organization' => $application->user->name,
-                    'objective' => $activity->objective,
-                    'activity_name' => $activity->name,
-                    'description' => $activity->description,
-                    'persons_involved' => $activity->persons_involved,
+                    'objective' => $this->cleanHtmlText($activity->objective),
+                    'activity_name' => $this->cleanHtmlText($activity->name),
+                    'description' => $this->cleanHtmlText($activity->description),
+                    'persons_involved' => $this->cleanHtmlText($activity->persons_involved),
                     'target_date' => $activity->target_date,
                     'target_date_formatted' => Carbon::parse($activity->target_date)->format('M d, Y'),
                     'budget' => $activity->budget,
@@ -64,5 +64,34 @@ class PlanOfActivitiesController extends Controller
             'totalActivities' => count($activities),
             'isAdmin' => true,
         ]);
+    }
+
+    /**
+     * Clean HTML tags and entities from text
+     * Converts HTML to plain text while preserving readability
+     */
+    private function cleanHtmlText($text)
+    {
+        if (empty($text)) {
+            return $text;
+        }
+
+        // First, convert common HTML entities to their readable equivalents
+        $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        
+        // Replace <br>, <br/>, <br />, and </p><p> tags with space or newline as needed
+        $text = preg_replace('/<br\s*\/?>/i', ' ', $text);
+        $text = preg_replace('/<\/p>\s*<p>/i', ' ', $text);
+        
+        // Strip all remaining HTML tags
+        $text = strip_tags($text);
+        
+        // Replace multiple spaces with single space
+        $text = preg_replace('/\s+/', ' ', $text);
+        
+        // Trim whitespace
+        $text = trim($text);
+        
+        return $text;
     }
 }
