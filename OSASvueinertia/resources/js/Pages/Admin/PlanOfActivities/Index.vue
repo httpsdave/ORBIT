@@ -480,6 +480,7 @@ const isPastDate = (dateString) => {
                           </span>
                         </div>
                         <Link 
+                          v-if="activity.status.toLowerCase() === 'approved'"
                           :href="`/applications/${activity.application_id}/reports`"
                           class="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:underline transition-colors duration-200"
                         >
@@ -578,6 +579,7 @@ const isPastDate = (dateString) => {
                     {{ activity.organization }}
                   </h3>
                   <Link 
+                    v-if="activity.status.toLowerCase() === 'approved'"
                     :href="`/applications/${activity.application_id}/reports`"
                     class="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:underline inline-flex items-center gap-1 mt-1"
                   >
