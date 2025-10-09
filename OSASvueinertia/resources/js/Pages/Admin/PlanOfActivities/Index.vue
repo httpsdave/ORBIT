@@ -228,7 +228,7 @@ const isPastDate = (dateString) => {
     </div>
 
     <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div class="w-full mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 py-8">
         <!-- Header Section -->
           <div class="mb-8">
           <div class="flex items-center justify-between mb-2">
