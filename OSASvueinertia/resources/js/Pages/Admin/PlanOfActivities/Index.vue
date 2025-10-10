@@ -745,19 +745,21 @@ const deselectAllMultiSelect = (columnKey) => {
                           :aria-pressed="isColumnSorted(column.key)"
                           :aria-label="`Sort ${column.label}`"
                         >
-                          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
-                            <path
-                              v-if="isColumnSorted(column.key, 'asc')"
-                              d="M8 17h2V7h3l-4-4-4 4h3v10zm8-10h-2v10h-3l4 4 4-4h-3V7z"
-                            />
-                            <path
-                              v-else-if="isColumnSorted(column.key, 'desc')"
-                              d="M8 7h2v10h3l-4 4-4-4h3V7zm8 10h-2V7h-3l4-4 4 4h-3v10z"
-                            />
-                            <path
-                              v-else
-                              d="M7 10h4V6h2v4h4l-5 5-5-5zm10 4h-4v4h-2v-4H7l5-5 5 5z"
-                            />
+                          <!-- Ascending Icon -->
+                          <svg v-if="isColumnSorted(column.key, 'asc')" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 6h18M7 12h14M11 18h10" />
+                            <circle cx="4" cy="12" r="1" fill="currentColor" />
+                            <circle cx="4" cy="18" r="1" fill="currentColor" />
+                          </svg>
+                          <!-- Descending Icon -->
+                          <svg v-else-if="isColumnSorted(column.key, 'desc')" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M11 6h10M7 12h14M3 18h18" />
+                            <circle cx="4" cy="6" r="1" fill="currentColor" />
+                            <circle cx="4" cy="12" r="1" fill="currentColor" />
+                          </svg>
+                          <!-- Unsorted Icon (3 bars equal) -->
+                          <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 6h18M3 12h18M3 18h18" />
                           </svg>
                         </button>
 
@@ -770,8 +772,9 @@ const deselectAllMultiSelect = (columnKey) => {
                             :aria-expanded="activeFilterDropdown === column.key"
                             :aria-label="`Filter ${column.label}`"
                           >
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
-                              <path d="M4 5h16a1 1 0 01.8 1.6l-5 6.667V19a1 1 0 01-.553.894l-4 2A1 1 0 019 21v-7.733l-5-6.667A1 1 0 014 5z" />
+                            <!-- Filter Icon (funnel) -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
                             </svg>
                           </button>
 
