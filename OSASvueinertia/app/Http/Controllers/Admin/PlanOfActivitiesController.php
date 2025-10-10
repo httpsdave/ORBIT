@@ -107,91 +107,132 @@ class PlanOfActivitiesController extends Controller
 
     public function exportPdf(Request $request)
     {
-        // Check if user is admin
-        $isAdmin = auth()->user()->isAdmin();
-        
-        // Get Plan of Activities applications
-        $query = OrganizationApplication::where('form_type', 'LSPU-OSAS-SF-004')
-            ->with(['user', 'activities']);
-        
-        // If not admin, filter to show only the user's own submissions
-        if (!$isAdmin) {
-            $query->where('user_id', auth()->id());
-        }
-        
-        $applications = $query->get();
-
-        // Flatten activities from all applications with organization info
-        $activities = [];
-        
-        foreach ($applications as $application) {
-            foreach ($application->activities as $activity) {
-                $activities[] = [
-                    'id' => $activity->id,
-                    'application_id' => $application->id,
-                    'organization' => $application->user->name,
-                    'objective' => $this->cleanHtmlText($activity->objective),
-                    'activity_name' => $this->cleanHtmlText($activity->name),
-                    'description' => $this->cleanHtmlText($activity->description),
-                    'persons_involved' => $this->cleanHtmlText($activity->persons_involved),
-                    'target_date' => $activity->target_date,
-                    'target_date_formatted' => Carbon::parse($activity->target_date)->format('M d, Y'),
-                    'budget' => $activity->budget,
-                    'target_participants' => $activity->target_participants ?? 'N/A',
-                    'status' => $application->status,
-                ];
+        try {
+            // Check if user is admin
+            $isAdmin = auth()->user()->isAdmin();
+            
+            // Get Plan of Activities applications
+            $query = OrganizationApplication::where('form_type', 'LSPU-OSAS-SF-004')
+                ->with(['user', 'activities']);
+            
+            // If not admin, filter to show only the user's own submissions
+            if (!$isAdmin) {
+                $query->where('user_id', auth()->id());
             }
-        }
+            
+            $applications = $query->get();
 
-        // Parse filters from request (support both POST body and GET query params)
-        $filters = [];
-        
-        if ($request->has('filters')) {
-            // POST request with filters in body
-            $filters = $request->input('filters', []);
-        } else {
-            // GET request with filters as query params
-            $filters = [
-                'search' => $request->input('search'),
-                'status' => $request->input('status'),
-                'date' => $request->input('date'),
-                'organization' => $request->input('organization'),
-                'columnFilters' => $request->input('columnFilters', []),
-            ];
-        }
-        
-        // Apply filters
-        $filteredActivities = $this->applyFilters($activities, $filters);
+            // Flatten activities from all applications with organization info
+            $activities = [];
+            
+            foreach ($applications as $application) {
+                foreach ($application->activities as $activity) {
+                    $activities[] = [
+                        'id' => $activity->id,
+                        'application_id' => $application->id,
+                        'organization' => $application->user->name ?? 'N/A',
+                        'objective' => $this->cleanHtmlText($activity->objective ?? ''),
+                        'activity_name' => $this->cleanHtmlText($activity->name ?? ''),
+                        'description' => $this->cleanHtmlText($activity->description ?? ''),
+                        'persons_involved' => $this->cleanHtmlText($activity->persons_involved ?? ''),
+                        'target_date' => $activity->target_date,
+                        'target_date_formatted' => $activity->target_date ? Carbon::parse($activity->target_date)->format('M d, Y') : 'N/A',
+                        'budget' => $activity->budget ?? 0,
+                        'target_participants' => $activity->target_participants ?? 'N/A',
+                        'status' => $application->status ?? 'Pending',
+                    ];
+                }
+            }
 
-        // Parse sort from request (support both POST body and GET query params)
-        $sort = $request->has('sort') ? $request->input('sort') : [
-            'column' => $request->input('sort.column'),
-            'direction' => $request->input('sort.direction'),
-        ];
-        $sort = $request->input('sort', []);
-        $sortedActivities = $this->applySorting($filteredActivities, $sort);
+            // Parse filters from request (support both POST body and GET query params)
+            $filters = [];
+            
+            if ($request->has('filters')) {
+                // POST request with filters in body
+                $filters = $request->input('filters', []);
+            } else {
+                // GET request with simplified query params
+                $filters = [
+                    'search' => $request->input('search'),
+                    'status' => $request->input('status'),
+                    'organization' => $request->input('organization'),
+                    'columnFilters' => [],
+                ];
+                
+                // Parse simplified column filters (filter_columnName and filter_columnName_op)
+                foreach ($request->all() as $key => $value) {
+                    if (strpos($key, 'filter_') === 0 && strpos($key, '_op') === false) {
+                        $columnKey = str_replace('filter_', '', $key);
+                        $operator = $request->input("filter_{$columnKey}_op", 'contains');
+                        
+                        // Handle comma-separated values for multi-select (operator 'in')
+                        if ($operator === 'in' && is_string($value)) {
+                            $value = explode(',', $value);
+                        }
+                        
+                        $filters['columnFilters'][$columnKey] = [
+                            'operator' => $operator,
+                            'value' => $value,
+                        ];
+                    }
+                }
+            }
+            
+            // Apply filters
+            $filteredActivities = $this->applyFilters($activities, $filters);
 
-        // Generate PDF
-        $pdf = Pdf::loadView('pdfs.plan_of_activities_list', [
-            'activities' => $sortedActivities,
-            'isAdmin' => $isAdmin,
-            'generatedDate' => Carbon::now()->format('F d, Y'),
-            'generatedBy' => auth()->user()->name,
-            'filters' => $filters,
-        ]);
+            // Parse sort from request (simplified structure)
+            $sort = [];
+            if ($request->has('sort')) {
+                $sort = $request->input('sort');
+            } else {
+                // Handle simplified sort parameters
+                $sortColumn = $request->input('sort_column');
+                $sortDirection = $request->input('sort_direction');
+                if ($sortColumn && $sortDirection) {
+                    $sort = [
+                        'column' => $sortColumn,
+                        'direction' => $sortDirection,
+                    ];
+                }
+            }
+            $sortedActivities = $this->applySorting($filteredActivities, $sort);
 
-        // Set paper size and orientation
-        $pdf->setPaper('legal', 'landscape');
+            // Generate PDF
+            $pdf = Pdf::loadView('pdfs.plan_of_activities_list', [
+                'activities' => $sortedActivities,
+                'isAdmin' => $isAdmin,
+                'generatedDate' => Carbon::now()->format('F d, Y'),
+                'generatedBy' => auth()->user()->name ?? 'Unknown',
+                'filters' => $filters,
+            ]);
 
-        // Check if action is 'view' to display inline, otherwise download
-        $action = $request->input('action', 'download');
-        
-        if ($action === 'view') {
-            // Return PDF for inline viewing in browser
-            return $pdf->stream('plan-of-activities-' . Carbon::now()->format('Y-m-d') . '.pdf');
-        } else {
-            // Return PDF download
-            return $pdf->download('plan-of-activities-' . Carbon::now()->format('Y-m-d') . '.pdf');
+            // Set paper size and orientation
+            $pdf->setPaper('legal', 'landscape');
+
+            // Check if action is 'view' to display inline, otherwise download
+            $action = $request->input('action', 'download');
+            
+            if ($action === 'view') {
+                // Return PDF for inline viewing in browser
+                return $pdf->stream('plan-of-activities-' . Carbon::now()->format('Y-m-d') . '.pdf');
+            } else {
+                // Return PDF download
+                return $pdf->download('plan-of-activities-' . Carbon::now()->format('Y-m-d') . '.pdf');
+            }
+        } catch (\Exception $e) {
+            // Log the error for debugging
+            \Log::error('PDF Export Error: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            // Return error response
+            return response()->json([
+                'error' => 'Failed to generate PDF',
+                'message' => $e->getMessage()
+            ], 500);
         }
     }
 

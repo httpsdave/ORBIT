@@ -114,9 +114,15 @@
 </head>
 <body>
     <div class="header">
+        @if(file_exists(public_path('images/lspu-logo.png')))
         <img src="{{ public_path('images/lspu-logo.png') }}" alt="LSPU Logo" class="logo">
+        @endif
         <span class="calibri-text" style="font-size:11pt;">Republic of the Philippines</span><br>
+        @if(file_exists(public_path('images/lspu-name.png')))
         <img src="{{ public_path('images/lspu-name.png') }}" alt="Laguna State Polytechnic University" class="university-name"><br>
+        @else
+        <strong style="font-size:13pt;">LAGUNA STATE POLYTECHNIC UNIVERSITY</strong><br>
+        @endif
         <span class="calibri-text" style="font-size:11pt;">Province of Laguna</span><br>
         <br>
         <strong>OFFICE OF STUDENT AFFAIRS AND SERVICES</strong><br>

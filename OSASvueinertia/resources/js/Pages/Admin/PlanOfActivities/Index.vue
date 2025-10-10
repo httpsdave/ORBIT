@@ -506,7 +506,7 @@ const exportToPdf = async () => {
   isExporting.value = true;
   
   try {
-    // Build the PDF URL with query parameters instead of POST
+    // Build the PDF URL with query parameters
     const baseUrl = props.isAdmin ? '/admin/plan-of-activities/export-pdf' : '/plan-of-activities/export-pdf';
     
     const params = new URLSearchParams();
@@ -514,28 +514,28 @@ const exportToPdf = async () => {
     // Add action=view to display inline instead of download
     params.append('action', 'view');
     
-    // Add filter parameters
+    // Add basic filter parameters only (avoid complex nested structures)
     if (searchQuery.value) params.append('search', searchQuery.value);
-    if (statusFilter.value !== 'all') params.append('status', statusFilter.value);
-    if (dateFilter.value) params.append('date', dateFilter.value);
+    if (statusFilter.value && statusFilter.value !== 'all') params.append('status', statusFilter.value);
     if (organizationFilter.value) params.append('organization', organizationFilter.value);
     
-    // Add column filters
+    // Simplified: Only add column filters that have single values (not arrays)
+    // This avoids URL encoding issues with nested arrays
     Object.entries(columnFilters.value).forEach(([key, filter]) => {
-      if (filter.value && (Array.isArray(filter.value) ? filter.value.length > 0 : filter.value !== '')) {
-        params.append(`columnFilters[${key}][operator]`, filter.operator);
-        if (Array.isArray(filter.value)) {
-          filter.value.forEach(val => params.append(`columnFilters[${key}][value][]`, val));
-        } else {
-          params.append(`columnFilters[${key}][value]`, filter.value);
-        }
+      if (filter.value && !Array.isArray(filter.value) && filter.value !== '') {
+        params.append(`filter_${key}`, filter.value);
+        params.append(`filter_${key}_op`, filter.operator);
+      } else if (Array.isArray(filter.value) && filter.value.length > 0) {
+        // For multi-select, join with commas
+        params.append(`filter_${key}`, filter.value.join(','));
+        params.append(`filter_${key}_op`, 'in');
       }
     });
     
     // Add sort parameters
     if (sortState.value.column) {
-      params.append('sort[column]', sortState.value.column);
-      params.append('sort[direction]', sortState.value.direction);
+      params.append('sort_column', sortState.value.column);
+      params.append('sort_direction', sortState.value.direction);
     }
     
     const pdfUrl = `${baseUrl}?${params.toString()}`;
