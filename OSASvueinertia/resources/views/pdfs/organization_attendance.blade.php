@@ -220,7 +220,7 @@
 
         <div class="footer">
             <div class="footer-left">LSPU-OSAS-SF-009</div>
-            <div class="footer-center">Rev. 0</div>
+                    <div class="footer-center">Rev.<span style="display: inline-block !important; border-bottom: 1px solid black !important; line-height: 5px !important; position: relative !important; top: 2px !important;">0</span></div>
             <div class="footer-right">10 August 2016</div>
         </div>
         @if($chunkIndex < $totalPages - 1)
