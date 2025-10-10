@@ -5,238 +5,129 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Plan of Activities Report</title>
     <style>
-        * {
+        @page {
+            size: A4 landscape;
+            margin-top: 0.5cm;
+            margin-bottom: 1.0cm;
+            margin-left: 1.5cm;
+            margin-right: 1.5cm;
+        }
+
+        body {
+            font-family: 'Times New Roman', serif;
+            font-size: 10pt;
+            line-height: 1.1;
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        body {
-            font-family: 'DejaVu Sans', Arial, sans-serif;
-            font-size: 9px;
-            line-height: 1.4;
-            color: #1a1a1a;
-            padding: 20px;
-        }
-
         .header {
             text-align: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 3px solid #2563eb;
+            font-size: 13px;
+            margin: 0 0 0.5cm 0;
+            padding-top: 0.3cm;
+            position: relative;
         }
 
-        .header h1 {
-            font-size: 18px;
-            font-weight: bold;
-            color: #1e3a8a;
-            margin-bottom: 5px;
+        .logo {
+            position: absolute;
+            top: calc(-0.5cm);
+            left: -2cm;
+            width: 250px;
+            height: auto;
         }
 
-        .header .subtitle {
-            font-size: 11px;
-            color: #64748b;
-            margin-bottom: 3px;
+        .university-name {
+            max-width: 23%;
+            height: auto;
+            margin: 4px 0;
+            display: inline-block;
+        }
+
+        .calibri-text {
+            font-family: Calibri, sans-serif;
         }
 
         .meta-info {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 15px;
-            padding: 8px 12px;
-            background-color: #f8fafc;
-            border-left: 4px solid #2563eb;
-            font-size: 9px;
+            margin: 15px 0;
+            font-size: 10pt;
         }
 
-        .meta-info div {
-            display: inline-block;
+        .meta-info p {
+            margin: 3px 0;
         }
 
-        .meta-info strong {
-            color: #1e3a8a;
+        .filters-section {
+            margin: 10px 0;
+            font-size: 9pt;
         }
 
-        .filters-applied {
-            margin-bottom: 12px;
-            padding: 8px 12px;
-            background-color: #eff6ff;
-            border-radius: 4px;
-            font-size: 8px;
-        }
-
-        .filters-applied strong {
-            color: #1e40af;
+        .filters-section strong {
             display: block;
-            margin-bottom: 4px;
-        }
-
-        .filter-tag {
-            display: inline-block;
-            padding: 2px 8px;
-            margin-right: 6px;
-            margin-bottom: 4px;
-            background-color: #dbeafe;
-            color: #1e40af;
-            border-radius: 3px;
-            font-weight: 600;
+            margin-bottom: 5px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
-            font-size: 8px;
+            margin: 15px 0;
+            font-size: 9pt;
         }
 
-        thead {
-            background: linear-gradient(to bottom, #1e3a8a, #1e40af);
-            color: white;
+        th, td {
+            border: 1px solid black;
+            padding: 4px;
+            text-align: left;
+            vertical-align: top;
         }
 
         th {
-            padding: 8px 6px;
-            text-align: left;
-            font-weight: 600;
-            font-size: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-            border-right: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        th:last-child {
-            border-right: none;
-        }
-
-        tbody tr {
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        tbody tr:nth-child(even) {
-            background-color: #f9fafb;
-        }
-
-        tbody tr:hover {
-            background-color: #f1f5f9;
+            background-color: #f0f0f0;
+            font-weight: bold;
+            text-align: center;
         }
 
         td {
-            padding: 7px 6px;
-            vertical-align: top;
-            font-size: 8px;
             word-wrap: break-word;
         }
 
-        .status-badge {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 7px;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-        }
-
-        .status-approved {
-            background-color: #dcfce7;
-            color: #166534;
-        }
-
-        .status-pending {
-            background-color: #fef3c7;
-            color: #92400e;
-        }
-
-        .status-disapproved {
-            background-color: #fee2e2;
-            color: #991b1b;
-        }
-
-        .date-badge {
-            display: inline-block;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-size: 7px;
-            margin-top: 2px;
-        }
-
-        .date-upcoming {
-            background-color: #dcfce7;
-            color: #166534;
-        }
-
-        .date-past {
-            background-color: #fee2e2;
-            color: #991b1b;
-        }
-
-        .currency {
-            font-weight: 600;
-            color: #059669;
+        .text-center {
+            text-align: center;
         }
 
         .footer {
-            margin-top: 20px;
-            padding-top: 12px;
-            border-top: 2px solid #e5e7eb;
+            position: absolute;
+            bottom: -5px;
+            width: 100%;
             text-align: center;
-            font-size: 8px;
-            color: #64748b;
+            font-size: 9pt;
+            font-family: Calibri, sans-serif;
         }
 
-        .summary {
-            margin-top: 15px;
-            padding: 10px;
-            background-color: #f8fafc;
-            border-radius: 4px;
-            text-align: center;
-            font-weight: 600;
-            color: #1e3a8a;
-        }
-
-        /* Column widths for optimal layout */
-        @if($isAdmin)
-        .col-org { width: 12%; }
-        .col-objective { width: 14%; }
-        .col-activity { width: 13%; }
-        .col-description { width: 16%; }
-        .col-persons { width: 11%; }
-        .col-date { width: 9%; }
-        .col-budget { width: 9%; }
-        .col-participants { width: 8%; }
-        .col-status { width: 8%; }
-        @else
-        .col-objective { width: 16%; }
-        .col-activity { width: 14%; }
-        .col-description { width: 18%; }
-        .col-persons { width: 12%; }
-        .col-date { width: 10%; }
-        .col-budget { width: 10%; }
-        .col-participants { width: 10%; }
-        .col-status { width: 10%; }
-        @endif
-
-        .text-truncate {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            line-height: 1.3;
+        p {
+            margin: 3px 0;
+            word-wrap: break-word;
+            line-height: 1.15;
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>📋 PLAN OF ACTIVITIES REPORT</h1>
-        <div class="subtitle">Laguna State Polytechnic University - Office of Student Affairs and Services</div>
-        <div class="subtitle">{{ $isAdmin ? 'Administrator View' : 'Organization View' }}</div>
+        <img src="{{ public_path('images/lspu-logo.png') }}" alt="LSPU Logo" class="logo">
+        <span class="calibri-text" style="font-size:11pt;">Republic of the Philippines</span><br>
+        <img src="{{ public_path('images/lspu-name.png') }}" alt="Laguna State Polytechnic University" class="university-name"><br>
+        <span class="calibri-text" style="font-size:11pt;">Province of Laguna</span><br>
+        <br>
+        <strong>OFFICE OF STUDENT AFFAIRS AND SERVICES</strong><br>
+        <br>
+        <span class="sub-header"><strong>PLAN OF ACTIVITIES REPORT</strong></span>
     </div>
 
     <div class="meta-info">
-        <div><strong>Generated:</strong> {{ $generatedDate }}</div>
-        <div><strong>By:</strong> {{ $generatedBy }}</div>
-        <div><strong>Total Activities:</strong> {{ count($activities) }}</div>
+        <p><strong>Generated:</strong> {{ $generatedDate }}</p>
+        <p><strong>By:</strong> {{ $generatedBy }}</p>
+        <p><strong>Total Activities:</strong> {{ count($activities) }}</p>
     </div>
 
     @php
@@ -247,16 +138,16 @@
     @endphp
 
     @if($hasFilters)
-    <div class="filters-applied">
-        <strong>🔍 Active Filters:</strong>
+    <div class="filters-section">
+        <strong>Active Filters:</strong>
         @if(!empty($filters['search']))
-            <span class="filter-tag">Search: "{{ $filters['search'] }}"</span>
+            <p>Search: "{{ $filters['search'] }}"</p>
         @endif
         @if(!empty($filters['status']) && $filters['status'] !== 'all')
-            <span class="filter-tag">Status: {{ ucfirst($filters['status']) }}</span>
+            <p>Status: {{ ucfirst($filters['status']) }}</p>
         @endif
         @if(!empty($filters['organization']))
-            <span class="filter-tag">Organization: {{ $filters['organization'] }}</span>
+            <p>Organization: {{ $filters['organization'] }}</p>
         @endif
     </div>
     @endif
@@ -265,87 +156,48 @@
         <thead>
             <tr>
                 @if($isAdmin)
-                <th class="col-org">Organization</th>
+                <th style="width: 12%;">Organization</th>
                 @endif
-                <th class="col-objective">Objective</th>
-                <th class="col-activity">Activity</th>
-                <th class="col-description">Description</th>
-                <th class="col-persons">Persons Involved</th>
-                <th class="col-date">Target Date</th>
-                <th class="col-budget">Budget</th>
-                <th class="col-participants">Participants</th>
-                <th class="col-status">Status</th>
+                <th style="width: {{ $isAdmin ? '14%' : '16%' }};">Objective</th>
+                <th style="width: {{ $isAdmin ? '13%' : '14%' }};">Activity</th>
+                <th style="width: {{ $isAdmin ? '16%' : '18%' }};">Description</th>
+                <th style="width: {{ $isAdmin ? '11%' : '12%' }};">Persons Involved</th>
+                <th style="width: {{ $isAdmin ? '9%' : '10%' }};">Target Date</th>
+                <th style="width: {{ $isAdmin ? '9%' : '10%' }};">Budget</th>
+                <th style="width: {{ $isAdmin ? '8%' : '10%' }};" class="text-center">Participants</th>
+                <th style="width: {{ $isAdmin ? '8%' : '10%' }};" class="text-center">Status</th>
             </tr>
         </thead>
         <tbody>
             @forelse($activities as $activity)
             <tr>
                 @if($isAdmin)
-                <td class="col-org">
-                    <div class="text-truncate">{{ $activity['organization'] }}</div>
-                </td>
+                <td>{{ $activity['organization'] }}</td>
                 @endif
-                <td class="col-objective">
-                    <div class="text-truncate">{{ $activity['objective'] }}</div>
-                </td>
-                <td class="col-activity">
-                    <strong>{{ $activity['activity_name'] }}</strong>
-                </td>
-                <td class="col-description">
-                    <div class="text-truncate">{{ $activity['description'] }}</div>
-                </td>
-                <td class="col-persons">
-                    <div class="text-truncate">{{ $activity['persons_involved'] }}</div>
-                </td>
-                <td class="col-date">
-                    {{ $activity['target_date_formatted'] }}
-                    @php
-                        $isPast = \Carbon\Carbon::parse($activity['target_date'])->isPast();
-                    @endphp
-                    <div class="date-badge {{ $isPast ? 'date-past' : 'date-upcoming' }}">
-                        {{ $isPast ? 'Past' : 'Upcoming' }}
-                    </div>
-                </td>
-                <td class="col-budget">
+                <td>{{ $activity['objective'] }}</td>
+                <td>{{ $activity['activity_name'] }}</td>
+                <td>{{ $activity['description'] }}</td>
+                <td>{{ $activity['persons_involved'] }}</td>
+                <td class="text-center">{{ $activity['target_date_formatted'] }}</td>
+                <td class="text-center">
                     @if($activity['budget'] && $activity['budget'] !== 'N/A')
-                        <span class="currency">₱{{ number_format($activity['budget'], 2) }}</span>
+                        ₱{{ number_format($activity['budget'], 2) }}
                     @else
                         N/A
                     @endif
                 </td>
-                <td class="col-participants" style="text-align: center;">
-                    {{ $activity['target_participants'] }}
-                </td>
-                <td class="col-status">
-                    @php
-                        $statusClass = 'status-' . strtolower($activity['status']);
-                    @endphp
-                    <span class="status-badge {{ $statusClass }}">
-                        {{ $activity['status'] }}
-                    </span>
-                </td>
+                <td class="text-center">{{ $activity['target_participants'] }}</td>
+                <td class="text-center">{{ $activity['status'] }}</td>
             </tr>
             @empty
             <tr>
-                <td colspan="{{ $isAdmin ? 9 : 8 }}" style="text-align: center; padding: 30px; color: #64748b;">
+                <td colspan="{{ $isAdmin ? 9 : 8 }}" class="text-center">
                     No activities found matching the selected filters.
                 </td>
             </tr>
             @endforelse
         </tbody>
     </table>
-
-    @if(count($activities) > 0)
-    <div class="summary">
-        📊 Total: {{ count($activities) }} {{ Str::plural('Activity', count($activities)) }} 
-        @php
-            $approved = collect($activities)->where('status', 'Approved')->count();
-            $pending = collect($activities)->where('status', 'Pending')->count();
-            $disapproved = collect($activities)->where('status', 'Disapproved')->count();
-        @endphp
-        | ✅ Approved: {{ $approved }} | ⏳ Pending: {{ $pending }} | ❌ Disapproved: {{ $disapproved }}
-    </div>
-    @endif
 
     <div class="footer">
         <p>This is a computer-generated document. No signature is required.</p>
