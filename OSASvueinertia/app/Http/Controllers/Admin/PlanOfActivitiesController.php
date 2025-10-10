@@ -143,11 +143,31 @@ class PlanOfActivitiesController extends Controller
             }
         }
 
-        // Apply filters from request
-        $filters = $request->input('filters', []);
+        // Parse filters from request (support both POST body and GET query params)
+        $filters = [];
+        
+        if ($request->has('filters')) {
+            // POST request with filters in body
+            $filters = $request->input('filters', []);
+        } else {
+            // GET request with filters as query params
+            $filters = [
+                'search' => $request->input('search'),
+                'status' => $request->input('status'),
+                'date' => $request->input('date'),
+                'organization' => $request->input('organization'),
+                'columnFilters' => $request->input('columnFilters', []),
+            ];
+        }
+        
+        // Apply filters
         $filteredActivities = $this->applyFilters($activities, $filters);
 
-        // Apply sorting from request
+        // Parse sort from request (support both POST body and GET query params)
+        $sort = $request->has('sort') ? $request->input('sort') : [
+            'column' => $request->input('sort.column'),
+            'direction' => $request->input('sort.direction'),
+        ];
         $sort = $request->input('sort', []);
         $sortedActivities = $this->applySorting($filteredActivities, $sort);
 
@@ -163,8 +183,16 @@ class PlanOfActivitiesController extends Controller
         // Set paper size and orientation
         $pdf->setPaper('legal', 'landscape');
 
-        // Return PDF download
-        return $pdf->download('plan-of-activities-' . Carbon::now()->format('Y-m-d') . '.pdf');
+        // Check if action is 'view' to display inline, otherwise download
+        $action = $request->input('action', 'download');
+        
+        if ($action === 'view') {
+            // Return PDF for inline viewing in browser
+            return $pdf->stream('plan-of-activities-' . Carbon::now()->format('Y-m-d') . '.pdf');
+        } else {
+            // Return PDF download
+            return $pdf->download('plan-of-activities-' . Carbon::now()->format('Y-m-d') . '.pdf');
+        }
     }
 
     private function applyFilters($activities, $filters)

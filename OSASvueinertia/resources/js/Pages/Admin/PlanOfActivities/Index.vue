@@ -497,49 +497,73 @@ const deselectAllMultiSelect = (columnKey) => {
   columnFilters.value[columnKey].value = [];
 };
 
-// Export to PDF
+// Export to PDF with Preview Modal
 const isExporting = ref(false);
+const showPdfPreviewModal = ref(false);
+const pdfPreviewUrl = ref(null);
+
 const exportToPdf = async () => {
   isExporting.value = true;
   
   try {
-    const response = await fetch('/admin/plan-of-activities/export-pdf', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-      },
-      body: JSON.stringify({
-        filters: {
-          search: searchQuery.value,
-          status: statusFilter.value,
-          date: dateFilter.value,
-          organization: organizationFilter.value,
-          columnFilters: columnFilters.value,
-        },
-        sort: sortState.value,
-      }),
+    // Build the PDF URL with query parameters instead of POST
+    const baseUrl = props.isAdmin ? '/admin/plan-of-activities/export-pdf' : '/plan-of-activities/export-pdf';
+    
+    const params = new URLSearchParams();
+    
+    // Add action=view to display inline instead of download
+    params.append('action', 'view');
+    
+    // Add filter parameters
+    if (searchQuery.value) params.append('search', searchQuery.value);
+    if (statusFilter.value !== 'all') params.append('status', statusFilter.value);
+    if (dateFilter.value) params.append('date', dateFilter.value);
+    if (organizationFilter.value) params.append('organization', organizationFilter.value);
+    
+    // Add column filters
+    Object.entries(columnFilters.value).forEach(([key, filter]) => {
+      if (filter.value && (Array.isArray(filter.value) ? filter.value.length > 0 : filter.value !== '')) {
+        params.append(`columnFilters[${key}][operator]`, filter.operator);
+        if (Array.isArray(filter.value)) {
+          filter.value.forEach(val => params.append(`columnFilters[${key}][value][]`, val));
+        } else {
+          params.append(`columnFilters[${key}][value]`, filter.value);
+        }
+      }
     });
-
-    if (!response.ok) {
-      throw new Error('Export failed');
+    
+    // Add sort parameters
+    if (sortState.value.column) {
+      params.append('sort[column]', sortState.value.column);
+      params.append('sort[direction]', sortState.value.direction);
     }
+    
+    const pdfUrl = `${baseUrl}?${params.toString()}`;
+    pdfPreviewUrl.value = pdfUrl;
+    showPdfPreviewModal.value = true;
+  } catch (error) {
+    console.error('PDF Preview Error:', error);
+    alert('Failed to generate PDF preview. Please try again.');
+  } finally {
+    isExporting.value = false;
+  }
+};
 
-    // Create blob from response
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
+const closePdfPreviewModal = () => {
+  showPdfPreviewModal.value = false;
+  pdfPreviewUrl.value = null;
+};
+
+const downloadPdfFromPreview = () => {
+  if (pdfPreviewUrl.value) {
+    // Remove action=view parameter for download
+    const downloadUrl = pdfPreviewUrl.value.replace('action=view&', '').replace('&action=view', '').replace('action=view', '');
     const link = document.createElement('a');
-    link.href = url;
+    link.href = downloadUrl;
     link.download = `plan-of-activities-${new Date().toISOString().split('T')[0]}.pdf`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
-  } catch (error) {
-    console.error('PDF Export Error:', error);
-    alert('Failed to export PDF. Please try again.');
-  } finally {
-    isExporting.value = false;
   }
 };
 </script>
@@ -1336,6 +1360,62 @@ const exportToPdf = async () => {
         </div>
       </div>
     </div>
+
+    <!-- PDF Preview Modal -->
+    <Teleport to="body">
+      <transition name="fade">
+        <div v-if="showPdfPreviewModal" class="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-60" @click="closePdfPreviewModal">
+          <div
+            class="relative bg-transparent shadow-2xl flex flex-col w-[95vw] max-w-4xl md:w-[70vw] md:max-w-3xl lg:w-[60vw] lg:max-w-4xl xl:w-[50vw] xl:max-w-5xl h-[75vh] md:h-[85vh] lg:h-[90vh] xl:h-[95vh] max-h-[95vh] overflow-hidden border border-transparent"
+            @click.stop
+          >
+            <!-- Close Button: floating at top-right, outside header -->
+            <button
+              @click="closePdfPreviewModal"
+              class="absolute top-4 right-4 flex items-center justify-center text-white hover:text-gray-200 focus:outline-none transition z-20 opacity-90"
+              title="Close Preview"
+              aria-label="Close Preview"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            
+            <!-- Header -->
+            <div class="flex items-center justify-between px-4 py-3 pr-16 bg-transparent relative">
+              <div class="font-semibold text-gray-200 text-base truncate opacity-90">
+                Plan of Activities Report
+              </div>
+              <div class="flex items-center gap-2">
+                <button
+                  @click="downloadPdfFromPreview"
+                  class="inline-flex items-center justify-center px-4 py-2 bg-blue-500 text-sm font-medium text-white rounded-xl shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group"
+                  title="Download PDF"
+                  aria-label="Download PDF"
+                >
+                  <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  Download
+                </button>
+              </div>
+            </div>
+            
+            <!-- PDF Iframe -->
+            <div class="flex-1 w-full h-full flex items-center justify-center bg-gray-100">
+              <iframe
+                v-if="pdfPreviewUrl"
+                :src="pdfPreviewUrl"
+                class="w-full h-full border-0 bg-white"
+                style="min-height: 300px;"
+                allowfullscreen
+              ></iframe>
+            </div>
+          </div>
+        </div>
+      </transition>
+    </Teleport>
   </SidebarLayout>
 </template>
 
