@@ -181,7 +181,7 @@
                 <td class="text-center">{{ $activity['target_date_formatted'] }}</td>
                 <td class="text-center">
                     @if($activity['budget'] && $activity['budget'] !== 'N/A')
-                        ₱{{ number_format($activity['budget'], 2) }}
+                        PHP {{ number_format($activity['budget'], 2) }}
                     @else
                         N/A
                     @endif
