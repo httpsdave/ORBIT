@@ -629,19 +629,12 @@ const deselectAllMultiSelect = (columnKey) => {
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm text-gray-600 dark:text-gray-400">
               <div class="flex items-center justify-center sm:justify-start gap-2">
                 <label class="text-xs uppercase tracking-wide font-semibold text-gray-500 dark:text-gray-400">Entries per page</label>
-                <div class="relative">
-                  <select
-                    v-model.number="activitiesPerPage"
-                    class="appearance-none w-24 pl-3 pr-8 py-1.5 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 text-sm"
-                  >
-                    <option v-for="option in pageSizeOptions" :key="option" :value="option">{{ option }}</option>
-                  </select>
-                  <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-gray-500 dark:text-gray-400">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.086l3.71-3.854a.75.75 0 111.08 1.04l-4.25 4.417a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
-                    </svg>
-                  </div>
-                </div>
+                <select
+                  v-model.number="activitiesPerPage"
+                  class="w-20 pl-2.5 pr-7 py-1.5 sm:pl-3 sm:pr-8 sm:py-2 border border-gray-300 dark:border-gray-600 rounded-full text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm"
+                >
+                  <option v-for="option in pageSizeOptions" :key="option" :value="option">{{ option }}</option>
+                </select>
               </div>
 
               <div class="text-center sm:text-right">
