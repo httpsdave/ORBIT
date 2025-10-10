@@ -1,5 +1,5 @@
-<script setup>
-import { ref, computed, watch } from 'vue';
+﻿<script setup>
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue';
 import { Head, Link } from '@inertiajs/vue3';
 import SidebarLayout from '@/Components/Layout/Sidebar/SidebarLayout.vue';
 
@@ -24,6 +24,86 @@ const statusFilter = ref('all');
 const dateFilter = ref('nearest'); // 'nearest', 'upcoming', 'past', 'submission-newest', 'submission-oldest'
 const organizationFilter = ref('');
 
+const tableColumns = [
+  { key: 'organization', label: 'Organization', adminOnly: true, type: 'text' },
+  { key: 'objective', label: 'Objective', type: 'text' },
+  { key: 'activity_name', label: 'Activity', type: 'text' },
+  { key: 'description', label: 'Brief Description', type: 'text' },
+  { key: 'persons_involved', label: 'Persons Involved', type: 'text' },
+  { key: 'target_date', label: 'Target Date', type: 'date' },
+  { key: 'budget', label: 'Budget', type: 'number' },
+  { key: 'target_participants', label: 'Target Participants', type: 'number' },
+  { key: 'status', label: 'Status', type: 'text' },
+];
+
+const filterOperators = {
+  text: [
+    { value: 'contains', label: 'Contains' },
+    { value: 'equals', label: 'Equals' },
+    { value: 'startsWith', label: 'Starts With' },
+    { value: 'endsWith', label: 'Ends With' },
+  ],
+  number: [
+    { value: 'equals', label: 'Equals' },
+    { value: 'greaterThan', label: 'Greater Than' },
+    { value: 'lessThan', label: 'Less Than' },
+  ],
+  date: [
+    { value: 'on', label: 'On' },
+    { value: 'before', label: 'Before' },
+    { value: 'after', label: 'After' },
+  ],
+};
+
+const createDefaultColumnFilters = () => {
+  return tableColumns.reduce((acc, column) => {
+    acc[column.key] = {
+      operator: filterOperators[column.type][0].value,
+      value: '',
+    };
+    return acc;
+  }, {});
+};
+
+const columnFilters = ref(createDefaultColumnFilters());
+const activeFilterDropdown = ref(null);
+const sortState = ref({ column: null, direction: null });
+
+const visibleColumns = computed(() => tableColumns.filter(column => !column.adminOnly || props.isAdmin));
+const columnCount = computed(() => visibleColumns.value.length);
+
+const parseNumericValue = (value) => {
+  if (value === null || value === undefined || value === '' || value === 'N/A') {
+    return null;
+  }
+
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return value;
+  }
+
+  const numericString = value.toString().replace(/[^0-9.-]/g, '');
+  const parsed = Number(numericString);
+  return Number.isNaN(parsed) ? null : parsed;
+};
+
+const closeFilterDropdown = () => {
+  activeFilterDropdown.value = null;
+};
+
+const handleClickOutside = (event) => {
+  if (!event.target.closest('.column-filter-wrapper')) {
+    closeFilterDropdown();
+  }
+};
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleClickOutside);
+});
+
 // Get unique organizations from activities
 const organizationOptions = computed(() => {
   const uniqueOrgs = [...new Set(props.activities.map(activity => activity.organization))];
@@ -32,11 +112,12 @@ const organizationOptions = computed(() => {
 
 // Pagination state
 const currentPage = ref(1);
-const activitiesPerPage = 50;
+const activitiesPerPage = ref(50);
+const pageSizeOptions = [10, 25, 50, 100];
 
 // Filtered activities based on search, status, and organization
 const filteredActivities = computed(() => {
-  let filtered = props.activities;
+  let filtered = [...props.activities];
 
   // Apply search filter
   if (searchQuery.value) {
@@ -112,15 +193,116 @@ const filteredActivities = computed(() => {
     });
   }
 
+  // Apply column-level filters
+  filtered = filtered.filter(activity => {
+    return tableColumns.every(column => {
+      if (column.adminOnly && !props.isAdmin) {
+        return true;
+      }
+
+      const { operator, value } = columnFilters.value[column.key];
+      if (!value) {
+        return true;
+      }
+
+      const activityValue = activity[column.key];
+      if (activityValue === undefined || activityValue === null) {
+        return false;
+      }
+
+      if (column.type === 'text') {
+        const recordStr = activityValue.toString().toLowerCase();
+        const searchStr = value.toString().toLowerCase();
+        if (operator === 'contains') return recordStr.includes(searchStr);
+        if (operator === 'equals') return recordStr === searchStr;
+        if (operator === 'startsWith') return recordStr.startsWith(searchStr);
+        if (operator === 'endsWith') return recordStr.endsWith(searchStr);
+        return true;
+      }
+
+      if (column.type === 'number') {
+        const numericRecord = parseNumericValue(activityValue);
+        const numericFilter = parseNumericValue(value);
+        if (numericRecord === null || numericFilter === null) {
+          return false;
+        }
+        if (operator === 'equals') return numericRecord === numericFilter;
+        if (operator === 'greaterThan') return numericRecord > numericFilter;
+        if (operator === 'lessThan') return numericRecord < numericFilter;
+        return true;
+      }
+
+      if (column.type === 'date') {
+        const recordDate = new Date(activityValue);
+        const filterDate = new Date(value);
+        if (Number.isNaN(recordDate.getTime()) || Number.isNaN(filterDate.getTime())) {
+          return false;
+        }
+        recordDate.setHours(0, 0, 0, 0);
+        filterDate.setHours(0, 0, 0, 0);
+        if (operator === 'on') return recordDate.getTime() === filterDate.getTime();
+        if (operator === 'before') return recordDate.getTime() < filterDate.getTime();
+        if (operator === 'after') return recordDate.getTime() > filterDate.getTime();
+        return true;
+      }
+
+      return true;
+    });
+  });
+
+  // Apply column sorting if active
+  if (sortState.value.column && sortState.value.direction) {
+    const column = tableColumns.find(col => col.key === sortState.value.column);
+    if (column) {
+      const directionMultiplier = sortState.value.direction === 'asc' ? 1 : -1;
+      filtered = [...filtered].sort((a, b) => {
+        const aVal = a[column.key];
+        const bVal = b[column.key];
+
+        if (column.type === 'number') {
+          const aNum = parseNumericValue(aVal);
+          const bNum = parseNumericValue(bVal);
+          if (aNum === null && bNum === null) return 0;
+          if (aNum === null) return 1 * directionMultiplier;
+          if (bNum === null) return -1 * directionMultiplier;
+          return (aNum - bNum) * directionMultiplier;
+        }
+
+        if (column.type === 'date') {
+          return (new Date(aVal) - new Date(bVal)) * directionMultiplier;
+        }
+
+        const aStr = aVal?.toString().toLowerCase() ?? '';
+        const bStr = bVal?.toString().toLowerCase() ?? '';
+        if (aStr < bStr) return -1 * directionMultiplier;
+        if (aStr > bStr) return 1 * directionMultiplier;
+        return 0;
+      });
+    }
+  }
+
   return filtered;
 });
 
 // Pagination computed properties
-const totalPages = computed(() => Math.ceil(filteredActivities.value.length / activitiesPerPage));
-const startIndex = computed(() => (currentPage.value - 1) * activitiesPerPage);
-const endIndex = computed(() => Math.min(startIndex.value + activitiesPerPage, filteredActivities.value.length));
+const totalPages = computed(() => {
+  if (activitiesPerPage.value <= 0) return 1;
+  return Math.max(1, Math.ceil(filteredActivities.value.length / activitiesPerPage.value));
+});
 const currentPageActivities = computed(() => {
-  return filteredActivities.value.slice(startIndex.value, endIndex.value);
+  const start = (currentPage.value - 1) * activitiesPerPage.value;
+  return filteredActivities.value.slice(start, start + activitiesPerPage.value);
+});
+
+const displayRange = computed(() => {
+  const total = filteredActivities.value.length;
+  if (total === 0) {
+    return { start: 0, end: 0 };
+  }
+
+  const start = (currentPage.value - 1) * activitiesPerPage.value + 1;
+  const end = Math.min(start + activitiesPerPage.value - 1, total);
+  return { start, end };
 });
 
 // Visible pages for pagination controls
@@ -182,6 +364,28 @@ watch([searchQuery, statusFilter, dateFilter, organizationFilter], () => {
   currentPage.value = 1;
 });
 
+watch(columnFilters, () => {
+  currentPage.value = 1;
+}, { deep: true });
+
+watch(sortState, () => {
+  currentPage.value = 1;
+}, { deep: true });
+
+watch(activitiesPerPage, (value) => {
+  if (!value || value <= 0) {
+    activitiesPerPage.value = pageSizeOptions[0];
+    return;
+  }
+  currentPage.value = 1;
+});
+
+watch(totalPages, (newTotal) => {
+  if (currentPage.value > newTotal) {
+    currentPage.value = newTotal;
+  }
+});
+
 // Format currency
 const formatCurrency = (amount) => {
   if (!amount || amount === 'N/A') return 'N/A';
@@ -212,6 +416,38 @@ const isPastDate = (dateString) => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   return targetDate < today;
+};
+
+const toggleFilterDropdown = (columnKey) => {
+  activeFilterDropdown.value = activeFilterDropdown.value === columnKey ? null : columnKey;
+};
+
+const updateSort = (columnKey, direction) => {
+  sortState.value = direction ? { column: columnKey, direction } : { column: null, direction: null };
+};
+
+const cycleSort = (columnKey) => {
+  if (sortState.value.column !== columnKey) {
+    updateSort(columnKey, 'asc');
+  } else if (sortState.value.direction === 'asc') {
+    updateSort(columnKey, 'desc');
+  } else {
+    updateSort(columnKey, null);
+  }
+};
+
+const clearColumnFilter = (columnKey) => {
+  columnFilters.value[columnKey].value = '';
+  columnFilters.value[columnKey].operator = filterOperators[tableColumns.find(col => col.key === columnKey).type][0].value;
+};
+
+const hasActiveColumnFilter = (columnKey) => !!columnFilters.value[columnKey].value;
+
+const isColumnSorted = (columnKey, direction) => {
+  if (!sortState.value.column) return false;
+  if (sortState.value.column !== columnKey) return false;
+  if (!direction) return true;
+  return sortState.value.direction === direction;
 };
 </script>
 
@@ -341,13 +577,32 @@ const isPastDate = (dateString) => {
             </div>
           </div>
 
-          <!-- Results count -->
+          <!-- Results count and page size -->
           <div class="max-w-4xl mx-auto px-3 sm:px-6 mb-6">
-            <div class="text-sm text-gray-600 dark:text-gray-400 text-center">
-              Showing <span class="font-semibold text-blue-600 dark:text-blue-400">{{ startIndex + 1 }}-{{ endIndex }}</span> of <span class="font-semibold text-blue-600 dark:text-blue-400">{{ filteredActivities.length }}</span> activities
-              <span v-if="filteredActivities.length !== totalActivities" class="ml-2 text-gray-500">
-                (filtered from {{ totalActivities }} total)
-              </span>
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm text-gray-600 dark:text-gray-400">
+              <div class="flex items-center justify-center sm:justify-start gap-2">
+                <label class="text-xs uppercase tracking-wide font-semibold text-gray-500 dark:text-gray-400">Entries per page</label>
+                <div class="relative">
+                  <select
+                    v-model.number="activitiesPerPage"
+                    class="appearance-none w-24 pl-3 pr-8 py-1.5 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 text-sm"
+                  >
+                    <option v-for="option in pageSizeOptions" :key="option" :value="option">{{ option }}</option>
+                  </select>
+                  <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-gray-500 dark:text-gray-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.086l3.71-3.854a.75.75 0 111.08 1.04l-4.25 4.417a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <div class="text-center sm:text-right">
+                Showing <span class="font-semibold text-blue-600 dark:text-blue-400">{{ displayRange.start }}-{{ displayRange.end }}</span> of <span class="font-semibold text-blue-600 dark:text-blue-400">{{ filteredActivities.length }}</span> activities
+                <span v-if="filteredActivities.length !== totalActivities" class="ml-2 text-gray-500">
+                  (filtered from {{ totalActivities }} total)
+                </span>
+              </div>
             </div>
           </div>
         </div>
@@ -432,32 +687,182 @@ const isPastDate = (dateString) => {
             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
               <thead class="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
                 <tr>
-                  <th v-if="isAdmin" scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                    Organization
-                  </th>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                    Objective
-                  </th>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                    Activity
-                  </th>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                    Brief Description
-                  </th>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                    Persons Involved
-                  </th>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                    Target Date
-                  </th>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                    Budget
-                  </th>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                    Target Participants
-                  </th>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                    Status
+                  <th
+                    v-for="column in visibleColumns"
+                    :key="column.key"
+                    scope="col"
+                    class="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider align-top"
+                  >
+                    <div class="flex items-center justify-between gap-2">
+                      <span class="truncate" :title="column.label">{{ column.label }}</span>
+                      <div class="flex items-center gap-1">
+                        <div class="relative column-filter-wrapper">
+                          <button
+                            type="button"
+                            class="inline-flex items-center justify-center p-1 rounded-md transition-colors duration-150"
+                            :class="hasActiveColumnFilter(column.key) ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-300' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'"
+                            @click.stop="toggleFilterDropdown(column.key)"
+                            :aria-expanded="activeFilterDropdown === column.key"
+                            :aria-label="`Filter ${column.label}`"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M4 5h16a1 1 0 01.8 1.6l-5 6.667V19a1 1 0 01-.553.894l-4 2A1 1 0 019 21v-7.733l-5-6.667A1 1 0 014 5z" />
+                            </svg>
+                          </button>
+
+                          <transition name="fade">
+                            <div
+                              v-if="activeFilterDropdown === column.key"
+                              class="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl z-40 p-4"
+                              @click.stop
+                            >
+                              <div class="flex items-start justify-between gap-2 mb-3">
+                                <div>
+                                  <p class="text-sm font-semibold text-gray-800 dark:text-gray-200">Filter {{ column.label }}</p>
+                                  <p class="text-xs text-gray-500 dark:text-gray-400">Apply a condition to this column</p>
+                                </div>
+                                <button
+                                  type="button"
+                                  class="text-xs text-blue-600 dark:text-blue-400 hover:underline"
+                                  @click="clearColumnFilter(column.key)"
+                                >
+                                  Clear
+                                </button>
+                              </div>
+
+                              <div class="space-y-4">
+                                <div>
+                                  <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Condition</label>
+                                  <select
+                                    v-model="columnFilters[column.key].operator"
+                                    class="w-full text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 px-2 py-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400"
+                                  >
+                                    <option
+                                      v-for="option in filterOperators[column.type]"
+                                      :key="option.value"
+                                      :value="option.value"
+                                    >
+                                      {{ option.label }}
+                                    </option>
+                                  </select>
+                                </div>
+
+                                <div>
+                                  <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Value</label>
+                                  <template v-if="column.type === 'text'">
+                                    <input
+                                      type="text"
+                                      v-model="columnFilters[column.key].value"
+                                      class="w-full text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 px-2 py-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400"
+                                      placeholder="Enter text"
+                                    />
+                                  </template>
+                                  <template v-else-if="column.type === 'number'">
+                                    <input
+                                      type="number"
+                                      v-model="columnFilters[column.key].value"
+                                      class="w-full text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 px-2 py-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400"
+                                      placeholder="Enter number"
+                                    />
+                                  </template>
+                                  <template v-else>
+                                    <input
+                                      type="date"
+                                      v-model="columnFilters[column.key].value"
+                                      class="w-full text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 px-2 py-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400"
+                                    />
+                                  </template>
+                                </div>
+
+                                <div class="border-t border-gray-200 dark:border-gray-700 pt-3 space-y-2">
+                                  <p class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Quick Sort</p>
+                                  <div class="flex flex-col gap-1">
+                                    <button
+                                      type="button"
+                                      class="inline-flex items-center justify-between w-full text-left text-xs px-2 py-1 rounded-md transition-colors"
+                                      :class="isColumnSorted(column.key, 'asc') ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'"
+                                      @click="updateSort(column.key, 'asc'); closeFilterDropdown();"
+                                    >
+                                      <span class="flex items-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor">
+                                          <path d="M7 18h3v-8h3L8 4 3 10h3v8zm10-6h-3v8h-3l5 6 5-6h-3v-8z" />
+                                        </svg>
+                                        Sort Ascending
+                                      </span>
+                                      <svg v-if="isColumnSorted(column.key, 'asc')" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M16.704 5.29a1 1 0 010 1.42l-7.147 7.146a1 1 0 01-1.415 0L3.296 9.01a1 1 0 011.415-1.414L9 11.884l6.296-6.295a1 1 0 011.408-.3z" clip-rule="evenodd" />
+                                      </svg>
+                                    </button>
+                                    <button
+                                      type="button"
+                                      class="inline-flex items-center justify-between w-full text-left text-xs px-2 py-1 rounded-md transition-colors"
+                                      :class="isColumnSorted(column.key, 'desc') ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'"
+                                      @click="updateSort(column.key, 'desc'); closeFilterDropdown();"
+                                    >
+                                      <span class="flex items-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor">
+                                          <path d="M7 6h3v8h3L8 20 3 14h3V6zm13 2h-3V0h-3l5-6 5 6h-3v8z" />
+                                        </svg>
+                                        Sort Descending
+                                      </span>
+                                      <svg v-if="isColumnSorted(column.key, 'desc')" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M16.704 5.29a1 1 0 010 1.42l-7.147 7.146a1 1 0 01-1.415 0L3.296 9.01a1 1 0 011.415-1.414L9 11.884l6.296-6.295a1 1 0 011.408-.3z" clip-rule="evenodd" />
+                                      </svg>
+                                    </button>
+                                    <button
+                                      type="button"
+                                      class="inline-flex items-center justify-between w-full text-left text-xs px-2 py-1 rounded-md text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+                                      @click="updateSort(column.key, null); closeFilterDropdown();"
+                                    >
+                                      <span class="flex items-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor">
+                                          <path d="M5 5h14v2H5zm0 6h10v2H5zm0 6h6v2H5z" />
+                                        </svg>
+                                        Clear Sort
+                                      </span>
+                                    </button>
+                                  </div>
+                                </div>
+
+                                <div class="flex justify-end gap-2 pt-2">
+                                  <button
+                                    type="button"
+                                    class="text-xs px-2 py-1 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+                                    @click="closeFilterDropdown"
+                                  >
+                                    Close
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </transition>
+                        </div>
+
+                        <button
+                          type="button"
+                          class="inline-flex items-center justify-center p-1 rounded-md transition-colors duration-150"
+                          :class="isColumnSorted(column.key) ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-300' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'"
+                          @click.stop="cycleSort(column.key)"
+                          :aria-pressed="isColumnSorted(column.key)"
+                          :aria-label="`Sort ${column.label}`"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                              v-if="isColumnSorted(column.key, 'asc')"
+                              d="M8 17h2V7h3l-4-4-4 4h3v10zm8-10h-2v10h-3l4 4 4-4h-3V7z"
+                            />
+                            <path
+                              v-else-if="isColumnSorted(column.key, 'desc')"
+                              d="M8 7h2v10h3l-4 4-4-4h3V7zm8 10h-2V7h-3l4-4 4 4h-3v10z"
+                            />
+                            <path
+                              v-else
+                              d="M7 10h4V6h2v4h4l-5 5-5-5zm10 4h-4v4h-2v-4H7l5-5 5 5z"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
                   </th>
                 </tr>
               </thead>
@@ -555,7 +960,7 @@ const isPastDate = (dateString) => {
                 
                 <!-- Empty State -->
                 <tr v-if="currentPageActivities.length === 0">
-                  <td :colspan="isAdmin ? 9 : 8" class="px-6 py-12 text-center">
+                  <td :colspan="columnCount" class="px-6 py-12 text-center">
                     <div class="flex flex-col items-center">
                       <div class="w-20 h-20 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900/30 dark:to-blue-800/30 flex items-center justify-center mb-4">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -776,3 +1181,16 @@ const isPastDate = (dateString) => {
     </div>
   </SidebarLayout>
 </template>
+
+<style scoped>
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+</style>
