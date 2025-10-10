@@ -25,15 +25,15 @@ const dateFilter = ref('nearest'); // 'nearest', 'upcoming', 'past', 'submission
 const organizationFilter = ref('');
 
 const tableColumns = [
-  { key: 'organization', label: 'Organization', adminOnly: true, type: 'text' },
-  { key: 'objective', label: 'Objective', type: 'text' },
-  { key: 'activity_name', label: 'Activity', type: 'text' },
-  { key: 'description', label: 'Brief Description', type: 'text' },
-  { key: 'persons_involved', label: 'Persons Involved', type: 'text' },
-  { key: 'target_date', label: 'Target Date', type: 'date' },
-  { key: 'budget', label: 'Budget', type: 'number' },
-  { key: 'target_participants', label: 'Target Participants', type: 'number' },
-  { key: 'status', label: 'Status', type: 'text' },
+  { key: 'organization', label: 'Organization', adminOnly: true, type: 'text', multiSelect: true },
+  { key: 'objective', label: 'Objective', type: 'text', multiSelect: false },
+  { key: 'activity_name', label: 'Activity', type: 'text', multiSelect: false },
+  { key: 'description', label: 'Brief Description', type: 'text', multiSelect: false },
+  { key: 'persons_involved', label: 'Persons Involved', type: 'text', multiSelect: false },
+  { key: 'target_date', label: 'Target Date', type: 'date', multiSelect: false },
+  { key: 'budget', label: 'Budget', type: 'number', multiSelect: false },
+  { key: 'target_participants', label: 'Target Participants', type: 'number', multiSelect: false },
+  { key: 'status', label: 'Status', type: 'text', multiSelect: true },
 ];
 
 const filterOperators = {
@@ -59,7 +59,7 @@ const createDefaultColumnFilters = () => {
   return tableColumns.reduce((acc, column) => {
     acc[column.key] = {
       operator: filterOperators[column.type][0].value,
-      value: '',
+      value: column.multiSelect ? [] : '',
     };
     return acc;
   }, {});
@@ -84,6 +84,18 @@ const parseNumericValue = (value) => {
   const numericString = value.toString().replace(/[^0-9.-]/g, '');
   const parsed = Number(numericString);
   return Number.isNaN(parsed) ? null : parsed;
+};
+
+// Get unique values for multi-select columns
+const getUniqueColumnValues = (columnKey) => {
+  const values = new Set();
+  props.activities.forEach(activity => {
+    const value = activity[columnKey];
+    if (value !== null && value !== undefined && value !== '') {
+      values.add(value);
+    }
+  });
+  return Array.from(values).sort();
 };
 
 const closeFilterDropdown = () => {
@@ -203,6 +215,18 @@ const filteredActivities = computed(() => {
       const { operator, value } = columnFilters.value[column.key];
       if (!value) {
         return true;
+      }
+
+      // Handle multi-select
+      if (column.multiSelect && Array.isArray(value)) {
+        if (value.length === 0) {
+          return true;
+        }
+        const activityValue = activity[column.key];
+        if (activityValue === undefined || activityValue === null) {
+          return false;
+        }
+        return value.includes(activityValue.toString());
       }
 
       const activityValue = activity[column.key];
@@ -437,17 +461,40 @@ const cycleSort = (columnKey) => {
 };
 
 const clearColumnFilter = (columnKey) => {
-  columnFilters.value[columnKey].value = '';
-  columnFilters.value[columnKey].operator = filterOperators[tableColumns.find(col => col.key === columnKey).type][0].value;
+  const column = tableColumns.find(col => col.key === columnKey);
+  columnFilters.value[columnKey].value = column?.multiSelect ? [] : '';
+  columnFilters.value[columnKey].operator = filterOperators[column.type][0].value;
 };
 
-const hasActiveColumnFilter = (columnKey) => !!columnFilters.value[columnKey].value;
+const hasActiveColumnFilter = (columnKey) => {
+  const value = columnFilters.value[columnKey].value;
+  return Array.isArray(value) ? value.length > 0 : !!value;
+};
 
 const isColumnSorted = (columnKey, direction) => {
   if (!sortState.value.column) return false;
   if (sortState.value.column !== columnKey) return false;
   if (!direction) return true;
   return sortState.value.direction === direction;
+};
+
+const toggleMultiSelectValue = (columnKey, value) => {
+  const filterValue = columnFilters.value[columnKey].value;
+  const index = filterValue.indexOf(value);
+  if (index === -1) {
+    filterValue.push(value);
+  } else {
+    filterValue.splice(index, 1);
+  }
+};
+
+const selectAllMultiSelect = (columnKey) => {
+  const uniqueValues = getUniqueColumnValues(columnKey);
+  columnFilters.value[columnKey].value = [...uniqueValues];
+};
+
+const deselectAllMultiSelect = (columnKey) => {
+  columnFilters.value[columnKey].value = [];
 };
 </script>
 
@@ -738,7 +785,8 @@ const isColumnSorted = (columnKey, direction) => {
                           <transition name="fade">
                             <div
                               v-if="activeFilterDropdown === column.key"
-                              class="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl z-40 p-4"
+                              class="absolute mt-2 w-64 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl z-40 p-4"
+                              :class="column.key === 'organization' || column.key === 'objective' ? 'left-0' : 'right-0'"
                               @click.stop
                             >
                               <div class="flex items-start justify-between gap-2 mb-3">
@@ -756,6 +804,52 @@ const isColumnSorted = (columnKey, direction) => {
                               </div>
 
                               <div class="space-y-4">
+                                <!-- Multi-Select Mode -->
+                                <template v-if="column.multiSelect">
+                                  <div>
+                                    <div class="flex items-center justify-between mb-2">
+                                      <label class="block text-xs font-medium text-gray-500 dark:text-gray-400">Select Values</label>
+                                      <div class="flex gap-1">
+                                        <button
+                                          type="button"
+                                          class="text-xs text-blue-600 dark:text-blue-400 hover:underline"
+                                          @click="selectAllMultiSelect(column.key)"
+                                        >
+                                          All
+                                        </button>
+                                        <span class="text-xs text-gray-400">|</span>
+                                        <button
+                                          type="button"
+                                          class="text-xs text-blue-600 dark:text-blue-400 hover:underline"
+                                          @click="deselectAllMultiSelect(column.key)"
+                                        >
+                                          None
+                                        </button>
+                                      </div>
+                                    </div>
+                                    <div class="max-h-48 overflow-y-auto border border-gray-200 dark:border-gray-700 rounded-md p-2 space-y-1">
+                                      <label
+                                        v-for="option in getUniqueColumnValues(column.key)"
+                                        :key="option"
+                                        class="flex items-center gap-2 px-2 py-1 hover:bg-gray-50 dark:hover:bg-gray-800 rounded cursor-pointer"
+                                      >
+                                        <input
+                                          type="checkbox"
+                                          :checked="columnFilters[column.key].value.includes(option)"
+                                          @change="toggleMultiSelectValue(column.key, option)"
+                                          class="rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500"
+                                        />
+                                        <span class="text-sm text-gray-700 dark:text-gray-300 truncate" :title="option">{{ option }}</span>
+                                      </label>
+                                    </div>
+                                    <div class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                                      {{ columnFilters[column.key].value.length }} selected
+                                    </div>
+                                  </div>
+                                </template>
+
+                                <!-- Standard Filter Mode -->
+                                <template v-else>
                                 <div>
                                   <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Condition</label>
                                   <select
@@ -798,6 +892,7 @@ const isColumnSorted = (columnKey, direction) => {
                                     />
                                   </template>
                                 </div>
+                                </template>
 
                                 <div class="border-t border-gray-200 dark:border-gray-700 pt-3 space-y-2">
                                   <p class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Quick Sort</p>
