@@ -691,11 +691,36 @@ const isColumnSorted = (columnKey, direction) => {
                     v-for="column in visibleColumns"
                     :key="column.key"
                     scope="col"
-                    class="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider align-top"
+                    class="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider align-top cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-150"
+                    @click="cycleSort(column.key)"
                   >
                     <div class="flex items-center justify-between gap-2">
                       <span class="truncate" :title="column.label">{{ column.label }}</span>
-                      <div class="flex items-center gap-1">
+                      <div class="flex items-center gap-1 flex-shrink-0" @click.stop>
+                        <button
+                          type="button"
+                          class="inline-flex items-center justify-center p-1 rounded-md transition-colors duration-150"
+                          :class="isColumnSorted(column.key) ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-300' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'"
+                          @click.stop="cycleSort(column.key)"
+                          :aria-pressed="isColumnSorted(column.key)"
+                          :aria-label="`Sort ${column.label}`"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                              v-if="isColumnSorted(column.key, 'asc')"
+                              d="M8 17h2V7h3l-4-4-4 4h3v10zm8-10h-2v10h-3l4 4 4-4h-3V7z"
+                            />
+                            <path
+                              v-else-if="isColumnSorted(column.key, 'desc')"
+                              d="M8 7h2v10h3l-4 4-4-4h3V7zm8 10h-2V7h-3l4-4 4 4h-3v10z"
+                            />
+                            <path
+                              v-else
+                              d="M7 10h4V6h2v4h4l-5 5-5-5zm10 4h-4v4h-2v-4H7l5-5 5 5z"
+                            />
+                          </svg>
+                        </button>
+
                         <div class="relative column-filter-wrapper">
                           <button
                             type="button"
@@ -837,30 +862,6 @@ const isColumnSorted = (columnKey, direction) => {
                             </div>
                           </transition>
                         </div>
-
-                        <button
-                          type="button"
-                          class="inline-flex items-center justify-center p-1 rounded-md transition-colors duration-150"
-                          :class="isColumnSorted(column.key) ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-300' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'"
-                          @click.stop="cycleSort(column.key)"
-                          :aria-pressed="isColumnSorted(column.key)"
-                          :aria-label="`Sort ${column.label}`"
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
-                            <path
-                              v-if="isColumnSorted(column.key, 'asc')"
-                              d="M8 17h2V7h3l-4-4-4 4h3v10zm8-10h-2v10h-3l4 4 4-4h-3V7z"
-                            />
-                            <path
-                              v-else-if="isColumnSorted(column.key, 'desc')"
-                              d="M8 7h2v10h3l-4 4-4-4h3V7zm8 10h-2V7h-3l4-4 4 4h-3v10z"
-                            />
-                            <path
-                              v-else
-                              d="M7 10h4V6h2v4h4l-5 5-5-5zm10 4h-4v4h-2v-4H7l5-5 5 5z"
-                            />
-                          </svg>
-                        </button>
                       </div>
                     </div>
                   </th>
