@@ -234,10 +234,10 @@ const isPastDate = (dateString) => {
           <div class="flex items-center justify-between mb-2">
             <div>
               <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
-                Plan of Activities
+                {{ isAdmin ? 'Plan of Activities' : 'My Plan of Activities' }}
               </h1>
               <p class="text-gray-600 dark:text-gray-400 mt-1">
-                Overview of all planned activities from submitted Plan of Activities forms
+                {{ isAdmin ? 'Overview of all planned activities from submitted Plan of Activities forms' : 'Overview of your planned activities' }}
               </p>
             </div>
             <div class="flex items-center gap-2">
@@ -273,6 +273,7 @@ const isPastDate = (dateString) => {
             </div>
 
             <!-- Filter Bar - Responsive Grid Layout -->
+                        <!-- Filter Bar (Admin Only) - Responsive Grid Layout -->
             <div class="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2">
               <!-- Status Filter -->
               <div class="col-span-1">
@@ -287,8 +288,8 @@ const isPastDate = (dateString) => {
                 </select>
               </div>
 
-              <!-- Organization Filter -->
-              <div class="col-span-1">
+              <!-- Organization Filter (Admin Only) -->
+              <div v-if="isAdmin" class="col-span-1">
                 <select 
                   v-model="organizationFilter"
                   class="w-full pl-2.5 pr-7 py-1.5 sm:pl-3 sm:pr-8 sm:py-2 border border-gray-300 dark:border-gray-600 rounded-full text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm"
@@ -307,7 +308,7 @@ const isPastDate = (dateString) => {
               </div>
 
               <!-- Date Filter -->
-              <div class="col-span-2 sm:col-span-1">
+              <div :class="isAdmin ? 'col-span-2 sm:col-span-1' : 'col-span-1'">
                 <select 
                   v-model="dateFilter"
                   class="w-full pl-2.5 pr-7 py-1.5 sm:pl-3 sm:pr-8 sm:py-2 border border-gray-300 dark:border-gray-600 rounded-full text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm"
@@ -323,7 +324,7 @@ const isPastDate = (dateString) => {
             </div>
 
             <!-- Active Filters Display - Compact for Mobile -->
-            <div v-if="searchQuery || statusFilter !== 'all' || organizationFilter || dateFilter !== 'nearest'" class="flex flex-wrap gap-1.5 sm:gap-2 items-center text-xs sm:text-sm">
+            <div v-if="searchQuery || statusFilter !== 'all' || (isAdmin && organizationFilter) || dateFilter !== 'nearest'" class="flex flex-wrap gap-1.5 sm:gap-2 items-center text-xs sm:text-sm">
               <span class="text-gray-600 dark:text-gray-400 font-medium text-xs sm:text-sm">Active:</span>
               <span v-if="searchQuery" class="px-1.5 py-0.5 sm:px-2 sm:py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-md text-xs">
                 "{{ searchQuery.length > 15 ? searchQuery.substring(0, 15) + '...' : searchQuery }}"
@@ -331,7 +332,7 @@ const isPastDate = (dateString) => {
               <span v-if="statusFilter !== 'all'" class="px-1.5 py-0.5 sm:px-2 sm:py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-md text-xs">
                 {{ statusFilter }}
               </span>
-              <span v-if="organizationFilter" class="px-1.5 py-0.5 sm:px-2 sm:py-1 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 rounded-md text-xs truncate max-w-[120px] sm:max-w-xs" :title="organizationOptions.find(opt => opt.value === organizationFilter)?.label">
+              <span v-if="isAdmin && organizationFilter" class="px-1.5 py-0.5 sm:px-2 sm:py-1 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 rounded-md text-xs truncate max-w-[120px] sm:max-w-xs" :title="organizationOptions.find(opt => opt.value === organizationFilter)?.label">
                 {{ organizationOptions.find(opt => opt.value === organizationFilter)?.label && organizationOptions.find(opt => opt.value === organizationFilter)?.label.length > 15 ? organizationOptions.find(opt => opt.value === organizationFilter)?.label.substring(0, 15) + '...' : organizationOptions.find(opt => opt.value === organizationFilter)?.label }}
               </span>
               <span v-if="dateFilter !== 'nearest'" class="px-1.5 py-0.5 sm:px-2 sm:py-1 bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 rounded-md text-xs">
@@ -431,7 +432,7 @@ const isPastDate = (dateString) => {
             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
               <thead class="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
                 <tr>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                  <th v-if="isAdmin" scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                     Organization
                   </th>
                   <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
@@ -466,7 +467,7 @@ const isPastDate = (dateString) => {
                   :key="activity.id"
                   class="hover:bg-gradient-to-r hover:from-blue-50 hover:to-transparent dark:hover:from-blue-900/20 dark:hover:to-transparent transition-all duration-200"
                 >
-                  <td class="px-6 py-4 whitespace-nowrap">
+                  <td v-if="isAdmin" class="px-6 py-4 whitespace-nowrap">
                     <div class="flex items-center">
                       <div class="max-w-xs">
                         <div class="text-sm font-medium text-gray-900 dark:text-white truncate relative group/org">
@@ -492,6 +493,13 @@ const isPastDate = (dateString) => {
                   <td class="px-6 py-4">
                     <div class="text-sm text-gray-900 dark:text-white max-w-xs">
                       {{ activity.objective }}
+                      <Link 
+                        v-if="!isAdmin && activity.status.toLowerCase() === 'approved'"
+                        :href="`/applications/${activity.application_id}/reports`"
+                        class="block text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:underline transition-colors duration-200 mt-1"
+                      >
+                        View Reports →
+                      </Link>
                     </div>
                   </td>
                   <td class="px-6 py-4">
@@ -547,7 +555,7 @@ const isPastDate = (dateString) => {
                 
                 <!-- Empty State -->
                 <tr v-if="currentPageActivities.length === 0">
-                  <td colspan="9" class="px-6 py-12 text-center">
+                  <td :colspan="isAdmin ? 9 : 8" class="px-6 py-12 text-center">
                     <div class="flex flex-col items-center">
                       <div class="w-20 h-20 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900/30 dark:to-blue-800/30 flex items-center justify-center mb-4">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -572,8 +580,8 @@ const isPastDate = (dateString) => {
               :key="activity.id"
               class="p-4 hover:bg-gradient-to-r hover:from-blue-50 hover:to-transparent dark:hover:from-blue-900/20 dark:hover:to-transparent transition-all duration-200"
             >
-              <!-- Organization & Status Header -->
-              <div class="flex items-start justify-between mb-3">
+              <!-- Organization & Status Header (Admin Only) -->
+              <div v-if="isAdmin" class="flex items-start justify-between mb-3">
                 <div class="flex-1 min-w-0">
                   <h3 class="text-sm font-semibold text-gray-900 dark:text-white break-words">
                     {{ activity.organization }}
@@ -594,6 +602,25 @@ const isPastDate = (dateString) => {
                 >
                   {{ activity.status }}
                 </span>
+              </div>
+
+              <!-- Status Header (User Only) -->
+              <div v-if="!isAdmin" class="flex items-center justify-between mb-3">
+                <span 
+                  :class="`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(activity.status)}`"
+                >
+                  {{ activity.status }}
+                </span>
+                <Link 
+                  v-if="activity.status.toLowerCase() === 'approved'"
+                  :href="`/applications/${activity.application_id}/reports`"
+                  class="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:underline inline-flex items-center gap-1"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  View Reports
+                </Link>
               </div>
 
               <!-- Activity Details Grid -->

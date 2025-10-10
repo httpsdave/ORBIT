@@ -13,10 +13,19 @@ class PlanOfActivitiesController extends Controller
 {
     public function index(Request $request)
     {
-        // Get all Plan of Activities applications (LSPU-OSAS-SF-004)
-        $applications = OrganizationApplication::where('form_type', 'LSPU-OSAS-SF-004')
-            ->with(['user', 'activities'])
-            ->get();
+        // Check if user is admin
+        $isAdmin = auth()->user()->isAdmin();
+        
+        // Get Plan of Activities applications (LSPU-OSAS-SF-004)
+        $query = OrganizationApplication::where('form_type', 'LSPU-OSAS-SF-004')
+            ->with(['user', 'activities']);
+        
+        // If not admin, filter to show only the user's own submissions
+        if (!$isAdmin) {
+            $query->where('user_id', auth()->id());
+        }
+        
+        $applications = $query->get();
 
         // Flatten activities from all applications with organization info
         $activities = [];
@@ -62,7 +71,7 @@ class PlanOfActivitiesController extends Controller
         return Inertia::render('Admin/PlanOfActivities/Index', [
             'activities' => $activities,
             'totalActivities' => count($activities),
-            'isAdmin' => true,
+            'isAdmin' => $isAdmin,
         ]);
     }
 

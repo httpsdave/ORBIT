@@ -137,6 +137,9 @@ Route::middleware(['auth'])->group(function () {
     // Archive routes for regular users
     Route::get('/archive', [ArchiveController::class, 'index'])->name('archive.index');
 
+    // User Plan of Activities route
+    Route::get('/plan-of-activities', [\App\Http\Controllers\Admin\PlanOfActivitiesController::class, 'index'])->name('plan-of-activities.index');
+
     // Auto-save form data route
     Route::post('/auto-save-form-data', [OrganizationApplicationController::class, 'autoSaveFormData'])->name('auto-save-form-data');
     
