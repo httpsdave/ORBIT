@@ -422,9 +422,9 @@
 
     <div class="header">
         <img src="{{ public_path('images/lspu-logo.png') }}" alt="LSPU Logo" class="logo">
-        <span class="header-republic-text"style="font-size:10pt;">Republic of the Philippines</span><br>
+        <span class="header-republic-text"style="font-size:11pt;">Republic of the Philippines</span><br>
         <img src="{{ public_path('images/lspu-name.png') }}" alt="Laguna State Polytechnic University" class="university-name"><br>
-        <span class="header-province-text"style="font-size:10pt;">Province of Laguna</span><br>
+        <span class="header-province-text"style="font-size:11pt;">Province of Laguna</span><br>
         <br>
     <p class="office-title" style="margin-bottom:10px; font-size:11pt;">OFFICE OF STUDENT AFFAIRS AND SERVICES</p>
         <span class="commitment-title" style="font-size:11pt;"><strong>ORGANIZATION ADVISER COMMITMENT FORM</strong></span>
@@ -559,7 +559,7 @@
 
     <div class="footer">
         <div class="footer-left">LSPU-OSAS-SF-003</div>
-        <div class="footer-center">Rev. 1</div>
+        <div class="footer-center">Rev.<span style="display: inline-block !important; border-bottom: 1px solid black !important; line-height: 5px !important; position: relative !important; top: 2px !important;">1</span></div>
         <div class="footer-right">09 November 2020</div>
     </div>
         

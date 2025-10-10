@@ -297,9 +297,9 @@
         // This function will be called to generate the header for each page
         $header = '<div class="header">
                 <img src="' . public_path('images/lspu-logo.png') . '" alt="LSPU Logo" class="logo">
-                <span class="header-text"style="font-size:10pt;">Republic of the Philippines<br>
+                <span class="header-text"style="font-size:11pt;">Republic of the Philippines<br>
                 <img src="' . public_path('images/lspu-name.png') .  '" alt="Laguna State Polytechnic University" class="university-name"><br>
-                <span class="province-text"style="font-size:10pt;">Province of Laguna</span></span>
+                <span class="province-text"style="font-size:11pt;">Province of Laguna</span></span>
                 <p class="office-title" style="font-size:11pt; font-weight:bold; margin-bottom:10px; margin-top:5px;">OFFICE OF STUDENT AFFAIRS AND SERVICES</p>
                 <p class="sub-header" style="font-size:11pt; font-weight:bold; margin-bottom:10px; margin-top:5px;">LIST OF MEMBERS OF THE ORGANIZATION</p>
             </div>';
@@ -310,7 +310,7 @@
         // Footer styling copied from organization_plan.blade.php (no functional changes)
         $footer = '<div class="footer" style="position: absolute; bottom: -5px; width: 100%; height: 20px; line-height: 20px; font-size: 10pt; font-family: Calibri, sans-serif; font-weight: normal;">
             <div class="footer-left" style="position: absolute; left: .1cm; bottom: -5px; font-weight: normal;">LSPU-OSAS-SF-005</div>
-            <div class="footer-center" style="position: absolute; left: 50%; transform: translateX(-50%); bottom: -5px; font-weight: normal;">Rev. 1</div>
+            <div class="footer-center" style="position: absolute; left: 50%; transform: translateX(-50%); bottom: -5px; font-weight: normal;">Rev.<span style="display: inline-block !important; border-bottom: 1px solid black !important; line-height: 5px !important; position: relative !important; top: 2px !important;">1</span></div>
             <div class="footer-right" style="position: absolute; right: .1cm; bottom: -5px; font-weight: normal;">09 November 2020</div>
         </div>';
         return $footer;

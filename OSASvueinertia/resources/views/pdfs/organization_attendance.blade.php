@@ -173,9 +173,9 @@
     @foreach($chunks as $chunkIndex => $attendeeChunk)
         <div class="header">
             <img src="{{ public_path('images/lspu-logo.png') }}" alt="LSPU Logo" class="logo">
-            <span class="calibri-text"style="font-size:10pt;">Republic of the Philippines</span><br>
+            <span class="calibri-text"style="font-size:11pt;">Republic of the Philippines</span><br>
             <img src="{{ public_path('images/lspu-name.png') }}" alt="Laguna State Polytechnic University" class="university-name"><br>
-            <span class="calibri-text"style="font-size:10pt;">Province of Laguna</span><br>
+            <span class="calibri-text"style="font-size:11pt;">Province of Laguna</span><br>
             <div style="margin-top: 5px; font-weight: bold;">OFFICE OF STUDENT AFFAIRS AND SERVICES</div>
             <div class="title" style="margin-top: 5px;">STUDENT ACTIVITY ATTENDANCE SHEET</div>
             @if($application->college)

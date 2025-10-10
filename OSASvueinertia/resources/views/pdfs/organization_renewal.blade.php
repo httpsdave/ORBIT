@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Organization Renewal Form</title>
     <style>
-        /* Set A4 paper size for print */
+        /* Set A4 paper size f    <span class="calibri-font"style="font-size:11pt;">Republic of the Philippines</span><br>
+        <img src="{{ public_path('images/lspu-name.png') }}" alt="Laguna State Polytechnic University" class="university-name"><br>
+    <span class="calibri-font"style="font-size:11pt;">Province of Laguna</span><br>print */
         @page {
             size: A4;
             margin-top: 0.5cm;
@@ -359,7 +361,7 @@
 
     <div class="footer">
         <div class="footer-left">LSPU-OSAS-SF-002</div>
-        <div class="footer-center">Rev. 1</div>
+        <div class="footer-center">Rev.<span style="display: inline-block !important; border-bottom: 1px solid black !important; line-height: 5px !important; position: relative !important; top: 2px !important;">1</span></div>
         <div class="footer-right">09 November 2020</div>
     </div>
 </body>

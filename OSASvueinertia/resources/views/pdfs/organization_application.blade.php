@@ -212,9 +212,9 @@
 
     <div class="header">
         <img src="{{ public_path('images/lspu-logo.png') }}" alt="LSPU Logo" class="logo">
-    <span class="calibri-text" style="font-size:10pt;">Republic of the Philippines</span><br>
+    <span class="calibri-text" style="font-size:11pt;">Republic of the Philippines</span><br>
         <img src="{{ public_path('images/lspu-name.png') }}" alt="Laguna State Polytechnic University" class="university-name"><br>
-    <span class="calibri-text" style="font-size:10pt;">Province of Laguna</span><br>
+    <span class="calibri-text" style="font-size:11pt;">Province of Laguna</span><br>
         <br>
        <strong> OFFICE OF STUDENT AFFAIRS AND SERVICES</strong><br>
         <br>
@@ -394,7 +394,7 @@
 
     <div class="footer">
         <div class="footer-left">LSPU-OSAS-SF-001</div>
-        <div class="footer-center">Rev.1</div>
+        <div class="footer-center">Rev.<span style="display: inline-block !important; border-bottom: 1px solid black !important; line-height: 5px !important; position: relative !important; top: 2px !important;">1</span></div>
         <div class="footer-right">09 November 2020</div>
     </div>
 

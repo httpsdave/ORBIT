@@ -116,9 +116,9 @@
 <body>
     <div class="header">
         <img src="{{ public_path('images/lspu-logo.png') }}" alt="LSPU Logo" class="logo">
-        <p class="calibri-font" style="margin-bottom: 0; font-size:10pt;">Republic of the Philippines</p>
+        <p class="calibri-font" style="margin-bottom: 0; font-size:11pt;">Republic of the Philippines</p>
         <img src="{{ public_path('images/lspu-name.png') }}" alt="Laguna State Polytechnic University" class="university-name"><br>
-        <p class="calibri-font" style="margin-top: 0; font-size:10pt;">Province of Laguna</p>
+        <p class="calibri-font" style="margin-top: 0; font-size:11pt;">Province of Laguna</p>
         <br>
         <p class="form-title" style="margin-bottom: 24px;">Evaluation Sheet for all Programs/Activities</p>
     </div>
@@ -244,9 +244,9 @@
             <div style="page-break-before: always;"></div>
             <div class="header">
                 <img src="{{ public_path('images/lspu-logo.png') }}" alt="LSPU Logo" class="logo">
-                <p class="calibri-font" style="margin-bottom: 0;">Republic of the Philippines</p>
+                <p class="calibri-font" style="margin-bottom: 0; font-size:11pt;">Republic of the Philippines</p>
                 <img src="{{ public_path('images/lspu-name.png') }}" alt="Laguna State Polytechnic University" class="university-name"><br>
-                <p class="calibri-font" style="margin-top: 0;">Province of Laguna</p>
+                <p class="calibri-font" style="margin-top: 0; font-size:11pt;">Province of Laguna</p>
                 <br>
             </div>
             <div style="margin-top: 24px;">

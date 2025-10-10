@@ -134,9 +134,9 @@
     <!-- Header -->
     <div class="header">
         <img src="{{ public_path('images/lspu-logo.png') }}" alt="LSPU Logo" class="logo">
-        <span style="font-size:10pt;">Republic of the Philippines</span><br>
+        <span style="font-size:11pt;">Republic of the Philippines</span><br>
         <img src="{{ public_path('images/lspu-name.png') }}" alt="Laguna State Polytechnic University" class="university-name"><br>
-        <span style="font-size:10pt;">Province of Laguna</span><br>
+        <span style="font-size:11pt;">Province of Laguna</span><br>
         <br>
     </div>
     <div class="title" style="text-align: center; font-size: 16px; font-weight: bold; margin: 20px 0 30px 0;">Evaluation Sheet for all Programs/Activities</div>

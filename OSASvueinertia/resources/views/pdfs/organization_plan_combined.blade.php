@@ -332,9 +332,9 @@
         <div class="header">
             <img src="{{ public_path('images/lspu-logo.png') }}" alt="LSPU Logo" class="logo">
 
-            <span class="calibri-text"style="font-size:10pt;">Republic of the Philippines</span><br>
+            <span class="calibri-text"style="font-size:11pt;">Republic of the Philippines</span><br>
             <img src="{{ public_path('images/lspu-name.png') }}" alt="Laguna State Polytechnic University" class="university-name"><br>
-            <span class="calibri-text"style="font-size:10pt;">Province of Laguna</span><br>
+            <span class="calibri-text"style="font-size:11pt;">Province of Laguna</span><br>
             <br>
             <p class="office-title" style="font-size:11pt; font-weight:bold; margin-bottom:10px; margin-top:5px;">OFFICE OF STUDENT AFFAIRS AND SERVICES</p>
             <div class="subtitle" style="margin-top:15px; font-size:13pt;">PLAN OF ACTIVITIES</div>
@@ -423,7 +423,7 @@
 
         <div class="footer" style="position: absolute; bottom: -5px; width: 100%; height: 20px; line-height: 20px; font-size: 10pt; font-family: Calibri, sans-serif;">
             <div class="footer-left" style="position: absolute; left: .1cm; bottom: -5px;">LSPU-OSAS-SF-004</div>
-            <div class="footer-center" style="position: absolute; left: 50%; transform: translateX(-50%); bottom: -5px;">Rev. 1</div>
+            <div class="footer-center" style="position: absolute; left: 50%; transform: translateX(-50%); bottom: -5px;">Rev.<span style="display: inline-block !important; border-bottom: 1px solid black !important; line-height: 5px !important; position: relative !important; top: 2px !important;">1</span></div>
             <div class="footer-right" style="position: absolute; right: .1cm; bottom: -5px;">09 November 2020</div>
         </div>
     </div>
