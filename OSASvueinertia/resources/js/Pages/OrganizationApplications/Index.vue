@@ -150,7 +150,6 @@ const activeDropdown = ref(null);
 const statusFilter = ref('');
 const formTypeFilter = ref('');
 const organizationFilter = ref('');
-const planSortFilter = ref('target_date'); // 'submission_date' or 'target_date'
 
 // Status update variables
 const showStatusModal = ref(false);
@@ -213,70 +212,14 @@ const organizationOptions = computed(() => {
   return props.users.map(user => ({ value: user.id.toString(), label: user.name }));
 });
 
-// Helper function to get earliest target date from Plan of Activities
-const getEarliestTargetDate = (app) => {
-  if (app.form_type !== 'LSPU-OSAS-SF-004' || !app.activities || !Array.isArray(app.activities)) {
-    return null;
-  }
-  
-  const validDates = app.activities
-    .map(activity => activity.target_date)
-    .filter(date => date && date !== '')
-    .map(date => new Date(date))
-    .filter(date => !isNaN(date.getTime()));
-  
-  if (validDates.length === 0) return null;
-  
-  return new Date(Math.min(...validDates));
-};
-
-// Helper function to sort applications with Plan of Activities prioritized by target date
-const sortApplications = (applications) => {
-  // If sorting by submission date, don't apply any custom sorting
-  if (planSortFilter.value === 'submission_date') {
-    return [...applications];
-  }
-  
-  // Otherwise, sort by target date (nearest first)
-  return [...applications].sort((a, b) => {
-    const isPlanA = a.form_type === 'LSPU-OSAS-SF-004';
-    const isPlanB = b.form_type === 'LSPU-OSAS-SF-004';
-    
-    // If both are Plan of Activities, sort by earliest target date
-    if (isPlanA && isPlanB) {
-      const dateA = getEarliestTargetDate(a);
-      const dateB = getEarliestTargetDate(b);
-      
-      // If both have target dates, sort by nearest (earliest) first
-      if (dateA && dateB) {
-        return dateA - dateB;
-      }
-      
-      // If only one has a target date, prioritize the one with a date
-      if (dateA) return -1;
-      if (dateB) return 1;
-      
-      // If neither has target dates, maintain original order
-      return 0;
-    }
-    
-    // If only one is Plan of Activities, prioritize it
-    if (isPlanA) return -1;
-    if (isPlanB) return 1;
-    
-    // For non-Plan applications, maintain original order
-    return 0;
-  });
-};
-
 // Combined filter function - now triggers server-side filtering
 const filterApplications = async () => {
   // When filters are applied, we need to reload from server with filters
   if (hasActiveFilters.value) {
     await reloadWithFilters();
   } else {
-    // No filters, sort and show all loaded applications
-    filteredApplications.value = sortApplications([...allApplications.value]);
+    // No filters, show all loaded applications
+    filteredApplications.value = [...allApplications.value];
   }
 };
 
@@ -307,9 +250,9 @@ const reloadWithFilters = async () => {
     const data = await response.json();
     
     if (data.applications && Array.isArray(data.applications)) {
-      // Replace all applications with filtered results and apply sorting
+      // Replace all applications with filtered results
       allApplications.value = [...data.applications];
-      filteredApplications.value = sortApplications([...data.applications]);
+      filteredApplications.value = [...data.applications];
       currentPage.value = data.currentPage;
       hasMorePages.value = data.hasMorePages;
     }
@@ -386,7 +329,7 @@ watch(showMessage, (val) => {
 });
 
 onMounted(() => {
-  filteredApplications.value = sortApplications([...allApplications.value]);
+  filteredApplications.value = [...allApplications.value];
   if (showMessage.value) {
     startBannerTimeout();
   }
@@ -414,14 +357,14 @@ onMounted(() => {
 
 // Watch for filter changes with debouncing
 let filterTimeout = null;
-watch([searchQuery, statusFilter, formTypeFilter, organizationFilter, planSortFilter], ([newSearch, newStatus, newFormType, newOrg, newPlanSort], [oldSearch, oldStatus, oldFormType, oldOrg, oldPlanSort]) => {
-  // Only reset pagination if non-sort filters changed
-  const nonSortFiltersChanged = newSearch !== oldSearch || 
-                                 newStatus !== oldStatus || 
-                                 newFormType !== oldFormType || 
-                                 newOrg !== oldOrg;
+watch([searchQuery, statusFilter, formTypeFilter, organizationFilter], ([newSearch, newStatus, newFormType, newOrg], [oldSearch, oldStatus, oldFormType, oldOrg]) => {
+  // Reset pagination if filters changed
+  const filtersChanged = newSearch !== oldSearch || 
+                         newStatus !== oldStatus || 
+                         newFormType !== oldFormType || 
+                         newOrg !== oldOrg;
   
-  if (nonSortFiltersChanged) {
+  if (filtersChanged) {
     resetPagination();
   }
   
@@ -659,7 +602,7 @@ const loadMoreApplications = async () => {
       const newApplications = data.applications.filter(app => !existingIds.has(app.id));
       
       allApplications.value = [...allApplications.value, ...newApplications];
-      filteredApplications.value = sortApplications([...allApplications.value]); // Apply sorting after appending
+      filteredApplications.value = [...allApplications.value];
       currentPage.value = data.currentPage;
       hasMorePages.value = data.hasMorePages;
     }
@@ -1007,7 +950,7 @@ const confirmClearData = () => {
         </div>
 
         <!-- Organization Filter -->
-        <div v-if="users.length > 0" :class="formTypeFilter === 'LSPU-OSAS-SF-004' ? 'col-span-1' : 'col-span-2 sm:col-span-1'">
+        <div v-if="users.length > 0" class="col-span-2 sm:col-span-1">
           <select 
             v-model="organizationFilter"
             class="w-full pl-2.5 pr-7 py-1.5 sm:pl-3 sm:pr-8 sm:py-2 border border-gray-300 dark:border-gray-600 rounded-full text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm"
@@ -1021,18 +964,6 @@ const confirmClearData = () => {
             >
               {{ option.label.length > 15 ? option.label.substring(0, 15) + '...' : option.label }}
             </option>
-          </select>
-        </div>
-
-        <!-- Plan of Activities Sort Filter - Only show when Plan of Activities form type is selected -->
-        <div v-if="formTypeFilter === 'LSPU-OSAS-SF-004'" class="col-span-1">
-          <select 
-            v-model="planSortFilter"
-            class="w-full pl-2.5 pr-7 py-1.5 sm:pl-3 sm:pr-8 sm:py-2 border border-gray-300 dark:border-gray-600 rounded-full text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm"
-            title="Sort Plan of Activities submissions"
-          >
-            <option value="submission_date">By Submission</option>
-            <option value="target_date">By Target Date</option>
           </select>
         </div>
 
