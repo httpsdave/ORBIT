@@ -258,6 +258,9 @@ Route::middleware(['auth'])->group(function () {
         // Admin Plan of Activities Management Routes
         Route::get('/plan-of-activities', [\App\Http\Controllers\Admin\PlanOfActivitiesController::class, 'index'])->name('admin.plan-of-activities.index');
 
+        // Admin Members & Officers Management Routes
+        Route::get('/members-officers', [\App\Http\Controllers\Admin\MembersOfficersController::class, 'index'])->name('admin.members-officers.index');
+
         // Admin Archive Management Routes
         Route::get('/archive', [\App\Http\Controllers\Admin\ArchiveController::class, 'index'])->name('admin.archive.index');
         Route::post('/archive/end-year', [\App\Http\Controllers\Admin\ArchiveController::class, 'endYear'])->name('admin.archive.end-year');
