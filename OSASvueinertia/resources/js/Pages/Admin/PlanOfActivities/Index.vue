@@ -496,6 +496,52 @@ const selectAllMultiSelect = (columnKey) => {
 const deselectAllMultiSelect = (columnKey) => {
   columnFilters.value[columnKey].value = [];
 };
+
+// Export to PDF
+const isExporting = ref(false);
+const exportToPdf = async () => {
+  isExporting.value = true;
+  
+  try {
+    const response = await fetch('/admin/plan-of-activities/export-pdf', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+      },
+      body: JSON.stringify({
+        filters: {
+          search: searchQuery.value,
+          status: statusFilter.value,
+          date: dateFilter.value,
+          organization: organizationFilter.value,
+          columnFilters: columnFilters.value,
+        },
+        sort: sortState.value,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Export failed');
+    }
+
+    // Create blob from response
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `plan-of-activities-${new Date().toISOString().split('T')[0]}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error('PDF Export Error:', error);
+    alert('Failed to export PDF. Please try again.');
+  } finally {
+    isExporting.value = false;
+  }
+};
 </script>
 
 <template>
@@ -524,6 +570,25 @@ const deselectAllMultiSelect = (columnKey) => {
               </p>
             </div>
             <div class="flex items-center gap-2">
+              <button
+                @click="exportToPdf"
+                :disabled="isExporting || filteredActivities.length === 0"
+                class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-gray-400 disabled:to-gray-500 text-white text-sm font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-60"
+                :title="filteredActivities.length === 0 ? 'No data to export' : 'Export filtered activities to PDF'"
+              >
+                <svg v-if="!isExporting" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <line x1="12" y1="18" x2="12" y2="12"></line>
+                  <line x1="9" y1="15" x2="15" y2="15"></line>
+                </svg>
+                <svg v-else class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span>{{ isExporting ? 'Exporting...' : 'Export PDF' }}</span>
+              </button>
+              
               <div class="bg-white dark:bg-gray-800 px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
                 <span class="text-sm text-gray-600 dark:text-gray-400">Total Activities:</span>
                 <span class="ml-2 text-lg font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">{{ totalActivities }}</span>
