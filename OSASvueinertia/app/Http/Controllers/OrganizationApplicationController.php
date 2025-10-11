@@ -304,6 +304,7 @@ class OrganizationApplicationController extends Controller
             ]);
         } elseif ($request->form_type === 'LSPU-OSAS-SF-002') {
             $validationRules = array_merge($validationRules, [
+                'application_date' => 'required|date',
                 'college' => 'nullable|string|max:255',
                 'academic_year_start' => 'required|string|max:10',
                 'academic_year_end' => 'required|string|max:10',
@@ -345,6 +346,7 @@ class OrganizationApplicationController extends Controller
             ]);
         } elseif ($request->form_type === 'LSPU-OSAS-SF-005') {
             $validationRules = array_merge($validationRules, [
+                'application_date' => 'required|date',
                 'semester' => 'required|string|in:1st,2nd,Summer,Inter',
                 'academic_year_start' => 'required|string|max:10',
                 'academic_year_end' => 'required|string|max:10',
@@ -741,6 +743,7 @@ class OrganizationApplicationController extends Controller
             ]);
         } elseif ($application->form_type === 'LSPU-OSAS-SF-002') {
             $validationRules = array_merge($validationRules, [
+                'application_date' => 'required|date',
                 'college' => 'nullable|string|max:255',
                 'academic_year_start' => 'required|string|max:10',
                 'academic_year_end' => 'required|string|max:10',
@@ -788,6 +791,7 @@ class OrganizationApplicationController extends Controller
             }
         } elseif ($application->form_type === 'LSPU-OSAS-SF-005') {
             $validationRules = array_merge($validationRules, [
+                'application_date' => 'required|date',
                 'semester' => 'required|string|in:1st,2nd,Summer,Inter',
                 'academic_year_start' => 'required|string|max:10',
                 'academic_year_end' => 'required|string|max:10',

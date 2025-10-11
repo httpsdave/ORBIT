@@ -10,6 +10,10 @@ const props = defineProps({
   isEdit: {
     type: Boolean,
     default: false
+  },
+  isAdmin: {
+    type: Boolean,
+    default: false
   }
 });
 
@@ -21,7 +25,7 @@ const form = useForm({
   form_type: 'LSPU-OSAS-SF-001',
   organization_name: props.initialFormData.organization_name?.toUpperCase() || '',
   president_name: props.initialFormData.president_name?.toUpperCase() || '',
-  application_date: (() => {
+  application_date: props.initialFormData.application_date || (() => {
     const today = new Date();
     const yyyy = today.getFullYear();
     const mm = String(today.getMonth() + 1).padStart(2, '0');
@@ -371,15 +375,23 @@ const submit = () => {
       </div>
       <!-- Right Column -->
       <div>
-        <label class="block font-bold">Application Date</label>
+        <label class="block font-bold">
+          Application Date
+          <span v-if="props.isAdmin" class="text-sm text-blue-600 font-normal ml-2">(Admin only)</span>
+        </label>
         <input 
           type="date" 
-          :value="form.application_date" 
-          class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none text-center rounded-md" 
-          required 
-          readonly 
-          tabindex="-1" 
-          style="user-select: none; -webkit-user-select: none;" 
+          v-model="form.application_date" 
+          :class="[
+            'border p-2 w-full rounded-md',
+            props.isAdmin 
+              ? 'bg-white text-gray-900 cursor-pointer' 
+              : 'bg-gray-200 text-gray-500 select-none pointer-events-none'
+          ]"
+          :required="props.isAdmin" 
+          :readonly="!props.isAdmin" 
+          :tabindex="props.isAdmin ? 0 : -1" 
+          :style="props.isAdmin ? '' : 'user-select: none; -webkit-user-select: none;'" 
         >
         <p v-if="errors.application_date" class="text-red-500 text-sm mt-1">{{ errors.application_date }}</p>
       </div>

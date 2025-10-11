@@ -12,6 +12,10 @@ const props = defineProps({
   isEdit: {
     type: Boolean,
     default: false
+  },
+  isAdmin: {
+    type: Boolean,
+    default: false
   }
 });
 
@@ -890,6 +894,20 @@ const submit = () => {
           style="text-transform: uppercase;" 
           required>
         <div v-if="errors.organization_name" class="text-red-500 text-sm mt-1">{{ errors.organization_name }}</div>
+
+        <div v-if="props.isAdmin" class="mt-4">
+          <label class="block font-bold">
+            Application Date
+            <span class="text-sm text-blue-600 font-normal ml-2">(Admin only)</span>
+          </label>
+          <input 
+            type="date" 
+            v-model="form.application_date" 
+            class="border p-2 w-full rounded-md bg-white text-gray-900 cursor-pointer" 
+            required
+          >
+          <div v-if="errors.application_date" class="text-red-500 text-sm mt-1">{{ errors.application_date }}</div>
+        </div>
 
         <label class="block font-bold mt-4">Semester</label>
           <select v-model="form.semester" class="border p-2 w-full rounded-md" required>

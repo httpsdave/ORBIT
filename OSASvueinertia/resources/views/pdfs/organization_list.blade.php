@@ -654,7 +654,7 @@
                         </p>
                         <p style="margin-top: 2px; text-align: center;">Organization Adviser</p>
                     </div>
-                    <p style="text-align: left; padding-left: 35px; margin-top: -10px;">Date: <span class="date-signature-line"><strong>{{ now()->format('F d, Y') }}</strong></span></p>
+                    <p style="text-align: left; padding-left: 35px; margin-top: -10px;">Date: <span class="date-signature-line"><strong>{{ \Carbon\Carbon::parse($application->application_date)->format('F d, Y') }}</strong></span></p>
                 </td>
                 <td style="width: 50%; vertical-align: top; text-align: center; padding-top: 0;">
                     <div style="width: 200px; margin: 0 auto; margin-left: 110px;">
@@ -677,7 +677,7 @@
                         </p>
                         <p style="margin-top: 2px; text-align: center;">Organization Adviser</p>
                     </div>
-                    <p style="text-align: left; padding-left: 110px; margin-top: -10px;">Date: <span class="date-signature-line"><strong>{{ now()->format('F d, Y') }}</strong></span></p>
+                    <p style="text-align: left; padding-left: 110px; margin-top: -10px;">Date: <span class="date-signature-line"><strong>{{ \Carbon\Carbon::parse($application->application_date)->format('F d, Y') }}</strong></span></p>
                 </td>
             </tr>
         </table>
@@ -984,7 +984,7 @@
                             </p>
                             <p style="margin-top: 2px; text-align: center; font-weight: normal;">Organization Adviser</p>
                         </div>
-                        <p style="text-align: left; padding-left: 10px; margin-top: -10px;">Date: <span class="date-signature-line"><strong>{{ now()->format('F d, Y') }}</strong></span></p>
+                        <p style="text-align: left; padding-left: 10px; margin-top: -10px;">Date: <span class="date-signature-line"><strong>{{ \Carbon\Carbon::parse($application->application_date)->format('F d, Y') }}</strong></span></p>
                     </td>
                     <td style="width: 50%; vertical-align: top; text-align: center; padding-top: 0;">
                         <div style="width: 200px; margin: 0 auto; margin-left: 110px;">
@@ -1007,7 +1007,7 @@
                             </p>
                             <p style="margin-top: 2px; text-align: center; font-weight: normal;">Organization Adviser</p>
                         </div>
-                        <p style="text-align: left; padding-left: 110px; margin-top: -10px;">Date: <span class="date-signature-line"><strong>{{ now()->format('F d, Y') }}</strong></span></p>
+                        <p style="text-align: left; padding-left: 110px; margin-top: -10px;">Date: <span class="date-signature-line"><strong>{{ \Carbon\Carbon::parse($application->application_date)->format('F d, Y') }}</strong></span></p>
                     </td>
                 </tr>
             </table>

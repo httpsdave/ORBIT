@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
+import { usePage } from '@inertiajs/vue3';
 import StudentOrganizationForm from '@/Components/forms/StudentOrganizationForm.vue';
 import RenewalForm from '@/Components/forms/RenewalForm.vue';
 import CommitmentForm from '@/Components/forms/CommitmentForm.vue';
@@ -10,6 +11,10 @@ import ListOfOfficersForm from '@/Components/forms/ListOfOfficersForm.vue';
 import ActivityAttendanceForm from '@/Components/forms/ActivityAttendanceForm.vue';
 import EvaluationForm from '@/Components/forms/EvaluationForm.vue';
 import { router } from '@inertiajs/vue3';
+
+// Get current user and check if admin
+const user = usePage().props.auth.user;
+const isAdmin = user && (user.role?.slug === 'admin' || user.is_admin || (typeof user.role === 'object' && user.role.id === 1));
 
 // Get saved form data and selected form type from props
 const props = defineProps({
@@ -384,6 +389,7 @@ const handleDirectUploadSubmit = () => {
       <StudentOrganizationForm 
         v-if="currentForm === 'LSPU-OSAS-SF-001'" 
         :initialFormData="formData"
+        :isAdmin="isAdmin"
         @submitted="handleFormSubmitted"
       />
       
@@ -391,6 +397,7 @@ const handleDirectUploadSubmit = () => {
       <RenewalForm 
         v-if="currentForm === 'LSPU-OSAS-SF-002'" 
         :initialFormData="formData"
+        :isAdmin="isAdmin"
         @submitted="handleFormSubmitted"
       />
       
@@ -398,6 +405,7 @@ const handleDirectUploadSubmit = () => {
       <CommitmentForm 
         v-if="currentForm === 'LSPU-OSAS-SF-003'" 
         :initialFormData="formData"
+        :isAdmin="isAdmin"
         @submitted="handleFormSubmitted"
       />
       
@@ -412,6 +420,7 @@ const handleDirectUploadSubmit = () => {
       <ListOfMembersForm 
         v-if="currentForm === 'LSPU-OSAS-SF-005'" 
         :initialFormData="formData"
+        :isAdmin="isAdmin"
         @submitted="handleFormSubmitted"
       />
       
@@ -426,6 +435,7 @@ const handleDirectUploadSubmit = () => {
       <ListOfOfficersForm 
         v-if="currentForm === 'LSPU-OSAS-SF-007'" 
         :initialFormData="formData"
+        :isAdmin="isAdmin"
         @submitted="handleFormSubmitted"
       />
       

@@ -399,6 +399,7 @@ const handleSpecialFormSubmit = () => {
         v-if="props.application.form_type === 'LSPU-OSAS-SF-001'" 
         :initialFormData="formData"
         :isEdit="true"
+        :isAdmin="isAdmin"
         @submitted="handleFormSubmitted"
       />
       
@@ -407,6 +408,7 @@ const handleSpecialFormSubmit = () => {
         v-else-if="props.application.form_type === 'LSPU-OSAS-SF-002'" 
         :initialFormData="formData"
         :isEdit="true"
+        :isAdmin="isAdmin"
         @submitted="handleFormSubmitted"
       />
       
@@ -415,6 +417,7 @@ const handleSpecialFormSubmit = () => {
         v-else-if="props.application.form_type === 'LSPU-OSAS-SF-003'" 
         :initialFormData="formData"
         :isEdit="true"
+        :isAdmin="isAdmin"
         @submitted="handleFormSubmitted"
       />
       
@@ -431,6 +434,7 @@ const handleSpecialFormSubmit = () => {
         v-else-if="props.application.form_type === 'LSPU-OSAS-SF-005'" 
         :initialFormData="formData"
         :isEdit="true"
+        :isAdmin="isAdmin"
         @submitted="handleFormSubmitted"
       />
       
@@ -447,6 +451,7 @@ const handleSpecialFormSubmit = () => {
         v-else-if="props.application.form_type === 'LSPU-OSAS-SF-007'" 
         :initialFormData="formData"
         :isEdit="true"
+        :isAdmin="isAdmin"
         @submitted="handleFormSubmitted"
       />
       
