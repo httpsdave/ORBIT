@@ -620,38 +620,15 @@ const downloadPdfFromPreview = () => {
             </div>
           </div>
 
-          <!-- Unified Search and Filter Section -->
-          <div class="max-w-4xl mx-auto px-3 sm:px-6 mb-6 space-y-3">
-            <!-- Search Bar -->
-            <div class="relative">
-              <div class="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </div>
-              <input
-                type="text"
-                v-model="searchQuery"
-                class="block w-full pl-9 sm:pl-12 pr-9 sm:pr-12 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 transition duration-150 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
-                placeholder="Search by organization, objective, activity..."
-              />
-              <div v-if="searchQuery" class="absolute inset-y-0 right-0 pr-3 sm:pr-4 flex items-center">
-                <button @click="searchQuery = ''" class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-
-            <!-- Filter Bar - Responsive Grid Layout -->
-                        <!-- Filter Bar (Admin Only) - Responsive Grid Layout -->
-            <div class="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2">
+          <!-- Mobile-only Filter Section -->
+          <div class="max-w-4xl mx-auto px-3 sm:px-6 mb-6 space-y-3 block md:hidden">
+            <!-- Filter Bar - Mobile Only -->
+            <div class="grid grid-cols-2 gap-2">
               <!-- Status Filter -->
               <div class="col-span-1">
                 <select 
                   v-model="statusFilter"
-                  class="w-full pl-2.5 pr-7 py-1.5 sm:pl-3 sm:pr-8 sm:py-2 border border-gray-300 dark:border-gray-600 rounded-full text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm"
+                  class="w-full pl-2.5 pr-7 py-1.5 border border-gray-300 dark:border-gray-600 rounded-full text-xs focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm"
                 >
                   <option value="all">All Status</option>
                   <option value="approved">Approved</option>
@@ -664,7 +641,7 @@ const downloadPdfFromPreview = () => {
               <div v-if="isAdmin" class="col-span-1">
                 <select 
                   v-model="organizationFilter"
-                  class="w-full pl-2.5 pr-7 py-1.5 sm:pl-3 sm:pr-8 sm:py-2 border border-gray-300 dark:border-gray-600 rounded-full text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm"
+                  class="w-full pl-2.5 pr-7 py-1.5 border border-gray-300 dark:border-gray-600 rounded-full text-xs focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm"
                   title="Filter by Organization"
                 >
                   <option value="">All Organizations</option>
@@ -680,10 +657,10 @@ const downloadPdfFromPreview = () => {
               </div>
 
               <!-- Date Filter -->
-              <div :class="isAdmin ? 'col-span-2 sm:col-span-1' : 'col-span-1'">
+              <div :class="isAdmin ? 'col-span-2' : 'col-span-1'">
                 <select 
                   v-model="dateFilter"
-                  class="w-full pl-2.5 pr-7 py-1.5 sm:pl-3 sm:pr-8 sm:py-2 border border-gray-300 dark:border-gray-600 rounded-full text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm"
+                  class="w-full pl-2.5 pr-7 py-1.5 border border-gray-300 dark:border-gray-600 rounded-full text-xs focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm"
                   title="Sort by Date"
                 >
                   <option value="nearest">Nearest Events</option>
@@ -695,43 +672,31 @@ const downloadPdfFromPreview = () => {
               </div>
             </div>
 
-            <!-- Active Filters Display - Compact for Mobile -->
-            <div v-if="searchQuery || statusFilter !== 'all' || (isAdmin && organizationFilter) || dateFilter !== 'nearest'" class="flex flex-wrap gap-1.5 sm:gap-2 items-center text-xs sm:text-sm">
-              <span class="text-gray-600 dark:text-gray-400 font-medium text-xs sm:text-sm">Active:</span>
-              <span v-if="searchQuery" class="px-1.5 py-0.5 sm:px-2 sm:py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-md text-xs">
+            <!-- Active Filters Display - Mobile Only -->
+            <div v-if="searchQuery || statusFilter !== 'all' || (isAdmin && organizationFilter) || dateFilter !== 'nearest'" class="flex flex-wrap gap-1.5 items-center text-xs">
+              <span class="text-gray-600 dark:text-gray-400 font-medium text-xs">Active:</span>
+              <span v-if="searchQuery" class="px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-md text-xs">
                 "{{ searchQuery.length > 15 ? searchQuery.substring(0, 15) + '...' : searchQuery }}"
               </span>
-              <span v-if="statusFilter !== 'all'" class="px-1.5 py-0.5 sm:px-2 sm:py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-md text-xs">
+              <span v-if="statusFilter !== 'all'" class="px-1.5 py-0.5 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-md text-xs">
                 {{ statusFilter }}
               </span>
-              <span v-if="isAdmin && organizationFilter" class="px-1.5 py-0.5 sm:px-2 sm:py-1 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 rounded-md text-xs truncate max-w-[120px] sm:max-w-xs" :title="organizationOptions.find(opt => opt.value === organizationFilter)?.label">
+              <span v-if="isAdmin && organizationFilter" class="px-1.5 py-0.5 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 rounded-md text-xs truncate max-w-[120px]" :title="organizationOptions.find(opt => opt.value === organizationFilter)?.label">
                 {{ organizationOptions.find(opt => opt.value === organizationFilter)?.label && organizationOptions.find(opt => opt.value === organizationFilter)?.label.length > 15 ? organizationOptions.find(opt => opt.value === organizationFilter)?.label.substring(0, 15) + '...' : organizationOptions.find(opt => opt.value === organizationFilter)?.label }}
               </span>
-              <span v-if="dateFilter !== 'nearest'" class="px-1.5 py-0.5 sm:px-2 sm:py-1 bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 rounded-md text-xs">
+              <span v-if="dateFilter !== 'nearest'" class="px-1.5 py-0.5 bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 rounded-md text-xs">
                 {{ dateFilter === 'upcoming' ? 'Upcoming Only' : dateFilter === 'past' ? 'Past Only' : dateFilter === 'submission-newest' ? 'Newest First' : 'Oldest First' }}
               </span>
             </div>
           </div>
 
-          <!-- Results count and page size -->
-          <div class="max-w-4xl mx-auto px-3 sm:px-6 mb-6">
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm text-gray-600 dark:text-gray-400">
-              <div class="flex items-center justify-center sm:justify-start gap-2">
-                <label class="text-xs uppercase tracking-wide font-semibold text-gray-500 dark:text-gray-400">Entries per page</label>
-                <select
-                  v-model.number="activitiesPerPage"
-                  class="w-20 pl-2.5 pr-7 py-1.5 sm:pl-3 sm:pr-8 sm:py-2 border border-gray-300 dark:border-gray-600 rounded-full text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm"
-                >
-                  <option v-for="option in pageSizeOptions" :key="option" :value="option">{{ option }}</option>
-                </select>
-              </div>
-
-              <div class="text-center sm:text-right">
-                Showing <span class="font-semibold text-blue-600 dark:text-blue-400">{{ displayRange.start }}-{{ displayRange.end }}</span> of <span class="font-semibold text-blue-600 dark:text-blue-400">{{ filteredActivities.length }}</span> activities
-                <span v-if="filteredActivities.length !== totalActivities" class="ml-2 text-gray-500">
-                  (filtered from {{ totalActivities }} total)
-                </span>
-              </div>
+          <!-- Results count -->
+          <div class="mb-6 px-2">
+            <div class="text-left text-sm text-gray-600 dark:text-gray-400">
+              Showing <span class="font-semibold text-blue-600 dark:text-blue-400">{{ displayRange.start }}-{{ displayRange.end }}</span> of <span class="font-semibold text-blue-600 dark:text-blue-400">{{ filteredActivities.length }}</span> activities
+              <span v-if="filteredActivities.length !== totalActivities" class="ml-2 text-gray-500">
+                (filtered from {{ totalActivities }} total)
+              </span>
             </div>
           </div>
         </div>
@@ -806,6 +771,44 @@ const downloadPdfFromPreview = () => {
               </svg>
             </button>
           </nav>
+        </div>
+
+        <!-- Table Header - Search Bar (Left) and Entries Per Page (Right) -->
+        <div class="mb-4 px-2">
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 w-full">
+            <!-- Search Bar - Left Side -->
+            <div class="relative w-full sm:w-96 flex-shrink-0">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+              <input
+                type="text"
+                v-model="searchQuery"
+                class="block w-full pl-9 pr-9 py-2.5 text-sm border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 transition duration-150 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 shadow-sm"
+                placeholder="Search by organization, objective, activity..."
+              />
+              <div v-if="searchQuery" class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                <button @click="searchQuery = ''" class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Entries Per Page - Right Side -->
+            <div class="flex items-center gap-2 justify-center sm:justify-end text-sm text-gray-600 dark:text-gray-400 flex-shrink-0">
+              <label class="text-xs uppercase tracking-wide font-semibold text-gray-500 dark:text-gray-400">Entries per page</label>
+              <select
+                v-model.number="activitiesPerPage"
+                class="w-20 pl-2.5 pr-7 py-1.5 sm:pl-3 sm:pr-8 sm:py-2 border border-gray-300 dark:border-gray-600 rounded-full text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm"
+              >
+                <option v-for="option in pageSizeOptions" :key="option" :value="option">{{ option }}</option>
+              </select>
+            </div>
+          </div>
         </div>
 
         <!-- Activities Table (Desktop) & Cards (Mobile) -->
