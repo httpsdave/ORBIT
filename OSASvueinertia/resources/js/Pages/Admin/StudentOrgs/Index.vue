@@ -181,7 +181,7 @@
                             <button
                               v-if="canBeAssignedParent(user)"
                               @click="openParentAssignModal(user)"
-                              class="inline-flex items-center justify-center text-purple-500 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors duration-150 p-1 sm:p-1.5 rounded-lg"
+                              class="inline-flex items-center justify-center text-yellow-500 dark:text-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-300 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 transition-colors duration-150 p-1 sm:p-1.5 rounded-lg"
                               title="Assign Parent Organization"
                             >
                               <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -293,7 +293,7 @@
                             <button
                               v-if="canBeAssignedParent(user)"
                               @click="openParentAssignModal(user)"
-                              class="inline-flex items-center justify-center text-purple-500 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors duration-150 p-1 sm:p-1.5 rounded-lg"
+                              class="inline-flex items-center justify-center text-yellow-500 dark:text-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-300 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 transition-colors duration-150 p-1 sm:p-1.5 rounded-lg"
                               title="Assign Parent Organization"
                             >
                               <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -334,7 +334,7 @@
                         <div v-if="parentOrg.profile_photo_url" class="flex-shrink-0 h-8 w-8 sm:h-10 sm:w-10 mr-3">
                           <img class="h-8 w-8 sm:h-10 sm:w-10 rounded-full object-cover border border-gray-200 dark:border-gray-500" :src="parentOrg.profile_photo_url" alt="" />
                         </div>
-                        <div v-else class="h-8 w-8 sm:h-10 sm:w-10 bg-gradient-to-br from-purple-500 to-pink-400 rounded-full flex items-center justify-center text-white font-medium shadow-inner text-xs sm:text-sm mr-3 flex-shrink-0">
+                        <div v-else class="h-8 w-8 sm:h-10 sm:w-10 bg-gradient-to-br from-blue-500 to-green-400 rounded-full flex items-center justify-center text-white font-medium shadow-inner text-xs sm:text-sm mr-3 flex-shrink-0">
                           {{ parentOrg.name ? parentOrg.name.charAt(0).toUpperCase() : 'O' }}
                         </div>
                         <div class="min-w-0 flex-1">
@@ -345,7 +345,7 @@
                       </div>
                       <div class="flex items-center ml-2 sm:ml-3 flex-shrink-0">
                         <span class="mr-1.5 sm:mr-2 text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full flex-shrink-0" 
-                              :class="parentOrg.sub_organizations?.length > 0 ? 'bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-200' : 'bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-400'">
+                              :class="parentOrg.sub_organizations?.length > 0 ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-200' : 'bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-400'">
                           {{ parentOrg.sub_organizations?.length || 0 }}
                         </span>
                         <svg
@@ -392,7 +392,7 @@
                             <div class="flex items-center space-x-1.5 sm:space-x-2 ml-2 flex-shrink-0">
                               <button
                                 @click="openParentAssignModal(subOrg)"
-                                class="inline-flex items-center justify-center text-purple-500 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors duration-150 p-1 sm:p-1.5 rounded-lg"
+                                class="inline-flex items-center justify-center text-yellow-500 dark:text-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-300 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 transition-colors duration-150 p-1 sm:p-1.5 rounded-lg"
                                 title="Change Parent Organization"
                               >
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -539,7 +539,7 @@
                               <button
                                 v-if="canBeAssignedParent(user)"
                                 @click="openParentAssignModal(user)"
-                                class="inline-flex items-center text-purple-500 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 transition-colors duration-150"
+                                class="inline-flex items-center text-yellow-500 dark:text-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-300 transition-colors duration-150"
                                 title="Assign Parent Organization"
                               >
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -699,7 +699,7 @@
                               <button
                                 v-if="canBeAssignedParent(user)"
                                 @click="openParentAssignModal(user)"
-                                class="inline-flex items-center text-purple-500 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 transition-colors duration-150 mr-4"
+                                class="inline-flex items-center text-yellow-500 dark:text-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-300 transition-colors duration-150 mr-4"
                                 title="Assign Parent Organization"
                               >
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -737,13 +737,13 @@
                   <div v-for="parentOrg in parentOrganizations" :key="`desktop-parent-${parentOrg.id}`" class="border border-gray-200 dark:border-gray-700 rounded-md overflow-hidden shadow-sm hover:shadow transition-shadow duration-200" data-college-accordion>
                     <div 
                       @click="toggleSubOrganization(parentOrg.id, $event)"
-                      class="flex justify-between items-center p-4 cursor-pointer bg-purple-50 dark:bg-purple-900/20 hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors duration-150"
+                      class="flex justify-between items-center p-4 cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-150"
                     >
                       <div class="flex items-center">
                         <div v-if="parentOrg.profile_photo_url" class="flex-shrink-0 h-12 w-12 mr-4">
                           <img class="h-12 w-12 rounded-full object-cover border border-gray-200 dark:border-gray-600" :src="parentOrg.profile_photo_url" alt="" />
                         </div>
-                        <div v-else class="h-12 w-12 bg-gradient-to-br from-purple-500 to-pink-400 rounded-full flex items-center justify-center text-white font-medium shadow-inner text-lg mr-4">
+                        <div v-else class="h-12 w-12 bg-gradient-to-br from-blue-500 to-green-400 rounded-full flex items-center justify-center text-white font-medium shadow-inner text-lg mr-4">
                           {{ parentOrg.name ? parentOrg.name.charAt(0).toUpperCase() : 'O' }}
                         </div>
                         <div>
@@ -754,7 +754,7 @@
                       </div>
                       <div class="flex items-center">
                         <span class="mr-2 text-sm font-medium px-2 py-1 rounded-full" 
-                              :class="parentOrg.sub_organizations?.length > 0 ? 'bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-200' : 'bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-400'">
+                              :class="parentOrg.sub_organizations?.length > 0 ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-200' : 'bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-400'">
                           {{ parentOrg.sub_organizations?.length || 0 }} Sub-Organizations
                         </span>
                         <svg
@@ -839,7 +839,7 @@
                               <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <button
                                   @click="openParentAssignModal(subOrg)"
-                                  class="inline-flex items-center text-purple-500 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 transition-colors duration-150 mr-4"
+                                  class="inline-flex items-center text-yellow-500 dark:text-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-300 transition-colors duration-150 mr-4"
                                   title="Change Parent Organization"
                                 >
                                   <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1154,7 +1154,7 @@
             <select
               v-else
               v-model="selectedParentOrgId"
-              class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+              class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
               required
             >
               <option :value="null" disabled>Choose a parent organization...</option>
@@ -1167,7 +1167,7 @@
           <div class="flex flex-col sm:flex-row items-center justify-end mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-gray-200 dark:border-gray-700 space-y-2 sm:space-y-0 sm:space-x-3">
             <SecondaryButton @click="closeParentAssignModal" class="w-full sm:w-auto order-2 sm:order-1" type="button">Cancel</SecondaryButton>
             <button
-              class="inline-flex items-center justify-center px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg shadow-md transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm w-full sm:w-auto order-1 sm:order-2"
+              class="inline-flex items-center justify-center px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg shadow-md transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm w-full sm:w-auto order-1 sm:order-2"
               :disabled="!selectedParentOrgId || availableParentOrganizations.length === 0"
               @click="confirmAssignParent"
               type="button"
