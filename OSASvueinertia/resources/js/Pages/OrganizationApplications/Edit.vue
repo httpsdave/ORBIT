@@ -443,6 +443,7 @@ const handleSpecialFormSubmit = () => {
         v-else-if="props.application.form_type === 'LSPU-OSAS-SF-006'" 
         :initialFormData="formData"
         :isEdit="true"
+        :isAdmin="isAdmin"
         @submitted="handleFormSubmitted"
       />
       

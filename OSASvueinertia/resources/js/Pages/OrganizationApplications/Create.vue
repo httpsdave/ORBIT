@@ -428,6 +428,7 @@ const handleDirectUploadSubmit = () => {
       <StudentCertificationForm 
         v-if="currentForm === 'LSPU-OSAS-SF-006'" 
         :initialFormData="formData"
+        :isAdmin="isAdmin"
         @submitted="handleFormSubmitted"
       />
       

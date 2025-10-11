@@ -43,6 +43,10 @@ const props = defineProps({
   isEdit: {
     type: Boolean,
     default: false
+  },
+  isAdmin: {
+    type: Boolean,
+    default: false
   }
 });
 
@@ -344,7 +348,7 @@ const form = useForm({
   adviser_suffix: props.initialFormData.adviser_suffix || '',
   director_name: props.initialFormData.director_name?.toUpperCase() || '',
   coordinator_name: props.initialFormData.coordinator_name?.toUpperCase() || '',
-  certification_date: new Date().toISOString().slice(0, 10), // Always current date
+  certification_date: props.initialFormData.certification_date || new Date().toISOString().slice(0, 10),
   students: (props.initialFormData.students || []).map(student => ({
     ...student,
     student_name: student.student_name?.toUpperCase() || '',
@@ -604,6 +608,24 @@ const submit = () => {
                   style="text-transform: uppercase;" 
                   required>
                 <p v-if="errors.organization_name" class="text-red-500 text-sm mt-1">{{ errors.organization_name }}</p>
+            </div>
+
+            <!-- Certification Date field (Admin only) -->
+            <div>
+                <label class="block font-bold">Certification Date <span v-if="props.isAdmin" class="text-sm text-gray-500">(Admin only)</span></label>
+                <input 
+                  v-if="props.isAdmin"
+                  v-model="form.certification_date" 
+                  type="date"
+                  class="border p-2 w-full rounded-md bg-white text-gray-900 cursor-pointer" 
+                  required>
+                <input 
+                  v-else
+                  :value="form.certification_date" 
+                  type="date"
+                  class="border p-2 w-full rounded-md bg-gray-200 text-gray-500 select-none pointer-events-none" 
+                  readonly>
+                <p v-if="errors.certification_date" class="text-red-500 text-sm mt-1">{{ errors.certification_date }}</p>
             </div>
 
             <!-- President Name field removed for Student Certification Form -->

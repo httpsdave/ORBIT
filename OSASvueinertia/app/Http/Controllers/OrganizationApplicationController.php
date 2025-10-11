@@ -362,6 +362,7 @@ class OrganizationApplicationController extends Controller
             ]);
         } elseif ($request->form_type === 'LSPU-OSAS-SF-006') {
             $validationRules = array_merge($validationRules, [
+                'certification_date' => 'required|date',
                 'students' => 'required|array|min:1',
                 'students.*.student_name' => 'required|string|max:255',
                 'students.*.course' => 'required|string|max:255',
@@ -809,6 +810,7 @@ class OrganizationApplicationController extends Controller
             // Special handling for members below
         } elseif ($application->form_type === 'LSPU-OSAS-SF-006') {
             $validationRules = array_merge($validationRules, [
+                'certification_date' => 'required|date',
                 'students' => 'required|array|min:1',
                 'students.*.student_name' => 'required|string|max:255',
                 'students.*.course' => 'required|string|max:255',
