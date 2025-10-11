@@ -184,8 +184,10 @@
                               class="inline-flex items-center justify-center text-yellow-500 dark:text-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-300 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 transition-colors duration-150 p-1 sm:p-1.5 rounded-lg"
                               title="Assign Parent Organization"
                             >
-                              <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 sm:h-4 sm:w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <circle cx="9" cy="8" r="3" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
+                                <circle cx="17" cy="8" r="2" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2 20c0-2 3-4 7-4s7 2 7 4" />
                               </svg>
                             </button>
                           </div>
@@ -296,8 +298,10 @@
                               class="inline-flex items-center justify-center text-yellow-500 dark:text-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-300 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 transition-colors duration-150 p-1 sm:p-1.5 rounded-lg"
                               title="Assign Parent Organization"
                             >
-                              <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 sm:h-4 sm:w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <circle cx="9" cy="8" r="3" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
+                                <circle cx="17" cy="8" r="2" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2 20c0-2 3-4 7-4s7 2 7 4" />
                               </svg>
                             </button>
                             <button
@@ -318,8 +322,10 @@
                 <!-- Sub-Organizations Section (Mobile) -->
                 <div v-if="activeTab === 'sub-organizations'" class="space-y-2 sm:space-y-3">
                   <div v-if="parentOrganizations.length === 0" class="text-center py-8 text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700 rounded-lg p-6">
-                    <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <circle cx="9" cy="8" r="3" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
+                      <circle cx="17" cy="8" r="2" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2 20c0-2 3-4 7-4s7 2 7 4" />
                     </svg>
                     <p class="mt-4 text-base font-medium text-gray-900 dark:text-gray-100">No sub-organizations found</p>
                     <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Organizations with sub-organizations will appear here.</p>
@@ -542,8 +548,10 @@
                                 class="inline-flex items-center text-yellow-500 dark:text-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-300 transition-colors duration-150"
                                 title="Assign Parent Organization"
                               >
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 515.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                  <circle cx="9" cy="8" r="3" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
+                                  <circle cx="17" cy="8" r="2" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2 20c0-2 3-4 7-4s7 2 7 4" />
                                 </svg>
                                 Assign Parent
                               </button>
@@ -593,9 +601,10 @@
                   <div v-if="openColleges.includes(college.id)" 
                       class="p-4 divide-y divide-gray-100 dark:divide-gray-700 bg-white dark:bg-gray-800 transition-all duration-300 ease-in-out">
                     <div v-if="college.users.length === 0" class="text-center text-gray-500 dark:text-gray-400 py-8">
-                      <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                      </svg>
+                      <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="8" r="3" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2 20c0-2 3-4 7-4s7 2 7 4" />
+                          </svg>
                       <p class="mt-2">No organizations found for this college</p>
                       <button
                         @click="openUserSelectionModalForCollege(college.id)"
@@ -703,7 +712,9 @@
                                 title="Assign Parent Organization"
                               >
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                  <circle cx="9" cy="8" r="3" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
+                                  <circle cx="17" cy="8" r="2" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2 20c0-2 3-4 7-4s7 2 7 4" />
                                 </svg>
                                 Assign Parent
                               </button>
@@ -728,7 +739,9 @@
                 <div v-if="activeTab === 'sub-organizations'" class="space-y-3">
                   <div v-if="parentOrganizations.length === 0" class="text-center py-8 text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700 rounded-lg p-8">
                     <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                      <circle cx="9" cy="8" r="3" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
+                      <circle cx="17" cy="8" r="2" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2 20c0-2 3-4 7-4s7 2 7 4"></path>
                     </svg>
                     <p class="mt-4 text-lg font-medium text-gray-900 dark:text-gray-100">No sub-organizations found</p>
                     <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Organizations with sub-organizations will appear here.</p>
