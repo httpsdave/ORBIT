@@ -8,6 +8,7 @@ const rankOptions = [
   'Assistant Professor II',
   'Assistant Professor III',
   'Assistant Professor IV',
+  'Professor I',
   'Associate Professor I',
   'Associate Professor II',
   'Associate Professor III',
