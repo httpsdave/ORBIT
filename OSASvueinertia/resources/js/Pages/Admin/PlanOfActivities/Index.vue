@@ -701,8 +701,46 @@ const downloadPdfFromPreview = () => {
           </div>
         </div>
 
-        <!-- Top Pagination Controls - Minimalist Design -->
-        <div v-if="totalPages > 1" class="flex items-center justify-between mt-6 px-2">
+        <!-- Table Header - Search Bar (Left) and Entries Per Page (Right) -->
+        <div class="mb-4 px-2">
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 w-full">
+            <!-- Search Bar - Left Side -->
+            <div class="relative w-full sm:w-96 flex-shrink-0">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+              <input
+                type="text"
+                v-model="searchQuery"
+                class="block w-full pl-9 pr-9 py-2.5 text-sm border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 transition duration-150 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 shadow-sm"
+                placeholder="Search by organization, objective, activity..."
+              />
+              <div v-if="searchQuery" class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                <button @click="searchQuery = ''" class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Entries Per Page - Right Side -->
+            <div class="flex items-center gap-2 justify-center sm:justify-end text-sm text-gray-600 dark:text-gray-400 flex-shrink-0">
+              <label class="text-xs uppercase tracking-wide font-semibold text-gray-500 dark:text-gray-400">Entries per page</label>
+              <select
+                v-model.number="activitiesPerPage"
+                class="w-20 pl-2.5 pr-7 py-1.5 sm:pl-3 sm:pr-8 sm:py-2 border border-gray-300 dark:border-gray-600 rounded-full text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm"
+              >
+                <option v-for="option in pageSizeOptions" :key="option" :value="option">{{ option }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pagination Controls - Below Entries Per Page -->
+        <div v-if="totalPages > 1" class="flex items-center justify-between mb-4 px-2">
           <!-- Page Info -->
           <div class="text-sm text-gray-600 dark:text-gray-400">
             Page <span class="font-semibold text-gray-900 dark:text-gray-100">{{ currentPage }}</span> of <span class="font-semibold text-gray-900 dark:text-gray-100">{{ totalPages }}</span>
@@ -771,44 +809,6 @@ const downloadPdfFromPreview = () => {
               </svg>
             </button>
           </nav>
-        </div>
-
-        <!-- Table Header - Search Bar (Left) and Entries Per Page (Right) -->
-        <div class="mb-4 px-2">
-          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 w-full">
-            <!-- Search Bar - Left Side -->
-            <div class="relative w-full sm:w-96 flex-shrink-0">
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </div>
-              <input
-                type="text"
-                v-model="searchQuery"
-                class="block w-full pl-9 pr-9 py-2.5 text-sm border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 transition duration-150 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 shadow-sm"
-                placeholder="Search by organization, objective, activity..."
-              />
-              <div v-if="searchQuery" class="absolute inset-y-0 right-0 pr-3 flex items-center">
-                <button @click="searchQuery = ''" class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-
-            <!-- Entries Per Page - Right Side -->
-            <div class="flex items-center gap-2 justify-center sm:justify-end text-sm text-gray-600 dark:text-gray-400 flex-shrink-0">
-              <label class="text-xs uppercase tracking-wide font-semibold text-gray-500 dark:text-gray-400">Entries per page</label>
-              <select
-                v-model.number="activitiesPerPage"
-                class="w-20 pl-2.5 pr-7 py-1.5 sm:pl-3 sm:pr-8 sm:py-2 border border-gray-300 dark:border-gray-600 rounded-full text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm"
-              >
-                <option v-for="option in pageSizeOptions" :key="option" :value="option">{{ option }}</option>
-              </select>
-            </div>
-          </div>
         </div>
 
         <!-- Activities Table (Desktop) & Cards (Mobile) -->
