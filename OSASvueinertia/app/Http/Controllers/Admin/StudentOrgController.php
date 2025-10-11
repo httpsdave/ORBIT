@@ -15,8 +15,19 @@ class StudentOrgController extends Controller
      */
     public function index()
     {
-        $colleges = College::with(['users.role', 'users.parentOrganization', 'users.subOrganizations'])->get();
-        $users = User::with(['role', 'parentOrganization', 'subOrganizations'])->get(); // For selection modal
+        $colleges = College::with([
+            'users.role', 
+            'users.parentOrganization.college', 
+            'users.subOrganizations.college'
+        ])->get();
+        
+        $users = User::with([
+            'role', 
+            'college',
+            'parentOrganization.college', 
+            'subOrganizations.college'
+        ])->get(); // For selection modal
+        
         return Inertia::render('Admin/StudentOrgs/Index', [
             'colleges' => $colleges,
             'users' => $users,
@@ -150,8 +161,8 @@ class StudentOrgController extends Controller
             'parent_organization_id' => 'required|exists:users,id',
         ]);
 
-        $subOrg = User::findOrFail($validated['sub_organization_id']);
-        $parentOrg = User::findOrFail($validated['parent_organization_id']);
+        $subOrg = User::with('college')->findOrFail($validated['sub_organization_id']);
+        $parentOrg = User::with('college')->findOrFail($validated['parent_organization_id']);
 
         // Prevent circular relationships
         if ($this->wouldCreateCircularRelationship($subOrg, $parentOrg)) {
@@ -169,6 +180,15 @@ class StudentOrgController extends Controller
         if ($parentOrg->parent_organization_id) {
             return redirect()->route('admin.student-orgs.index')
                 ->with('error', 'Cannot assign this organization as parent - it is already a sub-organization itself.');
+        }
+
+        // Validate college affiliation compatibility
+        if (!$this->areOrganizationsCompatibleForParentChild($parentOrg, $subOrg)) {
+            $parentAffiliation = $parentOrg->college ? $parentOrg->college->name : 'Non-College Affiliated';
+            $subAffiliation = $subOrg->college ? $subOrg->college->name : 'Non-College Affiliated';
+            
+            return redirect()->route('admin.student-orgs.index')
+                ->with('error', "Cannot assign parent organization - college affiliation mismatch. Parent organization is '{$parentAffiliation}' while sub-organization is '{$subAffiliation}'. Both organizations must either be college-affiliated to the same college OR both be non-college affiliated.");
         }
 
         $subOrg->parent_organization_id = $validated['parent_organization_id'];
@@ -208,6 +228,26 @@ class StudentOrgController extends Controller
             }
             $currentParent = $currentParent->parentOrganization;
         }
+        return false;
+    }
+
+    /**
+     * Check if two organizations are compatible for parent-child relationship based on college affiliation.
+     * Both must be either college-affiliated to the same college OR both non-college affiliated.
+     */
+    private function areOrganizationsCompatibleForParentChild($parentOrg, $subOrg)
+    {
+        // Case 1: Both are non-college affiliated
+        if (!$parentOrg->college_id && !$subOrg->college_id) {
+            return true;
+        }
+        
+        // Case 2: Both are college-affiliated and to the same college
+        if ($parentOrg->college_id && $subOrg->college_id && $parentOrg->college_id === $subOrg->college_id) {
+            return true;
+        }
+        
+        // All other cases are incompatible
         return false;
     }
 }

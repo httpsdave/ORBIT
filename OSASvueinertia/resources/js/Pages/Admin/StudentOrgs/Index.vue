@@ -1118,10 +1118,41 @@
             </div>
           </div>
 
+          <!-- College Affiliation Requirement Info -->
+          <div class="mb-4 p-3 bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 rounded-lg">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div class="ml-3">
+                <p class="text-sm text-amber-800 dark:text-amber-200 font-medium">College Affiliation Requirement</p>
+                <p class="text-xs text-amber-700 dark:text-amber-300 mt-1">
+                  Parent and sub-organizations must either both be affiliated with the same college OR both be non-college affiliated.
+                  <template v-if="orgToAssignParent">
+                    <br><strong>Compatible organizations:</strong> 
+                    {{ orgToAssignParent.college ? `College-affiliated (${orgToAssignParent.college.acronym})` : 'Non-College Affiliated' }} organizations only.
+                  </template>
+                </p>
+              </div>
+            </div>
+          </div>
+
           <!-- Parent Organization Selection -->
           <div class="mb-3 sm:mb-4">
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Select Parent Organization</label>
+            <div v-if="availableParentOrganizations.length === 0" class="p-4 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-center">
+              <svg class="mx-auto h-8 w-8 text-gray-400 dark:text-gray-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+              <p class="text-sm text-gray-600 dark:text-gray-400 font-medium">No Compatible Organizations Available</p>
+              <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                No organizations found that can serve as a parent for this sub-organization due to college affiliation requirements.
+              </p>
+            </div>
             <select
+              v-else
               v-model="selectedParentOrgId"
               class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
               required
@@ -1137,7 +1168,7 @@
             <SecondaryButton @click="closeParentAssignModal" class="w-full sm:w-auto order-2 sm:order-1" type="button">Cancel</SecondaryButton>
             <button
               class="inline-flex items-center justify-center px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg shadow-md transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm w-full sm:w-auto order-1 sm:order-2"
-              :disabled="!selectedParentOrgId"
+              :disabled="!selectedParentOrgId || availableParentOrganizations.length === 0"
               @click="confirmAssignParent"
               type="button"
             >
@@ -1239,11 +1270,13 @@ export default {
       // 2. Not already a sub-organization themselves (can't be both parent and sub)
       // 3. Won't create circular relationships
       // 4. The organization being assigned as sub-org doesn't already have sub-organizations (can't make a parent into a child)
+      // 5. College affiliation compatibility (both same college OR both non-college affiliated)
       return this.users.filter(user => 
         user.id !== this.orgToAssignParent?.id && 
         !user.parent_organization_id && // Potential parent can't already be a sub-organization
         !this.wouldCreateCircularRelationship(user, this.orgToAssignParent) &&
-        !(this.orgToAssignParent?.sub_organizations && this.orgToAssignParent.sub_organizations.length > 0) // Child-to-be can't already have children
+        !(this.orgToAssignParent?.sub_organizations && this.orgToAssignParent.sub_organizations.length > 0) && // Child-to-be can't already have children
+        this.areOrganizationsCompatibleForParentChild(user, this.orgToAssignParent) // College affiliation compatibility
       );
     }
   },
@@ -1532,6 +1565,22 @@ export default {
         currentParent = this.users.find(u => u.id === currentParent.parent_organization_id);
       }
       
+      return false;
+    },
+    areOrganizationsCompatibleForParentChild(parentOrg, subOrg) {
+      if (!parentOrg || !subOrg) return false;
+      
+      // Case 1: Both are non-college affiliated
+      if (!parentOrg.college_id && !subOrg.college_id) {
+        return true;
+      }
+      
+      // Case 2: Both are college-affiliated and to the same college
+      if (parentOrg.college_id && subOrg.college_id && parentOrg.college_id === subOrg.college_id) {
+        return true;
+      }
+      
+      // All other cases are incompatible
       return false;
     },
     canBeAssignedParent(organization) {
