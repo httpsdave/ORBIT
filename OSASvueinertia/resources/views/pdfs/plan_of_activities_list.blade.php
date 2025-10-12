@@ -6,7 +6,7 @@
     <title>Plan of Activities Report</title>
     <style>
         @page {
-            size: A4 landscape;
+            size: legal landscape;
             margin-top: 0.5cm;
             margin-bottom: 1.0cm;
             margin-left: 1.5cm;
@@ -20,6 +20,19 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+        }
+        
+        /* Ensure page breaks work properly for large tables */
+        tbody tr {
+            page-break-inside: avoid;
+        }
+        
+        thead {
+            display: table-header-group;
+        }
+        
+        tfoot {
+            display: table-footer-group;
         }
 
         .header {
@@ -72,12 +85,12 @@
             width: 100%;
             border-collapse: collapse;
             margin: 15px 0;
-            font-size: 9pt;
+            font-size: 8pt;
         }
 
         th, td {
             border: 1px solid black;
-            padding: 4px;
+            padding: 3px;
             text-align: left;
             vertical-align: top;
         }
@@ -86,10 +99,12 @@
             background-color: #f0f0f0;
             font-weight: bold;
             text-align: center;
+            font-size: 8pt;
         }
 
         td {
             word-wrap: break-word;
+            font-size: 8pt;
         }
 
         .text-center {
@@ -97,8 +112,8 @@
         }
 
         .footer {
-            position: absolute;
-            bottom: -5px;
+            position: fixed;
+            bottom: 0;
             width: 100%;
             text-align: center;
             font-size: 9pt;
@@ -109,6 +124,13 @@
             margin: 3px 0;
             word-wrap: break-word;
             line-height: 1.15;
+        }
+        
+        /* Prevent text overflow in cells */
+        td, th {
+            overflow-wrap: break-word;
+            word-break: break-word;
+            hyphens: auto;
         }
     </style>
 </head>

@@ -37,10 +37,10 @@ class PlanOfActivitiesController extends Controller
                     'id' => $activity->id,
                     'application_id' => $application->id,
                     'organization' => $application->user->name,
-                    'objective' => $this->cleanHtmlText($activity->objective),
-                    'activity_name' => $this->cleanHtmlText($activity->name),
-                    'description' => $this->cleanHtmlText($activity->description),
-                    'persons_involved' => $this->cleanHtmlText($activity->persons_involved),
+                    'objective' => $this->cleanHtmlText($activity->objective, 200),
+                    'activity_name' => $this->cleanHtmlText($activity->name, 150),
+                    'description' => $this->cleanHtmlText($activity->description, 300),
+                    'persons_involved' => $this->cleanHtmlText($activity->persons_involved, 150),
                     'target_date' => $activity->target_date,
                     'target_date_formatted' => Carbon::parse($activity->target_date)->format('M d, Y'),
                     'budget' => $activity->budget,
@@ -80,7 +80,7 @@ class PlanOfActivitiesController extends Controller
      * Clean HTML tags and entities from text
      * Converts HTML to plain text while preserving readability
      */
-    private function cleanHtmlText($text)
+    private function cleanHtmlText($text, $maxLength = null)
     {
         if (empty($text)) {
             return $text;
@@ -102,12 +102,21 @@ class PlanOfActivitiesController extends Controller
         // Trim whitespace
         $text = trim($text);
         
+        // Truncate if maxLength is specified (for PDF optimization)
+        if ($maxLength !== null && mb_strlen($text) > $maxLength) {
+            $text = mb_substr($text, 0, $maxLength) . '...';
+        }
+        
         return $text;
     }
 
     public function exportPdf(Request $request)
     {
         try {
+            // Increase memory limit and execution time for large PDFs
+            ini_set('memory_limit', '512M');
+            set_time_limit(300);
+            
             // Check if user is admin
             $isAdmin = auth()->user()->isAdmin();
             
@@ -131,10 +140,10 @@ class PlanOfActivitiesController extends Controller
                         'id' => $activity->id,
                         'application_id' => $application->id,
                         'organization' => $application->user->name ?? 'N/A',
-                        'objective' => $this->cleanHtmlText($activity->objective ?? ''),
-                        'activity_name' => $this->cleanHtmlText($activity->name ?? ''),
-                        'description' => $this->cleanHtmlText($activity->description ?? ''),
-                        'persons_involved' => $this->cleanHtmlText($activity->persons_involved ?? ''),
+                        'objective' => $this->cleanHtmlText($activity->objective ?? '', 200),
+                        'activity_name' => $this->cleanHtmlText($activity->name ?? '', 150),
+                        'description' => $this->cleanHtmlText($activity->description ?? '', 300),
+                        'persons_involved' => $this->cleanHtmlText($activity->persons_involved ?? '', 150),
                         'target_date' => $activity->target_date,
                         'target_date_formatted' => $activity->target_date ? Carbon::parse($activity->target_date)->format('M d, Y') : 'N/A',
                         'budget' => $activity->budget ?? 0,
@@ -209,6 +218,16 @@ class PlanOfActivitiesController extends Controller
 
             // Set paper size and orientation
             $pdf->setPaper('legal', 'landscape');
+            
+            // Set PDF options for better rendering
+            $pdf->setOptions([
+                'isHtml5ParserEnabled' => true,
+                'isRemoteEnabled' => true,
+                'chroot' => public_path(),
+                'dpi' => 96,
+                'defaultFont' => 'sans-serif',
+                'enable_php' => false
+            ]);
 
             // Check if action is 'view' to display inline, otherwise download
             $action = $request->input('action', 'download');
@@ -228,11 +247,16 @@ class PlanOfActivitiesController extends Controller
                 'trace' => $e->getTraceAsString()
             ]);
             
-            // Return error response
-            return response()->json([
-                'error' => 'Failed to generate PDF',
-                'message' => $e->getMessage()
-            ], 500);
+            // Return user-friendly error response
+            if ($request->expectsJson() || $request->input('action') === 'view') {
+                return response()->json([
+                    'error' => 'Failed to generate PDF',
+                    'message' => config('app.debug') ? $e->getMessage() : 'An error occurred while generating the PDF. Please try again or contact support.'
+                ], 500);
+            }
+            
+            // For non-JSON requests, redirect back with error
+            return back()->with('error', 'Failed to generate PDF. Please try again.');
         }
     }
 
