@@ -499,6 +499,7 @@ const deselectAllMultiSelect = (columnKey) => {
 
 // Export to PDF with Preview Modal
 const isExporting = ref(false);
+const isExportingDocx = ref(false);
 const showPdfPreviewModal = ref(false);
 const pdfPreviewUrl = ref(null);
 
@@ -566,6 +567,54 @@ const downloadPdfFromPreview = () => {
     document.body.removeChild(link);
   }
 };
+
+const exportToDocx = async () => {
+  isExportingDocx.value = true;
+  
+  try {
+    // Build the DOCX URL with query parameters
+    const baseUrl = props.isAdmin ? '/admin/plan-of-activities/export-docx' : '/plan-of-activities/export-docx';
+    
+    const params = new URLSearchParams();
+    
+    // Add basic filter parameters
+    if (searchQuery.value) params.append('search', searchQuery.value);
+    if (statusFilter.value && statusFilter.value !== 'all') params.append('status', statusFilter.value);
+    if (organizationFilter.value) params.append('organization', organizationFilter.value);
+    
+    // Add column filters
+    Object.entries(columnFilters.value).forEach(([key, filter]) => {
+      if (filter.value && !Array.isArray(filter.value) && filter.value !== '') {
+        params.append(`filter_${key}`, filter.value);
+        params.append(`filter_${key}_op`, filter.operator);
+      } else if (Array.isArray(filter.value) && filter.value.length > 0) {
+        params.append(`filter_${key}`, filter.value.join(','));
+        params.append(`filter_${key}_op`, 'in');
+      }
+    });
+    
+    // Add sort parameters
+    if (sortState.value.column) {
+      params.append('sort_column', sortState.value.column);
+      params.append('sort_direction', sortState.value.direction);
+    }
+    
+    const docxUrl = `${baseUrl}?${params.toString()}`;
+    
+    // Trigger download
+    const link = document.createElement('a');
+    link.href = docxUrl;
+    link.download = `plan-of-activities-${new Date().toISOString().split('T')[0]}.docx`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } catch (error) {
+    console.error('DOCX Export Error:', error);
+    alert('Failed to generate DOCX file. Please try again.');
+  } finally {
+    isExportingDocx.value = false;
+  }
+};
 </script>
 
 <template>
@@ -611,6 +660,25 @@ const downloadPdfFromPreview = () => {
                   <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
                 <span>{{ isExporting ? 'Exporting...' : 'Export PDF' }}</span>
+              </button>
+
+              <button
+                @click="exportToDocx"
+                :disabled="isExportingDocx || filteredActivities.length === 0"
+                class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 disabled:from-gray-400 disabled:to-gray-500 text-white text-sm font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-60"
+                :title="filteredActivities.length === 0 ? 'No data to export' : 'Export filtered activities to DOCX'"
+              >
+                <svg v-if="!isExportingDocx" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <path d="M12 18v-6"></path>
+                  <path d="M9 15l3 3 3-3"></path>
+                </svg>
+                <svg v-else class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span>{{ isExportingDocx ? 'Exporting...' : 'Export DOCX' }}</span>
               </button>
               
               <div class="bg-white dark:bg-gray-800 px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">

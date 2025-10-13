@@ -9,6 +9,9 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
+use PhpOffice\PhpWord\PhpWord;
+use PhpOffice\PhpWord\Style\Font;
+use PhpOffice\PhpWord\SimpleType\Jc;
 
 class PlanOfActivitiesController extends Controller
 {
@@ -324,6 +327,288 @@ class PlanOfActivitiesController extends Controller
         }
 
         return array_values($filtered);
+    }
+
+    public function exportDocx(Request $request)
+    {
+        try {
+            // Increase memory limit and execution time for large documents
+            ini_set('memory_limit', '512M');
+            set_time_limit(300);
+            
+            // Check if user is admin
+            $isAdmin = auth()->user()->isAdmin();
+            
+            // Get Plan of Activities applications
+            $query = OrganizationApplication::where('form_type', 'LSPU-OSAS-SF-004')
+                ->with(['user', 'activities']);
+            
+            // If not admin, filter to show only the user's own submissions
+            if (!$isAdmin) {
+                $query->where('user_id', auth()->id());
+            }
+            
+            $applications = $query->get();
+
+            // Flatten activities from all applications with organization info
+            $activities = [];
+            
+            foreach ($applications as $application) {
+                foreach ($application->activities as $activity) {
+                    $activities[] = [
+                        'id' => $activity->id,
+                        'application_id' => $application->id,
+                        'organization' => $application->user->name ?? 'N/A',
+                        'objective' => $this->cleanHtmlText($activity->objective ?? '', 200),
+                        'activity_name' => $this->cleanHtmlText($activity->name ?? '', 150),
+                        'description' => $this->cleanHtmlText($activity->description ?? '', 300),
+                        'persons_involved' => $this->cleanHtmlText($activity->persons_involved ?? '', 150),
+                        'target_date' => $activity->target_date,
+                        'target_date_formatted' => $activity->target_date ? Carbon::parse($activity->target_date)->format('M d, Y') : 'N/A',
+                        'budget' => $activity->budget ?? 0,
+                        'target_participants' => $activity->target_participants ?? 'N/A',
+                        'status' => $application->status ?? 'Pending',
+                    ];
+                }
+            }
+
+            // Parse filters from request
+            $filters = [];
+            
+            if ($request->has('filters')) {
+                $filters = $request->input('filters', []);
+            } else {
+                $filters = [
+                    'search' => $request->input('search'),
+                    'status' => $request->input('status'),
+                    'organization' => $request->input('organization'),
+                    'columnFilters' => [],
+                ];
+                
+                foreach ($request->all() as $key => $value) {
+                    if (strpos($key, 'filter_') === 0 && strpos($key, '_op') === false) {
+                        $columnKey = str_replace('filter_', '', $key);
+                        $operator = $request->input("filter_{$columnKey}_op", 'contains');
+                        
+                        if ($operator === 'in' && is_string($value)) {
+                            $value = explode(',', $value);
+                        }
+                        
+                        $filters['columnFilters'][$columnKey] = [
+                            'operator' => $operator,
+                            'value' => $value,
+                        ];
+                    }
+                }
+            }
+            
+            // Apply filters
+            $filteredActivities = $this->applyFilters($activities, $filters);
+
+            // Parse sort from request
+            $sort = [];
+            if ($request->has('sort')) {
+                $sort = $request->input('sort');
+            } else {
+                $sortColumn = $request->input('sort_column');
+                $sortDirection = $request->input('sort_direction');
+                if ($sortColumn && $sortDirection) {
+                    $sort = [
+                        'column' => $sortColumn,
+                        'direction' => $sortDirection,
+                    ];
+                }
+            }
+            $sortedActivities = $this->applySorting($filteredActivities, $sort);
+
+            // Check if ZIP extension is available for proper DOCX
+            $hasZipExtension = class_exists('ZipArchive');
+            
+            if ($hasZipExtension) {
+                // Use PHPWord for proper DOCX (if ZIP extension available)
+                return $this->generateDocxWithPhpWord($sortedActivities, $isAdmin);
+            } else {
+                // Use styled HTML that looks like the PDF (ZIP extension not available)
+                return $this->generateStyledHtmlAsDoc($sortedActivities, $isAdmin);
+            }
+            
+        } catch (\Exception $e) {
+            // Log the error for debugging
+            \Log::error('DOCX Export Error: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            // Return user-friendly error response
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'error' => 'Failed to generate DOCX',
+                    'message' => config('app.debug') ? $e->getMessage() : 'An error occurred while generating the DOCX file. Please try again or contact support.'
+                ], 500);
+            }
+            
+            // For non-JSON requests, redirect back with error
+            return back()->with('error', 'Failed to generate DOCX file. Please try again.');
+        }
+    }
+
+    private function generateDocxWithPhpWord($activities, $isAdmin)
+    {
+        // Original PHPWord implementation for when ZIP extension is available
+        $phpWord = new PhpWord();
+        
+        // Set document properties
+        $properties = $phpWord->getDocInfo();
+        $properties->setCreator(auth()->user()->name ?? 'OSAS System');
+        $properties->setTitle('Plan of Activities');
+        $properties->setDescription('Plan of Activities Report');
+        $properties->setSubject('Organization Activities');
+        
+        // Add section with landscape orientation
+        $section = $phpWord->addSection([
+            'orientation' => 'landscape',
+            'marginLeft' => 600,
+            'marginRight' => 600,
+            'marginTop' => 600,
+            'marginBottom' => 600,
+        ]);
+        
+        // Title
+        $section->addText(
+            'LAGUNA STATE POLYTECHNIC UNIVERSITY',
+            ['name' => 'Arial', 'size' => 14, 'bold' => true],
+            ['alignment' => Jc::CENTER, 'spaceAfter' => 0]
+        );
+        $section->addText(
+            'Office of Student Affairs and Services',
+            ['name' => 'Arial', 'size' => 11, 'bold' => true],
+            ['alignment' => Jc::CENTER, 'spaceAfter' => 0]
+        );
+        $section->addText(
+            'Plan of Activities Report',
+            ['name' => 'Arial', 'size' => 12, 'bold' => true],
+            ['alignment' => Jc::CENTER, 'spaceAfter' => 200]
+        );
+        
+        // Metadata
+        $section->addText(
+            'Generated: ' . Carbon::now()->format('F d, Y h:i A'),
+            ['name' => 'Arial', 'size' => 9],
+            ['alignment' => Jc::RIGHT, 'spaceAfter' => 100]
+        );
+        
+        $section->addText(
+            'Total Activities: ' . count($activities),
+            ['name' => 'Arial', 'size' => 9, 'bold' => true],
+            ['alignment' => Jc::RIGHT, 'spaceAfter' => 200]
+        );
+        
+        // Table styles
+        $tableStyle = [
+            'borderSize' => 6,
+            'borderColor' => '999999',
+            'cellMargin' => 50,
+            'alignment' => Jc::CENTER,
+            'width' => 100 * 50,
+        ];
+        
+        $headerStyle = ['bold' => true, 'size' => 9, 'color' => 'FFFFFF'];
+        $cellStyle = ['size' => 8];
+        $headerCellStyle = ['bgColor' => '4472C4', 'valign' => 'center'];
+        $cellStyleDef = ['valign' => 'top'];
+        
+        // Add table
+        $table = $section->addTable($tableStyle);
+        
+        // Header row
+        $table->addRow(400);
+        if ($isAdmin) {
+            $table->addCell(1800, $headerCellStyle)->addText('Organization', $headerStyle, ['alignment' => Jc::CENTER]);
+        }
+        $table->addCell(1500, $headerCellStyle)->addText('Objective', $headerStyle, ['alignment' => Jc::CENTER]);
+        $table->addCell(1500, $headerCellStyle)->addText('Activity', $headerStyle, ['alignment' => Jc::CENTER]);
+        $table->addCell(2000, $headerCellStyle)->addText('Description', $headerStyle, ['alignment' => Jc::CENTER]);
+        $table->addCell(1300, $headerCellStyle)->addText('Persons Involved', $headerStyle, ['alignment' => Jc::CENTER]);
+        $table->addCell(1000, $headerCellStyle)->addText('Target Date', $headerStyle, ['alignment' => Jc::CENTER]);
+        $table->addCell(1000, $headerCellStyle)->addText('Budget', $headerStyle, ['alignment' => Jc::CENTER]);
+        $table->addCell(800, $headerCellStyle)->addText('Participants', $headerStyle, ['alignment' => Jc::CENTER]);
+        $table->addCell(800, $headerCellStyle)->addText('Status', $headerStyle, ['alignment' => Jc::CENTER]);
+        
+        // Data rows
+        foreach ($activities as $activity) {
+            $table->addRow();
+            
+            if ($isAdmin) {
+                $table->addCell(1800, $cellStyleDef)->addText($activity['organization'], $cellStyle);
+            }
+            $table->addCell(1500, $cellStyleDef)->addText($activity['objective'], $cellStyle);
+            $table->addCell(1500, $cellStyleDef)->addText($activity['activity_name'], $cellStyle);
+            $table->addCell(2000, $cellStyleDef)->addText($activity['description'], $cellStyle);
+            $table->addCell(1300, $cellStyleDef)->addText($activity['persons_involved'], $cellStyle);
+            $table->addCell(1000, $cellStyleDef)->addText($activity['target_date_formatted'], $cellStyle);
+            
+            $budget = $activity['budget'];
+            $budgetText = $budget == 0 || $budget == 'N/A' ? 'N/A' : '₱' . number_format($budget, 2);
+            $table->addCell(1000, $cellStyleDef)->addText($budgetText, $cellStyle);
+            
+            $table->addCell(800, $cellStyleDef)->addText((string)$activity['target_participants'], $cellStyle);
+            
+            $statusColor = '000000';
+            switch(strtolower($activity['status'])) {
+                case 'approved': $statusColor = '28a745'; break;
+                case 'pending': $statusColor = 'ffc107'; break;
+                case 'disapproved': $statusColor = 'dc3545'; break;
+            }
+            $table->addCell(800, $cellStyleDef)->addText(
+                $activity['status'],
+                array_merge($cellStyle, ['color' => $statusColor, 'bold' => true])
+            );
+        }
+        
+        // Footer
+        $section->addTextBreak(1);
+        $section->addText(
+            'This report was generated by ' . (auth()->user()->name ?? 'Unknown') . ' on ' . Carbon::now()->format('F d, Y h:i A'),
+            ['name' => 'Arial', 'size' => 8, 'italic' => true, 'color' => '666666'],
+            ['alignment' => Jc::CENTER]
+        );
+        
+        $filename = 'plan-of-activities-' . Carbon::now()->format('Y-m-d') . '.docx';
+        $tempFile = tempnam(sys_get_temp_dir(), 'phpword') . '.docx';
+        
+        $objWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
+        $objWriter->save($tempFile);
+        
+        return response()->download($tempFile, $filename)->deleteFileAfterSend(true);
+    }
+
+    private function generateStyledHtmlAsDoc($activities, $isAdmin)
+    {
+        // Generate HTML with the same styling as PDF export
+        $logoPath = public_path('images/lspu-logo.png');
+        $logoData = '';
+        
+        if (file_exists($logoPath)) {
+            $logoData = 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath));
+        }
+        
+        $html = view('pdfs.plan_of_activities_docx', [
+            'activities' => $activities,
+            'isAdmin' => $isAdmin,
+            'generatedDate' => Carbon::now()->format('F d, Y'),
+            'generatedBy' => auth()->user()->name ?? 'Unknown',
+            'logoData' => $logoData,
+        ])->render();
+        
+        $filename = 'plan-of-activities-' . Carbon::now()->format('Y-m-d') . '.doc';
+        $tempFile = tempnam(sys_get_temp_dir(), 'docexport') . '.html';
+        
+        file_put_contents($tempFile, $html);
+        
+        return response()->download($tempFile, $filename, [
+            'Content-Type' => 'application/msword',
+        ])->deleteFileAfterSend(true);
     }
 
     private function applySorting($activities, $sort)

@@ -140,6 +140,7 @@ Route::middleware(['auth'])->group(function () {
     // User Plan of Activities route
     Route::get('/plan-of-activities', [\App\Http\Controllers\Admin\PlanOfActivitiesController::class, 'index'])->name('plan-of-activities.index');
     Route::match(['get', 'post'], '/plan-of-activities/export-pdf', [\App\Http\Controllers\Admin\PlanOfActivitiesController::class, 'exportPdf'])->name('plan-of-activities.export-pdf');
+    Route::match(['get', 'post'], '/plan-of-activities/export-docx', [\App\Http\Controllers\Admin\PlanOfActivitiesController::class, 'exportDocx'])->name('plan-of-activities.export-docx');
 
     // Auto-save form data route
     Route::post('/auto-save-form-data', [OrganizationApplicationController::class, 'autoSaveFormData'])->name('auto-save-form-data');
@@ -259,6 +260,7 @@ Route::middleware(['auth'])->group(function () {
         // Admin Plan of Activities Management Routes
         Route::get('/plan-of-activities', [\App\Http\Controllers\Admin\PlanOfActivitiesController::class, 'index'])->name('admin.plan-of-activities.index');
         Route::match(['get', 'post'], '/plan-of-activities/export-pdf', [\App\Http\Controllers\Admin\PlanOfActivitiesController::class, 'exportPdf'])->name('admin.plan-of-activities.export-pdf');
+        Route::match(['get', 'post'], '/plan-of-activities/export-docx', [\App\Http\Controllers\Admin\PlanOfActivitiesController::class, 'exportDocx'])->name('admin.plan-of-activities.export-docx');
 
         // Admin Members & Officers Management Routes
         Route::get('/members-officers', [\App\Http\Controllers\Admin\MembersOfficersController::class, 'index'])->name('admin.members-officers.index');
