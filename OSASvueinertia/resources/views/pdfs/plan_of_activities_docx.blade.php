@@ -1,10 +1,14 @@
 <!DOCTYPE html>
-<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+<html xmlns:o='urn:schemas-microsoft-com:office:office' 
+      xmlns:w='urn:schemas-microsoft-com:office:word' 
+      xmlns='http://www.w3.org/TR/REC-html40'>
 <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta charset="UTF-8">
     <meta name="ProgId" content="Word.Document">
     <meta name="Generator" content="Microsoft Word 15">
     <meta name="Originator" content="Microsoft Word 15">
+    <title>Plan of Activities Report</title>
     <!--[if gte mso 9]>
     <xml>
         <w:WordDocument>
@@ -57,7 +61,7 @@
             font-family: 'Old English Text MT', 'Book Antiqua', serif;
             margin: 2px 0;
             padding: 0;
-            font-weight: bold;
+            font-weight: normal;
             letter-spacing: 0.5px;
             line-height: 1.2;
         }
@@ -89,7 +93,7 @@
         
         .metadata {
             text-align: left;
-            font-size: 9pt;
+            font-size: 11pt;
             margin-bottom: 15px;
         }
         
@@ -112,14 +116,14 @@
             border: 1px solid #000;
             text-align: center;
             vertical-align: middle;
-            font-size: 9pt;
+            font-size: 11pt;
         }
         
         table.activities-table td {
             padding: 6px 5px;
             border: 1px solid #000;
             vertical-align: top;
-            font-size: 8pt;
+            font-size: 11pt;
             line-height: 1.2;
         }
         

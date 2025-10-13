@@ -585,30 +585,40 @@ class PlanOfActivitiesController extends Controller
 
     private function generateStyledHtmlAsDoc($activities, $isAdmin)
     {
-        // Generate HTML with the same styling as PDF export
-        $logoPath = public_path('images/lspu-logo.png');
-        $logoData = '';
-        
-        if (file_exists($logoPath)) {
-            $logoData = 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath));
+        try {
+            // Generate HTML with the same styling as PDF export
+            $logoPath = public_path('images/lspu-logo.png');
+            $logoData = '';
+            
+            if (file_exists($logoPath)) {
+                $logoData = 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath));
+            }
+            
+            $html = view('pdfs.plan_of_activities_docx', [
+                'activities' => $activities,
+                'isAdmin' => $isAdmin,
+                'generatedDate' => Carbon::now()->format('F d, Y'),
+                'generatedBy' => auth()->user()->name ?? 'Unknown',
+                'logoData' => $logoData,
+            ])->render();
+            
+            // Clean up the HTML to ensure proper encoding
+            $html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
+            
+            $filename = 'plan-of-activities-' . Carbon::now()->format('Y-m-d') . '.doc';
+            
+            // Return as direct response instead of temp file
+            return response($html, 200, [
+                'Content-Type' => 'application/msword; charset=utf-8',
+                'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+                'Cache-Control' => 'max-age=0',
+                'Pragma' => 'public',
+            ]);
+            
+        } catch (\Exception $e) {
+            \Log::error('DOCX Export Error: ' . $e->getMessage());
+            return back()->with('error', 'Failed to generate DOCX file: ' . $e->getMessage());
         }
-        
-        $html = view('pdfs.plan_of_activities_docx', [
-            'activities' => $activities,
-            'isAdmin' => $isAdmin,
-            'generatedDate' => Carbon::now()->format('F d, Y'),
-            'generatedBy' => auth()->user()->name ?? 'Unknown',
-            'logoData' => $logoData,
-        ])->render();
-        
-        $filename = 'plan-of-activities-' . Carbon::now()->format('Y-m-d') . '.doc';
-        $tempFile = tempnam(sys_get_temp_dir(), 'docexport') . '.html';
-        
-        file_put_contents($tempFile, $html);
-        
-        return response()->download($tempFile, $filename, [
-            'Content-Type' => 'application/msword',
-        ])->deleteFileAfterSend(true);
     }
 
     private function applySorting($activities, $sort)
