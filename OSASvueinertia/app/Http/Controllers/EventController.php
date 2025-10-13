@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use App\Services\EventExtractionService;
+use App\Services\GeminiEventExtractionService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Carbon\Carbon;
@@ -16,7 +17,7 @@ class EventController extends Controller
 {
     protected $eventExtractionService;
 
-    public function __construct(EventExtractionService $eventExtractionService)
+    public function __construct(GeminiEventExtractionService $eventExtractionService)
     {
         $this->eventExtractionService = $eventExtractionService;
     }
