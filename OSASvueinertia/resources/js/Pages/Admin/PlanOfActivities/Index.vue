@@ -721,15 +721,17 @@ onUnmounted(() => {
                       <button
                         @click="exportToPdf"
                         :disabled="isExporting"
-                        class="w-full text-left px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 flex items-center gap-3 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="w-full text-left px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-3 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        <svg v-if="!isExporting" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600 dark:text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                          <polyline points="14 2 14 8 20 8"></polyline>
-                          <line x1="12" y1="18" x2="12" y2="12"></line>
-                          <line x1="9" y1="15" x2="15" y2="15"></line>
+                        <!-- PDF file icon (red) -->
+                        <svg v-if="!isExporting" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-600 dark:text-red-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke-linecap="round" stroke-linejoin="round"></path>
+                          <polyline points="14 2 14 8 20 8" stroke-linecap="round" stroke-linejoin="round"></polyline>
+                          <rect x="7" y="12" width="3" height="2" fill="currentColor" class="opacity-90"></rect>
+                          <rect x="11.5" y="12" width="3" height="2" fill="currentColor" class="opacity-90"></rect>
+                          <rect x="16" y="12" width="1.5" height="2" fill="currentColor" class="opacity-90"></rect>
                         </svg>
-                        <svg v-else class="animate-spin h-5 w-5 text-blue-600 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <svg v-else class="animate-spin h-5 w-5 text-red-600 dark:text-red-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
@@ -742,15 +744,16 @@ onUnmounted(() => {
                       <button
                         @click="exportToDocx"
                         :disabled="isExportingDocx"
-                        class="w-full text-left px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-green-900/20 flex items-center gap-3 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="w-full text-left px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 flex items-center gap-3 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        <svg v-if="!isExportingDocx" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600 dark:text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                          <polyline points="14 2 14 8 20 8"></polyline>
-                          <path d="M12 18v-6"></path>
-                          <path d="M9 15l3 3 3-3"></path>
+                        <!-- DOCX/Word file icon (blue) -->
+                        <svg v-if="!isExportingDocx" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600 dark:text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke-linecap="round" stroke-linejoin="round"></path>
+                          <polyline points="14 2 14 8 20 8" stroke-linecap="round" stroke-linejoin="round"></polyline>
+                          <!-- Stylized W for Word -->
+                          <path d="M8.2 15.5l1.3-6 1.7 5.2 1.7-5.2 1.3 6" stroke-linecap="round" stroke-linejoin="round"></path>
                         </svg>
-                        <svg v-else class="animate-spin h-5 w-5 text-green-600 dark:text-green-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <svg v-else class="animate-spin h-5 w-5 text-blue-600 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
