@@ -95,10 +95,12 @@
             text-align: left;
             font-size: 11pt;
             margin-bottom: 15px;
+            font-family: 'Times New Roman', serif;
         }
         
         .metadata-item {
             margin: 2px 0;
+            font-family: 'Times New Roman', serif;
         }
         
         table.activities-table {
@@ -106,6 +108,7 @@
             border-collapse: collapse;
             font-size: 8pt;
             margin: 0;
+            font-family: 'Times New Roman', serif;
         }
         
         table.activities-table th {
@@ -117,6 +120,7 @@
             text-align: center;
             vertical-align: middle;
             font-size: 11pt;
+            font-family: 'Times New Roman', serif;
         }
         
         table.activities-table td {
@@ -125,11 +129,13 @@
             vertical-align: top;
             font-size: 11pt;
             line-height: 1.2;
+            font-family: 'Times New Roman', serif;
         }
         
         .status {
             font-weight: bold;
             text-align: center;
+            font-family: 'Times New Roman', serif;
         }
         
         .footer {
@@ -140,6 +146,7 @@
             margin-top: 20px;
             padding-top: 10px;
             border-top: 1px solid #ccc;
+            font-family: 'Times New Roman', serif;
         }
         
         .currency {

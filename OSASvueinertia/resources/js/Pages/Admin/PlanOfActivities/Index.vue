@@ -1,5 +1,5 @@
 ﻿<script setup>
-import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue';
+import { ref, computed, watch, onMounted, onBeforeUnmount, onUnmounted } from 'vue';
 import { Head, Link } from '@inertiajs/vue3';
 import SidebarLayout from '@/Components/Layout/Sidebar/SidebarLayout.vue';
 
@@ -497,47 +497,54 @@ const deselectAllMultiSelect = (columnKey) => {
   columnFilters.value[columnKey].value = [];
 };
 
-// Export to PDF with Preview Modal
+// Export to PDF and DOCX with Preview Modals
 const isExporting = ref(false);
 const isExportingDocx = ref(false);
 const showPdfPreviewModal = ref(false);
+const showDocxPreviewModal = ref(false);
 const pdfPreviewUrl = ref(null);
+const docxPreviewUrl = ref(null);
+const showExportDropdown = ref(false);
+
+// Function to build URL params
+const buildExportParams = () => {
+  const params = new URLSearchParams();
+  
+  // Add basic filter parameters
+  if (searchQuery.value) params.append('search', searchQuery.value);
+  if (statusFilter.value && statusFilter.value !== 'all') params.append('status', statusFilter.value);
+  if (organizationFilter.value) params.append('organization', organizationFilter.value);
+  
+  // Add column filters
+  Object.entries(columnFilters.value).forEach(([key, filter]) => {
+    if (filter.value && !Array.isArray(filter.value) && filter.value !== '') {
+      params.append(`filter_${key}`, filter.value);
+      params.append(`filter_${key}_op`, filter.operator);
+    } else if (Array.isArray(filter.value) && filter.value.length > 0) {
+      params.append(`filter_${key}`, filter.value.join(','));
+      params.append(`filter_${key}_op`, 'in');
+    }
+  });
+  
+  // Add sort parameters
+  if (sortState.value.column) {
+    params.append('sort_column', sortState.value.column);
+    params.append('sort_direction', sortState.value.direction);
+  }
+  
+  return params;
+};
 
 const exportToPdf = async () => {
   isExporting.value = true;
+  showExportDropdown.value = false;
   
   try {
-    // Build the PDF URL with query parameters
     const baseUrl = props.isAdmin ? '/admin/plan-of-activities/export-pdf' : '/plan-of-activities/export-pdf';
-    
-    const params = new URLSearchParams();
+    const params = buildExportParams();
     
     // Add action=view to display inline instead of download
     params.append('action', 'view');
-    
-    // Add basic filter parameters only (avoid complex nested structures)
-    if (searchQuery.value) params.append('search', searchQuery.value);
-    if (statusFilter.value && statusFilter.value !== 'all') params.append('status', statusFilter.value);
-    if (organizationFilter.value) params.append('organization', organizationFilter.value);
-    
-    // Simplified: Only add column filters that have single values (not arrays)
-    // This avoids URL encoding issues with nested arrays
-    Object.entries(columnFilters.value).forEach(([key, filter]) => {
-      if (filter.value && !Array.isArray(filter.value) && filter.value !== '') {
-        params.append(`filter_${key}`, filter.value);
-        params.append(`filter_${key}_op`, filter.operator);
-      } else if (Array.isArray(filter.value) && filter.value.length > 0) {
-        // For multi-select, join with commas
-        params.append(`filter_${key}`, filter.value.join(','));
-        params.append(`filter_${key}_op`, 'in');
-      }
-    });
-    
-    // Add sort parameters
-    if (sortState.value.column) {
-      params.append('sort_column', sortState.value.column);
-      params.append('sort_direction', sortState.value.direction);
-    }
     
     const pdfUrl = `${baseUrl}?${params.toString()}`;
     pdfPreviewUrl.value = pdfUrl;
@@ -568,53 +575,88 @@ const downloadPdfFromPreview = () => {
   }
 };
 
+const docxHtmlContent = ref('');
+const docxZoom = ref(100);
+
 const exportToDocx = async () => {
   isExportingDocx.value = true;
+  showExportDropdown.value = false;
   
   try {
-    // Build the DOCX URL with query parameters
     const baseUrl = props.isAdmin ? '/admin/plan-of-activities/export-docx' : '/plan-of-activities/export-docx';
+    const params = buildExportParams();
     
-    const params = new URLSearchParams();
-    
-    // Add basic filter parameters
-    if (searchQuery.value) params.append('search', searchQuery.value);
-    if (statusFilter.value && statusFilter.value !== 'all') params.append('status', statusFilter.value);
-    if (organizationFilter.value) params.append('organization', organizationFilter.value);
-    
-    // Add column filters
-    Object.entries(columnFilters.value).forEach(([key, filter]) => {
-      if (filter.value && !Array.isArray(filter.value) && filter.value !== '') {
-        params.append(`filter_${key}`, filter.value);
-        params.append(`filter_${key}_op`, filter.operator);
-      } else if (Array.isArray(filter.value) && filter.value.length > 0) {
-        params.append(`filter_${key}`, filter.value.join(','));
-        params.append(`filter_${key}_op`, 'in');
-      }
-    });
-    
-    // Add sort parameters
-    if (sortState.value.column) {
-      params.append('sort_column', sortState.value.column);
-      params.append('sort_direction', sortState.value.direction);
-    }
+    // Add action=view to display inline instead of download
+    params.append('action', 'view');
     
     const docxUrl = `${baseUrl}?${params.toString()}`;
+    docxPreviewUrl.value = docxUrl;
     
-    // Trigger download
-    const link = document.createElement('a');
-    link.href = docxUrl;
-    link.download = `plan-of-activities-${new Date().toISOString().split('T')[0]}.docx`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    // Fetch the HTML content
+    const response = await fetch(docxUrl);
+    const html = await response.text();
+    docxHtmlContent.value = html;
+    docxZoom.value = 100; // Reset zoom
+    
+    showDocxPreviewModal.value = true;
   } catch (error) {
-    console.error('DOCX Export Error:', error);
-    alert('Failed to generate DOCX file. Please try again.');
+    console.error('DOCX Preview Error:', error);
+    alert('Failed to generate DOCX preview. Please try again.');
   } finally {
     isExportingDocx.value = false;
   }
 };
+
+const closeDocxPreviewModal = () => {
+  showDocxPreviewModal.value = false;
+  docxPreviewUrl.value = null;
+  docxHtmlContent.value = '';
+  docxZoom.value = 100;
+};
+
+const downloadDocxFromPreview = () => {
+  if (docxPreviewUrl.value) {
+    // Remove action=view parameter for download
+    const downloadUrl = docxPreviewUrl.value.replace('action=view&', '').replace('&action=view', '').replace('action=view', '');
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.download = `plan-of-activities-${new Date().toISOString().split('T')[0]}.doc`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+};
+
+const zoomIn = () => {
+  if (docxZoom.value < 200) {
+    docxZoom.value += 10;
+  }
+};
+
+const zoomOut = () => {
+  if (docxZoom.value > 50) {
+    docxZoom.value -= 10;
+  }
+};
+
+const resetZoom = () => {
+  docxZoom.value = 100;
+};
+
+// Close dropdown when clicking outside
+const closeDropdownOnClickOutside = (event) => {
+  if (!event.target.closest('.export-dropdown-container')) {
+    showExportDropdown.value = false;
+  }
+};
+
+onMounted(() => {
+  document.addEventListener('click', closeDropdownOnClickOutside);
+});
+
+onUnmounted(() => {
+  document.removeEventListener('click', closeDropdownOnClickOutside);
+});
 </script>
 
 <template>
@@ -643,43 +685,84 @@ const exportToDocx = async () => {
               </p>
             </div>
             <div class="flex items-center gap-2">
-              <button
-                @click="exportToPdf"
-                :disabled="isExporting || filteredActivities.length === 0"
-                class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-gray-400 disabled:to-gray-500 text-white text-sm font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-60"
-                :title="filteredActivities.length === 0 ? 'No data to export' : 'Export filtered activities to PDF'"
-              >
-                <svg v-if="!isExporting" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                  <polyline points="14 2 14 8 20 8"></polyline>
-                  <line x1="12" y1="18" x2="12" y2="12"></line>
-                  <line x1="9" y1="15" x2="15" y2="15"></line>
-                </svg>
-                <svg v-else class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                <span>{{ isExporting ? 'Exporting...' : 'Export PDF' }}</span>
-              </button>
+              <!-- Export Dropdown -->
+              <div class="relative export-dropdown-container">
+                <button
+                  @click="showExportDropdown = !showExportDropdown"
+                  :disabled="filteredActivities.length === 0"
+                  class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 disabled:from-gray-400 disabled:to-gray-500 text-white text-sm font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-60"
+                  :title="filteredActivities.length === 0 ? 'No data to export' : 'Export filtered activities'"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                  </svg>
+                  <span>Export</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" :class="{ 'rotate-180': showExportDropdown }" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                  </svg>
+                </button>
 
-              <button
-                @click="exportToDocx"
-                :disabled="isExportingDocx || filteredActivities.length === 0"
-                class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 disabled:from-gray-400 disabled:to-gray-500 text-white text-sm font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-60"
-                :title="filteredActivities.length === 0 ? 'No data to export' : 'Export filtered activities to DOCX'"
-              >
-                <svg v-if="!isExportingDocx" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                  <polyline points="14 2 14 8 20 8"></polyline>
-                  <path d="M12 18v-6"></path>
-                  <path d="M9 15l3 3 3-3"></path>
-                </svg>
-                <svg v-else class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                <span>{{ isExportingDocx ? 'Exporting...' : 'Export DOCX' }}</span>
-              </button>
+                <!-- Dropdown Menu -->
+                <transition
+                  enter-active-class="transition ease-out duration-100"
+                  enter-from-class="transform opacity-0 scale-95"
+                  enter-to-class="transform opacity-100 scale-100"
+                  leave-active-class="transition ease-in duration-75"
+                  leave-from-class="transform opacity-100 scale-100"
+                  leave-to-class="transform opacity-0 scale-95"
+                >
+                  <div
+                    v-if="showExportDropdown"
+                    class="absolute right-0 mt-2 w-56 rounded-lg shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-50"
+                  >
+                    <div class="py-1">
+                      <button
+                        @click="exportToPdf"
+                        :disabled="isExporting"
+                        class="w-full text-left px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 flex items-center gap-3 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <svg v-if="!isExporting" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600 dark:text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                          <polyline points="14 2 14 8 20 8"></polyline>
+                          <line x1="12" y1="18" x2="12" y2="12"></line>
+                          <line x1="9" y1="15" x2="15" y2="15"></line>
+                        </svg>
+                        <svg v-else class="animate-spin h-5 w-5 text-blue-600 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <div>
+                          <div class="font-medium">{{ isExporting ? 'Exporting...' : 'Export as PDF' }}</div>
+                          <div class="text-xs text-gray-500 dark:text-gray-400">View and download PDF format</div>
+                        </div>
+                      </button>
+                      
+                      <button
+                        @click="exportToDocx"
+                        :disabled="isExportingDocx"
+                        class="w-full text-left px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-green-900/20 flex items-center gap-3 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <svg v-if="!isExportingDocx" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600 dark:text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                          <polyline points="14 2 14 8 20 8"></polyline>
+                          <path d="M12 18v-6"></path>
+                          <path d="M9 15l3 3 3-3"></path>
+                        </svg>
+                        <svg v-else class="animate-spin h-5 w-5 text-green-600 dark:text-green-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <div>
+                          <div class="font-medium">{{ isExportingDocx ? 'Exporting...' : 'Export as DOCX' }}</div>
+                          <div class="text-xs text-gray-500 dark:text-gray-400">View and download Word format</div>
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+                </transition>
+              </div>
               
               <div class="bg-white dark:bg-gray-800 px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
                 <span class="text-sm text-gray-600 dark:text-gray-400">Total Activities:</span>
@@ -1487,6 +1570,101 @@ const exportToDocx = async () => {
         </div>
       </transition>
     </Teleport>
+
+    <!-- DOCX Preview Modal -->
+    <Teleport to="body">
+      <transition name="fade">
+        <div v-if="showDocxPreviewModal" class="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-60" @click="closeDocxPreviewModal">
+          <div
+            class="relative bg-transparent shadow-2xl flex flex-col w-[95vw] max-w-4xl md:w-[70vw] md:max-w-3xl lg:w-[60vw] lg:max-w-4xl xl:w-[50vw] xl:max-w-5xl h-[75vh] md:h-[85vh] lg:h-[90vh] xl:h-[95vh] max-h-[95vh] overflow-hidden border border-transparent"
+            @click.stop
+          >
+            <!-- Close Button: floating at top-right, outside header -->
+            <button
+              @click="closeDocxPreviewModal"
+              class="absolute top-4 right-4 flex items-center justify-center text-white hover:text-gray-200 focus:outline-none transition z-20 opacity-90"
+              title="Close Preview"
+              aria-label="Close Preview"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            
+            <!-- Header -->
+            <div class="flex items-center justify-between px-4 py-3 pr-16 bg-gray-900 bg-opacity-90 backdrop-blur-sm relative">
+              <div class="font-semibold text-gray-200 text-base truncate opacity-90">
+                Plan of Activities Report (DOCX Preview)
+              </div>
+              <div class="flex items-center gap-2">
+                <!-- Zoom Controls -->
+                <div class="flex items-center gap-1 bg-gray-800 rounded-lg px-2 py-1">
+                  <button
+                    @click="zoomOut"
+                    class="p-1 text-white hover:bg-gray-700 rounded transition"
+                    title="Zoom Out"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M5 10a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1z" clip-rule="evenodd" />
+                    </svg>
+                  </button>
+                  <span class="text-white text-xs font-mono px-2">{{ docxZoom }}%</span>
+                  <button
+                    @click="zoomIn"
+                    class="p-1 text-white hover:bg-gray-700 rounded transition"
+                    title="Zoom In"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+                    </svg>
+                  </button>
+                  <button
+                    @click="resetZoom"
+                    class="p-1 text-white hover:bg-gray-700 rounded transition text-xs ml-1"
+                    title="Reset Zoom"
+                  >
+                    Reset
+                  </button>
+                </div>
+                
+                <button
+                  @click="downloadDocxFromPreview"
+                  class="inline-flex items-center justify-center px-4 py-2 bg-green-500 text-sm font-medium text-white rounded-xl shadow-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group"
+                  title="Download DOCX"
+                  aria-label="Download DOCX"
+                >
+                  <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  Download
+                </button>
+              </div>
+            </div>
+            
+            <!-- DOCX Content with Scroll -->
+            <div class="flex-1 w-full h-full overflow-auto bg-gray-200">
+              <div class="min-h-full p-4">
+                <div 
+                  v-if="docxHtmlContent"
+                  v-html="docxHtmlContent"
+                  :style="{ 
+                    transform: `scale(${docxZoom / 100})`, 
+                    transformOrigin: 'top center',
+                    width: docxZoom === 100 ? '100%' : `${100 / (docxZoom / 100)}%`,
+                    margin: '0 auto'
+                  }"
+                  class="bg-white shadow-2xl transition-transform duration-200 docx-preview-content"
+                ></div>
+                <div v-else class="flex items-center justify-center h-full">
+                  <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </transition>
+    </Teleport>
   </SidebarLayout>
 </template>
 
@@ -1500,5 +1678,35 @@ const exportToDocx = async () => {
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.rotate-180 {
+  transform: rotate(180deg);
+  transition: transform 0.2s ease;
+}
+
+/* DOCX Preview Content Styling */
+:deep(.docx-preview-content) {
+  padding: 20px;
+  min-height: 100%;
+}
+
+:deep(.docx-preview-content body) {
+  margin: 0;
+  padding: 0;
+}
+
+:deep(.docx-preview-content table) {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+:deep(.docx-preview-content .header) {
+  margin-bottom: 20px;
+}
+
+:deep(.docx-preview-content .footer) {
+  position: static;
+  margin-top: 20px;
 }
 </style>

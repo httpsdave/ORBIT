@@ -421,15 +421,23 @@ class PlanOfActivitiesController extends Controller
             }
             $sortedActivities = $this->applySorting($filteredActivities, $sort);
 
-            // Check if ZIP extension is available for proper DOCX
+            // Check if action is 'view' to display inline, otherwise download
+            $action = $request->input('action', 'download');
+
+            // For preview mode, always use HTML version (browsers can't display DOCX inline)
+            if ($action === 'view') {
+                return $this->generateStyledHtmlAsDoc($sortedActivities, $isAdmin, 'view');
+            }
+
+            // For download mode, check if ZIP extension is available for proper DOCX
             $hasZipExtension = class_exists('ZipArchive');
             
             if ($hasZipExtension) {
                 // Use PHPWord for proper DOCX (if ZIP extension available)
-                return $this->generateDocxWithPhpWord($sortedActivities, $isAdmin);
+                return $this->generateDocxWithPhpWord($sortedActivities, $isAdmin, 'download');
             } else {
                 // Use styled HTML that looks like the PDF (ZIP extension not available)
-                return $this->generateStyledHtmlAsDoc($sortedActivities, $isAdmin);
+                return $this->generateStyledHtmlAsDoc($sortedActivities, $isAdmin, 'download');
             }
             
         } catch (\Exception $e) {
@@ -453,7 +461,7 @@ class PlanOfActivitiesController extends Controller
         }
     }
 
-    private function generateDocxWithPhpWord($activities, $isAdmin)
+    private function generateDocxWithPhpWord($activities, $isAdmin, $action = 'download')
     {
         // Original PHPWord implementation for when ZIP extension is available
         $phpWord = new PhpWord();
@@ -580,40 +588,80 @@ class PlanOfActivitiesController extends Controller
         $objWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
         $objWriter->save($tempFile);
         
+        // Always return as download (view mode uses HTML version)
         return response()->download($tempFile, $filename)->deleteFileAfterSend(true);
     }
 
-    private function generateStyledHtmlAsDoc($activities, $isAdmin)
+    private function generateStyledHtmlAsDoc($activities, $isAdmin, $action = 'download')
     {
         try {
-            // Generate HTML with the same styling as PDF export
             $logoPath = public_path('images/lspu-logo.png');
+            $namePath = public_path('images/lspu-name.png');
             $logoData = '';
+            $nameData = '';
             
             if (file_exists($logoPath)) {
                 $logoData = 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath));
             }
             
-            $html = view('pdfs.plan_of_activities_docx', [
-                'activities' => $activities,
-                'isAdmin' => $isAdmin,
-                'generatedDate' => Carbon::now()->format('F d, Y'),
-                'generatedBy' => auth()->user()->name ?? 'Unknown',
-                'logoData' => $logoData,
-            ])->render();
-            
-            // Clean up the HTML to ensure proper encoding
-            $html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
+            if (file_exists($namePath)) {
+                $nameData = 'data:image/png;base64,' . base64_encode(file_get_contents($namePath));
+            }
             
             $filename = 'plan-of-activities-' . Carbon::now()->format('Y-m-d') . '.doc';
             
-            // Return as direct response instead of temp file
-            return response($html, 200, [
-                'Content-Type' => 'application/msword; charset=utf-8',
-                'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-                'Cache-Control' => 'max-age=0',
-                'Pragma' => 'public',
-            ]);
+            if ($action === 'view') {
+                // For preview, use the PDF template which is better for browser display
+                // We need to replace file paths with base64 data URIs for browser compatibility
+                $html = view('pdfs.plan_of_activities_list', [
+                    'activities' => $activities,
+                    'isAdmin' => $isAdmin,
+                    'generatedDate' => Carbon::now()->format('F d, Y'),
+                    'generatedBy' => auth()->user()->name ?? 'Unknown',
+                    'filters' => [], // No specific filters to display in preview
+                ])->render();
+                
+                // Replace local file paths with base64 data URIs for browser preview
+                if ($logoData) {
+                    $html = str_replace('src="' . public_path('images/lspu-logo.png') . '"', 'src="' . $logoData . '"', $html);
+                    // Also handle the asset() or public_path() variations
+                    $html = preg_replace('/src="[^"]*lspu-logo\.png"/', 'src="' . $logoData . '"', $html);
+                }
+                
+                if ($nameData) {
+                    $html = str_replace('src="' . public_path('images/lspu-name.png') . '"', 'src="' . $nameData . '"', $html);
+                    // Also handle the asset() or public_path() variations
+                    $html = preg_replace('/src="[^"]*lspu-name\.png"/', 'src="' . $nameData . '"', $html);
+                }
+                
+                // Return as HTML for viewing in browser
+                return response($html, 200, [
+                    'Content-Type' => 'text/html; charset=utf-8',
+                    'Cache-Control' => 'no-cache, no-store, must-revalidate',
+                    'Pragma' => 'no-cache',
+                    'Expires' => '0',
+                ]);
+            } else {
+                // For download, use the Word-formatted template
+                $html = view('pdfs.plan_of_activities_docx', [
+                    'activities' => $activities,
+                    'isAdmin' => $isAdmin,
+                    'generatedDate' => Carbon::now()->format('F d, Y'),
+                    'generatedBy' => auth()->user()->name ?? 'Unknown',
+                    'logoData' => $logoData,
+                ])->render();
+                
+                // Clean up the HTML to ensure proper encoding for Word format
+                $html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
+                
+                // Return as attachment for download
+                return response($html, 200, [
+                    'Content-Type' => 'application/msword; charset=utf-8',
+                    'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+                    'Cache-Control' => 'max-age=0',
+                    'Pragma' => 'public',
+                ]);
+            }
             
         } catch (\Exception $e) {
             \Log::error('DOCX Export Error: ' . $e->getMessage());
