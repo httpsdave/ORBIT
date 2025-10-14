@@ -15,7 +15,7 @@
 
         body {
             font-family: 'Times New Roman', serif;
-            font-size: 10pt;
+            font-size: 11pt;
             line-height: 1.1;
             margin: 0;
             padding: 0;
@@ -64,7 +64,8 @@
 
         .meta-info {
             margin: 15px 0;
-            font-size: 10pt;
+            font-size: 11pt;
+            font-family: 'Times New Roman', serif;
         }
 
         .meta-info p {
@@ -85,7 +86,8 @@
             width: 100%;
             border-collapse: collapse;
             margin: 15px 0;
-            font-size: 8pt;
+            font-size: 11pt;
+            font-family: 'Times New Roman', serif;
         }
 
         th, td {
@@ -93,18 +95,19 @@
             padding: 3px;
             text-align: left;
             vertical-align: top;
+            font-size: 11pt;
+            font-family: 'Times New Roman', serif;
         }
 
         th {
-            background-color: #f0f0f0;
+            background-color: #ffffff;
             font-weight: bold;
             text-align: center;
-            font-size: 8pt;
         }
 
         td {
             word-wrap: break-word;
-            font-size: 8pt;
+            background-color: #ffffff;
         }
 
         .text-center {
@@ -116,8 +119,8 @@
             bottom: 0;
             width: 100%;
             text-align: center;
-            font-size: 9pt;
-            font-family: Calibri, sans-serif;
+            font-size: 11pt;
+            font-family: 'Times New Roman', serif;
         }
 
         p {
@@ -139,17 +142,17 @@
         @if(file_exists(public_path('images/lspu-logo.png')))
         <img src="{{ public_path('images/lspu-logo.png') }}" alt="LSPU Logo" class="logo">
         @endif
-        <span class="calibri-text" style="font-size:11pt;">Republic of the Philippines</span><br>
+        <span class="calibri-text" style="font-size:11pt; font-family:Calibri, Arial, sans-serif;">Republic of the Philippines</span><br>
         @if(file_exists(public_path('images/lspu-name.png')))
-        <img src="{{ public_path('images/lspu-name.png') }}" alt="Laguna State Polytechnic University" class="university-name"><br>
+        <img src="{{ public_path('images/lspu-name.png') }}" alt="Laguna State Polytechnic University" class="university-name" style="font-family:'Old English Text MT', 'Book Antiqua', serif; font-size:12pt;"><br>
         @else
-        <strong style="font-size:13pt;">LAGUNA STATE POLYTECHNIC UNIVERSITY</strong><br>
+        <strong style="font-size:12pt; font-family:'Old English Text MT', 'Book Antiqua', serif;">LAGUNA STATE POLYTECHNIC UNIVERSITY</strong><br>
         @endif
-        <span class="calibri-text" style="font-size:11pt;">Province of Laguna</span><br>
+        <span class="calibri-text" style="font-size:11pt; font-family:Calibri, Arial, sans-serif;">Province of Laguna</span><br>
         <br>
-        <strong>OFFICE OF STUDENT AFFAIRS AND SERVICES</strong><br>
+        <strong style="font-family:'Times New Roman', serif; font-size:11pt;">OFFICE OF STUDENT AFFAIRS AND SERVICES</strong><br>
         <br>
-        <span class="sub-header"><strong>PLAN OF ACTIVITIES REPORT</strong></span>
+        <span class="sub-header" style="font-family:'Times New Roman', serif; font-size:11pt;"><strong>PLAN OF ACTIVITIES REPORT</strong></span>
     </div>
 
     <div class="meta-info">

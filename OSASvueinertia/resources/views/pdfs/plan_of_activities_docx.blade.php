@@ -15,14 +15,24 @@
             <w:View>Print</w:View>
             <w:Zoom>100</w:Zoom>
             <w:DoNotOptimizeForBrowser/>
+            <w:DoNotPromptForConvert/>
+            <w:DoNotRelyOnCSS/>
         </w:WordDocument>
     </xml>
     <![endif]-->
     <style>
-        @page Section1 {
-            size: 14in 8.5in;  /* Legal landscape */
-            margin: 0.5in 0.75in;
+        @page {
+            size: 14in 8.5in;
             mso-page-orientation: landscape;
+            margin: 0.5in 0.75in 0.75in 0.75in;
+            mso-header-margin: 0.5in;
+            mso-footer-margin: 0.5in;
+        }
+        
+        @page Section1 {
+            size: 14in 8.5in;
+            mso-page-orientation: landscape;
+            margin: 0.5in 0.75in 0.75in 0.75in;
         }
         
         div.Section1 {
@@ -31,15 +41,22 @@
         
         body {
             font-family: 'Times New Roman', serif;
-            font-size: 10pt;
+            font-size: 11pt;
             margin: 0;
             padding: 0;
+            mso-pagination: widow-orphan;
+            mso-layout-grid-align: none;
         }
         
         .header {
             text-align: center;
             margin-bottom: 20px;
-            position: relative;
+            width: 100%;
+        }
+        
+        .header-content {
+            text-align: center;
+            margin: 0 auto;
         }
         
         .header-text {
@@ -57,12 +74,11 @@
         }
         
         .header-text .university-name {
-            font-size: 12pt;
+            font-size: 11pt;
             font-family: 'Old English Text MT', 'Book Antiqua', serif;
             margin: 2px 0;
             padding: 0;
             font-weight: normal;
-            letter-spacing: 0.5px;
             line-height: 1.2;
         }
         
@@ -106,30 +122,40 @@
         table.activities-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 8pt;
+            font-size: 11pt;
             margin: 0;
             font-family: 'Times New Roman', serif;
+            mso-table-layout-alt: fixed;
+            mso-table-wrap: none;
+            mso-cellspacing: 0;
+            mso-yfti-tbllook: 1184;
+            mso-padding-alt: 0in 3pt 0in 3pt;
         }
         
         table.activities-table th {
             background-color: #fff;
             color: #000;
             font-weight: bold;
-            padding: 8px 5px;
+            padding: 6px 4px;
             border: 1px solid #000;
             text-align: center;
             vertical-align: middle;
             font-size: 11pt;
             font-family: 'Times New Roman', serif;
+            mso-border-alt: solid black 0.5pt;
+            mso-shading: white;
         }
         
         table.activities-table td {
-            padding: 6px 5px;
+            padding: 4px 3px;
             border: 1px solid #000;
             vertical-align: top;
             font-size: 11pt;
-            line-height: 1.2;
+            line-height: 1.1;
             font-family: 'Times New Roman', serif;
+            mso-border-alt: solid black 0.5pt;
+            word-wrap: break-word;
+            mso-shading: white;
         }
         
         .status {
@@ -140,7 +166,7 @@
         
         .footer {
             text-align: center;
-            font-size: 8pt;
+            font-size: 11pt;
             font-style: italic;
             color: #666;
             margin-top: 20px;
@@ -161,20 +187,42 @@
         /* Prevent page breaks inside table rows */
         tr {
             page-break-inside: avoid;
+            mso-yfti-irow: 0;
         }
+        
+        /* Word-specific column widths for better layout */
+        .col-org { width: 12%; mso-width-percent: 1200; }
+        .col-obj { width: 13%; mso-width-percent: 1300; }
+        .col-obj-no-admin { width: 15%; mso-width-percent: 1500; }
+        .col-act { width: 13%; mso-width-percent: 1300; }
+        .col-act-no-admin { width: 15%; mso-width-percent: 1500; }
+        .col-desc { width: 17%; mso-width-percent: 1700; }
+        .col-desc-no-admin { width: 19%; mso-width-percent: 1900; }
+        .col-persons { width: 12%; mso-width-percent: 1200; }
+        .col-persons-no-admin { width: 13%; mso-width-percent: 1300; }
+        .col-date { width: 8%; mso-width-percent: 800; }
+        .col-date-no-admin { width: 9%; mso-width-percent: 900; }
+        .col-budget { width: 10%; mso-width-percent: 1000; }
+        .col-budget-no-admin { width: 11%; mso-width-percent: 1100; }
+        .col-participants { width: 8%; mso-width-percent: 800; }
+        .col-participants-no-admin { width: 9%; mso-width-percent: 900; }
+        .col-status { width: 7%; mso-width-percent: 700; }
+        .col-status-no-admin { width: 8%; mso-width-percent: 800; }
     </style>
 </head>
 <body>
 <div class="Section1">
     <!-- Header -->
     <div class="header">
-        <div class="header-text">
-            <div class="republic">Republic of the Philippines</div>
-            <div class="university-name">Laguna State Polytechnic University</div>
-            <div class="province">Province of Laguna</div>
+        <div class="header-content">
+            <div class="header-text">
+                <div class="republic">Republic of the Philippines</div>
+                <div class="university-name">Laguna State Polytechnic University</div>
+                <div class="province">Province of Laguna</div>
+            </div>
+            <h2>Office of Student Affairs and Services</h2>
+            <h3>Plan of Activities Report</h3>
         </div>
-        <h2>Office of Student Affairs and Services</h2>
-        <h3>Plan of Activities Report</h3>
     </div>
     
     <!-- Metadata -->
@@ -195,16 +243,16 @@
         <thead>
             <tr>
                 @if($isAdmin)
-                    <th style="width: 12%;">Organization</th>
+                    <th class="col-org">Organization</th>
                 @endif
-                <th style="width: 12%;">Objective</th>
-                <th style="width: 12%;">Activity</th>
-                <th style="width: 15%;">Brief Description</th>
-                <th style="width: 12%;">Persons Involved</th>
-                <th style="width: 8%;">Target Date</th>
-                <th style="width: 10%;">Budget</th>
-                <th style="width: 8%;">Target Participants</th>
-                <th style="width: 7%;">Status</th>
+                <th class="{{ $isAdmin ? 'col-obj' : 'col-obj-no-admin' }}">Objective</th>
+                <th class="{{ $isAdmin ? 'col-act' : 'col-act-no-admin' }}">Activity</th>
+                <th class="{{ $isAdmin ? 'col-desc' : 'col-desc-no-admin' }}">Brief Description</th>
+                <th class="{{ $isAdmin ? 'col-persons' : 'col-persons-no-admin' }}">Persons Involved</th>
+                <th class="{{ $isAdmin ? 'col-date' : 'col-date-no-admin' }}">Target Date</th>
+                <th class="{{ $isAdmin ? 'col-budget' : 'col-budget-no-admin' }}">Budget</th>
+                <th class="{{ $isAdmin ? 'col-participants' : 'col-participants-no-admin' }}">Target Participants</th>
+                <th class="{{ $isAdmin ? 'col-status' : 'col-status-no-admin' }}">Status</th>
             </tr>
         </thead>
         <tbody>

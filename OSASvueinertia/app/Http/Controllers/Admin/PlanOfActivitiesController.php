@@ -424,21 +424,8 @@ class PlanOfActivitiesController extends Controller
             // Check if action is 'view' to display inline, otherwise download
             $action = $request->input('action', 'download');
 
-            // For preview mode, always use HTML version (browsers can't display DOCX inline)
-            if ($action === 'view') {
-                return $this->generateStyledHtmlAsDoc($sortedActivities, $isAdmin, 'view');
-            }
-
-            // For download mode, check if ZIP extension is available for proper DOCX
-            $hasZipExtension = class_exists('ZipArchive');
-            
-            if ($hasZipExtension) {
-                // Use PHPWord for proper DOCX (if ZIP extension available)
-                return $this->generateDocxWithPhpWord($sortedActivities, $isAdmin, 'download');
-            } else {
-                // Use styled HTML that looks like the PDF (ZIP extension not available)
-                return $this->generateStyledHtmlAsDoc($sortedActivities, $isAdmin, 'download');
-            }
+            // Always use HTML version for consistency between preview and download
+            return $this->generateStyledHtmlAsDoc($sortedActivities, $isAdmin, $action);
             
         } catch (\Exception $e) {
             // Log the error for debugging
@@ -612,7 +599,6 @@ class PlanOfActivitiesController extends Controller
             
             if ($action === 'view') {
                 // For preview, use the PDF template which is better for browser display
-                // We need to replace file paths with base64 data URIs for browser compatibility
                 $html = view('pdfs.plan_of_activities_list', [
                     'activities' => $activities,
                     'isAdmin' => $isAdmin,
@@ -642,13 +628,13 @@ class PlanOfActivitiesController extends Controller
                     'Expires' => '0',
                 ]);
             } else {
-                // For download, use the Word-formatted template
+                // For download, use the optimized DOCX template
                 $html = view('pdfs.plan_of_activities_docx', [
                     'activities' => $activities,
                     'isAdmin' => $isAdmin,
                     'generatedDate' => Carbon::now()->format('F d, Y'),
                     'generatedBy' => auth()->user()->name ?? 'Unknown',
-                    'logoData' => $logoData,
+                    'filters' => [], // No specific filters to display
                 ])->render();
                 
                 // Clean up the HTML to ensure proper encoding for Word format
