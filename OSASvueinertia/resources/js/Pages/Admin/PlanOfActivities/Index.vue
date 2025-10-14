@@ -690,7 +690,7 @@ onUnmounted(() => {
                 <button
                   @click="showExportDropdown = !showExportDropdown"
                   :disabled="filteredActivities.length === 0"
-                  class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 disabled:from-gray-400 disabled:to-gray-500 text-white text-sm font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-60"
+                  class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:from-gray-400 disabled:to-gray-500 text-white text-sm font-semibold rounded-xl shadow-md hover:shadow-blue-300/30 transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-60"
                   :title="filteredActivities.length === 0 ? 'No data to export' : 'Export filtered activities'"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
