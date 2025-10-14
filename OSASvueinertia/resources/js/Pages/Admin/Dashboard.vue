@@ -1,6 +1,6 @@
 <script setup>
 import { Head, router } from '@inertiajs/vue3';
-import { ref, onMounted, onUnmounted, watch, computed } from 'vue';
+import { ref, onMounted, onUnmounted, onBeforeUnmount, watch, computed } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
@@ -206,12 +206,17 @@ onMounted(() => {
     clockTimer.value = setInterval(() => {
         currentDateTime.value = new Date();
     }, 1000);
+
+    // Add click handler for adviser filters
+    document.addEventListener('click', handleAdviserClickOutside);
 });
 
 onUnmounted(() => {
     if (clockTimer.value) {
         clearInterval(clockTimer.value);
     }
+    // Remove click handler
+    document.removeEventListener('click', handleAdviserClickOutside);
 });
 
 const updateChartData = () => {
@@ -504,9 +509,9 @@ const statsCards = computed(() => [
 ]);
 
 function exportAdvisersToCSV() {
-    if (!props.advisersData.length) return;
-    const headers = ['Organization', 'Adviser', 'Second Adviser', 'Members Count', 'Officers Count'];
-    const rows = props.advisersData.map(row => {
+    if (!filteredAdvisersData.value.length) return;
+    const headers = ['Organization', 'Adviser', 'Second Adviser'];
+    const rows = filteredAdvisersData.value.map(row => {
         // Combine adviser name with prefix and suffix
         const adviserFullName = [row.adviser_prefix, row.adviser_name, row.adviser_suffix]
             .filter(Boolean)
@@ -515,9 +520,7 @@ function exportAdvisersToCSV() {
         return [
             `"${row.organization || ''}"`,
             `"${adviserFullName}"`,
-            `"${row.second_adviser || ''}"`,
-            row.members_count ?? '',
-            row.officers_count ?? ''
+            `"${row.second_adviser || ''}"`
         ];
     });
     const csvContent = [headers, ...rows].map(e => e.join(',')).join('\n');
@@ -531,6 +534,180 @@ function exportAdvisersToCSV() {
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
 }
+
+// Adviser table columns configuration
+const adviserTableColumns = [
+    { key: 'organization', label: 'Organization', type: 'text' },
+    { key: 'adviser', label: 'Adviser', type: 'text' },
+    { key: 'second_adviser', label: 'Second Adviser', type: 'text' }
+];
+
+// Filter operators by type
+const filterOperators = {
+    text: [
+        { value: 'contains', label: 'Contains' },
+        { value: 'equals', label: 'Equals' },
+        { value: 'starts', label: 'Starts with' },
+        { value: 'ends', label: 'Ends with' }
+    ]
+};
+
+// Create default column filters for advisers table
+const createDefaultAdviserFilters = () => {
+    return adviserTableColumns.reduce((acc, column) => {
+        acc[column.key] = {
+            operator: filterOperators[column.type][0].value,
+            value: ''
+        };
+        return acc;
+    }, {});
+};
+
+const adviserColumnFilters = ref(createDefaultAdviserFilters());
+const activeAdviserFilterDropdown = ref(null);
+const adviserSortState = ref({ column: null, direction: null });
+const adviserFilterDropdownStyle = ref({});
+
+// Filter advisers data based on column filters
+const filteredAdvisersData = computed(() => {
+    let filtered = [...(props.advisersData || [])];
+
+    // Apply column filters
+    adviserTableColumns.forEach(column => {
+        const filter = adviserColumnFilters.value[column.key];
+        if (!filter || !filter.value) return;
+
+        const filterValue = filter.value.toLowerCase();
+        
+        filtered = filtered.filter(row => {
+            let cellValue = '';
+            
+            // Get cell value based on column
+            if (column.key === 'organization') {
+                cellValue = (row.organization || '').toLowerCase();
+            } else if (column.key === 'adviser') {
+                cellValue = [row.adviser_prefix, row.adviser_name, row.adviser_suffix]
+                    .filter(Boolean)
+                    .join(' ')
+                    .toLowerCase() || (row.adviser_name || '').toLowerCase();
+            } else if (column.key === 'second_adviser') {
+                cellValue = (row.second_adviser || '').toLowerCase();
+            }
+
+            // Apply filter operator
+            switch (filter.operator) {
+                case 'contains':
+                    return cellValue.includes(filterValue);
+                case 'equals':
+                    return cellValue === filterValue;
+                case 'starts':
+                    return cellValue.startsWith(filterValue);
+                case 'ends':
+                    return cellValue.endsWith(filterValue);
+                default:
+                    return true;
+            }
+        });
+    });
+
+    // Apply sorting
+    if (adviserSortState.value.column) {
+        const column = adviserSortState.value.column;
+        const direction = adviserSortState.value.direction;
+
+        filtered.sort((a, b) => {
+            let aVal, bVal;
+
+            if (column === 'organization') {
+                aVal = (a.organization || '').toLowerCase();
+                bVal = (b.organization || '').toLowerCase();
+            } else if (column === 'adviser') {
+                aVal = [a.adviser_prefix, a.adviser_name, a.adviser_suffix]
+                    .filter(Boolean)
+                    .join(' ')
+                    .toLowerCase();
+                bVal = [b.adviser_prefix, b.adviser_name, b.adviser_suffix]
+                    .filter(Boolean)
+                    .join(' ')
+                    .toLowerCase();
+            } else if (column === 'second_adviser') {
+                aVal = (a.second_adviser || '').toLowerCase();
+                bVal = (b.second_adviser || '').toLowerCase();
+            }
+
+            const result = aVal.localeCompare(bVal);
+            return direction === 'asc' ? result : -result;
+        });
+    }
+
+    return filtered;
+});
+
+// Helper functions for adviser table
+const hasActiveAdviserColumnFilter = (columnKey) => {
+    const filter = adviserColumnFilters.value[columnKey];
+    return filter && filter.value !== '';
+};
+
+const toggleAdviserFilterDropdown = (columnKey, event) => {
+    if (activeAdviserFilterDropdown.value === columnKey) {
+        activeAdviserFilterDropdown.value = null;
+        adviserFilterDropdownStyle.value = {};
+    } else {
+        activeAdviserFilterDropdown.value = columnKey;
+        
+        // Calculate position based on button click
+        const button = event.currentTarget;
+        const rect = button.getBoundingClientRect();
+        const dropdownWidth = 256; // w-64 = 16rem = 256px
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        
+        // Determine if dropdown should open to the left or right
+        let left = rect.left;
+        if (left + dropdownWidth > viewportWidth) {
+            left = rect.right - dropdownWidth;
+        }
+        
+        // Determine if dropdown should open above or below
+        let top = rect.bottom + 8; // 8px gap
+        const estimatedDropdownHeight = 300;
+        if (top + estimatedDropdownHeight > viewportHeight) {
+            top = rect.top - estimatedDropdownHeight - 8;
+        }
+        
+        adviserFilterDropdownStyle.value = {
+            top: `${top}px`,
+            left: `${left}px`,
+        };
+    }
+};
+
+const closeAdviserFilterDropdown = () => {
+    activeAdviserFilterDropdown.value = null;
+};
+
+const clearAdviserColumnFilter = (columnKey) => {
+    adviserColumnFilters.value[columnKey].value = '';
+    adviserColumnFilters.value[columnKey].operator = filterOperators.text[0].value;
+};
+
+const updateAdviserSort = (columnKey, direction) => {
+    adviserSortState.value = {
+        column: columnKey,
+        direction: direction
+    };
+};
+
+const isAdviserColumnSorted = (columnKey, direction) => {
+    return adviserSortState.value.column === columnKey && adviserSortState.value.direction === direction;
+};
+
+const handleAdviserClickOutside = (event) => {
+    if (!event.target.closest('.adviser-column-filter-wrapper')) {
+        closeAdviserFilterDropdown();
+    }
+};
 </script>
 
 <template>
@@ -688,7 +865,7 @@ function exportAdvisersToCSV() {
                             :options="barChartOptions" 
                         />
                     </div>
-                    <div v-else-if="activeChart === 'advisers'" class="overflow-x-auto">
+                    <div v-else-if="activeChart === 'advisers'">
                         <!-- Export Button - Only show when data exists -->
                         <button
                             v-if="props.advisersData && props.advisersData.length > 0"
@@ -704,37 +881,191 @@ function exportAdvisersToCSV() {
                             Export CSV
                         </button>
 
-                        <!-- Table with data or empty state -->
-                        <div v-if="props.advisersData && props.advisersData.length > 0" class="overflow-x-auto">
+                        <!-- Table - Always show header to allow filter clearing -->
+                        <div v-if="props.advisersData && props.advisersData.length > 0">
+                            <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                                 <thead>
                                     <tr>
-                                        <th class="px-2 sm:px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Organization</th>
-                                        <th class="px-2 sm:px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase hidden sm:table-cell">Adviser</th>
-                                        <th class="px-2 sm:px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase hidden md:table-cell">Second Adviser</th>
-                                        <th class="px-2 sm:px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Members</th>
-                                        <th class="px-2 sm:px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase hidden sm:table-cell">Officers</th>
+                                        <th v-for="column in adviserTableColumns" :key="column.key" 
+                                            class="px-2 sm:px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                                            <div class="flex items-center justify-between gap-2">
+                                                <span>{{ column.label }}</span>
+                                                <div class="flex items-center gap-1">
+                                                    <!-- Sort Button -->
+                                                    <button
+                                                        type="button"
+                                                        @click="updateAdviserSort(column.key, isAdviserColumnSorted(column.key, 'asc') ? 'desc' : 'asc')"
+                                                        class="inline-flex items-center p-1 rounded-md transition-colors duration-150"
+                                                        :class="adviserSortState.column === column.key ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-300' : 'text-gray-400 dark:text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700'"
+                                                        :aria-label="`Sort by ${column.label}`"
+                                                    >
+                                                        <!-- Ascending Icon -->
+                                                        <svg v-if="isAdviserColumnSorted(column.key, 'asc')" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                            <path d="M3 6h4M3 12h8M3 18h12M17 8l-4 4 4 4" />
+                                                        </svg>
+                                                        <!-- Descending Icon -->
+                                                        <svg v-else-if="isAdviserColumnSorted(column.key, 'desc')" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                            <path d="M3 18h4M3 12h8M3 6h12M17 16l-4-4 4-4" />
+                                                        </svg>
+                                                        <!-- Unsorted Icon -->
+                                                        <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                            <path d="M3 6h18M3 12h18M3 18h18" />
+                                                        </svg>
+                                                    </button>
+
+                                                    <!-- Filter Button -->
+                                                    <div class="relative adviser-column-filter-wrapper">
+                                                        <button
+                                                            type="button"
+                                                            ref="filterButton"
+                                                            class="inline-flex items-center justify-center p-1 rounded-md transition-colors duration-150"
+                                                            :class="hasActiveAdviserColumnFilter(column.key) ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-300' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'"
+                                                            @click.stop="toggleAdviserFilterDropdown(column.key, $event)"
+                                                            :aria-expanded="activeAdviserFilterDropdown === column.key"
+                                                            :aria-label="`Filter ${column.label}`"
+                                                        >
+                                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                                                            </svg>
+                                                        </button>
+
+                                                        <!-- Filter Dropdown with Teleport -->
+                                                        <Teleport to="body">
+                                                            <transition name="fade">
+                                                                <div
+                                                                    v-if="activeAdviserFilterDropdown === column.key"
+                                                                    class="fixed w-64 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl z-50 p-4"
+                                                                    :style="adviserFilterDropdownStyle"
+                                                                    @click.stop
+                                                                >
+                                                                <div class="flex items-start justify-between gap-2 mb-3">
+                                                                    <div>
+                                                                        <p class="text-sm font-semibold text-gray-800 dark:text-gray-200">Filter {{ column.label }}</p>
+                                                                        <p class="text-xs text-gray-500 dark:text-gray-400">Apply a condition to this column</p>
+                                                                    </div>
+                                                                    <button
+                                                                        type="button"
+                                                                        class="text-xs text-blue-600 dark:text-blue-400 hover:underline"
+                                                                        @click="clearAdviserColumnFilter(column.key)"
+                                                                    >
+                                                                        Clear
+                                                                    </button>
+                                                                </div>
+
+                                                                <div class="space-y-4">
+                                                                    <div>
+                                                                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Condition</label>
+                                                                        <select
+                                                                            v-model="adviserColumnFilters[column.key].operator"
+                                                                            class="w-full text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 px-2 py-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                                                        >
+                                                                            <option
+                                                                                v-for="option in filterOperators[column.type]"
+                                                                                :key="option.value"
+                                                                                :value="option.value"
+                                                                            >
+                                                                                {{ option.label }}
+                                                                            </option>
+                                                                        </select>
+                                                                    </div>
+
+                                                                    <div>
+                                                                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Value</label>
+                                                                        <input
+                                                                            type="text"
+                                                                            v-model="adviserColumnFilters[column.key].value"
+                                                                            class="w-full text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 px-2 py-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                                                            placeholder="Enter text"
+                                                                        />
+                                                                    </div>
+
+                                                                    <div class="border-t border-gray-200 dark:border-gray-700 pt-3 space-y-2">
+                                                                        <p class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Quick Sort</p>
+                                                                        <div class="flex flex-col gap-1">
+                                                                            <button
+                                                                                type="button"
+                                                                                class="inline-flex items-center justify-between w-full text-left text-xs px-2 py-1 rounded-md transition-colors"
+                                                                                :class="isAdviserColumnSorted(column.key, 'asc') ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'"
+                                                                                @click="updateAdviserSort(column.key, 'asc'); closeAdviserFilterDropdown();"
+                                                                            >
+                                                                                <span class="flex items-center gap-2">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor">
+                                                                                        <path d="M7 18h3v-8h3L8 4 3 10h3v8zm10-6h-3v8h-3l5 6 5-6h-3v-8z" />
+                                                                                    </svg>
+                                                                                    Sort Ascending
+                                                                                </span>
+                                                                                <svg v-if="isAdviserColumnSorted(column.key, 'asc')" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                                                                    <path fill-rule="evenodd" d="M16.704 5.29a1 1 0 010 1.42l-7.147 7.146a1 1 0 01-1.415 0L3.296 9.01a1 1 0 011.415-1.414L9 11.884l6.296-6.295a1 1 0 011.408-.3z" clip-rule="evenodd" />
+                                                                                </svg>
+                                                                            </button>
+                                                                            <button
+                                                                                type="button"
+                                                                                class="inline-flex items-center justify-between w-full text-left text-xs px-2 py-1 rounded-md transition-colors"
+                                                                                :class="isAdviserColumnSorted(column.key, 'desc') ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'"
+                                                                                @click="updateAdviserSort(column.key, 'desc'); closeAdviserFilterDropdown();"
+                                                                            >
+                                                                                <span class="flex items-center gap-2">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor">
+                                                                                        <path d="M7 6h3v8h3L8 20l-5-6h3V6zm10 12h-3v-8h-3l5-6 5 6h-3v8z" />
+                                                                                    </svg>
+                                                                                    Sort Descending
+                                                                                </span>
+                                                                                <svg v-if="isAdviserColumnSorted(column.key, 'desc')" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                                                                    <path fill-rule="evenodd" d="M16.704 5.29a1 1 0 010 1.42l-7.147 7.146a1 1 0 01-1.415 0L3.296 9.01a1 1 0 011.415-1.414L9 11.884l6.296-6.295a1 1 0 011.408-.3z" clip-rule="evenodd" />
+                                                                                </svg>
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </transition>
+                                                        </Teleport>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-100 dark:divide-gray-700">
-                                    <tr v-for="(row, idx) in props.advisersData" :key="idx">
-                                        <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 dark:text-gray-300">
-                                            <div class="truncate max-w-[120px] sm:max-w-none" :title="row.organization">
-                                                {{ row.organization }}
+                                    <!-- Data rows when results exist -->
+                                    <template v-if="filteredAdvisersData && filteredAdvisersData.length > 0">
+                                        <tr v-for="(row, idx) in filteredAdvisersData" :key="idx">
+                                            <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 dark:text-gray-300">
+                                                <div class="truncate max-w-[120px] sm:max-w-none" :title="row.organization">
+                                                    {{ row.organization }}
+                                                </div>
+                                            </td>
+                                            <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 dark:text-gray-300">
+                                                {{ [row.adviser_prefix, row.adviser_name, row.adviser_suffix].filter(Boolean).join(' ') || row.adviser_name || '—' }}
+                                            </td>
+                                            <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 dark:text-gray-300">
+                                                {{ row.second_adviser || '—' }}
+                                            </td>
+                                        </tr>
+                                    </template>
+                                    <!-- No results row when filtered -->
+                                    <tr v-else>
+                                        <td colspan="3" class="px-4 py-12 text-center">
+                                            <div class="flex flex-col items-center justify-center">
+                                                <div class="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                                    </svg>
+                                                </div>
+                                                <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">No Results Found</h3>
+                                                <p class="text-sm text-gray-500 dark:text-gray-400 max-w-sm mb-4">
+                                                    No advisers match your current filter criteria. Try adjusting your filters above.
+                                                </p>
                                             </div>
                                         </td>
-                                        <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 dark:text-gray-300 hidden sm:table-cell">
-                                            {{ [row.adviser_prefix, row.adviser_name, row.adviser_suffix].filter(Boolean).join(' ') || row.adviser_name || '—' }}
-                                        </td>
-                                        <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 dark:text-gray-300 hidden md:table-cell">{{ row.second_adviser || '—' }}</td>
-                                        <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 dark:text-gray-300 text-center">{{ row.members_count ?? '—' }}</td>
-                                        <td class="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 dark:text-gray-300 text-center hidden sm:table-cell">{{ row.officers_count ?? '—' }}</td>
                                     </tr>
                                 </tbody>
                             </table>
+                            </div>
                         </div>
 
-                        <!-- Empty State -->
+                        <!-- Empty State - Only when NO data exists at all -->
                         <div v-else class="flex flex-col items-center justify-center py-12 px-4 text-center">
                             <div class="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -884,5 +1215,20 @@ function exportAdvisersToCSV() {
     line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.fade-enter-from {
+    opacity: 0;
+    transform: translateY(-10px);
+}
+
+.fade-leave-to {
+    opacity: 0;
+    transform: translateY(-10px);
 }
 </style>
