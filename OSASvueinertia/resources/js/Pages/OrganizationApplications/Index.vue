@@ -197,9 +197,10 @@ const statusOptions = computed(() => {
       
       return statusMatch && hasSignedDocument(app);
     });
-    
+
     // Only add "with Signed" variant if there are actual applications
-    if (hasAppsWithSigned) {
+    // Skip adding the variant for 'Approved' status per request
+    if (hasAppsWithSigned && status.toLowerCase() !== 'approved') {
       options.push({ 
         value: `${status}_with_signed`, 
         label: `${status} with Signed` 
