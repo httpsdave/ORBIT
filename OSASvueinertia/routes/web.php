@@ -148,6 +148,9 @@ Route::middleware(['auth'])->group(function () {
     Route::match(['get', 'post'], '/plan-of-activities/export-pdf', [\App\Http\Controllers\Admin\PlanOfActivitiesController::class, 'exportPdf'])->name('plan-of-activities.export-pdf');
     Route::match(['get', 'post'], '/plan-of-activities/export-docx', [\App\Http\Controllers\Admin\PlanOfActivitiesController::class, 'exportDocx'])->name('plan-of-activities.export-docx');
 
+    // User Members & Officers route (accessible to all authenticated users)
+    Route::get('/members-officers', [\App\Http\Controllers\Admin\MembersOfficersController::class, 'index'])->name('members-officers.index');
+
     // Auto-save form data route
     Route::post('/auto-save-form-data', [OrganizationApplicationController::class, 'autoSaveFormData'])->name('auto-save-form-data');
     

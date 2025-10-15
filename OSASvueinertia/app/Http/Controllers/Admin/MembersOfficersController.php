@@ -11,15 +11,25 @@ class MembersOfficersController extends Controller
 {
     public function index(Request $request)
     {
-        // Get all List of Members applications (LSPU-OSAS-SF-005)
-        $membersApplications = OrganizationApplication::where('form_type', 'LSPU-OSAS-SF-005')
-            ->with(['user', 'members'])
-            ->get();
+        $user = auth()->user();
+        $isAdmin = $user->role && $user->role->slug === 'admin';
 
-        // Get all List of Officers applications (LSPU-OSAS-SF-007)
-        $officersApplications = OrganizationApplication::where('form_type', 'LSPU-OSAS-SF-007')
-            ->with(['user', 'officers'])
-            ->get();
+        // Build base query for List of Members applications (LSPU-OSAS-SF-005)
+        $membersQuery = OrganizationApplication::where('form_type', 'LSPU-OSAS-SF-005')
+            ->with(['user', 'members']);
+
+        // Build base query for List of Officers applications (LSPU-OSAS-SF-007)
+        $officersQuery = OrganizationApplication::where('form_type', 'LSPU-OSAS-SF-007')
+            ->with(['user', 'officers']);
+
+        // If not admin, only show the user's own organization data
+        if (!$isAdmin) {
+            $membersQuery->where('user_id', $user->id);
+            $officersQuery->where('user_id', $user->id);
+        }
+
+        $membersApplications = $membersQuery->get();
+        $officersApplications = $officersQuery->get();
 
         // Flatten members from all applications with organization info
         $members = [];
@@ -62,7 +72,7 @@ class MembersOfficersController extends Controller
             'officers' => $officers,
             'totalMembers' => count($members),
             'totalOfficers' => count($officers),
-            'isAdmin' => true,
+            'isAdmin' => $isAdmin,
         ]);
     }
 }
