@@ -462,6 +462,11 @@ const getSignedDocumentType = (app) => {
 };
 
 const getViewUrl = (app) => {
+  // If there's a signed document (file), prioritize showing that
+  if (app.signed_document_path && app.signed_document_path.trim() !== '') {
+    return `/storage/${app.signed_document_path}`;
+  }
+  
   // For direct-upload forms, link directly to the PDF
   const reportPath = getReportPath(app);
   if ([
