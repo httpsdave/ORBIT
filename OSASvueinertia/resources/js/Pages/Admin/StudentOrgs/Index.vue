@@ -106,25 +106,6 @@
                 </div>
               </div>
 
-              <!-- Search & Sort Controls -->
-              <div class="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                <div class="flex-1">
-                  <input
-                    v-model="orgSearchQuery"
-                    type="text"
-                    placeholder="Search organizations by name, email, or acronym..."
-                    class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-                <div class="w-full sm:w-auto">
-                  <select v-model="sortOption" class="w-full sm:w-48 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option value="">Sort: Default</option>
-                    <option value="college">Sort by College (A → Z)</option>
-                    <option value="name">Sort by Organization Name (A → Z)</option>
-                  </select>
-                </div>
-              </div>
-
               <!-- Mobile Card View (hidden on large screens and above) -->
               <div class="block xl:hidden space-y-2 sm:space-y-3">
                 <!-- Non-College Affiliated Organizations Section -->
@@ -188,6 +169,7 @@
                             </button>
                             <!-- Assign to College Button -->
                             <button
+                              v-if="canChangeCollege(user)"
                               @click="openUserSelectionModalForAssignment(user)"
                               class="inline-flex items-center justify-center text-blue-500 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors duration-150 p-1 sm:p-1.5 rounded-lg"
                               title="Assign to College"
@@ -216,7 +198,7 @@
                   </div>
                 </div>
 
-                <div v-if="activeTab === 'college'" v-for="college in visibleColleges" :key="`mobile-${college.id}`" class="bg-gray-50 dark:bg-gray-700 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-gray-200 dark:border-gray-600 shadow-sm hover:shadow-md transition-all duration-200">
+                <div v-if="activeTab === 'college'" v-for="college in colleges" :key="`mobile-${college.id}`" class="bg-gray-50 dark:bg-gray-700 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-gray-200 dark:border-gray-600 shadow-sm hover:shadow-md transition-all duration-200">
                   <div 
                     @click="toggleCollege(college.id, $event)"
                     class="flex justify-between items-center cursor-pointer"
@@ -324,6 +306,7 @@
                               </svg>
                             </button>
                             <button
+                              v-if="canChangeCollege(user)"
                               @click="removeUserFromCollege(user.id)"
                               class="inline-flex items-center justify-center text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-150 p-1 sm:p-1.5 rounded-lg"
                             >
@@ -552,6 +535,7 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                               <button
+                                v-if="canChangeCollege(user)"
                                 @click="openUserSelectionModalForAssignment(user)"
                                 class="inline-flex items-center text-blue-500 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors duration-150 mr-4"
                                 title="Assign to College"
@@ -582,7 +566,7 @@
                   </div>
                 </div>
 
-                <div v-if="activeTab === 'college'" v-for="college in visibleColleges" :key="college.id" class="border border-gray-200 dark:border-gray-700 rounded-md overflow-hidden shadow-sm hover:shadow transition-shadow duration-200" data-college-accordion>
+                <div v-if="activeTab === 'college'" v-for="college in colleges" :key="college.id" class="border border-gray-200 dark:border-gray-700 rounded-md overflow-hidden shadow-sm hover:shadow transition-shadow duration-200" data-college-accordion>
                   <div 
                     @click="toggleCollege(college.id, $event)"
                     class="flex justify-between items-center p-4 cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-150"
@@ -738,6 +722,7 @@
                                 Assign Parent
                               </button>
                               <button
+                                v-if="canChangeCollege(user)"
                                 @click="removeUserFromCollege(user.id)"
                                 class="inline-flex items-center text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors duration-150"
                               >
@@ -924,16 +909,6 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
-          </div>
-
-          <!-- Search Input (only show if not assigning a specific user) -->
-          <div v-if="!(selectedUsers.length === 1 && selectedUsers[0])" class="mb-3 sm:mb-4">
-            <input
-              v-model="searchQuery"
-              type="text"
-              placeholder="Search organizations by name or email..."
-              class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
           </div>
 
           <!-- College Selection (always show to allow changing selection) -->
@@ -1248,11 +1223,6 @@ export default {
       selectedCollegeId: null,
       selectedCollegeName: '',
       selectedParentOrgId: null,
-  searchQuery: '',
-  // Search input for filtering organizations on the main page
-  orgSearchQuery: '',
-  // Sort option: '' | 'college'
-  sortOption: '',
       selectedUsers: [],
       clickOutsideHandler: null,
       assignForm: useForm({
@@ -1273,77 +1243,31 @@ export default {
       if (!this.users || !Array.isArray(this.users)) {
         return [];
       }
-      
-      if (!this.searchQuery) {
-        return this.users.filter(user => !user.college_id);
-      }
-      return this.users.filter(user => 
-        !user.college_id && 
-        ((user.name && user.name.toLowerCase().includes(this.searchQuery.toLowerCase())) ||
-         (user.email && user.email.toLowerCase().includes(this.searchQuery.toLowerCase())))
-      );
+      return this.users.filter(user => !user.college_id);
     },
     nonCollegeOrganizations() {
       if (!this.users || !Array.isArray(this.users)) {
         return [];
       }
-      const q = this.orgSearchQuery ? this.orgSearchQuery.toLowerCase() : '';
-      return this.users.filter(user => {
-        if (user.college_id) return false;
-        if (!q) return true;
-        return (user.name && user.name.toLowerCase().includes(q)) ||
-               (user.email && user.email.toLowerCase().includes(q));
-      });
+      return this.users.filter(user => !user.college_id);
     },
-
-    // Returns colleges filtered by search query and sorted according to sortOption
-    visibleColleges() {
-      if (!this.colleges || !Array.isArray(this.colleges)) return [];
-      const q = this.orgSearchQuery ? this.orgSearchQuery.toLowerCase() : '';
-
-      // Map colleges and filter their users by query
-      let mapped = this.colleges.map(col => {
-        const users = (col.users || []).filter(u => {
-          if (!q) return true;
-          return (u.name && u.name.toLowerCase().includes(q)) ||
-                 (u.email && u.email.toLowerCase().includes(q)) ||
-                 (col.acronym && col.acronym.toLowerCase().includes(q)) ||
-                 (col.name && col.name.toLowerCase().includes(q));
-        });
-        return Object.assign({}, col, { users });
-      }).filter(c => c.users && c.users.length > 0);
-
-      // Apply sorting
-      if (this.sortOption === 'college') {
-        mapped.sort((a, b) => (a.acronym || a.name || '').localeCompare(b.acronym || b.name || ''));
-      } else if (this.sortOption === 'name') {
-        mapped.forEach(c => c.users.sort((x, y) => (x.name || '').localeCompare(y.name || '')));
-      }
-
-      return mapped;
-    },
-
-    // Count of organizations that are affiliated with any college (sums up users in visibleColleges)
+    // Count of organizations that are affiliated with any college (sums up users in colleges)
     collegeAffiliatedCount() {
-      if (!this.visibleColleges || !Array.isArray(this.visibleColleges)) return 0;
+      if (!this.colleges || !Array.isArray(this.colleges)) return 0;
+      // Some colleges may include admin users in their users array elsewhere; ensure we count only non-admins
       const isAdmin = (user) => user && user.role && user.role.slug === 'admin';
-      return this.visibleColleges.reduce((total, college) => {
+      return this.colleges.reduce((total, college) => {
         if (!college || !Array.isArray(college.users)) return total;
         return total + college.users.filter(u => !isAdmin(u)).length;
       }, 0);
     },
-
     parentOrganizations() {
       if (!this.users || !Array.isArray(this.users)) {
         return [];
       }
-      const q = this.orgSearchQuery ? this.orgSearchQuery.toLowerCase() : '';
-      return this.users.filter(user => {
-        if (!(user.sub_organizations && user.sub_organizations.length > 0)) return false;
-        if (!q) return true;
-        return (user.name && user.name.toLowerCase().includes(q)) ||
-               (user.email && user.email.toLowerCase().includes(q));
-      });
+      return this.users.filter(user => 
+        user.sub_organizations && user.sub_organizations.length > 0
+      );
     },
     availableParentOrganizations() {
       if (!this.users || !Array.isArray(this.users)) {
@@ -1429,7 +1353,6 @@ export default {
       this.selectedCollegeId = collegeId;
       const college = this.colleges.find(c => c.id === collegeId);
       this.selectedCollegeName = college ? college.name : '';
-      this.searchQuery = '';
       this.selectedUsers = [];
       this.showUserSelectionModal = true;
     },
@@ -1437,7 +1360,6 @@ export default {
       this.showUserSelectionModal = false;
       this.selectedCollegeId = null;
       this.selectedCollegeName = '';
-      this.searchQuery = '';
       this.selectedUsers = [];
     },
     toggleUserSelection(user) {
@@ -1542,7 +1464,6 @@ export default {
     openUserSelectionModalForNewOrg() {
       this.selectedCollegeId = null;
       this.selectedCollegeName = 'any college';
-      this.searchQuery = '';
       this.selectedUsers = [];
       this.showUserSelectionModal = true;
     },
@@ -1550,14 +1471,12 @@ export default {
       this.selectedCollegeId = collegeId;
       const college = this.colleges.find(c => c.id === collegeId);
       this.selectedCollegeName = college ? college.name : '';
-      this.searchQuery = '';
       this.selectedUsers = [];
       this.showUserSelectionModal = true;
     },
     openUserSelectionModalForAssignment(user) {
       this.selectedCollegeId = null;
       this.selectedCollegeName = 'Select College';
-      this.searchQuery = '';
       this.selectedUsers = [user]; // Pre-select the user
       this.showUserSelectionModal = true;
     },
@@ -1671,6 +1590,13 @@ export default {
       // An organization can be assigned a parent if:
       // 1. It doesn't already have sub-organizations (can't be both parent and sub)
       // 2. It doesn't already have a parent organization
+      return !(organization.sub_organizations && organization.sub_organizations.length > 0) && 
+             !organization.parent_organization_id;
+    },
+    canChangeCollege(organization) {
+      // An organization can change its college affiliation if:
+      // 1. It's NOT a parent organization (doesn't have sub-organizations)
+      // 2. It's NOT a sub-organization (doesn't have a parent)
       return !(organization.sub_organizations && organization.sub_organizations.length > 0) && 
              !organization.parent_organization_id;
     }
