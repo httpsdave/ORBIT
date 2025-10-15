@@ -84,24 +84,24 @@
                     :class="['transition-colors', activeTab === 'college' ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200']"
                     @click.prevent="switchTab('college')"
                   >
-                    <span class="inline sm:hidden">College</span>
-                    <span class="hidden sm:inline">College Affiliated Organizations</span>
+                        <span class="inline sm:hidden">College ({{ collegeAffiliatedCount }})</span>
+                        <span class="hidden sm:inline">College Affiliated Organizations ({{ collegeAffiliatedCount }})</span>
                   </button>
                   <span class="mx-3 text-gray-400 dark:text-gray-500">|</span>
                   <button
                     :class="['transition-colors', activeTab === 'non-college' ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200']"
                     @click.prevent="switchTab('non-college')"
                   >
-                    <span class="inline sm:hidden">Non-College</span>
-                    <span class="hidden sm:inline">Non-College Affiliated Organizations</span>
+                    <span class="inline sm:hidden">Non ({{ nonCollegeOrganizations.length }})</span>
+                    <span class="hidden sm:inline">Non-College Affiliated Organizations ({{ nonCollegeOrganizations.length }})</span>
                   </button>
                   <span class="mx-3 text-gray-400 dark:text-gray-500">|</span>
                   <button
                     :class="['transition-colors', activeTab === 'sub-organizations' ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200']"
                     @click.prevent="switchTab('sub-organizations')"
                   >
-                    <span class="inline sm:hidden">Sub-Orgs</span>
-                    <span class="hidden sm:inline">Sub-Organizations</span>
+                    <span class="inline sm:hidden">Sub ({{ parentOrganizations.length }})</span>
+                    <span class="hidden sm:inline">Sub-Organizations ({{ parentOrganizations.length }})</span>
                   </button>
                 </div>
               </div>
@@ -1265,6 +1265,16 @@ export default {
         return [];
       }
       return this.users.filter(user => !user.college_id);
+    },
+    // Count of organizations that are affiliated with any college (sums up users in colleges)
+    collegeAffiliatedCount() {
+      if (!this.colleges || !Array.isArray(this.colleges)) return 0;
+      // Some colleges may include admin users in their users array elsewhere; ensure we count only non-admins
+      const isAdmin = (user) => user && user.role && user.role.slug === 'admin';
+      return this.colleges.reduce((total, college) => {
+        if (!college || !Array.isArray(college.users)) return total;
+        return total + college.users.filter(u => !isAdmin(u)).length;
+      }, 0);
     },
     parentOrganizations() {
       if (!this.users || !Array.isArray(this.users)) {
