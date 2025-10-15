@@ -1,6 +1,7 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { useForm } from '@inertiajs/vue3';
+import { useFormAutoSave } from '@/Composables/useFormAutoSave';
 
 const props = defineProps({
   initialFormData: {
@@ -147,6 +148,61 @@ const formattedDate = computed(() => {
 });
 
 const errors = ref({});
+const showRestorePrompt = ref(false);
+const autosavedData = ref(null);
+const hasRestoredData = ref(false);
+
+// Initialize autosave - watch the form data object
+const formDataForAutosave = computed(() => form.data());
+const { isAutoSaving, stop } = useFormAutoSave(formDataForAutosave, 'student_organization');
+
+// Fetch autosaved data on mount
+onMounted(async () => {
+  // Only try to restore if not in edit mode and no initial data
+  if (!props.isEdit && !props.initialFormData?.organization_name) {
+    try {
+      const response = await fetch('/get-autosaved-form-data?form_type=student_organization', {
+        headers: {
+          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+          'Accept': 'application/json',
+        },
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.form_data) {
+          autosavedData.value = data.form_data;
+          showRestorePrompt.value = true;
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch autosaved data:', error);
+    }
+  }
+});
+
+// Cleanup on unmount
+onUnmounted(() => {
+  stop();
+});
+
+const restoreAutosavedData = () => {
+  if (autosavedData.value) {
+    // Restore all form fields from autosaved data
+    Object.keys(autosavedData.value).forEach(key => {
+      if (key in form) {
+        form[key] = autosavedData.value[key];
+      }
+    });
+    hasRestoredData.value = true;
+  }
+  showRestorePrompt.value = false;
+};
+
+const dismissRestorePrompt = () => {
+  showRestorePrompt.value = false;
+  autosavedData.value = null;
+};
 
 const validateForm = () => {
   errors.value = {};
@@ -193,7 +249,20 @@ const submit = () => {
   } else {
     // For create mode, make the POST request
     form.post('/applications', {
-      onSuccess: () => {
+      onSuccess: async () => {
+        // Clear autosaved data after successful submission
+        try {
+          await fetch('/delete-autosaved-form-data?form_type=student_organization', {
+            method: 'DELETE',
+            headers: {
+              'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+              'Accept': 'application/json',
+            },
+            body: JSON.stringify({ form_type: 'student_organization' }),
+          });
+        } catch (error) {
+          console.error('Failed to clear autosaved data:', error);
+        }
         emit('submitted', form.data());
       },
       onError: (errors) => {
@@ -206,6 +275,37 @@ const submit = () => {
 </script>
 
 <template>
+
+<!-- Restore Prompt Modal -->
+<div v-if="showRestorePrompt" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+  <div class="bg-white rounded-lg shadow-xl p-6 max-w-md mx-4">
+    <div class="flex items-start mb-4">
+      <svg class="w-6 h-6 text-blue-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+      <div>
+        <h3 class="text-lg font-semibold text-gray-900">Restore Unsaved Changes?</h3>
+        <p class="mt-2 text-sm text-gray-600">
+          We found unsaved changes from your previous session. Would you like to restore them?
+        </p>
+      </div>
+    </div>
+    <div class="flex justify-end gap-3 mt-6">
+      <button
+        @click="dismissRestorePrompt"
+        class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+      >
+        Start Fresh
+      </button>
+      <button
+        @click="restoreAutosavedData"
+        class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+      >
+        Restore Changes
+      </button>
+    </div>
+  </div>
+</div>
 
 <div class="form-content" style="font-family: 'Times New Roman', serif; font-size: 11pt; line-height: 1.1; margin: 0; padding: 0; box-sizing: border-box; min-height: 100vh;">
   <div class="header text-center relative" style="font-size: 15px; margin: 0 0 0.5cm 0; padding-top: 0.5cm;">
@@ -463,6 +563,21 @@ const submit = () => {
       </div>
     </div>
     <div class="mt-6 text-center">
+      <!-- Autosave indicator -->
+      <div v-if="isAutoSaving" class="mb-3 text-sm text-gray-500 flex items-center justify-center gap-2">
+        <svg class="animate-spin h-4 w-4 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <span>Saving...</span>
+      </div>
+      <div v-else-if="!isEdit && !hasRestoredData" class="mb-3 text-sm text-green-600 flex items-center justify-center gap-2">
+        <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+        </svg>
+        <span>Draft saved</span>
+      </div>
+      
       <button
         type="submit"
         @click="submit"

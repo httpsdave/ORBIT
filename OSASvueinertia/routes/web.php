@@ -20,6 +20,7 @@ use App\Models\User;
 use App\Models\Role;
 use App\Http\Controllers\ArchiveController;
 use App\Http\Controllers\Auth\FirebasePasswordController;
+use App\Http\Controllers\FormAutosaveController;
 
 // Cookie reset route to clear corrupted browser cookies - IMPORTANT FOR 419 FIXES
 Route::get('/clear-cookies', function () {
@@ -152,7 +153,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/members-officers', [\App\Http\Controllers\Admin\MembersOfficersController::class, 'index'])->name('members-officers.index');
 
     // Auto-save form data route
-    Route::post('/auto-save-form-data', [OrganizationApplicationController::class, 'autoSaveFormData'])->name('auto-save-form-data');
+    Route::post('/auto-save-form-data', [FormAutosaveController::class, 'save'])->name('auto-save-form-data');
+    Route::get('/get-autosaved-form-data', [FormAutosaveController::class, 'get'])->name('get-autosaved-form-data');
+    Route::delete('/delete-autosaved-form-data', [FormAutosaveController::class, 'delete'])->name('delete-autosaved-form-data');
     
     // Clear saved form data route
     Route::delete('/clear-saved-form-data', [OrganizationApplicationController::class, 'clearSavedFormData'])->name('clear-saved-form-data');
