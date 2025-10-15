@@ -150,16 +150,30 @@ const formattedDate = computed(() => {
 const errors = ref({});
 const showRestorePrompt = ref(false);
 const autosavedData = ref(null);
-const hasRestoredData = ref(false);
 
-// Initialize autosave - watch the form data object
+// Initialize autosave - DISABLED by default until we determine what to do
 const formDataForAutosave = computed(() => form.data());
-const { isAutoSaving, stop } = useFormAutoSave(formDataForAutosave, 'student_organization');
+const { isAutoSaving, enable, stop } = useFormAutoSave(formDataForAutosave, 'student_organization', { enabled: false });
+
+// Check if autosaved data is newer than initialized data
+const isAutosavedDataNewer = (autosavedTimestamp) => {
+  if (!autosavedTimestamp) return false;
+  
+  // If we have initialFormData with a timestamp, compare
+  if (props.initialFormData?.updated_at || props.initialFormData?.created_at) {
+    const initialTimestamp = new Date(props.initialFormData.updated_at || props.initialFormData.created_at);
+    const autosaveTimestamp = new Date(autosavedTimestamp);
+    return autosaveTimestamp > initialTimestamp;
+  }
+  
+  // If no initial timestamp but we have autosaved data, it's "newer"
+  return true;
+};
 
 // Fetch autosaved data on mount
 onMounted(async () => {
-  // Only try to restore if not in edit mode and no initial data
-  if (!props.isEdit && !props.initialFormData?.organization_name) {
+  // Try to fetch autosaved data (works for both new and edit scenarios)
+  if (!props.isEdit) {
     try {
       const response = await fetch('/get-autosaved-form-data?form_type=student_organization', {
         headers: {
@@ -171,12 +185,26 @@ onMounted(async () => {
       if (response.ok) {
         const data = await response.json();
         if (data.success && data.form_data) {
-          autosavedData.value = data.form_data;
-          showRestorePrompt.value = true;
+          // Check if autosaved data is newer than initialized data
+          if (isAutosavedDataNewer(data.updated_at)) {
+            autosavedData.value = data.form_data;
+            showRestorePrompt.value = true;
+          } else {
+            // Autosaved data is older, enable autosave with current initialized data
+            enable();
+          }
+        } else {
+          // No autosaved data, enable autosave
+          enable();
         }
+      } else {
+        // No autosaved data found (404), enable autosave
+        enable();
       }
     } catch (error) {
       console.error('Failed to fetch autosaved data:', error);
+      // On error, still enable autosave
+      enable();
     }
   }
 });
@@ -194,14 +222,30 @@ const restoreAutosavedData = () => {
         form[key] = autosavedData.value[key];
       }
     });
-    hasRestoredData.value = true;
   }
   showRestorePrompt.value = false;
+  enable(); // Enable autosave after restoring
 };
 
-const dismissRestorePrompt = () => {
+const dismissRestorePrompt = async () => {
   showRestorePrompt.value = false;
   autosavedData.value = null;
+  
+  // Clear the old autosaved data since user chose to dismiss
+  try {
+    await fetch('/delete-autosaved-form-data?form_type=student_organization', {
+      method: 'DELETE',
+      headers: {
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({ form_type: 'student_organization' }),
+    });
+  } catch (error) {
+    console.error('Failed to clear autosaved data:', error);
+  }
+  
+  enable(); // Enable autosave after dismissing
 };
 
 const validateForm = () => {
@@ -571,7 +615,7 @@ const submit = () => {
         </svg>
         <span>Saving...</span>
       </div>
-      <div v-else-if="!isEdit && !hasRestoredData" class="mb-3 text-sm text-green-600 flex items-center justify-center gap-2">
+      <div v-else-if="!isEdit" class="mb-3 text-sm text-green-600 flex items-center justify-center gap-2">
         <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
           <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
         </svg>
