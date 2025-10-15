@@ -106,6 +106,25 @@
                 </div>
               </div>
 
+              <!-- Search & Sort Controls -->
+              <div class="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div class="flex-1">
+                  <input
+                    v-model="orgSearchQuery"
+                    type="text"
+                    placeholder="Search organizations by name, email, or acronym..."
+                    class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+                <div class="w-full sm:w-auto">
+                  <select v-model="sortOption" class="w-full sm:w-48 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">Sort: Default</option>
+                    <option value="college">Sort by College (A → Z)</option>
+                    <option value="name">Sort by Organization Name (A → Z)</option>
+                  </select>
+                </div>
+              </div>
+
               <!-- Mobile Card View (hidden on large screens and above) -->
               <div class="block xl:hidden space-y-2 sm:space-y-3">
                 <!-- Non-College Affiliated Organizations Section -->
@@ -197,7 +216,7 @@
                   </div>
                 </div>
 
-                <div v-if="activeTab === 'college'" v-for="college in colleges" :key="`mobile-${college.id}`" class="bg-gray-50 dark:bg-gray-700 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-gray-200 dark:border-gray-600 shadow-sm hover:shadow-md transition-all duration-200">
+                <div v-if="activeTab === 'college'" v-for="college in visibleColleges" :key="`mobile-${college.id}`" class="bg-gray-50 dark:bg-gray-700 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-gray-200 dark:border-gray-600 shadow-sm hover:shadow-md transition-all duration-200">
                   <div 
                     @click="toggleCollege(college.id, $event)"
                     class="flex justify-between items-center cursor-pointer"
@@ -563,7 +582,7 @@
                   </div>
                 </div>
 
-                <div v-if="activeTab === 'college'" v-for="college in colleges" :key="college.id" class="border border-gray-200 dark:border-gray-700 rounded-md overflow-hidden shadow-sm hover:shadow transition-shadow duration-200" data-college-accordion>
+                <div v-if="activeTab === 'college'" v-for="college in visibleColleges" :key="college.id" class="border border-gray-200 dark:border-gray-700 rounded-md overflow-hidden shadow-sm hover:shadow transition-shadow duration-200" data-college-accordion>
                   <div 
                     @click="toggleCollege(college.id, $event)"
                     class="flex justify-between items-center p-4 cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-150"
@@ -1229,7 +1248,11 @@ export default {
       selectedCollegeId: null,
       selectedCollegeName: '',
       selectedParentOrgId: null,
-      searchQuery: '',
+  searchQuery: '',
+  // Search input for filtering organizations on the main page
+  orgSearchQuery: '',
+  // Sort option: '' | 'college'
+  sortOption: '',
       selectedUsers: [],
       clickOutsideHandler: null,
       assignForm: useForm({
@@ -1264,25 +1287,63 @@ export default {
       if (!this.users || !Array.isArray(this.users)) {
         return [];
       }
-      return this.users.filter(user => !user.college_id);
+      const q = this.orgSearchQuery ? this.orgSearchQuery.toLowerCase() : '';
+      return this.users.filter(user => {
+        if (user.college_id) return false;
+        if (!q) return true;
+        return (user.name && user.name.toLowerCase().includes(q)) ||
+               (user.email && user.email.toLowerCase().includes(q));
+      });
     },
-    // Count of organizations that are affiliated with any college (sums up users in colleges)
+
+    // Returns colleges filtered by search query and sorted according to sortOption
+    visibleColleges() {
+      if (!this.colleges || !Array.isArray(this.colleges)) return [];
+      const q = this.orgSearchQuery ? this.orgSearchQuery.toLowerCase() : '';
+
+      // Map colleges and filter their users by query
+      let mapped = this.colleges.map(col => {
+        const users = (col.users || []).filter(u => {
+          if (!q) return true;
+          return (u.name && u.name.toLowerCase().includes(q)) ||
+                 (u.email && u.email.toLowerCase().includes(q)) ||
+                 (col.acronym && col.acronym.toLowerCase().includes(q)) ||
+                 (col.name && col.name.toLowerCase().includes(q));
+        });
+        return Object.assign({}, col, { users });
+      }).filter(c => c.users && c.users.length > 0);
+
+      // Apply sorting
+      if (this.sortOption === 'college') {
+        mapped.sort((a, b) => (a.acronym || a.name || '').localeCompare(b.acronym || b.name || ''));
+      } else if (this.sortOption === 'name') {
+        mapped.forEach(c => c.users.sort((x, y) => (x.name || '').localeCompare(y.name || '')));
+      }
+
+      return mapped;
+    },
+
+    // Count of organizations that are affiliated with any college (sums up users in visibleColleges)
     collegeAffiliatedCount() {
-      if (!this.colleges || !Array.isArray(this.colleges)) return 0;
-      // Some colleges may include admin users in their users array elsewhere; ensure we count only non-admins
+      if (!this.visibleColleges || !Array.isArray(this.visibleColleges)) return 0;
       const isAdmin = (user) => user && user.role && user.role.slug === 'admin';
-      return this.colleges.reduce((total, college) => {
+      return this.visibleColleges.reduce((total, college) => {
         if (!college || !Array.isArray(college.users)) return total;
         return total + college.users.filter(u => !isAdmin(u)).length;
       }, 0);
     },
+
     parentOrganizations() {
       if (!this.users || !Array.isArray(this.users)) {
         return [];
       }
-      return this.users.filter(user => 
-        user.sub_organizations && user.sub_organizations.length > 0
-      );
+      const q = this.orgSearchQuery ? this.orgSearchQuery.toLowerCase() : '';
+      return this.users.filter(user => {
+        if (!(user.sub_organizations && user.sub_organizations.length > 0)) return false;
+        if (!q) return true;
+        return (user.name && user.name.toLowerCase().includes(q)) ||
+               (user.email && user.email.toLowerCase().includes(q));
+      });
     },
     availableParentOrganizations() {
       if (!this.users || !Array.isArray(this.users)) {

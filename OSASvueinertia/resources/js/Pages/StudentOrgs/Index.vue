@@ -14,19 +14,42 @@
             <div class="pl-4 pr-4 sm:pl-8 sm:pr-6 lg:pl-16 lg:pr-12">
                 <h1 class="text-3xl font-bold mb-2" :class="isDarkMode ? 'text-white' : 'text-gray-900'">Student Organizations</h1>
                 <p class="text-sm mb-6" :class="isDarkMode ? 'text-gray-400' : 'text-gray-600'">
-                    Showing all active student organizations
+                    Showing {{ filteredOrganizations.length }} of {{ organizations.length }} active student organizations
                 </p>
 
-                <div class="mb-6 max-w-md">
-                    <input
-                        v-model="searchQuery"
-                        type="text"
-                        placeholder="Search organizations or colleges..."
-                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm transition-colors duration-300"
-                        :class="isDarkMode 
-                            ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400' 
-                            : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'"
-                    />
+                <!-- Search and Filter Controls -->
+                <div class="mb-6 flex flex-col sm:flex-row gap-4 max-w-4xl">
+                    <!-- Search Bar -->
+                    <div class="flex-1">
+                        <input
+                            v-model="searchQuery"
+                            type="text"
+                            placeholder="Search organizations by name..."
+                            class="w-full px-4 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm transition-colors duration-300"
+                            :class="isDarkMode 
+                                ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400' 
+                                : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'"
+                        />
+                    </div>
+
+                    <!-- College Filter Dropdown -->
+                    <div class="w-full sm:w-64">
+                        <select
+                            v-model="selectedCollege"
+                            class="w-full px-4 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm transition-colors duration-300"
+                            :class="isDarkMode 
+                                ? 'bg-gray-800 border-gray-600 text-white' 
+                                : 'bg-white border-gray-300 text-gray-900'"
+                        >
+                            <option value="">All Colleges</option>
+                            <option value="non-college">Non-College Affiliated</option>
+                            <option v-for="college in availableColleges" :key="college.id" :value="college.id">
+                                {{ college.acronym || college.name }}
+                            </option>
+                        </select>
+                    </div>
+
+
                 </div>
 
                 <div v-if="filteredOrganizations.length === 0" class="text-center py-12" :class="isDarkMode ? 'text-gray-400' : 'text-gray-500'">
@@ -128,12 +151,28 @@ const props = defineProps({
 
 const { isDark: isDarkMode } = useTheme();
 const searchQuery = ref('');
+const selectedCollege = ref('');
 const orgNameRefs = ref({});
 const currentTooltip = ref({
     show: false,
     text: '',
     top: 0,
     left: 0
+});
+
+// Get unique colleges from organizations
+const availableColleges = computed(() => {
+    const colleges = props.organizations
+        .filter(org => org.college)
+        .map(org => org.college)
+        .filter((college, index, self) => 
+            index === self.findIndex(c => c.id === college.id)
+        );
+    return colleges.sort((a, b) => {
+        const nameA = a.acronym || a.name || '';
+        const nameB = b.acronym || b.name || '';
+        return nameA.localeCompare(nameB);
+    });
 });
 
 const showTooltipForOrg = async (org) => {
@@ -198,13 +237,27 @@ const hideTooltip = () => {
 };
 
 const filteredOrganizations = computed(() => {
-    if (!searchQuery.value) return props.organizations;
-    const q = searchQuery.value.toLowerCase();
-    return props.organizations.filter(org => {
-        const name = org.name ? org.name.toLowerCase() : '';
-        const college = org.college ? (org.college.name + ' ' + (org.college.acronym || '')).toLowerCase() : '';
-        return name.includes(q) || college.includes(q);
-    });
+    let filtered = [...props.organizations];
+    
+    // Apply search filter
+    if (searchQuery.value) {
+        const q = searchQuery.value.toLowerCase();
+        filtered = filtered.filter(org => {
+            const name = org.name ? org.name.toLowerCase() : '';
+            return name.includes(q);
+        });
+    }
+    
+    // Apply college filter
+    if (selectedCollege.value) {
+        if (selectedCollege.value === 'non-college') {
+            filtered = filtered.filter(org => !org.college);
+        } else {
+            filtered = filtered.filter(org => org.college && org.college.id === parseInt(selectedCollege.value));
+        }
+    }
+    
+    return filtered;
 });
 </script>
 
