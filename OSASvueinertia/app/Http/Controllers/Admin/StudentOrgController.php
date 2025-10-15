@@ -15,8 +15,24 @@ class StudentOrgController extends Controller
      */
     public function index()
     {
-        $colleges = College::with(['users.role', 'users.parentOrganization', 'users.subOrganizations'])->get();
-        $users = User::with(['role', 'parentOrganization', 'subOrganizations'])->get(); // For selection modal
+        // Get the admin role id to exclude admin users
+        $adminRoleId = \App\Models\Role::where('slug', 'admin')->value('id');
+        
+        // Load colleges with their users, excluding admin accounts
+        $colleges = College::with([
+            'users' => function ($query) use ($adminRoleId) {
+                $query->where('role_id', '!=', $adminRoleId);
+            },
+            'users.role', 
+            'users.parentOrganization', 
+            'users.subOrganizations'
+        ])->get();
+        
+        // For selection modal, exclude admin accounts
+        $users = User::with(['role', 'parentOrganization', 'subOrganizations'])
+            ->where('role_id', '!=', $adminRoleId)
+            ->get();
+            
         return Inertia::render('Admin/StudentOrgs/Index', [
             'colleges' => $colleges,
             'users' => $users,
