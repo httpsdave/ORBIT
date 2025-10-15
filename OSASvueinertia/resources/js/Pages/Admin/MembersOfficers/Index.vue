@@ -27,7 +27,7 @@ const props = defineProps({
 });
 
 // Tab state
-const activeTab = ref('members'); // 'members' or 'officers'
+const activeTab = ref('officers'); // 'officers' or 'members'
 
 // Search and filter state
 const searchQuery = ref('');
@@ -534,7 +534,7 @@ const visiblePages = computed(() => {
 </script>
 
 <template>
-  <Head title="Members & Officers" />
+  <Head title="Officers & Members" />
 
   <SidebarLayout :is-admin="isAdmin">
     <!-- Colored Banner -->
@@ -552,7 +552,7 @@ const visiblePages = computed(() => {
           <div class="flex items-center justify-between mb-2">
             <div>
               <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
-                Members & Officers
+                Officers & Members
               </h1>
               <p class="text-gray-600 dark:text-gray-400 mt-1">
                 Overview of all members and officers from submitted forms
@@ -574,17 +574,6 @@ const visiblePages = computed(() => {
               <button
                 :class="[
                   'px-4 py-3 border-b-2 transition-colors',
-                  activeTab === 'members'
-                    ? 'border-blue-600 text-blue-600 dark:text-blue-400'
-                    : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600'
-                ]"
-                @click="switchTab('members')"
-              >
-                List of Members ({{ totalMembers }})
-              </button>
-              <button
-                :class="[
-                  'px-4 py-3 border-b-2 transition-colors ml-4',
                   activeTab === 'officers'
                     ? 'border-blue-600 text-blue-600 dark:text-blue-400'
                     : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600'
@@ -592,6 +581,17 @@ const visiblePages = computed(() => {
                 @click="switchTab('officers')"
               >
                 List of Officers ({{ totalOfficers }})
+              </button>
+              <button
+                :class="[
+                  'px-4 py-3 border-b-2 transition-colors ml-4',
+                  activeTab === 'members'
+                    ? 'border-blue-600 text-blue-600 dark:text-blue-400'
+                    : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600'
+                ]"
+                @click="switchTab('members')"
+              >
+                List of Members ({{ totalMembers }})
               </button>
             </div>
           </div>
