@@ -20,10 +20,10 @@ class PublicStudentOrgController extends Controller
         // Get the admin role id
         $adminRoleId = \App\Models\Role::where('slug', 'admin')->value('id');
 
-        // Get all users who are not admins, have a college_id set, and are active
+        // Get all users who are not admins and are active
+        // This now includes both college-affiliated and non-college-affiliated orgs
         $organizations = \App\Models\User::with('college')
             ->where('role_id', '!=', $adminRoleId)
-            ->whereNotNull('college_id')
             ->where('status', 'active')
             ->get();
 

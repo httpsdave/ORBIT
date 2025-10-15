@@ -14,7 +14,7 @@
             <div class="pl-4 pr-4 sm:pl-8 sm:pr-6 lg:pl-16 lg:pr-12">
                 <h1 class="text-3xl font-bold mb-2" :class="isDarkMode ? 'text-white' : 'text-gray-900'">Student Organizations</h1>
                 <p class="text-sm mb-6" :class="isDarkMode ? 'text-gray-400' : 'text-gray-600'">
-                    Showing active student organizations only
+                    Showing all active student organizations
                 </p>
 
                 <div class="mb-6 max-w-md">
@@ -63,6 +63,7 @@
                                     <h3 class="text-lg font-semibold mb-1 truncate w-full" :class="isDarkMode ? 'text-white' : 'text-gray-800'">{{ org.name }}</h3>
                                 </div>
                                 <span v-if="org.college" class="text-xs px-2 py-1 rounded-full mb-2" :class="isDarkMode ? 'bg-blue-900 text-blue-200' : 'bg-blue-100 text-blue-800'">{{ org.college.acronym || org.college.name }}</span>
+                                <span v-else class="text-xs px-2 py-1 rounded-full mb-2" :class="isDarkMode ? 'bg-purple-900 text-purple-200' : 'bg-purple-100 text-purple-800'">Non-College</span>
                                 <p v-if="org.description && !auth.user || (auth.user && auth.user.role !== 'admin' && (!auth.user.role || auth.user.role.name !== 'admin'))" class="text-xs line-clamp-2 mb-2 w-full" :class="isDarkMode ? 'text-gray-300' : 'text-gray-600'">{{ org.description }}</p>
                                 <p v-else class="text-xs line-clamp-2 mb-2 w-full" :class="isDarkMode ? 'text-gray-300' : 'text-gray-600'">No description available</p>
                             </div>
