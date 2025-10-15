@@ -78,7 +78,7 @@
           >
             <button
               @click="toggleFaq(index)"
-              class="w-full px-4 sm:px-6 py-3 sm:py-4 text-left flex justify-between items-center hover:bg-opacity-50 transition-colors duration-300"
+              class="w-full px-4 sm:px-6 py-3 sm:py-4 text-left flex justify-between items-center hover:bg-opacity-50 transition-colors duration-300 focus:outline-none"
               :class="isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-50'"
             >
               <div class="flex items-start flex-1 min-w-0">
@@ -107,14 +107,14 @@
             </button>
             
             <transition
-              enter-active-class="transition-all duration-300 ease-out"
-              enter-from-class="opacity-0 max-h-0"
-              enter-to-class="opacity-100 max-h-screen"
+              enter-active-class="transition-all duration-400 ease-out"
+              enter-from-class="opacity-0 transform -translate-y-2"
+              enter-to-class="opacity-100 transform translate-y-0"
               leave-active-class="transition-all duration-300 ease-in"
-              leave-from-class="opacity-100 max-h-screen"
-              leave-to-class="opacity-0 max-h-0"
+              leave-from-class="opacity-100 transform translate-y-0"
+              leave-to-class="opacity-0 transform -translate-y-2"
             >
-              <div v-show="openFaqs.includes(faqs.indexOf(faq))" class="px-4 sm:px-6 pb-4 sm:pb-6">
+              <div v-show="openFaqs.includes(faqs.indexOf(faq))" class="px-4 sm:px-6 pb-4 sm:pb-6 overflow-hidden">
                 <div class="pt-4 border-t" :class="isDarkMode ? 'border-gray-700' : 'border-gray-200'">
                   <div class="prose prose-sm sm:prose-base max-w-none leading-relaxed" :class="isDarkMode ? 'prose-invert' : ''" v-html="faq.answer"></div>
                 </div>
@@ -216,6 +216,11 @@ const faqs = [
     category: 'Applications',
     question: 'Can I edit my application after submitting it?',
     answer: '<p>This depends on the application status:</p><ul><li><strong>Pending:</strong> Yes, you can still edit your application while it is pending review.</li><li><strong>Approved:</strong> No, you cannot edit approved applications. Contact OSAS if changes are needed.</li><li><strong>Rejected:</strong> Yes, you can edit and resubmit rejected applications based on admin feedback.</li></ul>'
+  },
+  {
+    category: 'Applications',
+    question: 'When should I submit a Recognition Form vs a Renewal Form?',
+    answer: '<p>The type of form you submit depends on your organization\'s status:</p><p><strong>Recognition Form (LSPU-OSAS-SF-001):</strong></p><ul><li>For <strong>newly established organizations</strong> that have never been registered before</li><li>First-time registration with OSAS</li><li>Organizations applying for official recognition for the first time</li></ul><p><strong>Renewal Form (LSPU-OSAS-SF-002):</strong></p><ul><li>For organizations that have been <strong>previously recognized or accredited</strong></li><li>Annual renewal process for existing organizations</li><li>Maintains active status for organizations already in the system</li></ul><p><em>Important:</em> If your organization was recognized in a previous academic year, you only need to submit a renewal form to continue operations. Recognition is a one-time process, while renewal is required periodically (typically annually) to maintain active status.</p>'
   },
 
   {

@@ -467,9 +467,9 @@ const nonAffiliatedCount = computed(() => {
     return Math.max(0, total - totalCollegeOrgs);
 });
 
-// College affiliated organizations count (sum of all college orgs)
+// College affiliated organizations count (sum of parent organizations only in all colleges)
 const collegeAffiliatedCount = computed(() => {
-    return (props.collegesData || []).reduce((sum, c) => sum + (c && c.student_orgs_count ? c.student_orgs_count : 0), 0);
+    return (props.collegesData || []).reduce((sum, c) => sum + (c && c.parent_orgs_count ? c.parent_orgs_count : 0), 0);
 });
 
 // Average orgs per college - keeping for reference but we won't display it

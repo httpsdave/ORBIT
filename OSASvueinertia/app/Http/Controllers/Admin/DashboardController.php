@@ -20,6 +20,12 @@ class DashboardController extends Controller
             ->get()
             ->map(function ($college) {
                 $college->student_orgs_count = $college->users->count();
+                
+                // Count only parent organizations (organizations that have sub-organizations)
+                $college->parent_orgs_count = $college->users->filter(function($user) {
+                    return $user->subOrganizations()->count() > 0;
+                })->count();
+                
                 return $college;
             });
             
