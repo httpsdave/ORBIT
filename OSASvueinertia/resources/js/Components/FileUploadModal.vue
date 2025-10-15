@@ -5,7 +5,11 @@ const props = defineProps({
   showModal: Boolean,
   application: Object,
   isUploading: Boolean,
-  uploadProgress: Number
+  uploadProgress: Number,
+  allowLinkSubmissions: {
+    type: Boolean,
+    default: true
+  }
 });
 
 const emit = defineEmits(['close', 'upload', 'submitLink']);
@@ -174,7 +178,7 @@ const switchSubmissionType = (type) => {
           <!-- Submission Options -->
           <div v-else class="space-y-4">
             <!-- Toggle Buttons -->
-            <div class="flex space-x-2">
+            <div v-if="allowLinkSubmissions" class="flex space-x-2">
               <button
                 @click="switchSubmissionType('upload')"
                 :class="[

@@ -1,7 +1,11 @@
 <script setup>
-import { Link, router } from '@inertiajs/vue3';
-import { ref, nextTick, onMounted, onUnmounted, watch } from 'vue';
+import { Link, router, usePage } from '@inertiajs/vue3';
+import { ref, nextTick, onMounted, onUnmounted, watch, computed } from 'vue';
 import FileUploadModal from '@/Components/FileUploadModal.vue';
+
+const page = usePage();
+const allowLinkSubmissions = computed(() => page.props.auth.user?.allow_link_submissions ?? true);
+
 const props = defineProps({
   applications: Array,
   isAdmin: Boolean,
@@ -1109,6 +1113,7 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
       :application="selectedApplicationForUpload"
       :isUploading="isUploading"
       :uploadProgress="uploadProgress"
+      :allowLinkSubmissions="allowLinkSubmissions"
       @close="closeUploadModal"
       @upload="uploadDocument"
       @submitLink="submitLink"

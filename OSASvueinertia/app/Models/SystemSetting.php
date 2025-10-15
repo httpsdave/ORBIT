@@ -79,4 +79,20 @@ class SystemSetting extends Model
     {
         return static::set('allow_image_uploads', $value ? '1' : '0', 'Allow image uploads in List of Members and List of Officers forms');
     }
+
+    /**
+     * Check if link submissions are allowed
+     */
+    public static function allowLinkSubmissions()
+    {
+        return (bool) static::get('allow_link_submissions', true);
+    }
+
+    /**
+     * Set link submission setting
+     */
+    public static function setAllowLinkSubmissions($value)
+    {
+        return static::set('allow_link_submissions', $value ? '1' : '0', 'Allow link submissions in Upload Signed Document modal');
+    }
 }

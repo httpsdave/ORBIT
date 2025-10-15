@@ -12,6 +12,7 @@ const form = useForm({
     coordinator_name: user.coordinator_name || '',
     director_name: user.director_name || '',
     allow_image_uploads: user.allow_image_uploads !== undefined ? user.allow_image_uploads : true,
+    allow_link_submissions: user.allow_link_submissions !== undefined ? user.allow_link_submissions : true,
 });
 
 const isEditing = ref(false);
@@ -19,6 +20,7 @@ const originalDefaults = ref({
     coordinator_name: user.coordinator_name || '',
     director_name: user.director_name || '',
     allow_image_uploads: user.allow_image_uploads !== undefined ? user.allow_image_uploads : true,
+    allow_link_submissions: user.allow_link_submissions !== undefined ? user.allow_link_submissions : true,
 });
 
 // Watch for changes in user data and update form values
@@ -28,10 +30,12 @@ watch(() => user, (newUser) => {
         form.coordinator_name = newUser.coordinator_name || '';
         form.director_name = newUser.director_name || '';
         form.allow_image_uploads = newUser.allow_image_uploads !== undefined ? newUser.allow_image_uploads : true;
+        form.allow_link_submissions = newUser.allow_link_submissions !== undefined ? newUser.allow_link_submissions : true;
         originalDefaults.value = {
             coordinator_name: newUser.coordinator_name || '',
             director_name: newUser.director_name || '',
             allow_image_uploads: newUser.allow_image_uploads !== undefined ? newUser.allow_image_uploads : true,
+            allow_link_submissions: newUser.allow_link_submissions !== undefined ? newUser.allow_link_submissions : true,
         };
         isEditing.value = false;
     }
@@ -45,6 +49,7 @@ function cancelEdit() {
     form.coordinator_name = originalDefaults.value.coordinator_name;
     form.director_name = originalDefaults.value.director_name;
     form.allow_image_uploads = originalDefaults.value.allow_image_uploads;
+    form.allow_link_submissions = originalDefaults.value.allow_link_submissions;
     isEditing.value = false;
     form.clearErrors();
 }
@@ -125,6 +130,41 @@ function submit() {
                                     :class="[
                                         'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
                                         form.allow_image_uploads ? 'translate-x-5' : 'translate-x-0'
+                                    ]"
+                                ></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <div class="flex-1">
+                        <InputLabel for="allow_link_submissions" value="Allow Link Submissions" class="text-gray-700 dark:text-gray-300 font-medium" />
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                            Enable or disable link submission option in Upload Signed Document modal
+                        </p>
+                    </div>
+                    <div class="ml-4">
+                        <div class="relative inline-flex items-center">
+                            <input 
+                                id="allow_link_submissions"
+                                type="checkbox" 
+                                v-model="form.allow_link_submissions"
+                                :disabled="!isEditing"
+                                class="sr-only"
+                            />
+                            <label 
+                                for="allow_link_submissions" 
+                                :class="[
+                                    'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2',
+                                    form.allow_link_submissions ? 'bg-amber-500' : 'bg-gray-200',
+                                    !isEditing ? 'opacity-50 cursor-not-allowed' : ''
+                                ]"
+                            >
+                                <span 
+                                    :class="[
+                                        'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
+                                        form.allow_link_submissions ? 'translate-x-5' : 'translate-x-0'
                                     ]"
                                 ></span>
                             </label>
