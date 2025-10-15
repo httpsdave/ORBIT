@@ -467,6 +467,11 @@ const nonAffiliatedCount = computed(() => {
     return Math.max(0, total - totalCollegeOrgs);
 });
 
+// College affiliated organizations count (sum of all college orgs)
+const collegeAffiliatedCount = computed(() => {
+    return (props.collegesData || []).reduce((sum, c) => sum + (c && c.student_orgs_count ? c.student_orgs_count : 0), 0);
+});
+
 // Average orgs per college - keeping for reference but we won't display it
 const avgOrgsPerCollege = computed(() => {
     if (collegesWithOrgsCount.value === 0) return 0;
@@ -504,6 +509,12 @@ const statsCards = computed(() => [
         value: props.totalSubOrgs,
         icon: 'organization-chart',
         color: 'green'
+    },
+    {
+        title: 'College Affiliated Orgs',
+        value: collegeAffiliatedCount.value,
+        icon: 'academic-cap',
+        color: 'blue'
     }
     // Removed Past Events card
 ]);
@@ -787,10 +798,18 @@ const handleAdviserClickOutside = (event) => {
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
                             </div>
-                            <!-- Organization Chart Icon for Sub-Organizations -->
+                            <!-- Custom Icon for Sub-Organizations (uses currentColor) -->
                             <div v-else-if="card.icon === 'organization-chart'" class="w-12 h-12 rounded-full flex items-center justify-center bg-green-100 dark:bg-green-900/50">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-500 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-500 dark:text-green-400" viewBox="0 -960 960 960" fill="currentColor" width="24px" height="24px">
+                                    <path d="M600-120v-120H440v-400h-80v120H80v-320h280v120h240v-120h280v320H600v-120h-80v320h80v-120h280v320H600ZM160-760v160-160Zm520 400v160-160Zm0-400v160-160Zm0 160h120v-160H680v160Zm0 400h120v-160H680v160ZM160-600h120v-160H160v160Z" />
+                                </svg>
+                            </div>
+                            <!-- Academic Cap Icon for College Affiliated Orgs -->
+                            <div v-else-if="card.icon === 'academic-cap'" class="w-12 h-12 rounded-full flex items-center justify-center bg-blue-100 dark:bg-blue-900/50">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222" />
                                 </svg>
                             </div>
                         </div>
