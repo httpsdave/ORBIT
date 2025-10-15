@@ -176,7 +176,38 @@ const statusOptions = computed(() => {
   const statuses = props.allStatuses && props.allStatuses.length > 0 
     ? props.allStatuses 
     : [...new Set(props.applications.map(app => app.status))];
-  return statuses.map(status => ({ value: status, label: status }));
+  
+  // Helper to check if an app has a signed document
+  const hasSignedDocument = (app) => {
+    return (app.signed_document_path && app.signed_document_path.trim() !== '') || 
+           (app.signed_document_link && app.signed_document_link.trim() !== '');
+  };
+  
+  // Create status options with "with Signed" variants (only if they exist)
+  const options = [];
+  statuses.forEach(status => {
+    // Always add the regular status option
+    options.push({ value: status, label: status });
+    
+    // Check if there are any applications with this status AND a signed document
+    const hasAppsWithSigned = props.applications.some(app => {
+      const statusMatch = status.toLowerCase() === 'disapproved' 
+        ? ['rejected', 'disapproved'].includes(app.status?.toLowerCase())
+        : app.status?.toLowerCase() === status.toLowerCase();
+      
+      return statusMatch && hasSignedDocument(app);
+    });
+    
+    // Only add "with Signed" variant if there are actual applications
+    if (hasAppsWithSigned) {
+      options.push({ 
+        value: `${status}_with_signed`, 
+        label: `${status} with Signed` 
+      });
+    }
+  });
+  
+  return options;
 });
 
 const formTypeOptions = computed(() => {
@@ -210,6 +241,33 @@ const formTypeOptions = computed(() => {
 
 const organizationOptions = computed(() => {
   return props.users.map(user => ({ value: user.id.toString(), label: user.name }));
+});
+
+// Helper to check if an app has a signed document
+const hasSignedDocument = (app) => {
+  return (app.signed_document_path && app.signed_document_path.trim() !== '') || 
+         (app.signed_document_link && app.signed_document_link.trim() !== '');
+};
+
+// Check if there are pending applications with signed documents
+const hasPendingWithSigned = computed(() => {
+  return props.applications.some(app => 
+    app.status?.toLowerCase() === 'pending' && hasSignedDocument(app)
+  );
+});
+
+// Check if there are approved applications with signed documents
+const hasApprovedWithSigned = computed(() => {
+  return props.applications.some(app => 
+    app.status?.toLowerCase() === 'approved' && hasSignedDocument(app)
+  );
+});
+
+// Check if there are disapproved applications with signed documents
+const hasDisapprovedWithSigned = computed(() => {
+  return props.applications.some(app => 
+    ['rejected', 'disapproved'].includes(app.status?.toLowerCase()) && hasSignedDocument(app)
+  );
 });
 
 // Combined filter function - now triggers server-side filtering
@@ -908,11 +966,14 @@ const confirmClearData = () => {
 
       <!-- Status pill buttons (All | Pending | Approved | Disapproved) - Non-Admin Users -->
       <div v-if="!isAdmin" class="flex justify-center sm:justify-end">
-        <div class="inline-flex rounded-full bg-gray-100 dark:bg-gray-800 p-0.5 w-full max-w-sm sm:max-w-none sm:w-auto">
-          <button @click="setStatusFilter('')" :class="['flex-1 sm:flex-none px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-xs font-medium text-center transition-all', !statusFilter ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200']">All</button>
-          <button @click="setStatusFilter('pending')" :class="['flex-1 sm:flex-none px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-xs font-medium text-center transition-all', statusFilter && statusFilter.toLowerCase() === 'pending' ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200']">Pending</button>
-          <button @click="setStatusFilter('approved')" :class="['flex-1 sm:flex-none px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-xs font-medium text-center transition-all', statusFilter && statusFilter.toLowerCase() === 'approved' ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200']">Approved</button>
-          <button @click="setStatusFilter('disapproved')" :class="['flex-1 sm:flex-none px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-xs font-medium text-center transition-all', statusFilter && statusFilter.toLowerCase() === 'disapproved' ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200']">Disapproved</button>
+        <div class="inline-flex flex-wrap rounded-full bg-gray-100 dark:bg-gray-800 p-0.5 gap-1 w-full sm:w-auto justify-center">
+          <button @click="setStatusFilter('')" :class="['px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-xs font-medium text-center transition-all whitespace-nowrap', !statusFilter ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200']">All</button>
+          <button @click="setStatusFilter('pending')" :class="['px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-xs font-medium text-center transition-all whitespace-nowrap', statusFilter && statusFilter.toLowerCase() === 'pending' ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200']">Pending</button>
+          <button v-if="hasPendingWithSigned" @click="setStatusFilter('pending_with_signed')" :class="['px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-xs font-medium text-center transition-all whitespace-nowrap', statusFilter && statusFilter.toLowerCase() === 'pending_with_signed' ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200']">Pending w/ Signed</button>
+          <button @click="setStatusFilter('approved')" :class="['px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-xs font-medium text-center transition-all whitespace-nowrap', statusFilter && statusFilter.toLowerCase() === 'approved' ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200']">Approved</button>
+          <button v-if="hasApprovedWithSigned" @click="setStatusFilter('approved_with_signed')" :class="['px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-xs font-medium text-center transition-all whitespace-nowrap', statusFilter && statusFilter.toLowerCase() === 'approved_with_signed' ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200']">Approved w/ Signed</button>
+          <button @click="setStatusFilter('disapproved')" :class="['px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-xs font-medium text-center transition-all whitespace-nowrap', statusFilter && statusFilter.toLowerCase() === 'disapproved' ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200']">Disapproved</button>
+          <button v-if="hasDisapprovedWithSigned" @click="setStatusFilter('disapproved_with_signed')" :class="['px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-xs font-medium text-center transition-all whitespace-nowrap', statusFilter && statusFilter.toLowerCase() === 'disapproved_with_signed' ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200']">Disapproved w/ Signed</button>
         </div>
       </div>
 

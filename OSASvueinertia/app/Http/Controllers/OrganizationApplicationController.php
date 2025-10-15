@@ -50,11 +50,34 @@ class OrganizationApplicationController extends Controller
     // Apply status filter
     if ($request->filled('status_filter')) {
         $statusFilter = $request->get('status_filter');
-        if (strtolower($statusFilter) === 'disapproved') {
-            $query->whereIn('status', ['rejected', 'disapproved', 'Disapproved', 'Rejected']);
+        
+        // Check if it's a "with_signed" filter
+        if (str_ends_with(strtolower($statusFilter), '_with_signed')) {
+            // Extract the base status (e.g., "pending" from "pending_with_signed")
+            $baseStatus = str_replace('_with_signed', '', strtolower($statusFilter));
+            
+            // Filter by status and only include applications with signed documents
+            if ($baseStatus === 'disapproved') {
+                $query->whereIn('status', ['rejected', 'disapproved', 'Disapproved', 'Rejected'])
+                      ->where(function($q) {
+                          $q->whereNotNull('signed_document_path')
+                            ->orWhereNotNull('signed_document_link');
+                      });
+            } else {
+                $query->where('status', $baseStatus)
+                      ->where(function($q) {
+                          $q->whereNotNull('signed_document_path')
+                            ->orWhereNotNull('signed_document_link');
+                      });
+            }
         } else {
-            // Use exact match for better filtering
-            $query->where('status', $statusFilter);
+            // Regular status filter without signed document requirement
+            if (strtolower($statusFilter) === 'disapproved') {
+                $query->whereIn('status', ['rejected', 'disapproved', 'Disapproved', 'Rejected']);
+            } else {
+                // Use exact match for better filtering
+                $query->where('status', $statusFilter);
+            }
         }
     }
     
@@ -169,11 +192,34 @@ class OrganizationApplicationController extends Controller
         // Apply status filter
         if ($request->filled('status_filter')) {
             $statusFilter = $request->get('status_filter');
-            if (strtolower($statusFilter) === 'disapproved') {
-                $query->whereIn('status', ['rejected', 'disapproved', 'Disapproved', 'Rejected']);
+            
+            // Check if it's a "with_signed" filter
+            if (str_ends_with(strtolower($statusFilter), '_with_signed')) {
+                // Extract the base status (e.g., "pending" from "pending_with_signed")
+                $baseStatus = str_replace('_with_signed', '', strtolower($statusFilter));
+                
+                // Filter by status and only include applications with signed documents
+                if ($baseStatus === 'disapproved') {
+                    $query->whereIn('status', ['rejected', 'disapproved', 'Disapproved', 'Rejected'])
+                          ->where(function($q) {
+                              $q->whereNotNull('signed_document_path')
+                                ->orWhereNotNull('signed_document_link');
+                          });
+                } else {
+                    $query->where('status', $baseStatus)
+                          ->where(function($q) {
+                              $q->whereNotNull('signed_document_path')
+                                ->orWhereNotNull('signed_document_link');
+                          });
+                }
             } else {
-                // Use exact match for better filtering
-                $query->where('status', $statusFilter);
+                // Regular status filter without signed document requirement
+                if (strtolower($statusFilter) === 'disapproved') {
+                    $query->whereIn('status', ['rejected', 'disapproved', 'Disapproved', 'Rejected']);
+                } else {
+                    // Use exact match for better filtering
+                    $query->where('status', $statusFilter);
+                }
             }
         }
         
