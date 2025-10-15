@@ -21,7 +21,7 @@ function handleCollegeChange(e) {
     form.college = selected.replace('College of ', '');
   }
 }
-import { ref, onUnmounted, computed } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import { useFormAutoSave } from '@/Composables/useFormAutoSave';
 
@@ -105,20 +105,119 @@ const form = useForm({
   director_name: props.initialFormData.director_name?.toUpperCase() || '',
 });
 
+// Add errors ref object
+const errors = ref({});
+const showRestorePrompt = ref(false);
+const autosavedData = ref(null);
+
+// Initialize autosave - DISABLED by default until we determine what to do
+const formDataForAutosave = computed(() => form.data());
+const { isAutoSaving, enable, stop } = useFormAutoSave(formDataForAutosave, 'renewal_form', { enabled: false });
+
+// Check if autosaved data is newer than initialized data
+const isAutosavedDataNewer = (autosavedTimestamp) => {
+  if (!autosavedTimestamp) return false;
+  
+  // If we have initialFormData with a timestamp, compare
+  if (props.initialFormData?.updated_at || props.initialFormData?.created_at) {
+    const initialTimestamp = new Date(props.initialFormData.updated_at || props.initialFormData.created_at);
+    const autosaveTimestamp = new Date(autosavedTimestamp);
+    return autosaveTimestamp > initialTimestamp;
+  }
+  
+  // If no initial timestamp but we have autosaved data, it's "newer"
+  return true;
+};
+
+// Fetch autosaved data on mount
+onMounted(async () => {
+  // Try to fetch autosaved data (works for both new and edit scenarios)
+  if (!props.isEdit) {
+    try {
+      const response = await fetch('/get-autosaved-form-data?form_type=renewal_form', {
+        headers: {
+          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+          'Accept': 'application/json',
+        },
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.form_data) {
+          // Check if autosaved data is newer than initialized data
+          if (isAutosavedDataNewer(data.updated_at)) {
+            autosavedData.value = data.form_data;
+            showRestorePrompt.value = true;
+          } else {
+            // Autosaved data is older, enable autosave with current initialized data
+            enable();
+          }
+        } else {
+          // No autosaved data, enable autosave
+          enable();
+        }
+      } else {
+        // No autosaved data found (404), enable autosave
+        enable();
+      }
+    } catch (error) {
+      console.error('Failed to fetch autosaved data:', error);
+      // On error, still enable autosave
+      enable();
+    }
+  }
+});
+
+// Cleanup on unmount
+onUnmounted(() => {
+  stop();
+});
+
+const restoreAutosavedData = () => {
+  if (autosavedData.value) {
+    // Restore all form fields from autosaved data
+    Object.keys(autosavedData.value).forEach(key => {
+      if (key in form) {
+        form[key] = autosavedData.value[key];
+      }
+    });
+  }
+  showRestorePrompt.value = false;
+  enable(); // Enable autosave after restoring
+};
+
+const dismissRestorePrompt = async () => {
+  showRestorePrompt.value = false;
+  autosavedData.value = null;
+  
+  // Clear the old autosaved data since user chose to dismiss
+  try {
+    await fetch('/delete-autosaved-form-data?form_type=renewal_form', {
+      method: 'DELETE',
+      headers: {
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({ form_type: 'renewal_form' }),
+    });
+  } catch (error) {
+    console.error('Failed to clear autosaved data:', error);
+  }
+  
+  enable(); // Enable autosave after dismissing
+};
+
 // Initialize auto-save functionality
-const { isAutoSaving, autoSaveFormData, stop } = useFormAutoSave(form, 'LSPU-OSAS-SF-002');
+// const { isAutoSaving, autoSaveFormData, stop } = useFormAutoSave(form, 'LSPU-OSAS-SF-002');
 
 // Add a flag to disable auto-save during submit
 const isSubmitting = ref(false);
 let autoSaveTimeout = null;
 
 // Clean up auto-save watcher and timeout on unmount
-onUnmounted(() => {
-  if (autoSaveTimeout) clearTimeout(autoSaveTimeout);
-});
-
-// Add errors ref object
-const errors = ref({});
+// onUnmounted(() => {
+//   if (autoSaveTimeout) clearTimeout(autoSaveTimeout);
+// });
 
 // Add validateForm function
 const validateForm = () => {
@@ -189,7 +288,20 @@ const submit = () => {
   } else {
     // For create mode, make the POST request
     form.post('/applications', {
-      onSuccess: () => {
+      onSuccess: async () => {
+        // Clear autosaved data after successful submission
+        try {
+          await fetch('/delete-autosaved-form-data?form_type=renewal_form', {
+            method: 'DELETE',
+            headers: {
+              'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+              'Accept': 'application/json',
+            },
+            body: JSON.stringify({ form_type: 'renewal_form' }),
+          });
+        } catch (error) {
+          console.error('Failed to clear autosaved data:', error);
+        }
         emit('submitted', form.data());
         isSubmitting.value = false;
       },
@@ -203,6 +315,38 @@ const submit = () => {
 </script>
 
 <template>
+
+<!-- Restore Prompt Modal -->
+<div v-if="showRestorePrompt" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+  <div class="bg-white rounded-lg shadow-xl p-6 max-w-md mx-4">
+    <div class="flex items-start mb-4">
+      <svg class="w-6 h-6 text-blue-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+      <div>
+        <h3 class="text-lg font-semibold text-gray-900">Restore Unsaved Changes?</h3>
+        <p class="mt-2 text-sm text-gray-600">
+          We found unsaved changes from your previous session. Would you like to restore them?
+        </p>
+      </div>
+    </div>
+    <div class="flex justify-end gap-3 mt-6">
+      <button
+        @click="dismissRestorePrompt"
+        class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+      >
+        Start Fresh
+      </button>
+      <button
+        @click="restoreAutosavedData"
+        class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+      >
+        Restore Changes
+      </button>
+    </div>
+  </div>
+</div>
+
   <div class="mt-6 form-content" style="font-size:11pt;">
     <div class="header text-center relative">
       <!-- Back Button positioned above LSPU logo -->
@@ -266,14 +410,14 @@ const submit = () => {
     <p>
       <span class="signature-line" style="min-width:160px; font-size:11pt;" 
             :style="{
-              'font-size': form.organization_name.length > 84 ? '9pt' : 
-                          form.organization_name.length > 74 ? '9pt' : 
-                          form.organization_name.length > 65 ? '10pt' : '11pt',
-              'text-align': form.organization_name.length > 74 ? 'center' : 'center',
-              'line-height': form.organization_name.length > 74 ? '0.9' : 'normal'
+              'font-size': (form.organization_name || '').length > 84 ? '9pt' : 
+                          (form.organization_name || '').length > 74 ? '9pt' : 
+                          (form.organization_name || '').length > 65 ? '10pt' : '11pt',
+              'text-align': (form.organization_name || '').length > 74 ? 'center' : 'center',
+              'line-height': (form.organization_name || '').length > 74 ? '0.9' : 'normal'
             }"
             v-html="(() => {
-              const orgName = form.organization_name;
+              const orgName = form.organization_name || '';
               const orgNameLength = orgName.length;
               
               if (orgNameLength > 84) {
@@ -502,6 +646,21 @@ const submit = () => {
           </div>
 
           <div class="mt-6 text-center">
+        <!-- Autosave indicator -->
+        <div v-if="isAutoSaving" class="mb-3 text-sm text-gray-500 flex items-center justify-center gap-2">
+          <svg class="animate-spin h-4 w-4 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <span>Saving...</span>
+        </div>
+        <div v-else-if="!isEdit" class="mb-3 text-sm text-green-600 flex items-center justify-center gap-2">
+          <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+          </svg>
+          <span>Draft saved</span>
+        </div>
+        
         <button
           type="submit"
           class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-sm font-medium text-white rounded-xl shadow-md hover:shadow-green-300/30 hover:from-green-400 hover:to-green-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 active:from-green-600 active:to-green-700 transition-all duration-300 relative overflow-hidden group"
@@ -517,16 +676,6 @@ const submit = () => {
             <path d="M120-160v-640l760 320-760 320Zm80-120 474-200-474-200v140l240 60-240 60v140Zm0 0v-400 400Z"/>
           </svg>
         </button>
-        <!-- Auto-save indicator -->
-        <div v-if="isAutoSaving" class="mt-2 text-sm text-gray-600">
-          <span class="inline-flex items-center">
-            <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            Auto-saving...
-          </span>
-        </div>
       </div>
     </div>
   </form>
