@@ -115,6 +115,12 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/notifications/{id}/mark-read', [UserNotificationController::class, 'markAsRead'])->name('notifications.mark-read');
     Route::post('/notifications/mark-all-read', [UserNotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
     Route::get('/notifications/recent', [UserNotificationController::class, 'getRecent'])->name('notifications.recent');
+    
+    // FAQ Route - accessible to both admin and regular users
+    Route::get('/faq', function () {
+        return Inertia::render('FAQ');
+    })->name('faq');
+    
     // Profile routes
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
