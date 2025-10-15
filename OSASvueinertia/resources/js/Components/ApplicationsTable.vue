@@ -378,6 +378,9 @@ const handleMobileAction = (action) => {
     case 'viewSignedDocument':
       viewSignedDocument(app);
       break;
+    case 'viewUnsigned':
+      viewUnsignedDocument(app);
+      break;
     case 'viewFeedback':
       viewFeedback(app);
       break;
@@ -483,6 +486,24 @@ const getViewUrl = (app) => {
   return pdfRoute ? pdfRoute : '#';
 };
 
+// Get the original unsigned submission URL (ignores signed document)
+const getUnsignedViewUrl = (app) => {
+  // For direct-upload forms, link directly to the original PDF
+  const reportPath = getReportPath(app);
+  if ([
+    'LSPU-OSAS-SF-ACCOMPLISHMENT',
+    'LSPU-OSAS-SF-NARRATIVE',
+    'LSPU-OSAS-SF-BYLAWS',
+    'LSPU-OSAS-SF-FINANCIAL',
+    'LSPU-ACAD-RL',
+  ].includes(app.form_type) && reportPath) {
+    return `/storage/${reportPath}`;
+  }
+  // Otherwise, use the generated PDF route (if available)
+  const pdfRoute = getPdfRoute(app, 'view');
+  return pdfRoute ? pdfRoute : '#';
+};
+
 // Add this method in <script setup>
 const openPreview = (app) => {
   previewApp.value = app;
@@ -518,7 +539,7 @@ const closePreviewModal = () => {
 // Add new methods for signed document viewing
 const openPreviewInNewWindow = () => {
   if (typeof window !== 'undefined' && previewApp.value) {
-    const url = getViewUrl(previewApp.value);
+    const url = getViewUrl(previewApp.value); // Use getViewUrl to show signed if available
     if (url && url !== '#') {
       window.open(url, '_blank');
     }
@@ -557,8 +578,9 @@ const openSignedDocumentInNewWindow = (appId) => {
 };
 
 // Replace viewPdf to use modal on desktop and new window on mobile
+// Shows signed document if available, otherwise shows unsigned
 const viewPdf = (app) => {
-  const url = getViewUrl(app);
+  const url = getViewUrl(app); // Use getViewUrl which prioritizes signed document
   if (url && url !== '#') {
     // For mobile screens, open in new window
     if (window.innerWidth < 640) {
@@ -568,6 +590,17 @@ const viewPdf = (app) => {
       openPreview(app);
     }
   }
+};
+
+// View unsigned document (original submission)
+const viewUnsignedDocument = (app) => {
+  // Close any open dropdowns
+  activeDropdownApp.value = null;
+  showMobileActionsModal.value = false;
+  selectedMobileApp.value = null;
+  
+  // Navigate to the SPA document view with unsigned parameter
+  router.visit(`/applications/${app.id}/document?view=unsigned`);
 };
 
 // Add new method for viewing signed documents - Navigate to SPA view or open link
@@ -904,16 +937,19 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
           Delete Document
         </button>
         <!-- View signed document option (only if signed document exists) -->
+        <!-- HIDDEN - User should click card to view document in modal -->
+        
+        <!-- View unsigned document option (only if signed document exists) -->
         <button 
           v-if="hasSignedDocument(activeDropdownApp)"
-          @click="viewSignedDocument(activeDropdownApp)"
+          @click="viewUnsignedDocument(activeDropdownApp)"
           class="w-full text-left px-3 py-1.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200 font-medium"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-teal-600 dark:text-teal-400" viewBox="0 0 20 20" fill="currentColor">
-            <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2h-1.528A6 6 0 004 9.528V4z" />
-            <path fill-rule="evenodd" d="M8 10a4 4 0 00-3.446 6.032l-1.261 1.26a1 1 0 101.415 1.415l1.261-1.261A4 4 0 006 10z" clip-rule="evenodd" />
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600 dark:text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd" />
+            <path d="M8 8a.5.5 0 01.5-.5h3a.5.5 0 010 1h-3A.5.5 0 018 8zm0 2a.5.5 0 01.5-.5h3a.5.5 0 010 1h-3A.5.5 0 018 10zm0 2a.5.5 0 01.5-.5h3a.5.5 0 010 1h-3A.5.5 0 018 12z" />
           </svg>
-          {{ getSignedDocumentType(activeDropdownApp) === 'link' ? 'Open Link' : 'View Document' }}
+          View Unsigned
         </button>
 
         <!-- View Feedback option (only when feedback exists) -->
@@ -1253,16 +1289,18 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
                         <span class="text-sm text-gray-900 dark:text-gray-100">Delete Document</span>
                     </button>
 
+                    <!-- View signed document option - HIDDEN (user clicks card to view in modal) -->
+
                     <button 
                         v-if="selectedMobileApp && hasSignedDocument(selectedMobileApp)"
-                        @click="handleMobileAction('viewSignedDocument')"
+                        @click="handleMobileAction('viewUnsigned')"
                         class="w-full flex items-center px-3 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-150 active:scale-[0.98]"
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-teal-600 dark:text-teal-400 mr-2.5" viewBox="0 0 20 20" fill="currentColor">
-                            <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2h-1.528A6 6 0 004 9.528V4z" />
-                            <path fill-rule="evenodd" d="M8 10a4 4 0 00-3.446 6.032l-1.261 1.26a1 1 0 101.415 1.415l1.261-1.261A4 4 0 006 10z" clip-rule="evenodd" />
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600 dark:text-gray-400 mr-2.5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd" />
+                            <path d="M8 8a.5.5 0 01.5-.5h3a.5.5 0 010 1h-3A.5.5 0 018 8zm0 2a.5.5 0 01.5-.5h3a.5.5 0 010 1h-3A.5.5 0 018 10zm0 2a.5.5 0 01.5-.5h3a.5.5 0 010 1h-3A.5.5 0 018 12z" />
                         </svg>
-                        <span class="text-sm text-gray-900 dark:text-gray-100">{{ selectedMobileApp && getSignedDocumentType(selectedMobileApp) === 'link' ? 'Open Link' : 'View Document' }}</span>
+                        <span class="text-sm text-gray-900 dark:text-gray-100">View Unsigned</span>
                     </button>
 
                     <button 

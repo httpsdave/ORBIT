@@ -6,8 +6,8 @@
         <!-- PDF Iframe Container -->
         <div class="flex-1 relative bg-gray-100 min-h-[50vh] sm:min-h-[60vh] lg:min-h-0">
           <iframe
-            v-if="application"
-            :src="`/applications/${application.id}/view-document`"
+            v-if="application && documentUrl"
+            :src="documentUrl"
             class="w-full h-full border-0 bg-white"
             style="min-height: calc(100vh - 4rem);"
             allowfullscreen
@@ -64,7 +64,11 @@
         <!-- Panel Header -->
         <div class="p-4 border-b border-gray-200">
           <div class="flex items-center justify-between">
-            <h2 class="text-lg font-semibold text-gray-900">Document Details</h2>
+            <div>
+              <h2 class="text-lg font-semibold text-gray-900">Document Details</h2>
+              <p v-if="props.viewType === 'unsigned'" class="text-xs text-gray-500 mt-0.5">Viewing: Original Submission</p>
+              <p v-else-if="application?.signed_document_path" class="text-xs text-gray-500 mt-0.5">Viewing: Signed Document</p>
+            </div>
             <div class="flex items-center space-x-2">
               <!-- Close button for mobile overlay -->
 <button
@@ -245,6 +249,17 @@
           <div key="actions">
             <h3 class="text-sm font-medium text-gray-900 mb-3">Actions</h3>
             <div class="space-y-2">
+              <!-- Toggle between signed and unsigned view if signed document exists -->
+              <button
+                v-if="application?.signed_document_path"
+                @click="toggleDocumentView"
+                class="w-full inline-flex items-center justify-center px-4 py-2 bg-purple-100 text-sm font-medium text-purple-700 rounded-md hover:bg-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition"
+              >
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                </svg>
+                {{ props.viewType === 'unsigned' ? 'View Signed Document' : 'View Original Submission' }}
+              </button>
               <button
                 @click="openInNewWindow"
                 class="w-full inline-flex items-center justify-center px-4 py-2 bg-gray-100 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition"
@@ -316,6 +331,10 @@ const props = defineProps({
     default: '/dashboard'
   },
   isAdmin: Boolean,
+  viewType: {
+    type: String,
+    default: 'signed' // 'signed' or 'unsigned'
+  }
 })
 
 
@@ -342,15 +361,19 @@ const onDocumentError = () => {
 }
 
 const openInNewWindow = () => {
-  if (props.application) {
-    window.open(`/applications/${props.application.id}/view-document`, '_blank')
+  if (props.application && documentUrl.value) {
+    window.open(documentUrl.value, '_blank')
   }
 }
 
 const downloadDocument = () => {
-  if (props.application) {
-    const url = `/applications/${props.application.id}/view-document?download=1`;
-    const fileName = getFileName(props.application.signed_document_path);
+  if (props.application && documentUrl.value) {
+    const url = documentUrl.value.includes('?') 
+      ? `${documentUrl.value}&download=1` 
+      : `${documentUrl.value}?download=1`;
+    const fileName = props.viewType === 'unsigned' 
+      ? `${formTypeToName(props.application.form_type)}_unsigned.pdf`
+      : getFileName(props.application.signed_document_path);
     const link = document.createElement('a');
     link.href = url;
     link.setAttribute('download', fileName || 'document.pdf');
@@ -455,6 +478,87 @@ watch(() => props.application, (newApp) => {
 const isMobile = computed(() => windowWidth.value < 1024)
 const isSmallScreen = computed(() => windowWidth.value < 640) // For very small screens
 
+// Get the appropriate document URL based on viewType
+const documentUrl = computed(() => {
+  if (!props.application) return null;
+  
+  if (props.viewType === 'unsigned') {
+    // Return the original submission URL
+    return getUnsignedDocumentUrl();
+  } else {
+    // Return the signed document URL (default behavior)
+    return `/applications/${props.application.id}/view-document`;
+  }
+});
+
+// Get unsigned document URL (original submission)
+const getUnsignedDocumentUrl = () => {
+  if (!props.application) return null;
+  
+  const formType = props.application.form_type;
+  const appId = props.application.id;
+  
+  // Direct-upload forms
+  const directUploadTypes = [
+    'LSPU-OSAS-SF-ACCOMPLISHMENT',
+    'LSPU-OSAS-SF-NARRATIVE',
+    'LSPU-OSAS-SF-BYLAWS',
+    'LSPU-OSAS-SF-FINANCIAL',
+    'LSPU-ACAD-RL',
+  ];
+  
+  if (directUploadTypes.includes(formType)) {
+    const reportPath = getReportPath();
+    return reportPath ? `/storage/${reportPath}` : null;
+  }
+  
+  // Generated PDF routes
+  if (formType === 'LSPU-OSAS-SF-002') {
+    return `/applications/${appId}/export-renewal?action=view`;
+  } else if (formType === 'LSPU-OSAS-SF-001') {
+    return `/applications/${appId}/pdf?action=view`;
+  } else if (formType === 'LSPU-OSAS-SF-003') {
+    return `/applications/${appId}/export-commitment?action=view`;
+  } else if (formType === 'LSPU-OSAS-SF-004') {
+    return `/applications/${appId}/export-plan?action=view`;
+  } else if (formType === 'LSPU-OSAS-SF-006') {
+    return `/applications/${appId}/export-certification?action=view`;
+  } else if (formType === 'LSPU-OSAS-SF-005') {
+    return `/applications/${appId}/export-members?action=view`;
+  } else if (formType === 'LSPU-OSAS-SF-007') {
+    return `/applications/${appId}/export-officers?action=view`;
+  } else if (formType === 'LSPU-OSAS-SF-009') {
+    return `/applications/${appId}/export-attendance?action=view`;
+  } else if (formType === 'LSPU-OSAS-SF-EVAL') {
+    return `/applications/${appId}/export-evaluation?action=view`;
+  } else {
+    return `/applications/${appId}/pdf?action=view`;
+  }
+};
+
+// Get report path for direct-upload forms
+const getReportPath = () => {
+  if (!props.application) return null;
+  
+  const app = props.application;
+  const formType = app.form_type;
+  
+  switch(formType) {
+    case 'LSPU-OSAS-SF-ACCOMPLISHMENT':
+      return app.accomplishment_report_path;
+    case 'LSPU-OSAS-SF-NARRATIVE':
+      return app.narrative_report_path;
+    case 'LSPU-OSAS-SF-BYLAWS':
+      return app.bylaws_path;
+    case 'LSPU-OSAS-SF-FINANCIAL':
+      return app.financial_report_path;
+    case 'LSPU-ACAD-RL':
+      return app.event_letter_path;
+    default:
+      return null;
+  }
+};
+
 // Handle window resize
 const handleResize = () => {
   windowWidth.value = window.innerWidth
@@ -479,6 +583,18 @@ const handleKeydown = (event) => {
 // Replace the back button handler
 const goBackToApplications = () => {
   router.visit('/applications', { preserveState: false, preserveScroll: true });
+}
+
+// Toggle between signed and unsigned document view
+const toggleDocumentView = () => {
+  if (!props.application) return;
+  
+  const newViewType = props.viewType === 'unsigned' ? 'signed' : 'unsigned';
+  const url = newViewType === 'unsigned' 
+    ? `/applications/${props.application.id}/document?view=unsigned`
+    : `/applications/${props.application.id}/document`;
+  
+  router.visit(url, { preserveState: false, preserveScroll: true });
 }
 
 onMounted(() => {

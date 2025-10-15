@@ -1221,14 +1221,20 @@ class OrganizationApplicationController extends Controller
             abort(403, 'Unauthorized to view this application.');
         }
 
-        // Check if application has a signed document (file or link)
-        if (!$application->signed_document_path && !$application->signed_document_link) {
-            return redirect()->back()->with('error', 'No signed document found for this application.');
-        }
+        // Get view type from query parameter (signed or unsigned)
+        $viewType = request()->query('view', 'signed');
 
-        // If it's a link, redirect to the external document
-        if ($application->signed_document_link) {
-            return redirect($application->signed_document_link);
+        // If viewing unsigned, no need to check for signed document
+        if ($viewType === 'signed') {
+            // Check if application has a signed document (file or link)
+            if (!$application->signed_document_path && !$application->signed_document_link) {
+                return redirect()->back()->with('error', 'No signed document found for this application.');
+            }
+
+            // If it's a link, redirect to the external document
+            if ($application->signed_document_link) {
+                return redirect($application->signed_document_link);
+            }
         }
 
         // Log application view activity (only for non-admin users viewing their own applications)
@@ -1243,6 +1249,7 @@ class OrganizationApplicationController extends Controller
             'application' => $application->load('user'),
             'backUrl' => $backUrl,
             'isAdmin' => auth()->user()->isAdmin(),
+            'viewType' => $viewType,
         ]);
     }
 
