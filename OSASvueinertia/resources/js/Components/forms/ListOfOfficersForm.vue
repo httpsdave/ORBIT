@@ -1,7 +1,8 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import { usePage } from '@inertiajs/vue3';
+import { useFormAutoSave } from '@/Composables/useFormAutoSave';
 import Modal from '@/Components/Modal.vue';
 
 const props = defineProps({
@@ -10,6 +11,10 @@ const props = defineProps({
     default: () => ({})
   },
   isEdit: {
+    type: Boolean,
+    default: false
+  },
+  isAdmin: {
     type: Boolean,
     default: false
   }
@@ -35,11 +40,26 @@ const nextYear = computed(() => {
 // Add errors ref object
 const errors = ref({});
 
+// Autosave state
+const showRestorePrompt = ref(false);
+const autosavedData = ref(null);
+
 // CSV modal states
 const showCsvModal = ref(false);
 const csvModalTitle = ref('');
 const csvModalMessage = ref('');
 const csvModalType = ref('success'); // 'success' or 'error'
+
+// Error navigation modal states
+const showErrorModal = ref(false);
+const errorPages = ref([]);
+const totalErrors = ref(0);
+
+const closeErrorModal = () => {
+  showErrorModal.value = false;
+  errorPages.value = [];
+  totalErrors.value = 0;
+};
 
 // CSV template download functionality
 const downloadCSVTemplate = () => {
@@ -279,11 +299,76 @@ const prevPage = () => {
     }
 };
 
+// Error detection functions
+const getPageErrors = (pageNumber) => {
+  const startIdx = (pageNumber - 1) * officersPerPage;
+  const endIdx = Math.min(startIdx + officersPerPage, form.officers.length);
+  const pageErrors = [];
+  
+  // Check officers on this page
+  for (let i = startIdx; i < endIdx; i++) {
+    const officer = form.officers[i];
+    const officerErrors = [];
+    
+    if (!officer.student_name?.trim()) {
+      officerErrors.push('Officer name');
+    }
+    if (!officer.position?.trim()) {
+      officerErrors.push('Position');
+    }
+    if (!officer.student_number?.trim()) {
+      officerErrors.push('Student I.D. number');
+    }
+    
+    if (officerErrors.length > 0) {
+      pageErrors.push({
+        officerIndex: i + 1,
+        errors: officerErrors
+      });
+    }
+  }
+  
+  return pageErrors;
+};
+
+const getFormFieldErrors = () => {
+  const formErrors = [];
+  
+  if (!form.organization_name?.trim()) {
+    formErrors.push('Organization name');
+  }
+  if (!form.academic_year_start?.trim()) {
+    formErrors.push('Academic year start');
+  }
+  if (!form.academic_year_end?.trim()) {
+    formErrors.push('Academic year end');
+  }
+  if (!form.adviser_name?.trim()) {
+    formErrors.push('Faculty adviser name');
+  }
+  if (!form.coordinator_name?.trim()) {
+    formErrors.push('Coordinator name');
+  }
+  
+  return formErrors;
+};
+
+const goToErrorPage = (pageNumber) => {
+  goToPage(pageNumber);
+  closeErrorModal();
+};
+
 const form = useForm({
   form_type: 'LSPU-OSAS-SF-007',
   organization_name: props.initialFormData.organization_name?.toUpperCase() || '',
   // president_name removed for List of Officers Form
-  application_date: props.initialFormData.application_date || '',
+  application_date: props.initialFormData.application_date || (() => {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  })(),
   adviser_name: props.initialFormData.adviser_name?.toUpperCase() || '',
   coordinator_name: props.initialFormData.coordinator_name?.toUpperCase() || '',
   director_name: props.initialFormData.director_name?.toUpperCase() || '',
@@ -292,6 +377,9 @@ const form = useForm({
   academic_year_end: props.initialFormData.academic_year_end || nextYear.value,
   officers: [],
 });
+
+// Initialize autosave (disabled by default)
+const { isAutoSaving, enable: enableAutoSave, disable: disableAutoSave, start: startAutoSave, stop: stopAutoSave } = useFormAutoSave(form, 'list_of_officers', { enabled: false });
 
 const handlePhotoUpload = (event, index, type = 'officers') => {
     const file = event.target.files[0];
@@ -344,60 +432,213 @@ if (props.initialFormData?.officers && props.initialFormData.officers.length > 0
 const validateForm = () => {
   errors.value = {};
   
+  // Check if we should use modal-based error reporting (when more than 3 pages)
+  const useErrorModal = totalPages.value > 3;
+  
+  // Always validate and set individual field errors for visual feedback
   // Validate main form fields
-  if (!form.organization_name.trim()) {
+  if (!form.organization_name || !form.organization_name.trim()) {
     errors.value.organization_name = 'Organization name is required';
   }
   
-  if (!form.academic_year_start.trim()) {
+  if (!form.academic_year_start || !form.academic_year_start.trim()) {
     errors.value.academic_year_start = 'Academic year start is required';
   }
   
-  if (!form.academic_year_end.trim()) {
+  if (!form.academic_year_end || !form.academic_year_end.trim()) {
     errors.value.academic_year_end = 'Academic year end is required';
   }
   
   // president_name validation removed for List of Officers Form
   
-  if (!form.adviser_name.trim()) {
+  if (!form.adviser_name || !form.adviser_name.trim()) {
     errors.value.adviser_name = 'Faculty adviser name is required';
   }
   
-  if (!form.coordinator_name.trim()) {
+  if (!form.coordinator_name || !form.coordinator_name.trim()) {
     errors.value.coordinator_name = 'Coordinator name is required';
   }
   
-  // Validate officers
+  // Validate officers and set individual field errors
   form.officers.forEach((officer, index) => {
-    if (!officer.student_name.trim()) {
+    if (!officer.student_name || !officer.student_name.trim()) {
       errors.value[`officer_${index}_name`] = 'Officer name is required';
     }
     
-    if (!officer.position.trim()) {
+    if (!officer.position || !officer.position.trim()) {
       errors.value[`officer_${index}_position`] = 'Officer position is required';
     }
     
-    if (!officer.student_number.trim()) {
+    if (!officer.student_number || !officer.student_number.trim()) {
       errors.value[`officer_${index}_student_number`] = 'Student I.D. number is required';
     }
   });
   
-  // Return true if no errors
-  return Object.keys(errors.value).length === 0;
+  // Check if there are any errors
+  const hasErrors = Object.keys(errors.value).length > 0;
+  
+  if (useErrorModal && hasErrors) {
+    // For > 3 pages: show both individual field errors AND the navigation modal
+    errorPages.value = [];
+    totalErrors.value = 0;
+    
+    // Check form field errors
+    const formFieldErrors = getFormFieldErrors();
+    let hasFormErrors = formFieldErrors.length > 0;
+    
+    // Check each page for officer errors
+    const pagesWithErrors = [];
+    for (let page = 1; page <= totalPages.value; page++) {
+      const pageErrors = getPageErrors(page);
+      if (pageErrors.length > 0) {
+        pagesWithErrors.push({
+          pageNumber: page,
+          errors: pageErrors,
+          errorCount: pageErrors.reduce((sum, officer) => sum + officer.errors.length, 0)
+        });
+        totalErrors.value += pageErrors.reduce((sum, officer) => sum + officer.errors.length, 0);
+      }
+    }
+    
+    // Build error pages array for modal
+    errorPages.value = pagesWithErrors;
+    if (hasFormErrors) {
+      totalErrors.value += formFieldErrors.length;
+      // Add form errors as "page 0" for navigation
+      errorPages.value.unshift({
+        pageNumber: 0,
+        isFormFields: true,
+        errors: formFieldErrors.map(error => ({ officerIndex: null, errors: [error] })),
+        errorCount: formFieldErrors.length
+      });
+    }
+    
+    // Show the modal for easy navigation
+    showErrorModal.value = true;
+    return false;
+  }
+  
+  // Return true if no errors (works for both modal and non-modal cases)
+  return !hasErrors;
 };
+
+// Autosave restore function
+const restoreAutosave = () => {
+  if (autosavedData.value) {
+    // Store application_date before restore
+    const currentApplicationDate = form.application_date;
+    
+    // Restore all form fields from autosaved data
+    Object.assign(form, autosavedData.value);
+    
+    // Restore application_date to current value (don't overwrite from autosave)
+    form.application_date = currentApplicationDate;
+  }
+  showRestorePrompt.value = false;
+  enableAutoSave();
+};
+
+// Autosave dismiss function
+const dismissAutosave = async () => {
+  showRestorePrompt.value = false;
+  autosavedData.value = null;
+  
+  // Clear the old autosaved data since user chose to dismiss
+  try {
+    await fetch('/delete-autosaved-form-data?form_type=list_of_officers', {
+      method: 'DELETE',
+      headers: {
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({ form_type: 'list_of_officers' }),
+    });
+  } catch (error) {
+    console.error('Failed to clear autosaved data:', error);
+  }
+  
+  enableAutoSave();
+};
+
+// Check if autosaved data is newer than initialized data
+const isAutosavedDataNewer = (autosavedTimestamp) => {
+  if (!autosavedTimestamp) return false;
+  
+  if (props.initialFormData?.updated_at || props.initialFormData?.created_at) {
+    const initialTimestamp = new Date(props.initialFormData.updated_at || props.initialFormData.created_at);
+    const autosaveTimestamp = new Date(autosavedTimestamp);
+    return autosaveTimestamp > initialTimestamp;
+  }
+  
+  return true;
+};
+
+// Fetch autosaved data on mount
+onMounted(async () => {
+  if (!props.isEdit) {
+    try {
+      const response = await fetch('/get-autosaved-form-data?form_type=list_of_officers', {
+        headers: {
+          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+          'Accept': 'application/json',
+        },
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.form_data) {
+          if (isAutosavedDataNewer(data.updated_at)) {
+            autosavedData.value = data.form_data;
+            showRestorePrompt.value = true;
+          } else {
+            enableAutoSave();
+          }
+        } else {
+          enableAutoSave();
+        }
+      } else {
+        enableAutoSave();
+      }
+    } catch (error) {
+      console.error('Failed to fetch autosaved data:', error);
+      enableAutoSave();
+    }
+  }
+});
+
+// Cleanup on unmount
+onUnmounted(() => {
+  stopAutoSave();
+});
 
 // REMOVE: statusMessage, statusType, showStatus, showBanner
 
-const submit = () => {
+const submit = async () => {
   if (!validateForm()) {
     emit('error', 'Please fill in all required fields.');
     return;
   }
+  
+  stopAutoSave();
+  
   if (props.isEdit) {
     emit('submitted', form.data());
   } else {
     form.post('/applications', {
-      onSuccess: () => {
+      onSuccess: async () => {
+        // Clear autosaved data after successful submission
+        try {
+          await fetch('/delete-autosaved-form-data?form_type=list_of_officers', {
+            method: 'DELETE',
+            headers: {
+              'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+              'Accept': 'application/json',
+            },
+            body: JSON.stringify({ form_type: 'list_of_officers' }),
+          });
+        } catch (error) {
+          console.error('Failed to clear autosaved data:', error);
+        }
         emit('submitted', form.data());
       },
       onError: (errors) => {
@@ -410,6 +651,37 @@ const submit = () => {
 </script>
 
 <template>
+<!-- Restore Prompt Modal -->
+<div v-if="showRestorePrompt" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+  <div class="bg-white rounded-lg shadow-xl p-6 max-w-md mx-4">
+    <div class="flex items-start mb-4">
+      <svg class="w-6 h-6 text-blue-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+      <div>
+        <h3 class="text-lg font-semibold text-gray-900">Restore Unsaved Changes?</h3>
+        <p class="mt-2 text-sm text-gray-600">
+          We found unsaved changes from your previous session. Would you like to restore them?
+        </p>
+      </div>
+    </div>
+    <div class="flex justify-end gap-3 mt-6">
+      <button
+        @click="dismissAutosave"
+        class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+      >
+        Start Fresh
+      </button>
+      <button
+        @click="restoreAutosave"
+        class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+      >
+        Restore Changes
+      </button>
+    </div>
+  </div>
+</div>
+
   <div class="form-container">
     <!-- Remove the List of Officers Form heading above the logo -->
     <!-- <h2 class="text-lg font-bold mb-4">List of Officers Form</h2> -->
@@ -760,6 +1032,21 @@ const submit = () => {
         </div>
 
         <div class="mt-6 text-center">
+          <!-- Autosave indicator -->
+          <div v-if="isAutoSaving" class="mb-3 text-sm text-gray-500 flex items-center justify-center gap-2">
+            <svg class="animate-spin h-4 w-4 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span>Saving...</span>
+          </div>
+          <div v-else-if="!isEdit" class="mb-3 text-sm text-green-600 flex items-center justify-center gap-2">
+            <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+            </svg>
+            <span>Draft saved</span>
+          </div>
+          
           <button
             type="submit"
             @click="submit"
@@ -819,6 +1106,84 @@ const submit = () => {
                 ? 'bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800' 
                 : 'bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800'
             ]"
+          >
+            <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
+            <span class="relative z-10">Close</span>
+          </button>
+        </div>
+      </div>
+    </Modal>
+
+    <!-- Error Navigation Modal -->
+    <Modal :show="showErrorModal" @close="closeErrorModal">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 sm:p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center">
+            <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center mr-3 bg-red-100 dark:bg-red-900">
+              <svg class="w-5 h-5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-red-900 dark:text-red-100">Validation Errors Found</h3>
+          </div>
+          <button @click="closeErrorModal" class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        
+        <div class="mb-4">
+          <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">
+            Found <strong class="text-red-600 dark:text-red-400">{{ totalErrors }}</strong> error(s) across {{ errorPages.length }} location(s). 
+            Click on a location below to navigate and fix the errors.
+          </p>
+        </div>
+
+        <div class="space-y-3 max-h-96 overflow-y-auto">
+          <div 
+            v-for="(errorPage, index) in errorPages" 
+            :key="index"
+            class="border border-red-200 dark:border-red-800 rounded-lg p-3 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors cursor-pointer"
+            @click="errorPage.isFormFields ? closeErrorModal() : goToErrorPage(errorPage.pageNumber)"
+          >
+            <div class="flex items-start justify-between">
+              <div class="flex-1">
+                <div class="flex items-center mb-2">
+                  <svg class="w-4 h-4 text-red-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                  </svg>
+                  <span class="font-semibold text-gray-900 dark:text-gray-100">
+                    {{ errorPage.isFormFields ? 'Form Details' : `Page ${errorPage.pageNumber}` }}
+                  </span>
+                  <span class="ml-2 px-2 py-0.5 text-xs font-medium bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 rounded-full">
+                    {{ errorPage.errorCount }} error{{ errorPage.errorCount > 1 ? 's' : '' }}
+                  </span>
+                </div>
+                
+                <div class="ml-6 space-y-1">
+                  <div v-for="(error, errIdx) in errorPage.errors" :key="errIdx" class="text-sm">
+                    <span v-if="error.officerIndex" class="font-medium text-gray-700 dark:text-gray-300">
+                      Officer #{{ error.officerIndex }}:
+                    </span>
+                    <span class="text-red-600 dark:text-red-400">
+                      {{ error.errors.join(', ') }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              
+              <svg v-if="!errorPage.isFormFields" class="w-5 h-5 text-gray-400 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6 flex justify-end">
+          <button 
+            @click="closeErrorModal"
+            class="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-red-500 to-red-600 rounded-xl shadow-sm hover:from-red-600 hover:to-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-all duration-300 relative overflow-hidden group"
           >
             <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
             <span class="relative z-10">Close</span>
