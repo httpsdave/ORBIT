@@ -1,7 +1,8 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import { usePage } from '@inertiajs/vue3';
+import { useFormAutoSave } from '@/Composables/useFormAutoSave';
 import Modal from '@/Components/Modal.vue';
 
 const props = defineProps({
@@ -22,6 +23,10 @@ const props = defineProps({
 const backHref = computed(() => props.isEdit ? '/applications' : '/applications/select-form');
 
 const emit = defineEmits(['submitted', 'error']);
+
+// Autosave state
+const showRestorePrompt = ref(false);
+const autosavedData = ref(null);
 
 // Get current user data including system settings
 const page = usePage();
@@ -445,7 +450,13 @@ const form = useForm({
   
   // president_name removed for List of Members Form
   secretary_name: props.initialFormData.secretary_name?.toUpperCase() || '',
-  application_date: props.initialFormData.application_date || '',
+  application_date: props.initialFormData.application_date || (() => {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  })(),
   adviser_name: props.initialFormData.adviser_name?.toUpperCase() || '',
   adviser_prefix: props.initialFormData.adviser_prefix || '',
   adviser_suffix: props.initialFormData.adviser_suffix || '',
@@ -458,6 +469,9 @@ const form = useForm({
   coordinator_name: props.initialFormData.coordinator_name?.toUpperCase() || '',
   director_name: props.initialFormData.director_name?.toUpperCase() || '',
 });
+
+// Initialize autosave (disabled by default)
+const { isAutoSaving, enable: enableAutoSave, disable: disableAutoSave, start: startAutoSave, stop: stopAutoSave } = useFormAutoSave(form, 'list_of_members', { enabled: false });
 
 const handlePhotoUpload = (event, index, type = 'members') => {
     const file = event.target.files[0];
@@ -506,6 +520,43 @@ if (props.initialFormData?.members && props.initialFormData.members.length > 0) 
   }
 }
 
+// Autosave functions
+const restoreAutosave = () => {
+  if (autosavedData.value) {
+    // Store application_date before restore
+    const currentApplicationDate = form.application_date;
+    
+    Object.assign(form, autosavedData.value);
+    
+    // Restore application_date to current value (don't overwrite from autosave)
+    form.application_date = currentApplicationDate;
+    
+    showRestorePrompt.value = false;
+    enableAutoSave();
+    startAutoSave();
+  }
+};
+
+const dismissAutosave = async () => {
+  showRestorePrompt.value = false;
+  enableAutoSave();
+  startAutoSave();
+  
+  // Delete the autosaved data
+  try {
+    await fetch('/delete-autosaved-form-data', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+      },
+      body: JSON.stringify({ form_type: 'list_of_members' })
+    });
+  } catch (error) {
+    console.error('Failed to delete autosaved data:', error);
+  }
+};
+
 // Validation function
 const validateForm = () => {
   errors.value = {};
@@ -515,45 +566,45 @@ const validateForm = () => {
   
   // Always validate and set individual field errors for visual feedback
   // Validate main form fields
-  if (!form.organization_name.trim()) {
+  if (!form.organization_name || !form.organization_name.trim()) {
     errors.value.organization_name = 'Organization name is required';
   }
   
-  if (!form.coordinator_name.trim()) {
+  if (!form.coordinator_name || !form.coordinator_name.trim()) {
     errors.value.coordinator_name = 'Coordinator name is required';
   }
   
-  if (!form.semester.trim()) {
+  if (!form.semester || !form.semester.trim()) {
     errors.value.semester = 'Semester is required';
   }
   
-  if (!form.academic_year_start.trim()) {
+  if (!form.academic_year_start || !form.academic_year_start.trim()) {
     errors.value.academic_year_start = 'Academic year start is required';
   }
   
-  if (!form.academic_year_end.trim()) {
+  if (!form.academic_year_end || !form.academic_year_end.trim()) {
     errors.value.academic_year_end = 'Academic year end is required';
   }
   
-  if (!form.adviser_name.trim()) {
+  if (!form.adviser_name || !form.adviser_name.trim()) {
     errors.value.adviser_name = 'Faculty adviser name is required';
   }
   
-  if (!form.director_name.trim()) {
+  if (!form.director_name || !form.director_name.trim()) {
     errors.value.director_name = 'Director/Chairperson name is required';
   }
   
   // Validate members and set individual field errors
   form.members.forEach((member, index) => {
-    if (!member.student_name.trim()) {
+    if (!member.student_name || !member.student_name.trim()) {
       errors.value[`member_${index}_name`] = 'Student name is required';
     }
     
-    if (!member.student_number.trim()) {
+    if (!member.student_number || !member.student_number.trim()) {
       errors.value[`member_${index}_number`] = 'Student number is required';
     }
     
-    if (!member.course_year_section.trim()) {
+    if (!member.course_year_section || !member.course_year_section.trim()) {
       errors.value[`member_${index}_course`] = 'Course - Year & Section is required';
     }
   });
@@ -617,7 +668,7 @@ const validateForm = () => {
 // REMOVE:   setTimeout(() => { showStatus.value = false; }, 5000);
 // REMOVE: };
 
-const submit = () => {
+const submit = async () => {
   if (!validateForm()) {
     emit('error', 'Please fill in all required fields.');
     return;
@@ -632,11 +683,27 @@ const submit = () => {
     return;
   }
   
+  // Stop autosave before submission
+  stopAutoSave();
+  
   if (props.isEdit) {
     emit('submitted', form.data());
   } else {
     form.post('/applications', {
-      onSuccess: () => {
+      onSuccess: async () => {
+        // Delete autosaved data after successful submission
+        try {
+          await fetch('/delete-autosaved-form-data', {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            },
+            body: JSON.stringify({ form_type: 'list_of_members' })
+          });
+        } catch (error) {
+          console.error('Failed to delete autosaved data:', error);
+        }
         emit('submitted', form.data());
       },
       onError: (errors) => {
@@ -646,10 +713,83 @@ const submit = () => {
     });
   }
 };
+
+// Lifecycle hooks
+onMounted(async () => {
+  // Fetch autosaved data
+  try {
+    const response = await fetch('/get-autosaved-form-data?form_type=list_of_members', {
+      headers: {
+        'Accept': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+      }
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      if (data.form_data) {
+        autosavedData.value = data.form_data;
+        
+        // Compare timestamps: if autosaved data is newer than initialized data, show prompt
+        const autosavedTimestamp = new Date(data.updated_at).getTime();
+        const initializedTimestamp = props.initialFormData?.updated_at 
+          ? new Date(props.initialFormData.updated_at).getTime() 
+          : 0;
+        
+        if (autosavedTimestamp > initializedTimestamp) {
+          showRestorePrompt.value = true;
+        } else {
+          // Initialized data is newer or same, just enable autosave
+          enableAutoSave();
+          startAutoSave();
+        }
+      } else {
+        // No autosaved data, just enable autosave
+        enableAutoSave();
+        startAutoSave();
+      }
+    } else {
+      // No autosaved data found, enable autosave
+      enableAutoSave();
+      startAutoSave();
+    }
+  } catch (error) {
+    console.error('Failed to fetch autosaved data:', error);
+    // On error, still enable autosave
+    enableAutoSave();
+    startAutoSave();
+  }
+});
+
+onUnmounted(() => {
+  stopAutoSave();
+});
 </script>
 
 <template>
   <div class="mt-6 form-content">
+    <!-- Restore Autosave Prompt Modal -->
+    <div v-if="showRestorePrompt" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style="font-family: system-ui, -apple-system, sans-serif;">
+      <div class="bg-white rounded-lg p-6 max-w-md shadow-xl">
+        <h3 class="text-lg font-semibold mb-4">Restore Autosaved Data?</h3>
+        <p class="text-gray-600 mb-6">We found an autosaved version of this form. Would you like to restore it?</p>
+        <div class="flex gap-3 justify-end">
+          <button 
+            @click="dismissAutosave"
+            class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition-colors"
+          >
+            Dismiss
+          </button>
+          <button 
+            @click="restoreAutosave"
+            class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+          >
+            Restore
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- REMOVE: <StatusBanner :show="showStatus" :type="statusType" :message="statusMessage" @close="showStatus = false" /> -->
 
     <!-- Uniform header for all pages -->
@@ -1206,6 +1346,21 @@ const submit = () => {
         </div>
 
         <div class="mt-6 text-center">
+            <!-- Autosave indicator -->
+            <div v-if="isAutoSaving" class="mb-3 text-sm text-gray-500 flex items-center justify-center gap-2">
+              <svg class="animate-spin h-4 w-4 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <span>Saving...</span>
+            </div>
+            <div v-else-if="!isEdit" class="mb-3 text-sm text-green-600 flex items-center justify-center gap-2">
+              <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+              </svg>
+              <span>Draft saved</span>
+            </div>
+            
             <button
               type="submit"
               @click="submit"
