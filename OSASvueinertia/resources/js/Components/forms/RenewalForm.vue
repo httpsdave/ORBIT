@@ -541,24 +541,8 @@ const submit = () => {
 
               <!-- Right Column -->
               <div>
-                  <label class="block font-bold">
-                    Application Date
-                    <span v-if="props.isAdmin" class="text-sm text-blue-600 font-normal ml-2">(Admin only)</span>
-                  </label>
-                  <input 
-                    type="date" 
-                    v-model="form.application_date" 
-                    :class="[
-                      'border p-2 w-full rounded-md',
-                      props.isAdmin 
-                        ? 'bg-white text-gray-900 cursor-pointer' 
-                        : 'bg-gray-200 text-gray-500 select-none pointer-events-none'
-                    ]"
-                    :readonly="!props.isAdmin" 
-                    :tabindex="props.isAdmin ? 0 : -1" 
-                    :style="props.isAdmin ? '' : 'user-select: none; -webkit-user-select: none;'" 
-                  >
-                  <p v-if="errors.application_date" class="text-red-500 text-sm mt-1">{{ errors.application_date }}</p>
+                  <label class="block font-bold">Coordinator Name</label>
+                  <input v-model="form.coordinator_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none rounded-md" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none; text-transform: uppercase;">
               </div>
 
               <!-- Left Column -->
@@ -574,16 +558,8 @@ const submit = () => {
 
               <!-- Right Column -->
               <div>
-                  <label class="block font-bold">Application Date</label>
-                  <input 
-                    type="date" 
-                    :value="form.application_date" 
-                    class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none text-center rounded-md" 
-                    readonly 
-                    tabindex="-1" 
-                    style="user-select: none; -webkit-user-select: none;" 
-                  >
-                  <p v-if="errors.application_date" class="text-red-500 text-sm mt-1">{{ errors.application_date }}</p>
+                  <label class="block font-bold">Chairperson Name</label>
+                  <input v-model="form.director_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none rounded-md" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none; text-transform: uppercase;">
               </div>
 
               <!-- Left Column -->
@@ -609,10 +585,19 @@ const submit = () => {
                   <p v-if="errors.adviser_name" class="text-red-500 text-sm mt-1">{{ errors.adviser_name }}</p>
               </div>
 
-              <!-- Right Column -->
-              <div>
-                  <label class="block font-bold">Coordinator Name</label>
-                  <input v-model="form.coordinator_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none rounded-md" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none; text-transform: uppercase;">
+              <!-- Right Column - Empty placeholder for grid alignment -->
+              <div v-if="props.isAdmin">
+                  <label class="block font-bold">
+                    Application Date
+                    <span class="text-sm text-blue-600 font-normal ml-2">(Admin only)</span>
+                  </label>
+                  <input 
+                    type="date" 
+                    v-model="form.application_date" 
+                    class="border p-2 w-full rounded-md bg-white text-gray-900 cursor-pointer" 
+                    required
+                  >
+                  <p v-if="errors.application_date" class="text-red-500 text-sm mt-1">{{ errors.application_date }}</p>
               </div>
 
               <!-- Left Column -->
@@ -636,12 +621,6 @@ const submit = () => {
                       maxlength="8">
                   </div>
                   <p v-if="errors.dean_name" class="text-red-500 text-sm mt-1">{{ errors.dean_name }}</p>
-              </div>
-
-              <!-- Right Column -->
-              <div>
-                  <label class="block font-bold">Chairperson Name</label>
-                  <input v-model="form.director_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none rounded-md" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none; text-transform: uppercase;">
               </div>
           </div>
 

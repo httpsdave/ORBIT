@@ -518,24 +518,16 @@ const submit = () => {
         <p v-if="errors.organization_name" class="text-red-500 text-sm mt-1">{{ errors.organization_name }}</p>
       </div>
       <!-- Right Column -->
-      <div>
+      <div v-if="props.isAdmin">
         <label class="block font-bold">
           Application Date
-          <span v-if="props.isAdmin" class="text-sm text-blue-600 font-normal ml-2">(Admin only)</span>
+          <span class="text-sm text-blue-600 font-normal ml-2">(Admin only)</span>
         </label>
         <input 
           type="date" 
           v-model="form.application_date" 
-          :class="[
-            'border p-2 w-full rounded-md',
-            props.isAdmin 
-              ? 'bg-white text-gray-900 cursor-pointer' 
-              : 'bg-gray-200 text-gray-500 select-none pointer-events-none'
-          ]"
-          :required="props.isAdmin" 
-          :readonly="!props.isAdmin" 
-          :tabindex="props.isAdmin ? 0 : -1" 
-          :style="props.isAdmin ? '' : 'user-select: none; -webkit-user-select: none;'" 
+          class="border p-2 w-full rounded-md bg-white text-gray-900 cursor-pointer" 
+          required
         >
         <p v-if="errors.application_date" class="text-red-500 text-sm mt-1">{{ errors.application_date }}</p>
       </div>
