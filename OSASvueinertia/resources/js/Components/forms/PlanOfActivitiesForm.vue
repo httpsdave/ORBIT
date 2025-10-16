@@ -1,6 +1,7 @@
 <script setup>
-import { ref, nextTick, watch, computed } from 'vue';
+import { ref, nextTick, watch, computed, onMounted, onUnmounted } from 'vue';
 import { useForm } from '@inertiajs/vue3';
+import { useFormAutoSave } from '@/Composables/useFormAutoSave';
 // REMOVE: import StatusBanner from '@/Components/StatusBanner.vue';
 
 const props = defineProps({
@@ -17,6 +18,10 @@ const props = defineProps({
 const backHref = computed(() => props.isEdit ? '/applications' : '/applications/select-form');
 
 const emit = defineEmits(['submitted', 'error']);
+
+// Autosave state
+const showRestorePrompt = ref(false);
+const autosavedData = ref(null);
 
 // Add pagination state
 const currentPage = ref(1);
@@ -104,6 +109,9 @@ const form = useForm({
   director_name: props.initialFormData.director_name?.toUpperCase() || '',
   activities: initializeActivities(),
 });
+
+// Initialize autosave (disabled by default)
+const { isAutoSaving, enable: enableAutoSave, disable: disableAutoSave, start: startAutoSave, stop: stopAutoSave } = useFormAutoSave(form, 'plan_of_activities', { enabled: false });
 
 // Helper to format date to yyyy-MM-dd
 function formatDateForInput(dateStr) {
@@ -466,9 +474,12 @@ const sanitizeHtml = (html) => {
 
 // Helper to get plain text length for character counting
 const getPlainTextLength = (html) => {
+  if (!html) return '';
   const tmp = document.createElement('div');
-  tmp.innerHTML = html || '';
-  return tmp.textContent || tmp.innerText || '';
+  tmp.innerHTML = html;
+  // Get text content and normalize whitespace (replace multiple spaces/newlines with single space)
+  const text = (tmp.textContent || tmp.innerText || '').replace(/\s+/g, ' ').trim();
+  return text;
 };
 
 // Computed properties for character counts
@@ -499,47 +510,81 @@ const getCharacterCountClass = (currentCount, maxCount) => {
   return 'text-gray-500';
 };
 
+// Autosave functions
+const restoreAutosave = () => {
+  if (autosavedData.value) {
+    Object.assign(form, autosavedData.value);
+    showRestorePrompt.value = false;
+    enableAutoSave();
+    startAutoSave();
+    // Update contenteditable divs with restored data
+    nextTick(() => {
+      updateContentEditableDivs();
+    });
+  }
+};
+
+const dismissAutosave = async () => {
+  showRestorePrompt.value = false;
+  enableAutoSave();
+  startAutoSave();
+  
+  // Delete the autosaved data
+  try {
+    await fetch('/delete-autosaved-form-data', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+      },
+      body: JSON.stringify({ form_type: 'plan_of_activities' })
+    });
+  } catch (error) {
+    console.error('Failed to delete autosaved data:', error);
+  }
+};
+
 // Add validateForm function
 const validateForm = () => {
   errors.value = {};
   let isValid = true;
 
   // Check main form required fields
-  if (!form.organization_name.trim()) {
+  if (!form.organization_name || !form.organization_name.trim()) {
     errors.value.organization_name = 'Organization Name is required';
     isValid = false;
   }
 
   // Academic year start/end are always set to current/next year, so skip required validation
 
-  if (!form.semester.trim()) {
+  if (!form.semester || !form.semester.trim()) {
     errors.value.semester = 'Semester is required';
     isValid = false;
   }
 
-  if (!form.president_name.trim()) {
+  if (!form.president_name || !form.president_name.trim()) {
     errors.value.president_name = 'President Name is required';
     isValid = false;
   }
 
-  if (!form.secretary_name.trim()) {
+  if (!form.secretary_name || !form.secretary_name.trim()) {
     errors.value.secretary_name = 'Secretary Name is required';
     isValid = false;
   }
 
-  if (!form.adviser_name.trim()) {
+  if (!form.adviser_name || !form.adviser_name.trim()) {
     errors.value.adviser_name = 'Adviser Name is required';
     isValid = false;
   }
 
   // dean_name is optional for Plan of Activities
 
-  if (!form.coordinator_name.trim()) {
+  if (!form.coordinator_name || !form.coordinator_name.trim()) {
     errors.value.coordinator_name = 'Coordinator Name is required';
     isValid = false;
   }
 
-  if (!form.director_name.trim()) {
+  if (!form.director_name || !form.director_name.trim()) {
     errors.value.director_name = 'Director Name is required';
     isValid = false;
   }
@@ -634,11 +679,14 @@ const validateForm = () => {
 
 // REMOVE: statusMessage, statusType, showStatus, showBanner
 
-const submit = () => {
+const submit = async () => {
   if (!validateForm()) {
     emit('error', 'Please fill in all required fields.');
     return;
   }
+  
+  // Stop autosave before submission
+  stopAutoSave();
   
   // Clean HTML content from contenteditable fields before submission
   const cleanedData = {
@@ -671,7 +719,20 @@ const submit = () => {
         persons_involved: sanitizeHtml(activity.persons_involved || '').trim()
       }))
     })).post('/applications', {
-      onSuccess: () => {
+      onSuccess: async () => {
+        // Delete autosaved data after successful submission
+        try {
+          await fetch('/delete-autosaved-form-data', {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            },
+            body: JSON.stringify({ form_type: 'plan_of_activities' })
+          });
+        } catch (error) {
+          console.error('Failed to delete autosaved data:', error);
+        }
         emit('submitted', cleanedData);
       },
       onError: (errors) => {
@@ -878,17 +939,103 @@ function handleBudgetKeypress(event) {
   }
 }
 
-// Add event listeners
-nextTick(() => {
+// Lifecycle hooks
+onMounted(async () => {
+  // Fetch autosaved data
+  try {
+    const response = await fetch('/get-autosaved-form-data?form_type=plan_of_activities', {
+      headers: {
+        'Accept': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+      }
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      if (data.form_data) {
+        autosavedData.value = data.form_data;
+        
+        // Compare timestamps: if autosaved data is newer than initialized data, show prompt
+        const autosavedTimestamp = new Date(data.updated_at).getTime();
+        const initializedTimestamp = props.initialFormData?.updated_at 
+          ? new Date(props.initialFormData.updated_at).getTime() 
+          : 0;
+        
+        if (autosavedTimestamp > initializedTimestamp) {
+          showRestorePrompt.value = true;
+          // Update contenteditable divs with current (initialized) data while waiting for user decision
+          await nextTick();
+          updateContentEditableDivs();
+        } else {
+          // Initialized data is newer or same, just enable autosave
+          enableAutoSave();
+          startAutoSave();
+          // Update contenteditable divs with current data
+          await nextTick();
+          updateContentEditableDivs();
+        }
+      } else {
+        // No autosaved data, just enable autosave
+        enableAutoSave();
+        startAutoSave();
+        // Update contenteditable divs with current data
+        await nextTick();
+        updateContentEditableDivs();
+      }
+    } else {
+      // No autosaved data found, enable autosave
+      enableAutoSave();
+      startAutoSave();
+      // Update contenteditable divs with current data
+      await nextTick();
+      updateContentEditableDivs();
+    }
+  } catch (error) {
+    console.error('Failed to fetch autosaved data:', error);
+    // On error, still enable autosave
+    enableAutoSave();
+    startAutoSave();
+    // Update contenteditable divs with current data
+    await nextTick();
+    updateContentEditableDivs();
+  }
+  
+  // Add event listeners
   document.addEventListener('click', handleClickOutside);
   document.addEventListener('selectionchange', debouncedShowToolbarForSelection);
-  // Initialize contenteditable divs with existing data
-  updateContentEditableDivs();
+});
+
+onUnmounted(() => {
+  stopAutoSave();
+  document.removeEventListener('click', handleClickOutside);
+  document.removeEventListener('selectionchange', debouncedShowToolbarForSelection);
 });
 </script>
 
 <template>
   <div class="mt-6 form-content">
+    <!-- Restore Autosave Prompt Modal -->
+    <div v-if="showRestorePrompt" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style="font-family: system-ui, -apple-system, sans-serif;">
+      <div class="bg-white rounded-lg p-6 max-w-md shadow-xl">
+        <h3 class="text-lg font-semibold mb-4">Restore Autosaved Data?</h3>
+        <p class="text-gray-600 mb-6">We found an autosaved version of this form. Would you like to restore it?</p>
+        <div class="flex gap-3 justify-end">
+          <button 
+            @click="dismissAutosave"
+            class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition-colors"
+          >
+            Dismiss
+          </button>
+          <button 
+            @click="restoreAutosave"
+            class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+          >
+            Restore
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Rich Text Toolbar -->
     <div 
       v-if="showToolbar" 
@@ -1134,7 +1281,7 @@ nextTick(() => {
               <td class="border align-top" style="min-height:150px;padding:8px;vertical-align:top;">
                 <input 
                   type="date"
-                  v-model="activity.target_date"
+                  v-model="form.activities[startIndex + idx].target_date"
                   class="w-full border p-1 text-center rounded-md"
                   style="min-height:40px;"
                 >
@@ -1143,7 +1290,7 @@ nextTick(() => {
               <td class="border align-top" style="min-height:150px;padding:8px;vertical-align:top;">
                 <input 
                   type="text"
-                  v-model="activity.budget"
+                  v-model="form.activities[startIndex + idx].budget"
                   @input="handleBudgetInput"
                   @paste="(e) => handleBudgetPaste(e, idx)"
                   @keypress="handleBudgetKeypress"
@@ -1410,6 +1557,21 @@ nextTick(() => {
       </div>
 
       <div class="mt-6 text-center">
+        <!-- Autosave indicator -->
+        <div v-if="isAutoSaving" class="mb-3 text-sm text-gray-500 flex items-center justify-center gap-2">
+          <svg class="animate-spin h-4 w-4 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <span>Saving...</span>
+        </div>
+        <div v-else-if="!isEdit" class="mb-3 text-sm text-green-600 flex items-center justify-center gap-2">
+          <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+          </svg>
+          <span>Draft saved</span>
+        </div>
+        
         <button
           type="submit"
           @click="submit"
