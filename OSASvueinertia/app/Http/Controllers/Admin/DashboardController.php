@@ -119,7 +119,7 @@ class DashboardController extends Controller
         // Get the authenticated user's name
         $userName = auth()->user()->name;
 
-        // Get advisers data: organization name (user name), adviser_name, second_adviser, and member/officer counts from all approved forms
+        // Get advisers data: organization name (user name), adviser info from CommitmentForm, and member/officer counts from all approved forms
         $users = \App\Models\User::all();
         $advisersData = $users->map(function($user) {
             // Get ALL approved List of Members forms and sum their member counts
@@ -142,19 +142,54 @@ class DashboardController extends Controller
             // Calculate total officer count from all approved submissions
             $totalOfficersCount = $allOfficersApps->sum('officers_count');
             
-            // Get the latest approved form for adviser info (prefer members, fallback to officers)
-            $latestMembersApp = $allMembersApps->sortByDesc('created_at')->first();
-            $latestOfficersApp = $allOfficersApps->sortByDesc('created_at')->first();
+            // Get the latest approved CommitmentForm for adviser info
+            $commitmentForm = \App\Models\OrganizationApplication::where('user_id', $user->id)
+                ->where('status', 'Approved')
+                ->where('form_type', 'LSPU-OSAS-SF-003')
+                ->orderBy('created_at', 'desc')
+                ->first();
             
-            // Use adviser/second adviser from the latest of either form (prefer members, fallback to officers)
-            $adviser_name = $latestMembersApp->adviser_name ?? $latestOfficersApp->adviser_name ?? null;
-            $adviser_prefix = $latestMembersApp->adviser_prefix ?? $latestOfficersApp->adviser_prefix ?? null;
-            $adviser_suffix = $latestMembersApp->adviser_suffix ?? $latestOfficersApp->adviser_suffix ?? null;
-            $second_adviser = $latestMembersApp->second_adviser ?? $latestOfficersApp->second_adviser ?? null;
+            // Extract adviser information from CommitmentForm
+            $adviser_name = null;
+            $adviser_prefix = null;
+            $adviser_suffix = null;
+            $second_adviser = null;
+            $second_adviser_prefix = null;
+            $second_adviser_suffix = null;
             
-            // Only show if at least one approved form exists
-            if ($allMembersApps->isEmpty() && $allOfficersApps->isEmpty()) {
+            if ($commitmentForm && $commitmentForm->advisers) {
+                $advisersArray = is_string($commitmentForm->advisers) 
+                    ? json_decode($commitmentForm->advisers, true) 
+                    : $commitmentForm->advisers;
+                
+                // First page (adviser 1)
+                if (isset($advisersArray[0])) {
+                    $adviser_name = $advisersArray[0]['adviser_name'] ?? null;
+                    $adviser_prefix = $advisersArray[0]['adviser_prefix'] ?? null;
+                    $adviser_suffix = $advisersArray[0]['adviser_suffix'] ?? null;
+                }
+                
+                // Second page if exists (adviser 2)
+                if (isset($advisersArray[1])) {
+                    $second_adviser = $advisersArray[1]['adviser_name'] ?? null;
+                    $second_adviser_prefix = $advisersArray[1]['adviser_prefix'] ?? null;
+                    $second_adviser_suffix = $advisersArray[1]['adviser_suffix'] ?? null;
+                }
+            }
+            
+            // Only show if at least one approved form exists (members, officers, or commitment)
+            if ($allMembersApps->isEmpty() && $allOfficersApps->isEmpty() && !$commitmentForm) {
                 return null;
+            }
+            
+            // Combine second adviser name with prefix and suffix for display
+            $second_adviser_full = null;
+            if ($second_adviser) {
+                $second_adviser_full = collect([
+                    $second_adviser_prefix,
+                    $second_adviser,
+                    $second_adviser_suffix ? ', ' . $second_adviser_suffix : null
+                ])->filter()->implode(' ');
             }
             
             return [
@@ -162,7 +197,7 @@ class DashboardController extends Controller
                 'adviser_name' => $adviser_name,
                 'adviser_prefix' => $adviser_prefix,
                 'adviser_suffix' => $adviser_suffix,
-                'second_adviser' => $second_adviser,
+                'second_adviser' => $second_adviser_full,
                 'members_count' => $totalMembersCount > 0 ? $totalMembersCount : null,
                 'officers_count' => $totalOfficersCount > 0 ? $totalOfficersCount : null,
             ];
