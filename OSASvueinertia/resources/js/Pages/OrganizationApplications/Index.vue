@@ -27,11 +27,6 @@ const formTemplates = [
   { type: 'LSPU-OSAS-SF-EVAL', label: 'Evaluation Form' },
   { type: 'LSPU-OSAS-SF-EVALSHEET', label: 'Evaluation Sheet' },
   { type: 'LSPU-OSAS-SF-STATUS', label: 'Activity Status Report' },
-  { type: 'LSPU-OSAS-SF-ACCOMPLISHMENT', label: 'Accomplishment Report' },
-  { type: 'LSPU-OSAS-SF-NARRATIVE', label: 'Narrative Report' },
-  { type: 'LSPU-OSAS-SF-BYLAWS', label: 'Constitution & By-Laws' },
-  { type: 'LSPU-OSAS-SF-FINANCIAL', label: 'Financial Report' },
-  { type: 'LSPU-ACAD-RL', label: 'Event Letter' },
 ];
 const openPreview = (formType) => {
   // Device detection for mobile
