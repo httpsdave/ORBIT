@@ -21,8 +21,9 @@ function handleCollegeChange(e) {
         form.college = selected.replace('College of ', '');
     }
 }
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 import { useForm } from '@inertiajs/vue3';
+import { useFormAutoSave } from '@/Composables/useFormAutoSave';
 import Modal from '@/Components/Modal.vue';
 
 const props = defineProps({
@@ -44,6 +45,10 @@ const errors = ref({
   organization_name: '',
   president_name: ''
 });
+
+// Autosave state
+const showRestorePrompt = ref(false);
+const autosavedData = ref(null);
 
 // CSV modal states
 const showCsvModal = ref(false);
@@ -224,6 +229,9 @@ if (props.initialFormData?.attendees && props.initialFormData.attendees.length >
   }
 }
 
+// Initialize autosave (disabled by default)
+const { isAutoSaving, enable: enableAutoSave, disable: disableAutoSave, start: startAutoSave, stop: stopAutoSave } = useFormAutoSave(form, 'activity_attendance', { enabled: false });
+
 // Pagination state (must be after form is defined)
 const attendeesPerPage = 10;
 const currentPage = ref(1);
@@ -291,6 +299,9 @@ const submit = () => {
   if (!validateForm()) {
     return;
   }
+  // Stop autosave before submission
+  stopAutoSave();
+
   // Check if we're in edit mode
   if (props.isEdit) {
     // For edit mode, just emit the data - don't make HTTP request here
@@ -298,8 +309,20 @@ const submit = () => {
   } else {
     // For create mode, make the POST request
     form.post('/applications', {
-      onSuccess: () => {
-        // Removed system alert for successful submission
+      onSuccess: async () => {
+        // Delete autosaved data after successful submission
+        try {
+          await fetch('/delete-autosaved-form-data', {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            },
+            body: JSON.stringify({ form_type: 'activity_attendance' })
+          });
+        } catch (error) {
+          console.error('Failed to delete autosaved data:', error);
+        }
         emit('submitted', form.data());
       },
       onError: (errors) => {
@@ -308,10 +331,119 @@ const submit = () => {
     });
   }
 };
+
+// Autosave functions
+const restoreAutosave = () => {
+  if (autosavedData.value) {
+    // Store application_date before restore
+    const currentApplicationDate = form.application_date;
+
+    Object.assign(form, autosavedData.value);
+
+    // Restore application_date to current value (don't overwrite from autosave)
+    form.application_date = currentApplicationDate;
+
+    showRestorePrompt.value = false;
+    enableAutoSave();
+    startAutoSave();
+  }
+};
+
+const dismissAutosave = async () => {
+  showRestorePrompt.value = false;
+  enableAutoSave();
+  startAutoSave();
+
+  // Delete the autosaved data
+  try {
+    await fetch('/delete-autosaved-form-data', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+      },
+      body: JSON.stringify({ form_type: 'activity_attendance' })
+    });
+  } catch (error) {
+    console.error('Failed to delete autosaved data:', error);
+  }
+};
+
+// Lifecycle hooks
+onMounted(async () => {
+  // Fetch autosaved data
+  try {
+    const response = await fetch('/get-autosaved-form-data?form_type=activity_attendance', {
+      headers: {
+        'Accept': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+      }
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      if (data.form_data) {
+        autosavedData.value = data.form_data;
+
+        // Compare timestamps: if autosaved data is newer than initialized data, show prompt
+        const autosavedTimestamp = new Date(data.updated_at).getTime();
+        const initializedTimestamp = props.initialFormData?.updated_at 
+          ? new Date(props.initialFormData.updated_at).getTime() 
+          : 0;
+
+        if (autosavedTimestamp > initializedTimestamp) {
+          showRestorePrompt.value = true;
+        } else {
+          // Initialized data is newer or same, just enable autosave
+          enableAutoSave();
+          startAutoSave();
+        }
+      } else {
+        // No autosaved data, just enable autosave
+        enableAutoSave();
+        startAutoSave();
+      }
+    } else {
+      // No autosaved data found, enable autosave
+      enableAutoSave();
+      startAutoSave();
+    }
+  } catch (error) {
+    console.error('Failed to fetch autosaved data:', error);
+    // On error, still enable autosave
+    enableAutoSave();
+    startAutoSave();
+  }
+});
+
+onUnmounted(() => {
+  stopAutoSave();
+});
 </script>
 
 <template>
   <div class="mt-6 form-content">
+    <!-- Restore Autosave Prompt Modal -->
+    <div v-if="showRestorePrompt" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style="font-family: system-ui, -apple-system, sans-serif;">
+      <div class="bg-white rounded-lg p-6 max-w-md shadow-xl">
+        <h3 class="text-lg font-semibold mb-4">Restore Autosaved Data?</h3>
+        <p class="text-gray-600 mb-6">We found an autosaved version of this form. Would you like to restore it?</p>
+        <div class="flex gap-3 justify-end">
+          <button 
+            @click="dismissAutosave"
+            class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition-colors"
+          >
+            Dismiss
+          </button>
+          <button 
+            @click="restoreAutosave"
+            class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+          >
+            Restore
+          </button>
+        </div>
+      </div>
+    </div>
     <!-- Header matching blade template -->
     <div class="header text-center relative">
       <!-- Back Button positioned above LSPU logo -->
@@ -549,6 +681,21 @@ const submit = () => {
     </div>
 
     <div class="mt-6 text-center">
+            <!-- Autosave indicator -->
+            <div v-if="isAutoSaving" class="mb-3 text-sm text-gray-500 flex items-center justify-center gap-2">
+              <svg class="animate-spin h-4 w-4 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <span>Saving...</span>
+            </div>
+            <div v-else-if="!isEdit" class="mb-3 text-sm text-green-600 flex items-center justify-center gap-2">
+              <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+              </svg>
+              <span>Draft saved</span>
+            </div>
+
         <button
           type="submit"
           @click="submit"
