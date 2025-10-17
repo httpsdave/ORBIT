@@ -51,13 +51,23 @@ const handleUpdateStatus = () => {
       ></div>
 
       <!-- Modal Content -->
-      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-md w-full max-w-md relative z-10 overflow-hidden">
+      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-md relative z-10 overflow-hidden">
         <!-- Header -->
-        <div class="bg-gradient-to-r from-blue-600 to-indigo-600 p-6 text-white">
-          <h3 class="text-xl font-bold text-white">
+        <div class="bg-white dark:bg-gray-800 p-6 relative overflow-hidden border-b border-gray-200 dark:border-gray-700">
+          <!-- Background Illustration -->
+          <div class="absolute top-1/2 right-0 transform translate-x-[16%] -translate-y-1/2 opacity-[0.42] dark:opacity-[0.36] w-[180px] h-[180px] pointer-events-none z-0">
+            <img 
+              src="/images/flatillus3.svg" 
+              alt="" 
+              class="w-full h-full object-contain"
+              role="presentation"
+            />
+          </div>
+          
+          <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100 relative z-10">
             {{ isAdmin ? 'Update Application Status' : 'Application Feedback' }}
           </h3>
-          <p class="text-sm text-indigo-100 mt-1">
+          <p class="text-sm text-gray-600 dark:text-gray-400 mt-1 relative z-10">
             {{ application?.organization_name }}
           </p>
         </div>
@@ -138,11 +148,11 @@ const handleUpdateStatus = () => {
         </div>
 
         <!-- Footer -->
-        <div class="bg-gray-50 dark:bg-gray-700 p-6 flex justify-end space-x-3 border-t border-gray-100 dark:border-gray-600">
+        <div class="bg-gray-50 dark:bg-gray-900 p-6 flex justify-end space-x-3 border-t border-gray-100 dark:border-gray-700">
           <button
             v-if="isAdmin"
             @click="emit('close')"
-            class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 font-medium hover:bg-gray-100 dark:hover:bg-gray-600 transition duration-200 text-sm"
+            class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-700 dark:text-gray-300 font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition duration-300 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Cancel
           </button>
@@ -150,8 +160,9 @@ const handleUpdateStatus = () => {
             v-if="isAdmin"
             @click="handleUpdateStatus"
             :disabled="isSubmitting"
-            class="px-5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-medium rounded-lg transition duration-200 text-sm flex items-center space-x-2 disabled:opacity-70"
+            class="px-5 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 text-white font-medium rounded-xl shadow-md hover:shadow-blue-300/30 transition-all duration-300 text-sm flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group"
           >
+            <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
             <svg
               v-if="isSubmitting"
               class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
@@ -171,8 +182,9 @@ const handleUpdateStatus = () => {
           <button
             v-if="!isAdmin"
             @click="emit('close')"
-            class="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-medium rounded-lg transition duration-200 text-sm"
+            class="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 text-white font-medium rounded-xl shadow-md hover:shadow-blue-300/30 transition-all duration-300 text-sm relative overflow-hidden group"
           >
+            <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
             Close
           </button>
         </div>
