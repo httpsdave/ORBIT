@@ -1,6 +1,7 @@
 <script setup>
 import { useForm } from '@inertiajs/vue3';
-import { ref, computed, watch, onMounted } from 'vue';
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
+import { useFormAutoSave } from '@/Composables/useFormAutoSave';
 
 const props = defineProps({
   initialFormData: {
@@ -53,6 +54,13 @@ const form = useForm({
 
 const errors = ref({});
 const lastValidRatings = ref([...form.ratings]);
+
+// Autosave state
+const showRestorePrompt = ref(false);
+const autosavedData = ref(null);
+
+// Initialize autosave (disabled by default)
+const { isAutoSaving, enable: enableAutoSave, disable: disableAutoSave, start: startAutoSave, stop: stopAutoSave } = useFormAutoSave(form, 'evaluation', { enabled: false });
 
 // If in edit mode, update form when initialFormData changes
 watch(() => props.initialFormData, (newVal) => {
@@ -227,13 +235,29 @@ const submit = () => {
     };
   });
 
+  // Stop autosave before submission
+  stopAutoSave();
+
   if (props.isEdit) {
     emit('submitted', form.data());
   } else {
     form.clearErrors();
     form.post('/applications', {
       preserveScroll: true,
-      onSuccess: () => {
+      onSuccess: async () => {
+          // Delete autosaved data after successful submission
+          try {
+            await fetch('/delete-autosaved-form-data', {
+              method: 'DELETE',
+              headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+              },
+              body: JSON.stringify({ form_type: 'evaluation' })
+            });
+          } catch (error) {
+            console.error('Failed to delete autosaved data:', error);
+          }
           emit('submitted', form.data());
         },
       onError: (errors) => {
@@ -242,6 +266,94 @@ const submit = () => {
     });
   }
 };
+
+// Autosave functions
+const restoreAutosave = () => {
+  if (autosavedData.value) {
+    // Preserve date/time fields if present
+    const currentDateStart = form.date_start;
+    const currentDateEnd = form.date_end;
+    const currentTimeStart = form.time_start;
+    const currentTimeEnd = form.time_end;
+
+    Object.assign(form, autosavedData.value);
+
+    // Restore preserved fields
+    form.date_start = currentDateStart || form.date_start;
+    form.date_end = currentDateEnd || form.date_end;
+    form.time_start = currentTimeStart || form.time_start;
+    form.time_end = currentTimeEnd || form.time_end;
+
+    // Ensure ratings length matches statements
+    if (!Array.isArray(form.ratings) || form.ratings.length !== statements.length) {
+      form.ratings = Array(statements.length).fill('');
+    }
+
+    showRestorePrompt.value = false;
+    enableAutoSave();
+    startAutoSave();
+  }
+};
+
+const dismissAutosave = async () => {
+  showRestorePrompt.value = false;
+  enableAutoSave();
+  startAutoSave();
+
+  try {
+    await fetch('/delete-autosaved-form-data', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+      },
+      body: JSON.stringify({ form_type: 'evaluation' })
+    });
+  } catch (error) {
+    console.error('Failed to delete autosaved data:', error);
+  }
+};
+
+// Lifecycle hooks
+onMounted(async () => {
+  try {
+    const response = await fetch('/get-autosaved-form-data?form_type=evaluation', {
+      headers: {
+        'Accept': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+      }
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      if (data.form_data) {
+        autosavedData.value = data.form_data;
+        const autosavedTimestamp = new Date(data.updated_at).getTime();
+        const initializedTimestamp = props.initialFormData?.updated_at ? new Date(props.initialFormData.updated_at).getTime() : 0;
+        if (autosavedTimestamp > initializedTimestamp) {
+          showRestorePrompt.value = true;
+        } else {
+          enableAutoSave();
+          startAutoSave();
+        }
+      } else {
+        enableAutoSave();
+        startAutoSave();
+      }
+    } else {
+      enableAutoSave();
+      startAutoSave();
+    }
+  } catch (error) {
+    console.error('Failed to fetch autosaved data:', error);
+    enableAutoSave();
+    startAutoSave();
+  }
+});
+
+onUnmounted(() => {
+  stopAutoSave();
+});
 
 const onRatingKeyPress = (e, i) => {
   const val = e.target.value;
@@ -279,6 +391,27 @@ const onRatingKeyPress = (e, i) => {
 
 <template>
   <div class="mt-6 form-content">
+    <!-- Restore Autosave Prompt Modal -->
+    <div v-if="showRestorePrompt" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style="font-family: system-ui, -apple-system, sans-serif;">
+      <div class="bg-white rounded-lg p-6 max-w-md shadow-xl">
+        <h3 class="text-lg font-semibold mb-4">Restore Autosaved Data?</h3>
+        <p class="text-gray-600 mb-6">We found an autosaved version of this evaluation form. Would you like to restore it?</p>
+        <div class="flex gap-3 justify-end">
+          <button 
+            @click="dismissAutosave"
+            class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition-colors"
+          >
+            Dismiss
+          </button>
+          <button 
+            @click="restoreAutosave"
+            class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+          >
+            Restore
+          </button>
+        </div>
+      </div>
+    </div>
     <div class="header text-center relative mb-6">
       <!-- Back Button positioned above LSPU logo -->
         <div style="position: absolute; top: -0.8cm; left: -2cm; z-index: 10;">
@@ -294,7 +427,7 @@ const onRatingKeyPress = (e, i) => {
       </div>
       <img src="/images/lspu-logo.png" alt="LSPU Logo" class="absolute top-[-0.5cm] left-[-2cm] w-[250px] h-auto">
   <p class="text-sm mb-0 calibri">Republic of the Philippines</p>
-      <p class="text-base font-bold university-name mb-0">Laguna State Polytechnic University</p>
+      <p class="text-base font-normal university-name mb-0" >Laguna State Polytechnic University</p>
   <p class="text-sm mb-0 calibri">Province of Laguna</p>
   <p class="text-lg font-bold mt-6 mb-2 calibri">Evaluation Sheet for all Programs/Activities</p>
     </div>
@@ -455,6 +588,21 @@ const onRatingKeyPress = (e, i) => {
       </div>
 
       <div class="mt-6 text-center">
+        <!-- Autosave indicator -->
+        <div v-if="isAutoSaving" class="mb-3 text-sm text-gray-500 flex items-center justify-center gap-2">
+          <svg class="animate-spin h-4 w-4 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <span>Saving...</span>
+        </div>
+        <div v-else-if="!isEdit" class="mb-3 text-sm text-green-600 flex items-center justify-center gap-2">
+          <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+          </svg>
+          <span>Draft saved</span>
+        </div>
+
         <button
           @click="submit"
           type="button"
@@ -484,7 +632,7 @@ const onRatingKeyPress = (e, i) => {
 }
 .university-name {
   font-family: 'Old English Text MT', 'Times New Roman', serif;
-  font-weight: bold;
+  font-weight: normal;
 }
 
 .calibri {
