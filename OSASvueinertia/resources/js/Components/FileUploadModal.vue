@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 
 const props = defineProps({
   showModal: Boolean,
@@ -19,6 +19,11 @@ const selectedFile = ref(null);
 const error = ref('');
 const submissionType = ref('upload'); // 'upload' or 'link'
 const linkUrl = ref('');
+
+// Check if error is about file size
+const isFileSizeError = computed(() => {
+  return error.value.toLowerCase().includes('too large') || error.value.toLowerCase().includes('size');
+});
 
 const resetState = () => {
   selectedFile.value = null;
@@ -53,7 +58,7 @@ const validateFile = (file) => {
   }
   
   if (file.size > 20 * 1024 * 1024) { // 20MB
-    error.value = 'File size must be less than 20MB.';
+    error.value = 'Oh no! File size is too large. Please compress your PDF and try again.';
     return false;
   }
   
@@ -278,11 +283,25 @@ const switchSubmissionType = (type) => {
 
             <!-- Error Message -->
             <div v-if="error" class="bg-red-50 border border-red-200 rounded-lg p-3">
-              <div class="flex items-center">
-                <svg class="h-5 w-5 text-red-400 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div class="flex items-start">
+                <svg class="h-5 w-5 text-red-400 mr-2 mt-0.5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <p class="text-sm text-red-700">{{ error }}</p>
+                <div class="flex-1">
+                  <p class="text-sm text-red-700">{{ error }}</p>
+                  <a 
+                    v-if="isFileSizeError"
+                    href="https://www.ilovepdf.com/compress_pdf" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    class="text-sm text-indigo-600 hover:text-indigo-800 underline font-medium mt-1 inline-flex items-center"
+                  >
+                    Try compressing your PDF here
+                    <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                  </a>
+                </div>
               </div>
             </div>
           </div>
