@@ -650,15 +650,11 @@ const closeMobileActionsModal = () => {
                         <InputError class="mt-2" :message="form.errors.role_id" />
                     </div>
 
-                    <div class="flex flex-col sm:flex-row items-center justify-end pt-3 sm:pt-4 border-t border-gray-100 dark:border-gray-700 space-y-2 sm:space-y-0 sm:space-x-2">
-                        <SecondaryButton @click="cancelCreate" class="w-full sm:w-auto order-2 sm:order-1">
+                    <div class="flex flex-col sm:flex-row items-center justify-end pt-3 sm:pt-4 border-t border-gray-100 dark:border-gray-700 gap-2">
+                        <SecondaryButton type="button" @click="cancelCreate" class="w-full sm:w-auto order-2 sm:order-1">
                             Cancel
                         </SecondaryButton>
-                        <PrimaryButton 
-                            :class="{ 'opacity-25': form.processing }" 
-                            :disabled="form.processing"
-                            class="bg-blue-500 hover:bg-blue-600 w-full sm:w-auto order-1 sm:order-2"
-                        >
+                        <PrimaryButton type="submit" :class="{ 'opacity-25': form.processing }" :disabled="form.processing" class="w-full sm:w-auto order-1 sm:order-2">
                             Create User
                         </PrimaryButton>
                     </div>
@@ -721,15 +717,11 @@ const closeMobileActionsModal = () => {
                         <InputError class="mt-2" :message="editForm.errors.role_id" />
                     </div>
 
-                    <div class="flex flex-col sm:flex-row items-center justify-end pt-3 sm:pt-4 border-t border-gray-100 dark:border-gray-700 space-y-2 sm:space-y-0 sm:space-x-2">
-                        <SecondaryButton @click="cancelEdit" class="w-full sm:w-auto order-2 sm:order-1">
+                    <div class="flex flex-col sm:flex-row items-center justify-end pt-3 sm:pt-4 border-t border-gray-100 dark:border-gray-700 gap-2">
+                        <SecondaryButton type="button" @click="cancelEdit" class="w-full sm:w-auto order-2 sm:order-1">
                             Cancel
                         </SecondaryButton>
-                        <PrimaryButton 
-                            :class="{ 'opacity-25': editForm.processing }" 
-                            :disabled="editForm.processing"
-                            class="bg-blue-500 hover:bg-blue-600 w-full sm:w-auto order-1 sm:order-2"
-                        >
+                        <PrimaryButton type="submit" :class="{ 'opacity-25': editForm.processing }" :disabled="editForm.processing" class="w-full sm:w-auto order-1 sm:order-2">
                             Update User
                         </PrimaryButton>
                     </div>
@@ -775,7 +767,7 @@ const closeMobileActionsModal = () => {
                     </p>
                 </div>
 
-                <div class="mt-4 sm:mt-6 flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-2">
+                <div class="mt-4 sm:mt-6 flex flex-col sm:flex-row justify-end gap-2">
                     <button
                         type="button"
                         @click="() => { showingDeleteModal = false; deleteConfirmation = ''; }"
