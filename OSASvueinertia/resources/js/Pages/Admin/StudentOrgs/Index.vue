@@ -107,7 +107,9 @@
               </div>
 
               <!-- Mobile Card View (hidden on large screens and above) -->
-              <div class="block xl:hidden space-y-2 sm:space-y-3">
+              <div class="block xl:hidden">
+                <Transition name="tab-content" mode="out-in">
+                  <div :key="activeTab" class="space-y-2 sm:space-y-3">
                 <!-- Non-College Affiliated Organizations Section -->
                 <div v-if="activeTab === 'non-college' && nonCollegeOrganizations.length > 0" class="bg-gray-50 dark:bg-gray-700 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-gray-200 dark:border-gray-600 shadow-sm">
                   <div class="flex justify-between items-center">
@@ -431,10 +433,14 @@
                   <p class="mt-4 text-lg font-medium text-gray-900 dark:text-gray-100">No colleges found</p>
                   <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Get started by adding colleges to the system.</p>
                 </div>
+                  </div>
+                </Transition>
               </div>
 
               <!-- Desktop Accordion View (hidden on mobile and tablet) -->
-              <div class="hidden xl:block space-y-3">
+              <div class="hidden xl:block">
+                <Transition name="tab-content" mode="out-in">
+                  <div :key="activeTab" class="space-y-3">
                 <!-- Non-College Affiliated Organizations Section -->
                 <div v-if="activeTab === 'non-college' && nonCollegeOrganizations.length > 0" class="border border-gray-200 dark:border-gray-700 rounded-md overflow-hidden shadow-sm" data-college-accordion>
                   <div class="flex justify-between items-center p-4 bg-gray-50 dark:bg-gray-700">
@@ -886,6 +892,8 @@
                 <div v-if="colleges.length === 0" class="text-center py-8 text-gray-500 dark:text-gray-400">
                   No colleges found.
                 </div>
+                  </div>
+                </Transition>
               </div>
             </div>
           </div>
@@ -1625,5 +1633,29 @@ export default {
 /* Smooth chevron rotation */
 .transition-transform {
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Tab content transitions - optimized and subtle */
+.tab-content-enter-active {
+  transition: opacity 0.15s cubic-bezier(0.16, 1, 0.3, 1), transform 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tab-content-leave-active {
+  transition: opacity 0.1s cubic-bezier(0.4, 0, 1, 1), transform 0.1s cubic-bezier(0.4, 0, 1, 1);
+}
+
+.tab-content-enter-from {
+  opacity: 0;
+  transform: translateX(8px);
+}
+
+.tab-content-leave-to {
+  opacity: 0;
+  transform: translateX(-8px);
+}
+
+.tab-content-enter-active,
+.tab-content-leave-active {
+  will-change: transform, opacity;
 }
 </style>
