@@ -227,7 +227,7 @@
                   </div>
 
                   <!-- Mobile Organizations List -->
-                  <div v-if="openColleges.includes(college.id)" class="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-200 dark:border-gray-600">
+                  <div v-if="openColleges.includes(college.id)" class="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-200 dark:border-gray-600 animate-dropdown">
                     <div v-if="college.users.length === 0" class="text-center text-gray-500 dark:text-gray-400 py-4 sm:py-6">
                       <svg class="mx-auto h-8 w-8 sm:h-10 sm:w-10 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
@@ -369,7 +369,7 @@
                     </div>
 
                     <!-- Sub-Organizations List (Mobile) -->
-                    <div v-if="openSubOrganizations.includes(parentOrg.id)" class="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-200 dark:border-gray-600">
+                    <div v-if="openSubOrganizations.includes(parentOrg.id)" class="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-200 dark:border-gray-600 animate-dropdown">
                       <div v-if="!parentOrg.sub_organizations?.length" class="text-center text-gray-500 dark:text-gray-400 py-4 sm:py-6">
                         <svg class="mx-auto h-8 w-8 sm:h-10 sm:w-10 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
@@ -602,7 +602,7 @@
 
                   <!-- Users List -->
                   <div v-if="openColleges.includes(college.id)" 
-                      class="p-4 divide-y divide-gray-100 dark:divide-gray-700 bg-white dark:bg-gray-800 transition-all duration-300 ease-in-out">
+                      class="p-4 divide-y divide-gray-100 dark:divide-gray-700 bg-white dark:bg-gray-800 animate-dropdown">
                     <div v-if="college.users.length === 0" class="text-center text-gray-500 dark:text-gray-400 py-8">
                       <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
                             <circle cx="12" cy="8" r="3" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
@@ -794,7 +794,7 @@
 
                     <!-- Sub-Organizations List (Desktop) -->
                     <div v-if="openSubOrganizations.includes(parentOrg.id)" 
-                        class="p-4 divide-y divide-gray-100 dark:divide-gray-700 bg-white dark:bg-gray-800 transition-all duration-300 ease-in-out">
+                        class="p-4 divide-y divide-gray-100 dark:divide-gray-700 bg-white dark:bg-gray-800 animate-dropdown">
                       <div v-if="!parentOrg.sub_organizations?.length" class="text-center text-gray-500 dark:text-gray-400 py-8">
                         <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
@@ -1604,13 +1604,26 @@ export default {
 };
 </script>
 
-<style>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s;
+<style scoped>
+/* Optimized dropdown animation - subtle and performant */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
-.fade-enter,
-.fade-leave-to {
-  opacity: 0;
+
+.animate-dropdown {
+  animation: slideDown 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+}
+
+/* Smooth chevron rotation */
+.transition-transform {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 </style>
