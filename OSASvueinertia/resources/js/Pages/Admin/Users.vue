@@ -347,41 +347,42 @@ const closeMobileActionsModal = () => {
     <Head title="User Management" />
 
     <AuthenticatedLayout>
-        <template #header>
-            <!-- Colored banner -->
-            <div class="flex w-full overflow-hidden rounded-lg mb-2">
-                <div class="w-1/4 h-1 bg-blue-500" style="animation-delay: 0.2s;"></div>
-                <div class="w-1/4 h-1 bg-green-500" style="animation-delay: 0.4s;"></div>
-                <div class="w-1/4 h-1 bg-yellow-500" style="animation-delay: 0.6s;"></div>
-                <div class="w-1/4 h-1 bg-red-500" style="animation-delay: 0.8s;"></div>
-            </div>
-            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                User Management
-            </h2>
-        </template>
+        <!-- Colored Banner -->
+        <div class="flex w-full mb-6 overflow-hidden rounded-lg shadow-md">
+            <div class="w-1/4 h-1.5 bg-blue-500" style="animation-delay: 0.2s;"></div>
+            <div class="w-1/4 h-1.5 bg-green-500" style="animation-delay: 0.4s;"></div>
+            <div class="w-1/4 h-1.5 bg-yellow-500" style="animation-delay: 0.6s;"></div>
+            <div class="w-1/4 h-1.5 bg-red-500" style="animation-delay: 0.8s;"></div>
+        </div>
 
-        <div class="py-3 sm:py-6 md:py-12 w-full">
+        <div class="py-3 sm:py-6 md:py-8 w-full">
             <div class="max-w-7xl mx-auto px-1 sm:px-6 lg:px-8 w-full">
+                <!-- Header Section -->
+                <div class="mb-8">
+                    <div class="flex flex-col space-y-4 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between mb-2">
+                        <div>
+                            <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+                                User Management
+                            </h1>
+                            <p class="text-gray-600 dark:text-gray-400 mt-1">
+                                Manage user accounts and permissions
+                            </p>
+                        </div>
+                        <PrimaryButton 
+                            @click="showingCreateModal = true"
+                            class="flex items-center justify-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 shadow-sm text-sm w-full sm:w-auto"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                            </svg>
+                            <span class="hidden xs:inline">Add New User</span>
+                            <span class="xs:hidden">Add User</span>
+                        </PrimaryButton>
+                    </div>
+                </div>
+
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg min-w-0 w-full">
                     <div class="p-2 sm:p-4 lg:p-6 w-full">
-                        <div class="flex flex-col space-y-2 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between mb-3 sm:mb-6 pb-2 sm:pb-4 border-b border-gray-100 dark:border-gray-700">
-                            <div>
-                                <h3 class="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100">
-                                    All Users
-                                </h3>
-                                <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1">Manage user accounts and permissions</p>
-                            </div>
-                            <PrimaryButton 
-                                @click="showingCreateModal = true"
-                                class="flex items-center justify-center px-3 sm:px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 shadow-sm text-sm w-full sm:w-auto"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                                </svg>
-                                <span class="hidden xs:inline">Add New User</span>
-                                <span class="xs:hidden">Add User</span>
-                            </PrimaryButton>
-                        </div>
 
                         <!-- Search Bar -->
                         <div class="mb-3 sm:mb-6">
