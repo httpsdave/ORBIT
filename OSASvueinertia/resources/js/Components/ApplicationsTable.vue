@@ -942,7 +942,7 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-orange-600 dark:text-orange-400" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zm3 8a1 1 0 11-2 0 1 1 0 012 0zm-8 2a1 1 0 100 2h10a1 1 0 100-2H4z" clip-rule="evenodd" />
           </svg>
-          Delete Document
+          Delete Signed
         </button>
         <!-- View signed document option (only if signed document exists) -->
         <!-- HIDDEN - User should click card to view document in modal -->
@@ -992,7 +992,7 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600 dark:text-blue-400" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
           </svg>
-          Download PDF
+          Download
         </a>
         <span
           v-else
@@ -1001,7 +1001,7 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 dark:text-gray-500" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
           </svg>
-          Download PDF
+          Download
         </span>
         <!-- Delete Application -->
         <button 
@@ -1293,7 +1293,7 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-orange-600 dark:text-orange-400 mr-2.5" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zm3 8a1 1 0 11-2 0 1 1 0 012 0zm-8 2a1 1 0 100 2h10a1 1 0 100-2H4z" clip-rule="evenodd" />
                         </svg>
-                        <span class="text-sm text-gray-900 dark:text-gray-100">Delete Document</span>
+                        <span class="text-sm text-gray-900 dark:text-gray-100">Delete Signed</span>
                     </button>
 
                     <!-- View signed document option - HIDDEN (user clicks card to view in modal) -->
@@ -1339,7 +1339,7 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600 dark:text-blue-400 mr-2.5" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
                         </svg>
-                        <span class="text-sm text-gray-900 dark:text-gray-100">Download PDF</span>
+                        <span class="text-sm text-gray-900 dark:text-gray-100">Download</span>
                     </button>
 
                     <button 
