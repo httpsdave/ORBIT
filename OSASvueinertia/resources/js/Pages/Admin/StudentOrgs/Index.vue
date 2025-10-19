@@ -2,36 +2,40 @@
   <div>
     <AuthenticatedLayout title="Student Organizations">
       
-        
-          <!-- Color Banner -->
-          <div class="flex w-full mb-3 sm:mb-4 overflow-hidden rounded-lg shadow-lg">
-            <div class="w-1/4 h-1 sm:h-1.5 bg-blue-500" style="animation-delay: 0.2s;"></div>
-            <div class="w-1/4 h-1 sm:h-1.5 bg-green-500" style="animation-delay: 0.4s;"></div>
-            <div class="w-1/4 h-1 sm:h-1.5 bg-yellow-500" style="animation-delay: 0.6s;"></div>
-            <div class="w-1/4 h-1 sm:h-1.5 bg-red-500" style="animation-delay: 0.8s;"></div>
-          </div>
+        <!-- Colored Banner -->
+        <div class="flex w-full mb-6 overflow-hidden rounded-lg shadow-md">
+          <div class="w-1/4 h-1.5 bg-blue-500" style="animation-delay: 0.2s;"></div>
+          <div class="w-1/4 h-1.5 bg-green-500" style="animation-delay: 0.4s;"></div>
+          <div class="w-1/4 h-1.5 bg-yellow-500" style="animation-delay: 0.6s;"></div>
+          <div class="w-1/4 h-1.5 bg-red-500" style="animation-delay: 0.8s;"></div>
+        </div>
 
-          <div class="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:justify-between sm:items-center">
-            <h2 class="font-semibold text-lg sm:text-xl text-gray-800 dark:text-gray-200 leading-tight">
-              Manage Student Organizations
-            </h2>
-            <button
-              type="button"
-              @click="openUserSelectionModalForNewOrg"
-              class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-sm font-medium text-white rounded-xl shadow-md hover:shadow-blue-300/30 hover:from-blue-400 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 w-full sm:w-auto relative overflow-hidden group"
-            >
-              <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
-              </svg>
-              <span class="hidden xs:inline">Add New Organization</span>
-              <span class="xs:hidden">Add Organization</span>
-            </button>
-          </div>
-        
+        <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+          <div class="w-full mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 py-8">
+            <!-- Header Section -->
+            <div class="mb-8">
+              <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                  <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+                    Student Organizations
+                  </h1>
+                  <p class="text-gray-600 dark:text-gray-400 mt-1">
+                    Manage and organize student organizations by college affiliation
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  @click="openUserSelectionModalForNewOrg"
+                  class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white text-sm font-semibold rounded-xl shadow-md hover:shadow-blue-300/30 transition-all duration-200 whitespace-nowrap flex-shrink-0"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                  </svg>
+                  <span>Add New Organization</span>
+                </button>
+              </div>
+            </div>
 
-        <div class="py-2 sm:py-4 md:py-6 lg:py-8">
-          <div class="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 xl:px-8">
             <!-- Alert Messages -->
             <div v-if="$page.props.flash && $page.props.flash.message" 
                  class="mb-3 sm:mb-4 bg-green-100 dark:bg-green-900 border-l-4 border-green-500 text-green-700 dark:text-green-200 p-3 sm:p-4 rounded shadow-sm" 
@@ -68,12 +72,9 @@
               <div class="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-gray-100 dark:border-gray-700">
                 <div>
                   <h3 class="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100">
-                    Student Organizations by College
+                    Organizations Overview
                   </h3>
-                  <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1">Manage organizations across all colleges</p>
-                </div>
-                <div class="text-sm text-gray-500 dark:text-gray-400">
-                  {{ getTotalUsersCount() }} Total Organizations
+                  <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1">{{ getTotalUsersCount() }} total organizations</p>
                 </div>
               </div>
 
