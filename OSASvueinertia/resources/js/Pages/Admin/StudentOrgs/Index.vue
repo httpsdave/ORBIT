@@ -474,12 +474,9 @@
                               Email
                             </th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                              Role
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                               Status
                             </th>
-                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            <th v-if="nonCollegeOrganizations.some(u => canBeAssignedParent(u) || canChangeCollege(u))" scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                               Actions
                             </th>
                           </tr>
@@ -503,16 +500,6 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                               <div class="text-sm text-gray-900 dark:text-gray-100">{{ user.email || 'No email' }}</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                              <span
-                                :class="[
-                                  'px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full',
-                                  user.role && user.role.slug === 'admin' ? 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200' : 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
-                                ]"
-                              >
-                                {{ user.role ? user.role.name : 'No role' }}
-                              </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                               <!-- Improved Status Toggle (desktop table) -->
@@ -540,7 +527,7 @@
                                 {{ user.status === 'active' ? 'Active' : 'Inactive' }}
                               </span>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <td v-if="nonCollegeOrganizations.some(u => canBeAssignedParent(u) || canChangeCollege(u))" class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                               <button
                                 v-if="canChangeCollege(user)"
                                 @click="openUserSelectionModalForAssignment(user)"
@@ -648,12 +635,9 @@
                               Email
                             </th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                              Role
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                               Status
                             </th>
-                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            <th v-if="college.users.some(u => canBeAssignedParent(u) || canChangeCollege(u))" scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                               Actions
                             </th>
                           </tr>
@@ -677,16 +661,6 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                               <div class="text-sm text-gray-900 dark:text-gray-100">{{ user.email || 'No email' }}</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                              <span
-                                :class="[
-                                  'px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full',
-                                  user.role && user.role.slug === 'admin' ? 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200' : 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
-                                ]"
-                              >
-                                {{ user.role ? user.role.name : 'No role' }}
-                              </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                               <!-- Improved Status Toggle (desktop table) -->
@@ -714,7 +688,7 @@
                                 {{ user.status === 'active' ? 'Active' : 'Inactive' }}
                               </span>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <td v-if="college.users.some(u => canBeAssignedParent(u) || canChangeCollege(u))" class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                               <button
                                 v-if="canBeAssignedParent(user)"
                                 @click="openParentAssignModal(user)"
