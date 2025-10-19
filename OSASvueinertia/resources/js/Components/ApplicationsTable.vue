@@ -599,8 +599,16 @@ const viewUnsignedDocument = (app) => {
   showMobileActionsModal.value = false;
   selectedMobileApp.value = null;
   
-  // Navigate to the SPA document view with unsigned parameter
-  router.visit(`/applications/${app.id}/document?view=unsigned`);
+  // On mobile screens (< 640px), open in new window
+  if (window.innerWidth < 640) {
+    const url = getUnsignedViewUrl(app);
+    if (url && url !== '#') {
+      window.open(url, '_blank');
+    }
+  } else {
+    // On desktop/larger screens, navigate to the SPA document view with unsigned parameter
+    router.visit(`/applications/${app.id}/document?view=unsigned`);
+  }
 };
 
 // Add new method for viewing signed documents - Navigate to SPA view or open link
@@ -945,9 +953,8 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
           @click="viewUnsignedDocument(activeDropdownApp)"
           class="w-full text-left px-3 py-1.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200 font-medium"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600 dark:text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd" />
-            <path d="M8 8a.5.5 0 01.5-.5h3a.5.5 0 010 1h-3A.5.5 0 018 8zm0 2a.5.5 0 01.5-.5h3a.5.5 0 010 1h-3A.5.5 0 018 10zm0 2a.5.5 0 01.5-.5h3a.5.5 0 010 1h-3A.5.5 0 018 12z" />
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600 dark:text-gray-400" viewBox="0 -960 960 960" fill="currentColor">
+            <path d="M760-200H320q-33 0-56.5-23.5T240-280v-560q0-33 23.5-56.5T320-920h280l240 240v400q0 33-23.5 56.5T760-200ZM560-640v-200H320v560h440v-360H560ZM160-40q-33 0-56.5-23.5T80-120v-560h80v560h440v80H160Zm160-800v200-200 560-560Z"/>
           </svg>
           View Unsigned
         </button>
@@ -1291,17 +1298,16 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
 
                     <!-- View signed document option - HIDDEN (user clicks card to view in modal) -->
 
-                    <button 
-                        v-if="selectedMobileApp && hasSignedDocument(selectedMobileApp)"
-                        @click="handleMobileAction('viewUnsigned')"
-                        class="w-full flex items-center px-3 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-150 active:scale-[0.98]"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600 dark:text-gray-400 mr-2.5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd" />
-                            <path d="M8 8a.5.5 0 01.5-.5h3a.5.5 0 010 1h-3A.5.5 0 018 8zm0 2a.5.5 0 01.5-.5h3a.5.5 0 010 1h-3A.5.5 0 018 10zm0 2a.5.5 0 01.5-.5h3a.5.5 0 010 1h-3A.5.5 0 018 12z" />
-                        </svg>
-                        <span class="text-sm text-gray-900 dark:text-gray-100">View Unsigned</span>
-                    </button>
+          <button 
+            v-if="selectedMobileApp && hasSignedDocument(selectedMobileApp)"
+            @click="handleMobileAction('viewUnsigned')"
+            class="w-full flex items-center px-3 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-150 active:scale-[0.98]"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600 dark:text-gray-400 mr-2.5" viewBox="0 -960 960 960" fill="currentColor">
+              <path d="M760-200H320q-33 0-56.5-23.5T240-280v-560q0-33 23.5-56.5T320-920h280l240 240v400q0 33-23.5 56.5T760-200ZM560-640v-200H320v560h440v-360H560ZM160-40q-33 0-56.5-23.5T80-120v-560h80v560h440v80H160Zm160-800v200-200 560-560Z"/>
+            </svg>
+            <span class="text-sm text-gray-900 dark:text-gray-100">View Unsigned</span>
+          </button>
 
                     <button 
                         v-if="selectedMobileApp && hasFeedback(selectedMobileApp)"
