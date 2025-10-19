@@ -164,8 +164,20 @@ class EventController extends Controller
         if (in_array($extension, ['jpg', 'jpeg', 'png'])) {
             // Try Tesseract OCR first
             try {
-                $text = (new TesseractOCR(storage_path('app/public/' . $filePath)))
-                    ->run();
+                $ocr = new TesseractOCR(storage_path('app/public/' . $filePath));
+                
+                // Configure Tesseract for better accuracy
+                $ocr->lang('eng')  // English language
+                    ->psm(3)       // Automatic page segmentation
+                    ->oem(1);      // Neural nets LSTM engine
+                
+                $text = $ocr->run();
+                
+                // If text is empty or too short, it might have failed
+                if (empty(trim($text)) || strlen(trim($text)) < 10) {
+                    throw new \Exception("Tesseract returned insufficient text");
+                }
+                
             } catch (\Exception $e) {
                 // If Tesseract fails, fall back to OCR.Space
                 try {
@@ -215,65 +227,170 @@ class EventController extends Controller
         // Prepare the file for upload
         $filePath = $file->getRealPath();
         $fileName = $file->getClientOriginalName();
+        $maxSizeBytes = 1024 * 1024; // 1MB limit for OCR.Space
+        $isCompressed = false;
         
-        // Create cURL request
-        $ch = curl_init();
-        
-        $postData = [
-            'apikey' => $apiKey,
-            'language' => 'eng',
-            'isOverlayRequired' => 'false',
-            'filetype' => strtolower($file->getClientOriginalExtension()),
-            'detectOrientation' => 'true',
-            'scale' => 'true',
-            'OCREngine' => '2' // Use OCR Engine 2 for better accuracy
-        ];
-        
-        // Add file to the request
-        $postData['file'] = new \CURLFile($filePath, $file->getMimeType(), $fileName);
-        
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        
-        $response = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $error = curl_error($ch);
-        curl_close($ch);
-        
-        if ($error) {
-            throw new \Exception("cURL Error: " . $error);
+        // Check if file needs compression
+        if (filesize($filePath) > $maxSizeBytes) {
+            $filePath = $this->compressImage($filePath, $file->getClientOriginalExtension());
+            $isCompressed = true;
         }
         
-        if ($httpCode !== 200) {
-            throw new \Exception("OCR.Space API returned HTTP code: " . $httpCode);
-        }
-        
-        $result = json_decode($response, true);
-        
-        if (!$result) {
-            throw new \Exception("Failed to decode OCR.Space response");
-        }
-        
-        if ($result['IsErroredOnProcessing']) {
-            throw new \Exception("OCR.Space processing error: " . ($result['ErrorMessage'] ?? 'Unknown error'));
-        }
-        
-        if (empty($result['ParsedResults'])) {
-            throw new \Exception("No text found in the image");
-        }
-        
-        // Extract text from all parsed results
-        $extractedText = '';
-        foreach ($result['ParsedResults'] as $parsedResult) {
-            if (isset($parsedResult['ParsedText'])) {
-                $extractedText .= $parsedResult['ParsedText'] . "\n";
+        try {
+            // Create cURL request
+            $ch = curl_init();
+            
+            $postData = [
+                'apikey' => $apiKey,
+                'language' => 'eng',
+                'isOverlayRequired' => 'false',
+                'filetype' => strtolower($file->getClientOriginalExtension()),
+                'detectOrientation' => 'true',
+                'scale' => 'true',
+                'OCREngine' => '2' // Use OCR Engine 2 for better accuracy
+            ];
+            
+            // Add file to the request
+            $postData['file'] = new \CURLFile($filePath, $file->getMimeType(), $fileName);
+            
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $error = curl_error($ch);
+            curl_close($ch);
+            
+            if ($error) {
+                throw new \Exception("cURL Error: " . $error);
+            }
+            
+            if ($httpCode !== 200) {
+                throw new \Exception("OCR.Space API returned HTTP code: " . $httpCode);
+            }
+            
+            $result = json_decode($response, true);
+            
+            if (!$result) {
+                throw new \Exception("Failed to decode OCR.Space response");
+            }
+            
+            if ($result['IsErroredOnProcessing']) {
+                throw new \Exception("OCR.Space processing error: " . ($result['ErrorMessage'] ?? 'Unknown error'));
+            }
+            
+            if (empty($result['ParsedResults'])) {
+                throw new \Exception("No text found in the image");
+            }
+            
+            // Extract text from all parsed results
+            $extractedText = '';
+            foreach ($result['ParsedResults'] as $parsedResult) {
+                if (isset($parsedResult['ParsedText'])) {
+                    $extractedText .= $parsedResult['ParsedText'] . "\n";
+                }
+            }
+            
+            return trim($extractedText);
+            
+        } finally {
+            // Clean up temporary compressed file
+            if ($isCompressed && file_exists($filePath)) {
+                @unlink($filePath);
             }
         }
+    }
+
+    /**
+     * Compress image to reduce file size for OCR.Space API
+     */
+    private function compressImage($filePath, $extension)
+    {
+        $maxSizeBytes = 1024 * 1024; // 1MB
+        $quality = 85; // Start with 85% quality
+        $tempPath = storage_path('app/temp_compressed_' . uniqid() . '.' . $extension);
         
-        return trim($extractedText);
+        try {
+            // Load image based on type
+            $image = null;
+            switch (strtolower($extension)) {
+                case 'jpg':
+                case 'jpeg':
+                    $image = imagecreatefromjpeg($filePath);
+                    break;
+                case 'png':
+                    $image = imagecreatefrompng($filePath);
+                    break;
+                default:
+                    return $filePath; // Return original if unsupported type
+            }
+            
+            if (!$image) {
+                return $filePath;
+            }
+            
+            // Try compressing with decreasing quality until under 1MB
+            while ($quality > 20) {
+                // Save compressed image
+                if (strtolower($extension) === 'png') {
+                    // PNG compression level (0-9, where 9 is highest compression)
+                    $pngQuality = floor((100 - $quality) / 10);
+                    imagepng($image, $tempPath, $pngQuality);
+                } else {
+                    imagejpeg($image, $tempPath, $quality);
+                }
+                
+                // Check if file size is acceptable
+                if (filesize($tempPath) <= $maxSizeBytes) {
+                    imagedestroy($image);
+                    return $tempPath;
+                }
+                
+                // Reduce quality for next iteration
+                $quality -= 15;
+            }
+            
+            // If still too large, resize the image
+            $width = imagesx($image);
+            $height = imagesy($image);
+            $newWidth = (int)($width * 0.7);
+            $newHeight = (int)($height * 0.7);
+            
+            $resized = imagecreatetruecolor($newWidth, $newHeight);
+            
+            // Preserve transparency for PNG
+            if (strtolower($extension) === 'png') {
+                imagealphablending($resized, false);
+                imagesavealpha($resized, true);
+            }
+            
+            imagecopyresampled($resized, $image, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+            
+            // Save resized image
+            if (strtolower($extension) === 'png') {
+                imagepng($resized, $tempPath, 6);
+            } else {
+                imagejpeg($resized, $tempPath, 70);
+            }
+            
+            imagedestroy($image);
+            imagedestroy($resized);
+            
+            return $tempPath;
+            
+        } catch (\Exception $e) {
+            // If compression fails, return original
+            if (isset($image) && $image) {
+                imagedestroy($image);
+            }
+            if (file_exists($tempPath)) {
+                @unlink($tempPath);
+            }
+            return $filePath;
+        }
     }
 }
