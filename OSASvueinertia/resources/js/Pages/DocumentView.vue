@@ -62,19 +62,19 @@
   } : {}"
 >
         <!-- Panel Header -->
-        <div class="p-4 border-b border-gray-200">
+        <div class="p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
           <div class="flex items-center justify-between">
             <div>
-              <h2 class="text-lg font-semibold text-gray-900">Document Details</h2>
-              <p v-if="props.viewType === 'unsigned'" class="text-xs text-gray-500 mt-0.5">Viewing: Original Submission</p>
-              <p v-else-if="application?.signed_document_path" class="text-xs text-gray-500 mt-0.5">Viewing: Signed Document</p>
+              <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Document Details</h2>
+              <p v-if="props.viewType === 'unsigned'" class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Viewing: Original Submission</p>
+              <p v-else-if="application?.signed_document_path" class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Viewing: Signed Document</p>
             </div>
             <div class="flex items-center space-x-2">
               <!-- Close button for mobile overlay -->
 <button
   v-if="isMobile && showInfoPanel"
   @click="toggleInfoPanel"
-  class="inline-flex items-center justify-center w-8 h-8 text-gray-400 hover:text-gray-600 focus:outline-none focus:text-gray-600 transition-all duration-200 rounded-full hover:bg-gray-100 transform hover:rotate-90"
+  class="inline-flex items-center justify-center w-8 h-8 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none transition-all duration-200 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transform hover:rotate-90 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
   aria-label="Close panel"
 >
   <svg class="w-5 h-5 transition-transform duration-200" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
@@ -85,7 +85,7 @@
                 <button
   v-if="!showInfoPanel"
   @click="toggleInfoPanel"
-  class="inline-flex items-center justify-center w-8 h-8 text-gray-400 hover:text-gray-600 focus:outline-none focus:text-gray-600 transition rounded-full hover:bg-gray-100 lg:hidden"
+  class="inline-flex items-center justify-center w-8 h-8 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none transition-all duration-200 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 lg:hidden focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
   aria-label="Show information panel"
 >
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
@@ -97,7 +97,7 @@
               <!-- Back button -->
               <button
                 @click="goBackToApplications"
-                class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-800 focus:outline-none focus:text-blue-600 transition"
+                class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-all duration-200"
               >
                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M15 19l-7-7 7-7" />
@@ -110,7 +110,7 @@
 
         <!-- Panel Content -->
         <!-- Panel Content with staggered animation -->
-<div class="flex-1 overflow-y-auto p-4 space-y-6" style="max-height: calc(100vh - 4rem);">
+<div class="flex-1 overflow-y-auto p-4 space-y-6 bg-gray-50 dark:bg-gray-900" style="max-height: calc(100vh - 4rem);">
   <transition-group
     enter-active-class="transition-all duration-300 ease-out"
     enter-from-class="opacity-0 translate-x-4"
@@ -119,24 +119,24 @@
   >
           <!-- Basic Information -->
           <div key="basic-info">
-            <h3 class="text-sm font-medium text-gray-900 mb-3">Basic Information</h3>
+            <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">Basic Information</h3>
             <div class="space-y-2 text-sm">
               <div>
-                <span class="font-medium text-gray-600">Form Type:</span>
-                <span class="ml-2 text-gray-900">{{ formTypeToName(application?.form_type) }}</span>
+                <span class="font-medium text-gray-600 dark:text-gray-400">Form Type:</span>
+                <span class="ml-2 text-gray-900 dark:text-gray-100">{{ formTypeToName(application?.form_type) }}</span>
               </div>
               <div>
-                <span class="font-medium text-gray-600">Organization:</span>
-                <span class="ml-2 text-gray-900">{{ application?.organization_name || 'N/A' }}</span>
+                <span class="font-medium text-gray-600 dark:text-gray-400">Organization:</span>
+                <span class="ml-2 text-gray-900 dark:text-gray-100">{{ application?.organization_name || 'N/A' }}</span>
               </div>
               <div>
-                <span class="font-medium text-gray-600">Submitted:</span>
-                <span class="ml-2 text-gray-900">{{ formatDate(application?.created_at) }}</span>
+                <span class="font-medium text-gray-600 dark:text-gray-400">Submitted:</span>
+                <span class="ml-2 text-gray-900 dark:text-gray-100">{{ formatDate(application?.created_at) }}</span>
               </div>
               <div v-if="application?.signed_document_path">
-                <span class="font-medium text-gray-600">Document:</span>
+                <span class="font-medium text-gray-600 dark:text-gray-400">Document:</span>
                 <span 
-                  class="ml-2 text-gray-900 truncate block max-w-48 cursor-help" 
+                  class="ml-2 text-gray-900 dark:text-gray-100 truncate block max-w-48 cursor-help" 
                   :title="getFileName(application.signed_document_path)"
                 >
                   {{ getFileName(application.signed_document_path) }}
@@ -147,7 +147,7 @@
 
           <!-- Status Section -->
           <div key="status">
-            <h3 class="text-sm font-medium text-gray-900 mb-3">Status</h3>
+            <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">Status</h3>
             <div class="flex items-center space-x-2">
               <span 
                 :class="[
@@ -162,7 +162,7 @@
 
           <!-- Admin: Status Update & Feedback Section -->
           <div key="admin-status-update" v-if="props.isAdmin">
-            <h3 class="text-sm font-medium text-gray-900 mb-3">Update Status & Feedback</h3>
+            <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">Update Status & Feedback</h3>
             <div class="space-y-3">
               <div class="grid grid-cols-3 gap-2 min-w-0">
                 <button
@@ -202,13 +202,13 @@
               <textarea
                 v-model="feedbackText"
                 rows="4"
-                class="w-full rounded-lg border border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 transition duration-200 p-3 text-sm resize-none"
+                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring focus:ring-blue-500 dark:focus:ring-blue-400 focus:ring-opacity-50 transition duration-200 p-3 text-sm resize-none"
                 :placeholder="selectedStatus === 'Approved' ? 'Goodjob! thank you for your submission. Keep it up.' : 'Enter feedback to the organization...'"
               ></textarea>
               <button
                 @click="updateStatus"
                 :disabled="isUpdatingStatus || (selectedStatus === application?.status && feedbackText.trim() === (application?.feedback || ''))"
-                class="w-full inline-flex justify-center items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-medium rounded-lg transition duration-200 text-sm disabled:opacity-70"
+                class="w-full inline-flex justify-center items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 disabled:from-gray-400 disabled:to-gray-500 text-white font-medium rounded-lg transition-all duration-200 text-sm disabled:opacity-70 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
               >
                 <svg
                   v-if="isUpdatingStatus"
@@ -231,29 +231,29 @@
 
           <!-- User: Feedback Display Section -->
           <div key="user-feedback-display" v-if="!props.isAdmin">
-            <h3 class="text-sm font-medium text-gray-900 mb-3">Feedback from Admin</h3>
-            <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-sm text-gray-700">
+            <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">Feedback from Admin</h3>
+            <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 text-sm text-gray-700 dark:text-gray-300">
               {{ application?.feedback || 'No feedback provided.' }}
             </div>
           </div>
 
           <!-- Admin: Existing Feedback Display -->
           <div key="admin-feedback-display" v-if="props.isAdmin && application?.feedback">
-            <h3 class="text-sm font-medium text-gray-900 mb-3">Current Feedback</h3>
-            <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-sm text-gray-700">
+            <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">Current Feedback</h3>
+            <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 text-sm text-gray-700 dark:text-gray-300">
               {{ application.feedback }}
             </div>
           </div>
 
           <!-- Actions -->
           <div key="actions">
-            <h3 class="text-sm font-medium text-gray-900 mb-3">Actions</h3>
+            <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">Actions</h3>
             <div class="space-y-2">
               <!-- Toggle between signed and unsigned view if signed document exists -->
               <button
                 v-if="application?.signed_document_path"
                 @click="toggleDocumentView"
-                class="w-full inline-flex items-center justify-center px-4 py-2 bg-purple-100 text-sm font-medium text-purple-700 rounded-md hover:bg-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition"
+                class="w-full inline-flex items-center justify-center px-4 py-2 bg-purple-100 dark:bg-purple-900/30 text-sm font-medium text-purple-700 dark:text-purple-300 rounded-lg hover:bg-purple-200 dark:hover:bg-purple-900/50 focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-all duration-200"
               >
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
@@ -262,7 +262,7 @@
               </button>
               <button
                 @click="openInNewWindow"
-                class="w-full inline-flex items-center justify-center px-4 py-2 bg-gray-100 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition"
+                class="w-full inline-flex items-center justify-center px-4 py-2 bg-gray-100 dark:bg-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 dark:focus:ring-gray-400 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-all duration-200"
               >
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
@@ -271,7 +271,7 @@
               </button>
               <button
                 @click="downloadDocument"
-                class="w-full inline-flex items-center justify-center px-4 py-2 bg-blue-100 text-sm font-medium text-blue-700 rounded-md hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition"
+                class="w-full inline-flex items-center justify-center px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-sm font-medium text-blue-700 dark:text-blue-300 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-all duration-200"
               >
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
