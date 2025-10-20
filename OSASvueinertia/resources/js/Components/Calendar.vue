@@ -1151,7 +1151,7 @@
     }
     </style>
 <script>
-import { ref, reactive, onMounted, computed, watch, onUnmounted } from 'vue';
+import { ref, reactive, onMounted, computed, watch, onUnmounted, nextTick } from 'vue';
 import FullCalendar from '@fullcalendar/vue3';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -1385,6 +1385,20 @@ export default {
     onUnmounted(() => {
       if (checkEventsTimer.value) {
         clearInterval(checkEventsTimer.value);
+      }
+    });
+    
+    // Watch for view changes and update calendar size when switching back to calendar view
+    watch(currentView, async (newView) => {
+      if (newView === 'calendar') {
+        // Wait for DOM to update
+        await nextTick();
+        // Give the transition time to complete
+        setTimeout(() => {
+          if (fullCalendar.value && fullCalendar.value.getApi) {
+            fullCalendar.value.getApi().updateSize();
+          }
+        }, 350); // Wait slightly longer than the 300ms transition
       }
     });
     
