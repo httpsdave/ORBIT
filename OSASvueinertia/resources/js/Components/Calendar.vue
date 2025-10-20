@@ -211,6 +211,44 @@
       @click.self="cancelEdit"
     >
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 sm:p-6 w-full max-w-xs sm:max-w-md max-h-[90vh] overflow-y-auto">
+      <!-- Autosave Restore Prompt -->
+      <div v-if="showRestorePrompt && !isEditing" class="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+        <div class="flex items-start">
+          <svg class="w-5 h-5 text-blue-500 dark:text-blue-400 mt-0.5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <div class="flex-1">
+            <h3 class="text-sm font-medium text-blue-800 dark:text-blue-200">Draft Found</h3>
+            <p class="mt-1 text-sm text-blue-700 dark:text-blue-300">
+              We found an unsaved draft. Would you like to restore it?
+            </p>
+            <div class="mt-3 flex gap-2">
+              <button
+                @click="restoreAutosave"
+                class="px-3 py-1.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 rounded-md transition-colors duration-200"
+              >
+                Restore Draft
+              </button>
+              <button
+                @click="dismissAutosave"
+                class="px-3 py-1.5 text-sm font-medium text-blue-700 dark:text-blue-300 bg-white dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-gray-700 border border-blue-300 dark:border-blue-700 rounded-md transition-colors duration-200"
+              >
+                Start Fresh
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Autosaving indicator -->
+      <div v-if="isAutoSaving && !isEditing" class="mb-3 flex items-center text-sm text-gray-500 dark:text-gray-400">
+        <svg class="animate-spin h-4 w-4 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <span>Saving draft...</span>
+      </div>
+      
       <div class="flex justify-between items-center mb-4">
         <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">
           {{ isEditing ? 'Edit Event' : 'Create New Event' }}
@@ -1162,6 +1200,7 @@ import EventHistoryModal from './EventHistoryModal.vue';
 import EventStatistics from './EventStatistics.vue';
 import ConfirmationModal from './ConfirmationModal.vue';
 import StatusBanner from './StatusBanner.vue';
+import { useFormAutoSave } from '@/Composables/useFormAutoSave';
 import axios from 'axios';
 import dayjs from 'dayjs';
 
@@ -1224,6 +1263,10 @@ export default {
     const checkEventsTimer = ref(null);
     const showPastEventsModal = ref(false);
     
+    // Autosave state
+    const showRestorePrompt = ref(false);
+    const autosavedData = ref(null);
+    
     // For event details modal (non-admin users)
     const showEventDetailsModal = ref(false);
     const selectedEvent = ref({});
@@ -1268,6 +1311,24 @@ export default {
       location: '',
       organization: ''
     });
+    
+    // Initialize autosave composable (disabled by default, only for create mode)
+    const eventFormDataForAutosave = computed(() => ({
+      title: eventForm.title,
+      date: eventForm.date,
+      end_date: eventForm.end_date,
+      start_time: eventForm.start_time,
+      end_time: eventForm.end_time,
+      description: eventForm.description,
+      location: eventForm.location,
+      organization: eventForm.organization
+    }));
+    
+    const { isAutoSaving, enable: enableAutoSave, disable: disableAutoSave, start: startAutoSave, stop: stopAutoSave } = useFormAutoSave(
+      eventFormDataForAutosave,
+      'calendar_event',
+      { enabled: false }
+    );
     
     // Clear form errors
     const clearFormErrors = () => {
@@ -1386,6 +1447,8 @@ export default {
       if (checkEventsTimer.value) {
         clearInterval(checkEventsTimer.value);
       }
+      // Clean up autosave on unmount
+      stopAutoSave();
     });
     
     // Watch for view changes and update calendar size when switching back to calendar view
@@ -1510,6 +1573,9 @@ export default {
     function saveEvent() {
       if (!props.isAdmin) return; // Safety check
       
+      // Stop autosave before submitting
+      stopAutoSave();
+      
       // Clear previous errors
       clearFormErrors();
       
@@ -1528,6 +1594,8 @@ export default {
       
       // Stop if there are validation errors
       if (hasErrors) {
+        // Re-enable autosave if validation fails
+        startAutoSave();
         return;
       }
       
@@ -1545,7 +1613,7 @@ export default {
         location: eventForm.location,
         organization: eventForm.organization
       })
-        .then(response => {
+        .then(async (response) => {
           // Add the new event to the list
           events.value.push(response.data);
           filterExpiredEvents();
@@ -1553,6 +1621,23 @@ export default {
           // Dispatch event for calendar badge update
           if (typeof window !== 'undefined') {
             window.dispatchEvent(new Event('calendar-event-added'));
+          }
+          
+          // Clear autosaved data after successful submission
+          try {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            if (csrfToken) {
+              await fetch('/delete-autosaved-form-data', {
+                method: 'DELETE',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'X-CSRF-TOKEN': csrfToken,
+                },
+                body: JSON.stringify({ form_type: 'calendar_event' })
+              });
+            }
+          } catch (error) {
+            console.error('Failed to delete autosaved data:', error);
           }
           
           // Reset the form
@@ -1567,6 +1652,9 @@ export default {
           }, 5000);
         })
         .catch(error => {
+          // Re-enable autosave if submission fails
+          startAutoSave();
+          
           if (error.response && error.response.status === 403) {
             alert('Unauthorized: You do not have permission to perform this action.');
           } else if (error.response && error.response.status === 422) {
@@ -1736,7 +1824,57 @@ export default {
       }
     }
     
+    // Autosave restore function
+    const restoreAutosave = () => {
+      if (autosavedData.value) {
+        Object.assign(eventForm, autosavedData.value);
+      }
+      showRestorePrompt.value = false;
+      enableAutoSave();
+      startAutoSave();
+    };
+    
+    // Autosave dismiss function
+    const dismissAutosave = async () => {
+      showRestorePrompt.value = false;
+      autosavedData.value = null;
+      
+      // Clear the old autosaved data since user chose to dismiss
+      try {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        if (csrfToken) {
+          await fetch('/delete-autosaved-form-data', {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-TOKEN': csrfToken,
+            },
+            body: JSON.stringify({ form_type: 'calendar_event' })
+          });
+        }
+      } catch (error) {
+        console.error('Failed to delete autosaved data:', error);
+      }
+      
+      enableAutoSave();
+      startAutoSave();
+    };
+    
+    // Helper function to check if autosaved data is newer
+    const isAutosavedDataNewer = (autosavedTimestamp) => {
+      if (!autosavedTimestamp) return false;
+      const autosavedTime = new Date(autosavedTimestamp).getTime();
+      // Compare with when modal was opened (approximate with current time for new events)
+      const currentTime = new Date().getTime();
+      // If autosaved data is less than 24 hours old, consider it potentially relevant
+      return (currentTime - autosavedTime) < 24 * 60 * 60 * 1000;
+    };
+    
     function resetForm() {
+      // Stop autosave when closing the form
+      stopAutoSave();
+      disableAutoSave();
+      
       extractedData.value = null;
       isEditing.value = false;
       currentEditId.value = null;
@@ -2023,9 +2161,12 @@ export default {
       eventForm.description = '';
       eventForm.location = '';
       eventForm.organization = '';
+      
+      // Fetch autosaved data when opening create modal
+      fetchAutosavedData();
     }
 
-    function createEventForDate(clickedDate, info) {
+    async function createEventForDate(clickedDate, info) {
       // Set up new event with clicked date
       isEditing.value = false;
       currentEditId.value = null;
@@ -2057,9 +2198,12 @@ export default {
       }
       
       console.log(`Event creation initiated for date: ${clickedDate}`);
+      
+      // Fetch autosaved data when opening create modal
+      await fetchAutosavedData();
     }
     
-    function createEventForDateRange(startDate, endDate, info) {
+    async function createEventForDateRange(startDate, endDate, info) {
       // Set up new event with selected date range
       isEditing.value = false;
       currentEditId.value = null;
@@ -2082,6 +2226,54 @@ export default {
           info.view.calendar.unselect();
         }
       }, 100);
+      
+      // Fetch autosaved data when opening create modal
+      await fetchAutosavedData();
+    }
+    
+    // Fetch autosaved data for create mode
+    async function fetchAutosavedData() {
+      try {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        if (!csrfToken) {
+          console.warn('CSRF token not found, skipping autosave fetch');
+          enableAutoSave();
+          startAutoSave();
+          return;
+        }
+        
+        const response = await fetch('/get-autosaved-form-data?form_type=calendar_event', {
+          headers: {
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': csrfToken,
+          }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && data.form_data && isAutosavedDataNewer(data.updated_at)) {
+            autosavedData.value = data.form_data;
+            showRestorePrompt.value = true;
+          } else {
+            // No autosaved data or too old, enable autosave immediately
+            enableAutoSave();
+            startAutoSave();
+          }
+        } else if (response.status === 404) {
+          // No autosaved data found, enable autosave immediately
+          enableAutoSave();
+          startAutoSave();
+        } else {
+          console.error('Failed to fetch autosaved data:', response.status);
+          enableAutoSave();
+          startAutoSave();
+        }
+      } catch (error) {
+        console.error('Failed to fetch autosaved data:', error);
+        // On error, still enable autosave
+        enableAutoSave();
+        startAutoSave();
+      }
     }
     
     // Handle calendar date click (single day) with improved animations and error handling
@@ -2338,6 +2530,10 @@ export default {
   eventForm.description = data.description || '';
   eventForm.location = data.location || '';
   eventForm.organization = data.organization || '';
+  
+  // Enable autosave for extracted data
+  // First check if there's existing autosaved data
+  fetchAutosavedData();
 }
 
 function exportPastEventsCsv(pastEvents) {
@@ -2441,7 +2637,13 @@ function exportPastEventsCsv(pastEvents) {
         pastDateMessage,
         showPastDateWarning,
         confirmPastDate,
-        cancelPastDate
+        cancelPastDate,
+      // Autosave
+      showRestorePrompt,
+      autosavedData,
+      isAutoSaving,
+      restoreAutosave,
+      dismissAutosave
     };
   }
 };
