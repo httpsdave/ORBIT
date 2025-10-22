@@ -65,6 +65,12 @@ class DashboardController extends Controller
         // Get pending applications count (only active applications)
         $pendingApplications = OrganizationApplication::active()->where('status', 'pending')->count();
         
+        // Get approved applications count (only active applications)
+        $approvedApplications = OrganizationApplication::active()->where('status', 'Approved')->count();
+        
+        // Get rejected applications count (only active applications)
+        $rejectedApplications = OrganizationApplication::active()->where('status', 'Rejected')->count();
+        
         // Get approved Plan of Activities count that have ALL their activity reports approved
         $approvedPOAsCount = OrganizationApplication::active()
             ->where('status', 'Approved')
@@ -210,6 +216,8 @@ class DashboardController extends Controller
             'todayEvent' => $todayEvent,
             'upcomingEvent' => $upcomingEvent,
             'pendingApplications' => $pendingApplications,
+            'approvedApplications' => $approvedApplications,
+            'rejectedApplications' => $rejectedApplications,
             'userName' => $userName,
             'advisersData' => $advisersData->filter()->values(),
             'pastEventsCount' => $pastEventsCount, // Pass to dashboard

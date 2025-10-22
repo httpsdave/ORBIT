@@ -37,6 +37,14 @@ const props = defineProps({
         type: Number,
         default: 0,
     },
+    approvedApplications: {
+        type: Number,
+        default: 0,
+    },
+    rejectedApplications: {
+        type: Number,
+        default: 0,
+    },
     userName: {
         type: String,
         default: '',
@@ -65,6 +73,40 @@ const displayEvent = props.todayEvent || props.upcomingEvent;
 // Real-time clock
 const currentDateTime = ref(new Date());
 const clockTimer = ref(null);
+
+// Application card flip state (0 = pending, 1 = approved, 2 = rejected)
+const applicationCardState = ref(0);
+
+const cycleApplicationCard = () => {
+    applicationCardState.value = (applicationCardState.value + 1) % 3;
+};
+
+const applicationCardData = computed(() => {
+    const states = [
+        {
+            title: 'Pending Applications',
+            value: props.pendingApplications,
+            icon: 'clock',
+            color: 'yellow',
+            borderColor: 'border-yellow-500'
+        },
+        {
+            title: 'Approved Applications',
+            value: props.approvedApplications,
+            icon: 'check-circle',
+            color: 'green',
+            borderColor: 'border-green-500'
+        },
+        {
+            title: 'Rejected Applications',
+            value: props.rejectedApplications,
+            icon: 'x-circle',
+            color: 'red',
+            borderColor: 'border-red-500'
+        }
+    ];
+    return states[applicationCardState.value];
+});
 
 // Format date for display
 const formatDate = (dateString) => {
@@ -484,37 +526,40 @@ const statsCards = computed(() => [
         title: 'Total Organizations',
         value: props.totalStudentOrgs,
         icon: 'building',
-        color: 'green'
+        color: 'green',
+        flippable: false
     },
     {
         title: 'Non-College Affiliated Orgs',
         value: nonAffiliatedCount.value,
         icon: 'users-group',
-        color: 'blue'
+        color: 'blue',
+        flippable: false
     },
     {
-        title: 'Pending Applications',
-        value: props.pendingApplications,
-        icon: 'clock',
-        color: 'yellow'
+        ...applicationCardData.value,
+        flippable: true
     },
     {
         title: 'Total Activities Conducted',
         value: props.approvedPOAsCount,
         icon: 'document-text',
-        color: 'red'
+        color: 'red',
+        flippable: false
     },
     {
         title: 'Sub-Organizations',
         value: props.totalSubOrgs,
         icon: 'organization-chart',
-        color: 'green'
+        color: 'green',
+        flippable: false
     },
     {
         title: 'College Affiliated Orgs',
         value: collegeAffiliatedCount.value,
         icon: 'academic-cap',
-        color: 'blue'
+        color: 'blue',
+        flippable: false
     }
     // Removed Past Events card
 ]);
@@ -764,9 +809,15 @@ const handleAdviserClickOutside = (event) => {
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-6">
             <div v-for="(card, index) in statsCards" :key="index" 
-                 :class="`bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg border-l-4 border-${card.color}-500 transition hover:shadow-md`">
+                 :class="[
+                     'bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg border-l-4 transition-all duration-300',
+                     card.borderColor || `border-${card.color}-500`,
+                     card.flippable ? 'cursor-pointer hover:shadow-lg hover:scale-105' : 'hover:shadow-md'
+                 ]"
+                 @click="card.flippable ? cycleApplicationCard() : null">
                 <div class="p-5">
-                    <div class="flex items-center">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center flex-1">
                         <div class="flex-shrink-0">
                             <!-- Users Group Icon -->
                             <div v-if="card.icon === 'users-group'" class="w-12 h-12 rounded-full flex items-center justify-center bg-blue-100 dark:bg-blue-900/50">
@@ -812,10 +863,29 @@ const handleAdviserClickOutside = (event) => {
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222" />
                                 </svg>
                             </div>
+                            <!-- Check Circle Icon for Approved Applications -->
+                            <div v-else-if="card.icon === 'check-circle'" class="w-12 h-12 rounded-full flex items-center justify-center bg-green-100 dark:bg-green-900/50">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-500 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <!-- X Circle Icon for Rejected Applications -->
+                            <div v-else-if="card.icon === 'x-circle'" class="w-12 h-12 rounded-full flex items-center justify-center bg-red-100 dark:bg-red-900/50">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
                         </div>
-                        <div class="ml-4">
+                        <div class="ml-4 flex-1">
                             <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ card.title }}</p>
                             <p class="text-3xl font-bold text-gray-900 dark:text-gray-100">{{ card.value }}</p>
+                        </div>
+                        </div>
+                        <!-- Flip indicator icon (only for flippable cards) -->
+                        <div v-if="card.flippable" class="flex-shrink-0 ml-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 dark:text-gray-500 animate-spin-slow" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
                         </div>
                     </div>
                 </div>
@@ -1225,6 +1295,19 @@ const handleAdviserClickOutside = (event) => {
     }
     50% {
         opacity: 0.5;
+    }
+}
+
+.animate-spin-slow {
+    animation: spin 3s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
     }
 }
 
