@@ -2,6 +2,11 @@
 import { Link } from '@inertiajs/vue3';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 
+// Disable automatic attribute inheritance since we manually apply them
+defineOptions({
+  inheritAttrs: false
+});
+
 defineProps({
   isAdmin: {
     type: Boolean,
@@ -20,7 +25,7 @@ defineProps({
 
 <template>
   <!-- Colored banner only -->
-  <div class="flex items-center justify-start px-4 mt-4">
+  <div v-bind="$attrs" class="flex items-center justify-start px-4 mt-4">
     <!-- Colored banner -->
     <div 
       class="flex overflow-hidden rounded-lg h-2"

@@ -1,4 +1,9 @@
 <script setup>
+// Disable automatic attribute inheritance since we manually apply them
+defineOptions({
+  inheritAttrs: false
+});
+
 // The properties remain the same as before to maintain compatibility
 const props = defineProps({
   sidebarExpanded: {
@@ -16,7 +21,7 @@ const props = defineProps({
 
 <template>
   <!-- Footer container with colored banner as the dividing line -->
-  <div class="mt-auto flex flex-col items-center">
+  <div v-bind="$attrs" class="mt-auto flex flex-col items-center">
     <!-- Colored banner that IS the line between footer and sidebar -->
     <div class="flex w-full overflow-hidden">
       <div class="w-1/4 h-1.5 bg-blue-600" style="animation-delay: 0.2s;"></div>

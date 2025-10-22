@@ -648,7 +648,7 @@ onUnmounted(() => {
    <aside
       id="sidebar"
       :class="[
-        'z-30 transition-all duration-300 ease-out border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-lg shadow-blue-200/20 dark:shadow-gray-900/50 flex flex-col',
+        'z-30 transition-all duration-200 ease-in-out border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-lg shadow-blue-200/20 dark:shadow-gray-900/50 flex flex-col overflow-hidden',
         // Desktop positioning logic - always fixed positioned
         'md:fixed md:left-0 md:pt-16 md:h-screen',
         // Width logic - always overlays content when expanded via click
@@ -666,6 +666,10 @@ onUnmounted(() => {
         :is-admin="isAdmin" 
         :sidebar-expanded="sidebarExpanded"
         :showing-sidebar="showingSidebar"
+        :class="[
+          'flex-shrink-0 transition-opacity duration-200',
+          sidebarExpanded || showingSidebar ? 'opacity-100' : 'opacity-100'
+        ]"
       />
       
       <!-- Navigation Links -->
@@ -673,19 +677,27 @@ onUnmounted(() => {
         :is-admin="isAdmin" 
         :sidebar-expanded="sidebarExpanded" 
         :showing-sidebar="showingSidebar"
+        :class="[
+          'flex-1 overflow-y-auto overflow-x-hidden transition-opacity duration-200',
+          sidebarExpanded || showingSidebar ? 'opacity-100' : 'opacity-100'
+        ]"
       />
       
       <!-- Bottom Actions (Empty for future implementation) -->
       <SidebarFooter 
         :sidebar-expanded="sidebarExpanded" 
         :showing-sidebar="showingSidebar"
+        :class="[
+          'flex-shrink-0 transition-opacity duration-200',
+          sidebarExpanded || showingSidebar ? 'opacity-100' : 'opacity-100'
+        ]"
       />
     </aside>
 
     <!-- Main Content - with additional top padding to account for the fixed header -->
     <div 
         :class="[
-          'flex-1 flex flex-col pt-16 overflow-x-hidden w-full min-w-0',
+          'flex-1 flex flex-col pt-16 overflow-x-hidden w-full min-w-0 transition-all duration-200 ease-in-out',
           // Push content only when expanded via toggle button
           (sidebarExpanded && expandedViaToggle) ? 'md:ml-64' : 'md:ml-20'
         ]"
@@ -761,7 +773,13 @@ a:focus, button:focus {
     will-change: transform;
     backface-visibility: hidden;
     transform-style: preserve-3d;
+    transition: transform 0.2s ease-in-out;
   }
+}
+
+/* Prevent content overflow and horizontal scrollbars */
+#sidebar * {
+  min-width: 0;
 }
 
 /* Add scale-175 which isn't standard in Tailwind */

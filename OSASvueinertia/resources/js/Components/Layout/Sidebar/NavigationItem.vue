@@ -75,7 +75,7 @@ onBeforeUnmount(() => {
       v-if="item && item.route"
       :href="route(item.route)" 
       @click="handleNavigationClick"
-      class="flex items-center px-4 py-2 text-gray-600 dark:text-gray-300 font-medium hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 rounded-lg hover:bg-blue-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400 group"
+      class="flex items-center px-4 py-2 text-gray-600 dark:text-gray-300 font-medium hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200 rounded-lg hover:bg-blue-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400 group overflow-hidden"
       :class="[
         ((item.exactMatch === false && item.checkStartsWith && isRouteActive(item.route, false, true)) ||
         (!item.checkStartsWith && route().current(item.route))) ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/50 shadow-sm' : '',
@@ -84,10 +84,16 @@ onBeforeUnmount(() => {
       :aria-current="(item.exactMatch === false && item.checkStartsWith && isRouteActive(item.route, false, true)) ||
                     (!item.checkStartsWith && route().current(item.route)) ? 'page' : undefined"
     >
-      <svg xmlns="http://www.w3.org/2000/svg" :class="(item.icon.includes('m160-419') || item.icon.includes('M640-400') || item.icon.includes('m80-520') || item.icon.includes('M440-480')) ? 'h-6 w-6' : 'h-5 w-5'" :fill="(item.icon.includes('m160-419') || item.icon.includes('M640-400') || item.icon.includes('m80-520') || item.icon.includes('M440-480')) ? 'currentColor' : 'none'" :viewBox="(item.icon.includes('m160-419') || item.icon.includes('M640-400') || item.icon.includes('m80-520') || item.icon.includes('M440-480')) ? '0 -960 960 960' : '0 0 24 24'" :stroke="(item.icon.includes('m160-419') || item.icon.includes('M640-400') || item.icon.includes('m80-520') || item.icon.includes('M440-480')) ? 'none' : 'currentColor'" :style="(item.icon.includes('m160-419') || item.icon.includes('M640-400') || item.icon.includes('m80-520') || item.icon.includes('M440-480')) ? 'color: inherit; opacity: 1;' : ''">
+      <svg xmlns="http://www.w3.org/2000/svg" :class="[(item.icon.includes('m160-419') || item.icon.includes('M640-400') || item.icon.includes('m80-520') || item.icon.includes('M440-480')) ? 'h-6 w-6' : 'h-5 w-5', 'flex-shrink-0']" :fill="(item.icon.includes('m160-419') || item.icon.includes('M640-400') || item.icon.includes('m80-520') || item.icon.includes('M440-480')) ? 'currentColor' : 'none'" :viewBox="(item.icon.includes('m160-419') || item.icon.includes('M640-400') || item.icon.includes('m80-520') || item.icon.includes('M440-480')) ? '0 -960 960 960' : '0 0 24 24'" :stroke="(item.icon.includes('m160-419') || item.icon.includes('M640-400') || item.icon.includes('m80-520') || item.icon.includes('M440-480')) ? 'none' : 'currentColor'" :style="(item.icon.includes('m160-419') || item.icon.includes('M640-400') || item.icon.includes('m80-520') || item.icon.includes('M440-480')) ? 'color: inherit; opacity: 1;' : ''">
         <path :stroke-linecap="(item.icon.includes('m160-419') || item.icon.includes('M640-400') || item.icon.includes('m80-520') || item.icon.includes('M440-480')) ? 'none' : 'round'" :stroke-linejoin="(item.icon.includes('m160-419') || item.icon.includes('M640-400') || item.icon.includes('m80-520') || item.icon.includes('M440-480')) ? 'none' : 'round'" :stroke-width="(item.icon.includes('m160-419') || item.icon.includes('M640-400') || item.icon.includes('m80-520') || item.icon.includes('M440-480')) ? '0' : '2'" :d="item.icon" />
       </svg>
-      <span v-if="sidebarExpanded || showingSidebar" class="ml-3">{{ item.name }}</span>
+      <span 
+        v-if="sidebarExpanded || showingSidebar" 
+        class="ml-3 truncate min-w-0 transition-opacity duration-200"
+        :class="sidebarExpanded || showingSidebar ? 'opacity-100' : 'opacity-0'"
+      >
+        {{ item.name }}
+      </span>
       <span v-else class="sr-only">{{ item.name }}</span>
     </Link>
     

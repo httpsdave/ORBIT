@@ -94,9 +94,9 @@ const handleActionClick = (event) => {
 
 <template>
   <!-- Navigation Links - Wrap in overflow container -->
-  <div class="flex-grow overflow-y-auto custom-scrollbar flex flex-col">
+  <div class="flex-1 flex flex-col overflow-hidden min-h-0">
     <!-- Main navigation section -->
-    <nav class="mt-4 px-2 space-y-4 flex-grow" aria-label="Main navigation">
+    <nav class="flex-1 mt-4 px-2 space-y-4 overflow-y-auto overflow-x-hidden custom-scrollbar" aria-label="Main navigation">
       <!-- Navigation items based on role -->
       <template v-for="(item, index) in navItems" :key="`nav-item-${index}`">
         <NavigationItem 
@@ -115,14 +115,20 @@ const handleActionClick = (event) => {
             <Link
               :href="route('applications.index')"
               @click="handleActionClick"
-              class="w-full flex justify-center items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 text-white text-base font-medium rounded-xl shadow-md hover:shadow-blue-300/70 dark:hover:shadow-blue-500/30 transition-all duration-300 relative overflow-hidden group focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-offset-gray-800"
+              class="w-full flex justify-center items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 text-white text-base font-medium rounded-xl shadow-md hover:shadow-blue-300/70 dark:hover:shadow-blue-500/30 transition-all duration-200 relative overflow-hidden group focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-offset-gray-800"
               :class="{'px-2': !sidebarExpanded && !showingSidebar}"
             >
               <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" :class="{'mr-0': !sidebarExpanded && !showingSidebar, 'mr-2': sidebarExpanded || showingSidebar}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0" :class="{'mr-0': !sidebarExpanded && !showingSidebar, 'mr-2': sidebarExpanded || showingSidebar}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
-              <span v-if="sidebarExpanded || showingSidebar"> All Applications</span>
+              <span 
+                v-if="sidebarExpanded || showingSidebar"
+                class="truncate min-w-0 transition-opacity duration-200"
+                :class="sidebarExpanded || showingSidebar ? 'opacity-100' : 'opacity-0'"
+              >
+                All Applications
+              </span>
               <span v-else class="sr-only">Applications</span>
             </Link>
           </SidebarTooltipButton>
@@ -190,14 +196,20 @@ const handleActionClick = (event) => {
             <Link
               :href="route('applications.index')"
               @click="handleActionClick"
-              class="w-full flex justify-center items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 text-white text-base font-medium rounded-xl shadow-md hover:shadow-blue-300/70 dark:hover:shadow-blue-500/30 transition-all duration-300 relative overflow-hidden group focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-offset-gray-800"
+              class="w-full flex justify-center items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 text-white text-base font-medium rounded-xl shadow-md hover:shadow-blue-300/70 dark:hover:shadow-blue-500/30 transition-all duration-200 relative overflow-hidden group focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-offset-gray-800"
               :class="{'px-2': !sidebarExpanded && !showingSidebar}"
             >
               <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" :class="{'mr-0': !sidebarExpanded && !showingSidebar, 'mr-2': sidebarExpanded || showingSidebar}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0" :class="{'mr-0': !sidebarExpanded && !showingSidebar, 'mr-2': sidebarExpanded || showingSidebar}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
               </svg>
-              <span v-if="sidebarExpanded || showingSidebar">New Application</span>
+              <span 
+                v-if="sidebarExpanded || showingSidebar"
+                class="truncate min-w-0 transition-opacity duration-200"
+                :class="sidebarExpanded || showingSidebar ? 'opacity-100' : 'opacity-0'"
+              >
+                New Application
+              </span>
               <span v-else class="sr-only">New Application</span>
             </Link>
           </SidebarTooltipButton>
@@ -284,5 +296,15 @@ const handleActionClick = (event) => {
 
 .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background-color: rgba(107, 114, 128, 0.6);
+}
+
+/* Prevent horizontal scrollbar and text overflow */
+nav {
+  min-width: 0;
+}
+
+nav > * {
+  min-width: 0;
+  max-width: 100%;
 }
 </style>
