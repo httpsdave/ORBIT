@@ -194,7 +194,10 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <Head title="Reset Password | LSPU ORBIT" />
+    <Head title="Reset Password | LSPU ORBIT">
+        <!-- Preload the first slideshow image for better LCP -->
+        <link rel="preload" as="image" :href="slideshowImages[0]" fetchpriority="high" />
+    </Head>
     
     <!-- Full screen container with split layout -->
     <div class="min-h-screen flex relative overflow-hidden">
@@ -251,9 +254,18 @@ onBeforeUnmount(() => {
                     v-for="(image, index) in slideshowImages" 
                     :key="index" 
                     v-show="activeSlide === index"
-                    class="absolute inset-0 bg-cover bg-center transition-opacity duration-1000"
-                    :style="{ backgroundImage: `url(${image})`, filter: 'brightness(0.3) contrast(1.2)' }"
+                    class="absolute inset-0 transition-opacity duration-1000"
                 >
+                    <!-- Use img tag for better LCP -->
+                    <img 
+                        :src="image"
+                        alt="LSPU Campus"
+                        class="w-full h-full object-cover object-center filter brightness-[0.3] contrast-[1.2]"
+                        :loading="index === 0 ? 'eager' : 'lazy'"
+                        :fetchpriority="index === 0 ? 'high' : 'low'"
+                        width="1920"
+                        height="1080"
+                    />
                 </div>
             </transition-group>
             <!-- Subtle overlay -->

@@ -100,7 +100,10 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <Head title="Login | LSPU ORBIT" />
+    <Head title="Login | LSPU ORBIT">
+        <!-- Preload the first slideshow image for better LCP -->
+        <link rel="preload" as="image" :href="slideshowImages[0]" fetchpriority="high" />
+    </Head>
     
     <!-- Main container with slideshow background -->
     <div class="min-h-screen flex items-center justify-center px-4 py-8 relative overflow-hidden">
@@ -111,9 +114,19 @@ onBeforeUnmount(() => {
                     v-for="(image, index) in slideshowImages" 
                     :key="index" 
                     v-show="activeSlide === index"
-                    class="absolute inset-0 bg-cover bg-center transition-opacity duration-1000"
-                    :style="{ backgroundImage: `url(${image})`, filter: isDarkMode ? 'brightness(0.7)' : 'brightness(1.1) contrast(1.1)' }"
+                    class="absolute inset-0 transition-opacity duration-1000"
                 >
+                    <!-- Use img tag instead of background-image for better LCP optimization -->
+                    <img 
+                        :src="image"
+                        alt="LSPU Campus"
+                        class="w-full h-full object-cover object-center"
+                        :class="{ 'filter': true, 'brightness-[0.7]': isDarkMode, 'brightness-110 contrast-110': !isDarkMode }"
+                        :loading="index === 0 ? 'eager' : 'lazy'"
+                        :fetchpriority="index === 0 ? 'high' : 'low'"
+                        width="1920"
+                        height="1080"
+                    />
                 </div>
             </transition-group>
             <!-- Overlay to ensure content readability -->
