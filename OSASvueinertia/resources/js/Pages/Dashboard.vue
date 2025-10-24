@@ -278,7 +278,7 @@ const displayedActivities = computed(() => {
   
     <AuthenticatedLayout>
       <template #header>
-        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-2 sm:space-y-0">
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-2 sm:space-y-0 select-none">
           <h2 class="font-semibold text-lg sm:text-xl text-gray-800 dark:text-gray-200 leading-tight">My Dashboard</h2>
           <div class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 order-first sm:order-last">{{ formatCurrentDateTime }}</div>
         </div>
@@ -308,7 +308,7 @@ const displayedActivities = computed(() => {
                     </svg>
                   </div>
                 </div>
-                <div class="text-center sm:text-left">
+                <div class="text-center sm:text-left select-none">
                   <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 dark:text-gray-200">{{ greeting }}, {{ $page.props.auth?.user?.name || 'User' }}!</h2>
                   <p class="mt-1 text-sm sm:text-base text-gray-600 dark:text-gray-400">Welcome to ORBIT. Here's your latest activity and important updates.</p>
                 </div>
@@ -328,7 +328,7 @@ const displayedActivities = computed(() => {
                       </svg>
                     </div>
                   </div>
-                  <div class="ml-3 sm:ml-4">
+                  <div class="ml-3 sm:ml-4 select-none">
                     <p class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Applications</p>
                     <p class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">{{ props.myApplications.length }}</p>
                   </div>
@@ -345,7 +345,7 @@ const displayedActivities = computed(() => {
                       </svg>
                     </div>
                   </div>
-                  <div class="ml-3 sm:ml-4">
+                  <div class="ml-3 sm:ml-4 select-none">
                     <p class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Upcoming Events</p>
                     <p class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">{{ props.upcomingEvents.length + (props.todayEvent ? 1 : 0) }}</p>
                   </div>
@@ -362,7 +362,7 @@ const displayedActivities = computed(() => {
                       </svg>
                     </div>
                   </div>
-                  <div class="ml-3 sm:ml-4">
+                  <div class="ml-3 sm:ml-4 select-none">
                     <p class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Reports to be approved</p>
                     <p class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">{{ props.reportsToBeSubmitted }}</p>
                   </div>
@@ -415,13 +415,13 @@ const displayedActivities = computed(() => {
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                           </svg>
                         </div>
-                        <div class="min-w-0 flex-1">
+                        <div class="min-w-0 flex-1 select-none">
                           <h4 class="font-medium text-gray-800 dark:text-gray-200 text-sm sm:text-base truncate">{{ application.title }}</h4>
                           <p class="text-xs text-gray-500 dark:text-gray-400">Updated: {{ formatDate(application.updated_at) }}</p>
                         </div>
                       </div>
                       <div class="flex items-center justify-between sm:justify-end space-x-3 flex-shrink-0">
-                        <span :class="`px-2 py-1 sm:px-3 sm:py-1 rounded-full text-xs font-medium ring-1 ring-inset ${getStatusColor(application.status)}`">
+                        <span :class="`px-2 py-1 sm:px-3 sm:py-1 rounded-full text-xs font-medium ring-1 ring-inset ${getStatusColor(application.status)} select-none`">
                           {{ application.status }}
                         </span>
                         <Link :href="`/applications`" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 bg-blue-50 dark:bg-blue-900/50 hover:bg-blue-100 dark:hover:bg-blue-900/70 p-2 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md">
@@ -468,7 +468,7 @@ const displayedActivities = computed(() => {
                             <div :class="getActivityIconClasses(activity.action)" v-html="getActivityIcon(activity.action)">
                             </div>
                           </div>
-                          <div class="flex-1">
+                          <div class="flex-1 select-none">
                             <p class="text-sm font-medium text-gray-800 dark:text-gray-200">{{ activity.description }}</p>
                             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ formatDate(activity.created_at) }}</p>
                             <!-- Show organization name if available -->
@@ -519,7 +519,7 @@ const displayedActivities = computed(() => {
               style="transition-delay: 200ms;"
             >
               <div class="p-4 sm:p-6">
-                <div class="flex items-center mb-4">
+                <div class="flex items-center mb-4 select-none">
                   <div class="p-2 rounded-md bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 mr-3">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -529,7 +529,7 @@ const displayedActivities = computed(() => {
                 </div>
                 
                 <div v-if="props.todayEvent" class="mb-6 border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-white dark:bg-gray-800 shadow-sm cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-700 transition" >
-                  <Link :href="route('calendar')" class="block">
+                  <Link :href="route('calendar')" class="block select-none">
                     <div class="flex justify-between items-center mb-2">
                       <span class="bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-md">TODAY</span>
                       <span class="text-xs text-gray-600 dark:text-gray-400">{{ formatTime(props.todayEvent.start_date) }}</span>
@@ -558,7 +558,7 @@ const displayedActivities = computed(() => {
                 <div v-if="props.upcomingEvents && props.upcomingEvents.length > 0" class="space-y-4">
                   <div v-for="(event, index) in props.upcomingEvents.slice(0, 3)" :key="event.id" 
                     class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-white dark:bg-gray-800 shadow-sm cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-700 transition">
-                    <Link :href="route('calendar')" class="block">
+                    <Link :href="route('calendar')" class="block select-none">
                       <div class="flex">
                         <div class="mr-4 flex-shrink-0">
                           <div class="h-12 w-12 rounded-md bg-green-100 dark:bg-green-900/50 flex flex-col items-center justify-center">
@@ -607,7 +607,7 @@ const displayedActivities = computed(() => {
                 
                 <div v-else-if="!props.todayEvent" class="border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-700">
                   <!-- Mini Calendar View -->
-                  <div class="p-4">
+                  <div class="p-4 select-none">
                     <div class="text-center mb-3">
                       <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300">{{ generateCalendar.monthName }}</h4>
                     </div>
