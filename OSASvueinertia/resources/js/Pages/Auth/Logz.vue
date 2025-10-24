@@ -469,17 +469,17 @@ onBeforeUnmount(() => {
                     <div class="space-y-3 sm:space-y-4">
                         <button
                             type="submit"
-                            class="w-full text-white font-semibold py-3 sm:py-4 px-4 sm:px-6 rounded-lg transition-all duration-300 flex items-center justify-center relative overflow-hidden group shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 transform hover:scale-105"
+                            class="w-full text-white font-semibold py-3 sm:py-4 px-4 sm:px-6 rounded-full transition-all duration-300 flex items-center justify-center relative overflow-hidden group shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 active:scale-95"
                             :class="[
                                 isDarkMode 
                                     ? 'bg-gradient-to-r from-blue-500 to-green-600 hover:from-blue-400 hover:to-green-500' 
                                     : 'bg-gradient-to-r from-blue-500 to-green-600 hover:from-blue-400 hover:to-green-500',
-                                { 'opacity-80 cursor-not-allowed transform-none': form.processing || isLoading }
+                                { 'opacity-80 cursor-not-allowed': form.processing || isLoading }
                             ]"
                             :disabled="form.processing || isLoading"
-                            aria-label="Sign In"
+                            aria-label="Login"
                         >
-                            <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
+                            <span class="absolute inset-0 w-full h-full transition-all duration-700 ease-out bg-white rounded-full opacity-0 group-hover:opacity-10 scale-0 group-hover:scale-100"></span>
                             <span v-if="isLoading" class="absolute inset-0 flex items-center justify-center">
                                 <svg class="animate-spin h-4 w-4 sm:h-5 sm:w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -492,7 +492,7 @@ onBeforeUnmount(() => {
                                     <polyline points="10 17 15 12 10 7"></polyline>
                                     <line x1="15" y1="12" x2="3" y2="12"></line>
                                 </svg>
-                                Sign In to ORBIT
+                                Login
                             </span>
                         </button>
                     </div>
@@ -732,5 +732,10 @@ input:-webkit-autofill:active {
 input:-moz-autofill {
   background-color: transparent !important;
   color: white !important;
+}
+
+/* Ensure focus ring is circular */
+button:focus {
+  border-radius: 9999px;
 }
 </style>
