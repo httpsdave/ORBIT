@@ -182,6 +182,7 @@ onBeforeUnmount(() => {
 
 <template>
     <Head title="Login | LSPU ORBIT">
+        <meta name="description" content="Login to LSPU ORBIT - Organized Records for Better Institutional Tracking. Access your student organization account to manage documents, activities, and submissions for the Office of Student Affairs and Services." />
         <!-- Preload the first slideshow image for better LCP -->
         <link rel="preload" as="image" :href="slideshowImages[0]" fetchpriority="high" />
     </Head>
