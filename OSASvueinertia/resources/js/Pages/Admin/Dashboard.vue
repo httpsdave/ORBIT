@@ -771,7 +771,7 @@ const handleAdviserClickOutside = (event) => {
 
     <AuthenticatedLayout>
         <template #header>
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between select-none">
                 <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Admin Dashboard</h2>
                 <div class="text-sm text-gray-500 dark:text-gray-400">{{ formatCurrentDateTime }}</div>
             </div>
@@ -796,7 +796,7 @@ const handleAdviserClickOutside = (event) => {
                             </svg>
                         </div>
                     </div>
-                    <div class="ml-4">
+                    <div class="ml-4 select-none">
                         <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-200">{{ greeting }}, {{ userName || 'Administrator' }}!</h2>
                         <p class="mt-1 text-gray-600 dark:text-gray-400">Welcome to ORBIT. Here's an overview of your system.</p>
                     </div>
@@ -876,16 +876,23 @@ const handleAdviserClickOutside = (event) => {
                                 </svg>
                             </div>
                         </div>
-                        <div class="ml-4 flex-1">
+                        <div class="ml-4 flex-1 select-none">
                             <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ card.title }}</p>
                             <p class="text-3xl font-bold text-gray-900 dark:text-gray-100">{{ card.value }}</p>
                         </div>
                         </div>
                         <!-- Flip indicator icon (only for flippable cards) -->
-                        <div v-if="card.flippable" class="flex-shrink-0 ml-2">
+                        <div v-if="card.flippable" class="flex-shrink-0 ml-2 relative group/tooltip">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 dark:text-gray-500 animate-spin-slow" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                             </svg>
+                            <!-- Tooltip -->
+                            <div class="absolute bottom-full right-0 mb-2 hidden group-hover/tooltip:block z-10 pointer-events-none">
+                                <div class="bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-lg py-2 px-3 whitespace-nowrap shadow-lg">
+                                    Click to flip card
+                                    <div class="absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-gray-900 dark:border-t-gray-700"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -897,7 +904,7 @@ const handleAdviserClickOutside = (event) => {
             <div class="xl:col-span-2 bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
                 <div class="p-3 sm:p-4 lg:p-6">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-6 space-y-3 sm:space-y-0">
-                        <h3 class="text-base sm:text-lg font-medium text-gray-800 dark:text-gray-200">
+                        <h3 class="text-base sm:text-lg font-medium text-gray-800 dark:text-gray-200 select-none">
                             <template v-if="activeChart === 'bar'">Members per Organization</template>
                             <template v-else>Student Organizations by College</template>
                         </h3>
@@ -1174,7 +1181,7 @@ const handleAdviserClickOutside = (event) => {
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
                 <div class="p-3 sm:p-4 lg:p-6">
                     <div class="flex flex-col sm:flex-row sm:items-center mb-4 justify-between space-y-2 sm:space-y-0">
-                        <div class="flex items-center">
+                        <div class="flex items-center select-none">
                             <div :class="props.todayEvent ? 'p-2 rounded-md bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-400 mr-3' : 'p-2 rounded-md bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 mr-3'">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" :stroke="props.todayEvent ? '#16a34a' : '#3b82f6'">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -1185,7 +1192,7 @@ const handleAdviserClickOutside = (event) => {
                             </h3>
                         </div>
                         <!-- Minimalist Events Held Badge -->
-                        <div class="flex items-center space-x-1 bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 px-2 sm:px-3 py-1 rounded-full text-xs font-semibold">
+                        <div class="flex items-center space-x-1 bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 px-2 sm:px-3 py-1 rounded-full text-xs font-semibold select-none">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:h-4 sm:w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
@@ -1220,7 +1227,7 @@ const handleAdviserClickOutside = (event) => {
                     
                     <div v-else class="border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-700">
                         <!-- Mini Calendar View -->
-                        <div class="p-4">
+                        <div class="p-4 select-none">
                             <div class="text-center mb-3">
                                 <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300">{{ generateCalendar.monthName }}</h4>
                             </div>
