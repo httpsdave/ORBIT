@@ -511,4 +511,21 @@ button:hover:not(:disabled) {
             transform: translateY(-1.65rem) translateX(-2rem) scale(0.78);
         }
 }
+
+/* Use default cursor for all text content - no text selection cursor */
+p, span, h1, h2, h3, h4, h5, h6, div, label:not([for]) {
+  cursor: default;
+  user-select: none;
+}
+
+/* Only show text cursor for actual input fields */
+input[type="text"], input[type="email"], input[type="password"], textarea {
+  cursor: text;
+  user-select: text;
+}
+
+/* Pointer cursor for interactive elements */
+a, button, label[for], input[type="checkbox"], input[type="radio"] {
+  cursor: pointer;
+}
 </style>
