@@ -3,6 +3,7 @@ import { Head } from '@inertiajs/vue3';
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Link } from '@inertiajs/vue3';
+import TutorialModal from '@/Components/Tutorial/TutorialModal.vue';
 
 // Define props for data passed from the controller
 const props = defineProps({
@@ -25,8 +26,15 @@ const props = defineProps({
   reportsToBeSubmitted: {
     type: Number,
     default: 0,
+  },
+  hasSeenTutorial: {
+    type: Boolean,
+    default: false,
   }
 });
+
+// Tutorial state
+const showTutorial = ref(false);
 
 // Real-time clock
 const currentDateTime = ref(new Date());
@@ -180,6 +188,13 @@ onMounted(() => {
   clockTimer.value = setInterval(() => {
     currentDateTime.value = new Date();
   }, 1000);
+  
+  // Show tutorial if user hasn't seen it yet
+  if (!props.hasSeenTutorial) {
+    setTimeout(() => {
+      showTutorial.value = true;
+    }, 1000); // Delay to allow dashboard to load first
+  }
 });
 
 onUnmounted(() => {
@@ -187,6 +202,10 @@ onUnmounted(() => {
     clearInterval(clockTimer.value);
   }
 });
+
+const closeTutorial = () => {
+  showTutorial.value = false;
+};
 
 // Get time until next event
 const timeUntilNext = computed(() => {
@@ -277,6 +296,13 @@ const displayedActivities = computed(() => {
     <Head title="Dashboard" />
   
     <AuthenticatedLayout>
+      <!-- Tutorial Modal -->
+      <TutorialModal 
+        :show="showTutorial" 
+        :isAdmin="false"
+        @close="closeTutorial"
+      />
+      
       <template #header>
         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-2 sm:space-y-0 select-none">
           <h2 class="font-semibold text-lg sm:text-xl text-gray-800 dark:text-gray-200 leading-tight">My Dashboard</h2>

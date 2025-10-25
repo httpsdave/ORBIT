@@ -74,6 +74,7 @@ class UserDashboardController extends Controller
             'upcomingEvents' => $upcomingEvents,
             'recentActivity' => $recentActivity,
             'reportsToBeSubmitted' => $reportsToBeSubmitted,
+            'hasSeenTutorial' => $user->has_seen_tutorial ?? false,
         ]);
     }
     

@@ -7,6 +7,7 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { Pie, Bar } from 'vue-chartjs';
 import Modal from '@/Components/Modal.vue';
 import { Link } from '@inertiajs/vue3';
+import TutorialModal from '@/Components/Tutorial/TutorialModal.vue';
 
 // Register Chart.js components
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title, ChartDataLabels);
@@ -60,8 +61,15 @@ const props = defineProps({
     approvedPOAsCount: {
         type: Number,
         default: 0,
+    },
+    hasSeenTutorial: {
+        type: Boolean,
+        default: false,
     }
 });
+
+// Tutorial state
+const showTutorial = ref(false);
 
 // Colors for the charts - using our primary color scheme
 const COLORS = ['#3B82F6', '#10B981', '#FBBF24', '#EF4444', '#8B5CF6', '#EC4899', '#06B6D4', '#6366F1', '#D946EF', '#A855F7'];
@@ -251,6 +259,13 @@ onMounted(() => {
 
     // Add click handler for adviser filters
     document.addEventListener('click', handleAdviserClickOutside);
+    
+    // Show tutorial if user hasn't seen it yet
+    if (!props.hasSeenTutorial) {
+        setTimeout(() => {
+            showTutorial.value = true;
+        }, 1000); // Delay to allow dashboard to load first
+    }
 });
 
 onUnmounted(() => {
@@ -260,6 +275,10 @@ onUnmounted(() => {
     // Remove click handler
     document.removeEventListener('click', handleAdviserClickOutside);
 });
+
+const closeTutorial = () => {
+    showTutorial.value = false;
+};
 
 const updateChartData = () => {
     // Safety check if collegesData is undefined
@@ -770,6 +789,13 @@ const handleAdviserClickOutside = (event) => {
     <Head title="Admin Dashboard"></Head>
 
     <AuthenticatedLayout>
+        <!-- Tutorial Modal -->
+        <TutorialModal 
+            :show="showTutorial" 
+            :isAdmin="true"
+            @close="closeTutorial"
+        />
+        
         <template #header>
             <div class="flex items-center justify-between select-none">
                 <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Admin Dashboard</h2>

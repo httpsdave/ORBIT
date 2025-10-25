@@ -92,6 +92,12 @@ Route::middleware(['auth'])->group(function () {
 
     // API routes
     Route::prefix('api')->group(function () {
+        // Tutorial completion endpoint
+        Route::post('/tutorial/complete', function () {
+            auth()->user()->update(['has_seen_tutorial' => true]);
+            return response()->json(['success' => true]);
+        })->name('api.tutorial.complete');
+        
         // Ensure these routes check for admin role
         Route::middleware(['auth'])->group(function () {
             Route::post('/events', [EventController::class, 'store']);

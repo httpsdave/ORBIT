@@ -222,6 +222,7 @@ class DashboardController extends Controller
             'advisersData' => $advisersData->filter()->values(),
             'pastEventsCount' => $pastEventsCount, // Pass to dashboard
             'approvedPOAsCount' => $approvedPOAsCount, // Pass POA count to dashboard
+            'hasSeenTutorial' => auth()->user()->has_seen_tutorial ?? false,
         ]);
     }
 }
