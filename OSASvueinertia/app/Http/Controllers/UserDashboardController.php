@@ -6,12 +6,19 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\OrganizationApplication;
 use App\Models\Event;
-use App\Models\UserActivity;
 use App\Models\ActivityReport;
+use App\Services\ActivityLogService;
 use Carbon\Carbon;
 
 class UserDashboardController extends Controller
 {
+    protected ActivityLogService $activityLogService;
+
+    public function __construct(ActivityLogService $activityLogService)
+    {
+        $this->activityLogService = $activityLogService;
+    }
+
     /**
      * Display the user dashboard
      *
@@ -55,8 +62,8 @@ class UserDashboardController extends Controller
             ->take(5)
             ->get();
         
-        // Get recent activity from UserActivity model
-        $recentActivity = UserActivity::recentForUser($user->id, 10);
+        // Get recent activity from cache-based service
+        $recentActivity = $this->activityLogService->getActivities($user->id, 10);
         
         // Calculate reports to be submitted
         $reportsToBeSubmitted = $this->calculateReportsToBeSubmitted($user->id);

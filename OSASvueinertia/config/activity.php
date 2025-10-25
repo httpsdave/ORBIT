@@ -3,11 +3,12 @@
 return [
     /*
     |--------------------------------------------------------------------------
-    | Activity Log Retention
+    | Activity Log Retention (Database - Legacy)
     |--------------------------------------------------------------------------
     |
     | This value determines how many days activity logs should be retained
-    | before being automatically pruned from the database.
+    | in the database before being automatically pruned.
+    | NOTE: This is for legacy database-based activity logs only.
     |
     */
 
@@ -15,10 +16,24 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Cleanup Schedule
+    | Activity Log Cache TTL
     |--------------------------------------------------------------------------
     |
-    | Determines if automatic cleanup should be enabled via scheduled tasks.
+    | Time-to-live for cached activity logs in seconds.
+    | Default: 48 hours (2 days)
+    | This is the recommended approach for short-lived activity tracking.
+    |
+    */
+
+    'cache_ttl' => env('ACTIVITY_CACHE_TTL', 48 * 60 * 60), // 48 hours
+
+    /*
+    |--------------------------------------------------------------------------
+    | Cleanup Schedule (Database - Legacy)
+    |--------------------------------------------------------------------------
+    |
+    | Determines if automatic cleanup should be enabled via scheduled tasks
+    | for database-based activity logs.
     |
     */
 

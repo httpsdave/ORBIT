@@ -2,112 +2,89 @@
 
 namespace App\Traits;
 
-use App\Models\UserActivity;
+use App\Services\ActivityLogService;
 
 trait LogsUserActivity
 {
     /**
-     * Log user activity.
+     * Get the activity log service instance
      */
-    protected function logActivity(string $action, string $description, $subject = null, array $metadata = []): UserActivity
+    protected function getActivityLogService(): ActivityLogService
     {
-        return UserActivity::log($action, $description, $subject, $metadata);
+        return app(ActivityLogService::class);
+    }
+
+    /**
+     * Log user activity (using cache-based service)
+     */
+    protected function logActivity(string $action, string $description, $subject = null, array $metadata = []): array
+    {
+        $userId = auth()->id();
+        
+        if (!$userId) {
+            return [];
+        }
+
+        // If subject provided, add its info to metadata
+        if ($subject) {
+            $metadata['subject_type'] = get_class($subject);
+            $metadata['subject_id'] = $subject->id;
+        }
+
+        return $this->getActivityLogService()->log($userId, $action, $description, $metadata);
     }
 
     /**
      * Log application creation.
      */
-    protected function logApplicationCreated($application): UserActivity
+    protected function logApplicationCreated($application): array
     {
-        return $this->logActivity(
-            'application_created',
-            'Created a new organization application',
-            $application,
-            [
-                'form_type' => $application->form_type,
-                'organization_name' => $application->organization_name,
-            ]
-        );
+        $userId = auth()->id();
+        return $this->getActivityLogService()->logApplicationCreated($userId, $application);
     }
 
     /**
      * Log application update.
      */
-    protected function logApplicationUpdated($application): UserActivity
+    protected function logApplicationUpdated($application): array
     {
-        return $this->logActivity(
-            'application_updated',
-            'Updated organization application',
-            $application,
-            [
-                'form_type' => $application->form_type,
-                'organization_name' => $application->organization_name,
-            ]
-        );
+        $userId = auth()->id();
+        return $this->getActivityLogService()->logApplicationUpdated($userId, $application);
     }
 
     /**
      * Log application deletion.
      */
-    protected function logApplicationDeleted($application): UserActivity
+    protected function logApplicationDeleted($application): array
     {
-        return $this->logActivity(
-            'application_deleted',
-            'Deleted organization application',
-            null, // Subject is deleted, so we pass null
-            [
-                'form_type' => $application->form_type,
-                'organization_name' => $application->organization_name,
-                'deleted_id' => $application->id,
-            ]
-        );
+        $userId = auth()->id();
+        return $this->getActivityLogService()->logApplicationDeleted($userId, $application);
     }
 
     /**
      * Log document upload.
      */
-    protected function logDocumentUploaded($application, string $fileName): UserActivity
+    protected function logDocumentUploaded($application, string $fileName): array
     {
-        return $this->logActivity(
-            'document_uploaded',
-            'Uploaded a signed document',
-            $application,
-            [
-                'file_name' => $fileName,
-                'organization_name' => $application->organization_name,
-            ]
-        );
+        $userId = auth()->id();
+        return $this->getActivityLogService()->logDocumentUploaded($userId, $application, $fileName);
     }
 
     /**
      * Log document deletion.
      */
-    protected function logDocumentDeleted($application, string $fileName): UserActivity
+    protected function logDocumentDeleted($application, string $fileName): array
     {
-        return $this->logActivity(
-            'document_deleted',
-            'Deleted a signed document',
-            $application,
-            [
-                'file_name' => $fileName,
-                'organization_name' => $application->organization_name,
-            ]
-        );
+        $userId = auth()->id();
+        return $this->getActivityLogService()->logDocumentDeleted($userId, $application, $fileName);
     }
 
     /**
      * Log application view.
      */
-    protected function logApplicationViewed($application): UserActivity
+    protected function logApplicationViewed($application): array
     {
-        return $this->logActivity(
-            'application_viewed',
-            'Viewed organization application details',
-            $application,
-            [
-                'form_type' => $application->form_type,
-                'organization_name' => $application->organization_name,
-            ]
-        );
+        $userId = auth()->id();
+        return $this->getActivityLogService()->logApplicationViewed($userId, $application);
     }
 }
