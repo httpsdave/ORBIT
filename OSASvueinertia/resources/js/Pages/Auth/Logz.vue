@@ -675,11 +675,26 @@ button:hover:not(:disabled) {
   transform: translateY(-1px);
 }
 
-/* Smooth transitions for all interactive elements */
-* {
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 300ms;
+/* Use default cursor for all text content - no text selection cursor */
+p, span, h1, h2, h3, h4, h5, h6, div, label:not([for]) {
+  cursor: default !important;
+  user-select: none;
+}
+
+/* Only show text cursor for actual input fields */
+input[type="text"], input[type="email"], input[type="password"], textarea {
+  cursor: text !important;
+  user-select: text;
+}
+
+/* Pointer cursor for interactive elements */
+a, button, label[for], input[type="checkbox"], input[type="radio"] {
+  cursor: pointer !important;
+}
+
+/* Ensure disabled buttons show not-allowed cursor */
+button:disabled {
+  cursor: not-allowed !important;
 }
 
 /* Enhanced focus states for better accessibility */
@@ -738,5 +753,27 @@ input:-moz-autofill {
 /* Ensure focus ring is circular */
 button:focus {
   border-radius: 9999px;
+}
+
+/* Use default cursor for all text content - no text selection cursor */
+p, span, h1, h2, h3, h4, h5, h6, div, label:not([for]) {
+  cursor: default !important;
+  user-select: none;
+}
+
+/* Only show text cursor for actual input fields */
+input[type="text"], input[type="email"], input[type="password"], textarea {
+  cursor: text !important;
+  user-select: text;
+}
+
+/* Pointer cursor for interactive elements */
+a, button, label[for], input[type="checkbox"], input[type="radio"] {
+  cursor: pointer !important;
+}
+
+/* Ensure disabled buttons show not-allowed cursor */
+button:disabled {
+  cursor: not-allowed !important;
 }
 </style>
