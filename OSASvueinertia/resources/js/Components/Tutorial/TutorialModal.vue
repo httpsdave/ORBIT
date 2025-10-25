@@ -195,7 +195,7 @@ onUnmounted(() => {
             <div class="fixed inset-0 bg-gray-900/80 transition-opacity"></div>
 
             <!-- Modal -->
-            <div class="flex min-h-full items-center justify-center p-4">
+            <div class="flex min-h-full items-center justify-center p-2 sm:p-4">
                 <Transition
                     enter-active-class="transition-all duration-200"
                     enter-from-class="opacity-0 scale-95"
@@ -204,9 +204,9 @@ onUnmounted(() => {
                     leave-from-class="opacity-100 scale-100"
                     leave-to-class="opacity-0 scale-95"
                 >
-                    <div v-if="show" class="relative overflow-hidden rounded-2xl bg-white dark:bg-gray-800 shadow-2xl w-full max-w-2xl">
+                    <div v-if="show" class="relative overflow-hidden rounded-xl sm:rounded-2xl bg-white dark:bg-gray-800 shadow-2xl w-full max-w-2xl mx-2 sm:mx-0">
                         <!-- Progress Bar -->
-                        <div class="absolute top-0 left-0 right-0 h-1.5 bg-gray-200 dark:bg-gray-700 overflow-hidden">
+                        <div class="absolute top-0 left-0 right-0 h-1 sm:h-1.5 bg-gray-200 dark:bg-gray-700 overflow-hidden">
                             <div 
                                 class="h-full bg-gradient-to-r from-blue-500 to-green-500 transition-all duration-300 ease-out"
                                 :style="{ width: progress + '%' }"
@@ -217,69 +217,70 @@ onUnmounted(() => {
                         <button
                             @click="skipTutorial"
                             type="button"
-                            class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-150 z-10 group"
+                            class="absolute top-2 right-2 sm:top-4 sm:right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-150 z-10 p-1 sm:p-0"
                             :disabled="isCompleting"
                         >
                             <span class="sr-only">Skip tutorial</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         </button>
 
                         <!-- Content -->
-                        <div class="px-6 py-8 sm:px-10 sm:py-12">
+                        <div class="px-4 py-6 sm:px-6 sm:py-8 md:px-10 md:py-12">
                             <!-- Step Indicator -->
-                            <div class="text-center mb-6">
-                                <span class="inline-block px-3 py-1 text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 rounded-full">
+                            <div class="text-center mb-4 sm:mb-6">
+                                <span class="inline-block px-2 py-1 sm:px-3 sm:py-1 text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 rounded-full">
                                     Step {{ currentStep + 1 }} of {{ totalSteps }}
                                 </span>
                             </div>
 
                             <!-- Icon - Optimized SVG rendering -->
-                            <div class="mb-4">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto" :class="currentStepData.iconClass" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <div class="mb-3 sm:mb-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 sm:h-16 sm:w-16 mx-auto" :class="currentStepData.iconClass" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" :d="currentStepData.iconPath" />
                                 </svg>
                             </div>
 
                             <!-- Title -->
-                            <h3 id="tutorial-title" class="text-2xl sm:text-3xl font-bold text-center text-gray-900 dark:text-white mb-4 select-none">
+                            <h3 id="tutorial-title" class="text-xl sm:text-2xl md:text-3xl font-bold text-center text-gray-900 dark:text-white mb-3 sm:mb-4 select-none px-2">
                                 {{ currentStepData.title }}
                             </h3>
 
                             <!-- Description -->
-                            <p class="text-base sm:text-lg text-center text-gray-600 dark:text-gray-300 leading-relaxed mb-8 select-none">
+                            <p class="text-sm sm:text-base md:text-lg text-center text-gray-600 dark:text-gray-300 leading-relaxed mb-6 sm:mb-8 select-none px-2">
                                 {{ currentStepData.description }}
                             </p>
 
                             <!-- Navigation Buttons -->
-                            <div class="flex items-center justify-between gap-4">
+                            <div class="flex items-center justify-between gap-2 sm:gap-3 md:gap-4">
                                 <button
                                     @click="prevStep"
                                     type="button"
                                     :disabled="currentStep === 0 || isAnimating"
-                                    class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150 cursor-pointer"
+                                    class="inline-flex items-center px-2 py-2 sm:px-4 sm:py-2.5 text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150 cursor-pointer"
                                 >
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                                     </svg>
-                                    Previous
+                                    <span class="hidden sm:inline">Previous</span>
+                                    <span class="sm:hidden">Prev</span>
                                 </button>
 
                                 <!-- Step Dots -->
-                                <div class="flex items-center gap-2">
+                                <div class="flex items-center gap-1 sm:gap-1.5 md:gap-2">
                                     <button
                                         v-for="(step, index) in steps"
                                         :key="index"
                                         @click="!isAnimating && (currentStep = index)"
                                         type="button"
-                                        class="w-2.5 h-2.5 rounded-full transition-all duration-200 cursor-pointer"
+                                        class="h-1.5 sm:h-2 md:h-2.5 rounded-full transition-all duration-200 cursor-pointer"
                                         :class="[
                                             index === currentStep 
-                                                ? 'bg-blue-500 w-8' 
+                                                ? 'bg-blue-500 w-6 sm:w-7 md:w-8' 
                                                 : index < currentStep 
-                                                    ? 'bg-green-500' 
-                                                    : 'bg-gray-300 dark:bg-gray-600'
+                                                    ? 'bg-green-500 w-1.5 sm:w-2 md:w-2.5' 
+                                                    : 'bg-gray-300 dark:bg-gray-600 w-1.5 sm:w-2 md:w-2.5'
                                         ]"
                                         :aria-label="`Go to step ${index + 1}`"
                                         :disabled="isAnimating"
@@ -291,10 +292,10 @@ onUnmounted(() => {
                                     @click="nextStep"
                                     type="button"
                                     :disabled="isAnimating"
-                                    class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-green-500 rounded-lg hover:from-blue-600 hover:to-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                                    class="inline-flex items-center px-2 py-2 sm:px-4 sm:py-2.5 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-green-500 rounded-lg hover:from-blue-600 hover:to-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                                 >
-                                    Next
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <span class="hidden sm:inline">Next</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:h-4 sm:w-4 sm:ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                                     </svg>
                                 </button>
@@ -304,18 +305,20 @@ onUnmounted(() => {
                                     @click="completeTutorial"
                                     type="button"
                                     :disabled="isCompleting"
-                                    class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-green-500 to-blue-500 rounded-lg hover:from-green-600 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                                    class="inline-flex items-center px-2 py-2 sm:px-4 sm:py-2.5 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-green-500 to-blue-500 rounded-lg hover:from-green-600 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                                 >
                                     <span v-if="isCompleting" class="inline-flex items-center">
-                                        <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <svg class="animate-spin -ml-1 mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                         </svg>
-                                        Getting Started...
+                                        <span class="hidden sm:inline">Getting Started...</span>
+                                        <span class="sm:hidden">Starting...</span>
                                     </span>
                                     <span v-else class="inline-flex items-center">
-                                        Get Started
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <span class="hidden sm:inline">Get Started</span>
+                                        <span class="sm:hidden">Start</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:h-4 sm:w-4 ml-1 sm:ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                                         </svg>
                                     </span>
@@ -323,10 +326,16 @@ onUnmounted(() => {
                             </div>
 
                             <!-- Keyboard Hints -->
-                            <div class="mt-6 text-center text-xs text-gray-500 dark:text-gray-400 select-none">
-                                <span class="inline-block mx-1">← → Navigate</span>
-                                <span class="inline-block mx-1">• ESC Skip</span>
-                                <span class="inline-block mx-1">• ENTER Next</span>
+                            <div class="mt-4 sm:mt-6 text-center text-xs text-gray-500 dark:text-gray-400 select-none">
+                                <span class="hidden sm:inline">
+                                    <span class="inline-block mx-1">← → Navigate</span>
+                                    <span class="inline-block mx-1">• ESC Skip</span>
+                                    <span class="inline-block mx-1">• ENTER Next</span>
+                                </span>
+                                <span class="sm:hidden">
+                                    <span class="inline-block">← → Navigate</span>
+                                    <span class="inline-block ml-2">• ESC Skip</span>
+                                </span>
                             </div>
                         </div>
                     </div>
