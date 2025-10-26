@@ -83,11 +83,38 @@
     
     <!-- Upcoming Events Section -->
     <div v-if="todaysEvents.length > 0" class="border-t dark:border-gray-700 pt-4">
-      <h3 class="text-md font-medium mb-3 text-gray-600 dark:text-gray-400 break-words">Upcoming Events</h3>
+      <button
+        @click="toggleUpcomingEvents"
+        class="flex items-center justify-between w-full mb-3 group hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg px-2 py-1.5 transition-all duration-200"
+        :aria-label="isUpcomingEventsExpanded ? 'Collapse upcoming events' : 'Expand upcoming events'"
+      >
+        <h3 class="text-md font-medium text-gray-600 dark:text-gray-400 break-words group-hover:text-gray-800 dark:group-hover:text-gray-200 transition-colors duration-200">
+          Upcoming Events
+        </h3>
+        <div class="p-1.5 rounded-full group-hover:bg-gray-100 dark:group-hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-400 transition-all duration-200">
+          <svg 
+            class="w-5 h-5 text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-all duration-300 ease-in-out"
+            :class="{ 'rotate-180': !isUpcomingEventsExpanded }"
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+      </button>
     </div>
     
-    <ul class="divide-y divide-gray-100 dark:divide-gray-700 min-w-0">
-      <li v-for="event in upcomingEventsFiltered" :key="event.id" class="py-3">
+    <transition
+      enter-active-class="transition-all duration-500 ease-out overflow-hidden"
+      enter-from-class="opacity-0 transform scale-y-0 -translate-y-4"
+      enter-to-class="opacity-100 transform scale-y-100 translate-y-0"
+      leave-active-class="transition-all duration-400 ease-in overflow-hidden"
+      leave-from-class="opacity-100 transform scale-y-100 translate-y-0"
+      leave-to-class="opacity-0 transform scale-y-0 -translate-y-4"
+    >
+      <ul v-show="isUpcomingEventsExpanded" class="divide-y divide-gray-100 dark:divide-gray-700 min-w-0 origin-top">
+        <li v-for="event in upcomingEventsFiltered" :key="event.id" class="py-3">
         <div class="flex items-start space-x-3 min-w-0">
           <div class="flex-shrink-0 bg-blue-50 dark:bg-blue-900 rounded-md p-2 text-center border-l-3 border-blue-500">
             <span class="text-xs font-medium text-blue-500 dark:text-blue-400">{{ formatDate(event.start_date, 'MMM') }}</span>
@@ -136,6 +163,7 @@
         <p class="text-sm">No upcoming events</p>
       </li>
     </ul>
+    </transition>
   </div>
   
   <!-- Floating Desktop Dropdown -->
@@ -334,6 +362,10 @@ export default {
     // Mobile modal state
     const showMobileActionsModal = ref(false);
     const selectedMobileEvent = ref(null);
+    
+    // Collapsible state for upcoming events
+    const isUpcomingEventsExpanded = ref(true);
+    
     const todaysEvents = computed(() => {
       const today = dayjs().format('YYYY-MM-DD');
       return props.displayedEvents.filter(event => {
@@ -484,6 +516,10 @@ export default {
       showMobileActionsModal.value = false;
       selectedMobileEvent.value = null;
     };
+    
+    const toggleUpcomingEvents = () => {
+      isUpcomingEventsExpanded.value = !isUpcomingEventsExpanded.value;
+    };
 
     onMounted(() => {
       document.addEventListener('click', closeDropdowns);
@@ -510,7 +546,10 @@ export default {
       showMobileActionsModal,
       selectedMobileEvent,
       handleMobileAction,
-      closeMobileActionsModal
+      closeMobileActionsModal,
+      // Collapsible
+      isUpcomingEventsExpanded,
+      toggleUpcomingEvents
     };
   }
 };
