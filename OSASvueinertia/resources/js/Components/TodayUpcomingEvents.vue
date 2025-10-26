@@ -9,13 +9,31 @@
     <ul v-if="todaysEvents.length > 0" class="divide-y divide-gray-100 dark:divide-gray-700 mb-6 min-w-0">
       <li v-for="event in todaysEvents" :key="'today-' + event.id" class="py-4">
         <div class="flex items-start space-x-4 min-w-0">
-          <div class="flex-shrink-0 bg-green-50 dark:bg-green-900 rounded-lg p-3 text-center border-l-4 border-green-500">
-            <span class="text-sm font-medium text-green-500 dark:text-green-400">{{ formatDate(event.start_date, 'MMM') }}</span>
+          <!-- Date badge - changes color if cancelled -->
+          <div :class="[
+            'flex-shrink-0 rounded-lg p-3 text-center border-l-4',
+            event.status === 'cancelled' 
+              ? 'bg-red-50 dark:bg-red-900 border-red-500' 
+              : 'bg-green-50 dark:bg-green-900 border-green-500'
+          ]">
+            <span :class="[
+              'text-sm font-medium',
+              event.status === 'cancelled' ? 'text-red-500 dark:text-red-400' : 'text-green-500 dark:text-green-400'
+            ]">{{ formatDate(event.start_date, 'MMM') }}</span>
             <p class="text-xl font-bold text-gray-800 dark:text-gray-100">{{ formatDate(event.start_date, 'DD') }}</p>
-            <span class="text-xs text-green-400">TODAY</span>
+            <span :class="[
+              'text-xs',
+              event.status === 'cancelled' ? 'text-red-400' : 'text-green-400'
+            ]">{{ event.status === 'cancelled' ? 'CANCELLED' : 'TODAY' }}</span>
           </div>
           <div class="flex-1 min-w-0 overflow-hidden">
-            <p class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate break-words">{{ event.title }}</p>
+            <!-- Title with strikethrough if cancelled -->
+            <p :class="[
+              'text-sm font-medium truncate break-words',
+              event.status === 'cancelled' 
+                ? 'text-red-600 dark:text-red-400 line-through opacity-75' 
+                : 'text-gray-900 dark:text-gray-100'
+            ]">{{ event.title }}</p>
             <div class="flex items-center mt-1 text-xs text-gray-500 dark:text-gray-400 min-w-0">
               <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -30,7 +48,19 @@
                 </span>
               </span>
             </div>
-            <p v-if="event.description" class="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2 break-words overflow-hidden">{{ event.description }}</p>
+            <!-- Show cancelled badge if cancelled -->
+            <div v-if="event.status === 'cancelled'" class="mt-2">
+              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200">
+                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                Event Cancelled
+              </span>
+            </div>
+            <p v-if="event.description" :class="[
+              'text-xs mt-1 line-clamp-2 break-words overflow-hidden',
+              event.status === 'cancelled' ? 'text-gray-400 dark:text-gray-500' : 'text-gray-500 dark:text-gray-400'
+            ]">{{ event.description }}</p>
           </div>
           <!-- Admin/User action buttons -->
           <div v-if="isAdmin" class="flex-shrink-0 flex space-x-1">
@@ -167,8 +197,10 @@ export default {
       return props.displayedEvents
         .filter(event => {
           const eventStartDate = dayjs(event.start_date).format('YYYY-MM-DD');
-          // Filter out today's events from upcoming events
-          return new Date(event.start_date) >= now && eventStartDate !== today;
+          // Filter out today's events from upcoming events AND filter out cancelled events
+          return new Date(event.start_date) >= now && 
+                 eventStartDate !== today && 
+                 event.status !== 'cancelled';
         })
         .sort((a, b) => new Date(a.start_date) - new Date(b.start_date))
         .slice(0, 5);
