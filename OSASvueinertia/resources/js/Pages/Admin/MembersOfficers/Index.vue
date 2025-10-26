@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue';
+import { ref, computed, watch, onMounted, onBeforeUnmount, shallowRef } from 'vue';
 import { Head } from '@inertiajs/vue3';
 import SidebarLayout from '@/Components/Layout/Sidebar/SidebarLayout.vue';
 
@@ -103,15 +103,20 @@ const handleClickOutside = (event) => {
   }
 };
 
+let clickOutsideHandler = null;
+
 onMounted(() => {
-  document.addEventListener('click', handleClickOutside);
+  clickOutsideHandler = handleClickOutside;
+  document.addEventListener('click', clickOutsideHandler, { passive: true });
 });
 
 onBeforeUnmount(() => {
-  document.removeEventListener('click', handleClickOutside);
+  if (clickOutsideHandler) {
+    document.removeEventListener('click', clickOutsideHandler);
+  }
 });
 
-// Get unique organizations
+// Get unique organizations - memoized
 const organizationOptions = computed(() => {
   const allOrgs = activeTab.value === 'members' 
     ? [...new Set(props.members.map(m => m.organization))]
@@ -119,7 +124,7 @@ const organizationOptions = computed(() => {
   return allOrgs.sort().map(org => ({ value: org, label: org }));
 });
 
-// Get unique values for multi-select columns
+// Get unique values for multi-select columns - optimized
 const getUniqueColumnValues = (columnKey) => {
   const values = new Set();
   const data = activeTab.value === 'members' ? props.members : props.officers;
@@ -192,95 +197,132 @@ const currentPage = ref(1);
 const activitiesPerPage = ref(50);
 const pageSizeOptions = [10, 25, 50, 100];
 
-// Filtered members
-const filteredMembers = computed(() => {
-  let filtered = props.members;
+// Optimized filter function to reduce redundant string operations
+const applyFilters = (data, tableColumns) => {
+  let filtered = data;
+  const searchLower = searchQuery.value?.toLowerCase();
 
-  // Apply search filter
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase();
-    filtered = filtered.filter(member => 
-      member.organization.toLowerCase().includes(query) ||
-      member.student_name.toLowerCase().includes(query) ||
-      member.student_number.toLowerCase().includes(query) ||
-      member.course_year_section.toLowerCase().includes(query)
-    );
+  // Early return if no filters
+  const hasFilters = searchQuery.value || 
+                     statusFilter.value !== 'all' || 
+                     organizationFilter.value || 
+                     semesterFilter.value !== 'all' ||
+                     Object.values(columnFilters.value).some(f => 
+                       Array.isArray(f.value) ? f.value.length > 0 : !!f.value
+                     );
+  
+  if (!hasFilters && !sortState.value.column) {
+    return data;
+  }
+
+  // Apply search filter (for members only)
+  if (searchLower && tableColumns === membersTableColumns) {
+    filtered = filtered.filter(member => {
+      const orgLower = member.organization?.toLowerCase() ?? '';
+      const nameLower = member.student_name?.toLowerCase() ?? '';
+      const numLower = member.student_number?.toLowerCase() ?? '';
+      const courseLower = member.course_year_section?.toLowerCase() ?? '';
+      
+      return orgLower.includes(searchLower) ||
+             nameLower.includes(searchLower) ||
+             numLower.includes(searchLower) ||
+             courseLower.includes(searchLower);
+    });
+  } else if (searchLower) {
+    // For officers
+    filtered = filtered.filter(officer => {
+      const orgLower = officer.organization?.toLowerCase() ?? '';
+      const nameLower = officer.student_name?.toLowerCase() ?? '';
+      const numLower = officer.student_number?.toLowerCase() ?? '';
+      const posLower = officer.position?.toLowerCase() ?? '';
+      
+      return orgLower.includes(searchLower) ||
+             nameLower.includes(searchLower) ||
+             numLower.includes(searchLower) ||
+             posLower.includes(searchLower);
+    });
   }
 
   // Apply status filter
   if (statusFilter.value !== 'all') {
-    filtered = filtered.filter(member => 
-      member.status.toLowerCase() === statusFilter.value.toLowerCase()
+    const statusLower = statusFilter.value.toLowerCase();
+    filtered = filtered.filter(item => 
+      item.status?.toLowerCase() === statusLower
     );
   }
 
   // Apply organization filter
   if (organizationFilter.value) {
-    filtered = filtered.filter(member => 
-      member.organization === organizationFilter.value
+    filtered = filtered.filter(item => 
+      item.organization === organizationFilter.value
     );
   }
 
-  // Apply semester filter
-  if (semesterFilter.value !== 'all') {
+  // Apply semester filter (members only)
+  if (semesterFilter.value !== 'all' && tableColumns === membersTableColumns) {
     filtered = filtered.filter(member => 
       member.semester === semesterFilter.value
     );
   }
 
-  // Apply column-level filters
-  filtered = filtered.filter(member => {
-    return membersTableColumns.every(column => {
-      const filterData = columnFilters.value[column.key];
-      if (!filterData) return true;
+  // Apply column-level filters - optimized
+  const activeFilters = tableColumns.filter(column => {
+    const filterData = columnFilters.value[column.key];
+    if (!filterData) return false;
+    const { value } = filterData;
+    return Array.isArray(value) ? value.length > 0 : !!value;
+  });
 
-      const { operator, value } = filterData;
-      if (!value) {
-        return true;
-      }
+  if (activeFilters.length > 0) {
+    filtered = filtered.filter(item => {
+      return activeFilters.every(column => {
+        const filterData = columnFilters.value[column.key];
+        const { operator, value } = filterData;
 
-      // Handle multi-select
-      if (column.multiSelect && Array.isArray(value)) {
-        if (value.length === 0) {
-          return true;
+        // Handle multi-select
+        if (column.multiSelect && Array.isArray(value)) {
+          const itemValue = item[column.key];
+          if (itemValue === undefined || itemValue === null) {
+            return false;
+          }
+          return value.includes(String(itemValue));
         }
-        const memberValue = member[column.key];
-        if (memberValue === undefined || memberValue === null) {
+
+        const itemValue = item[column.key];
+        if (itemValue === undefined || itemValue === null) {
           return false;
         }
-        return value.includes(memberValue.toString());
-      }
 
-      const memberValue = member[column.key];
-      if (memberValue === undefined || memberValue === null) {
-        return false;
-      }
+        if (column.type === 'text') {
+          const recordStr = String(itemValue).toLowerCase();
+          const searchStr = String(value).toLowerCase();
+          
+          switch(operator) {
+            case 'contains': return recordStr.includes(searchStr);
+            case 'equals': return recordStr === searchStr;
+            case 'startsWith': return recordStr.startsWith(searchStr);
+            case 'endsWith': return recordStr.endsWith(searchStr);
+            default: return true;
+          }
+        }
 
-      if (column.type === 'text') {
-        const recordStr = memberValue.toString().toLowerCase();
-        const searchStr = value.toString().toLowerCase();
-        if (operator === 'contains') return recordStr.includes(searchStr);
-        if (operator === 'equals') return recordStr === searchStr;
-        if (operator === 'startsWith') return recordStr.startsWith(searchStr);
-        if (operator === 'endsWith') return recordStr.endsWith(searchStr);
         return true;
-      }
-
-      return true;
+      });
     });
-  });
+  }
 
   // Apply column sorting if active
   if (sortState.value.column && sortState.value.direction) {
-    const column = membersTableColumns.find(col => col.key === sortState.value.column);
+    const column = tableColumns.find(col => col.key === sortState.value.column);
     if (column) {
       const directionMultiplier = sortState.value.direction === 'asc' ? 1 : -1;
       filtered = [...filtered].sort((a, b) => {
         const aVal = a[column.key];
         const bVal = b[column.key];
 
-        const aStr = aVal?.toString().toLowerCase() ?? '';
-        const bStr = bVal?.toString().toLowerCase() ?? '';
+        const aStr = String(aVal ?? '').toLowerCase();
+        const bStr = String(bVal ?? '').toLowerCase();
+        
         if (aStr < bStr) return -1 * directionMultiplier;
         if (aStr > bStr) return 1 * directionMultiplier;
         return 0;
@@ -289,98 +331,16 @@ const filteredMembers = computed(() => {
   }
 
   return filtered;
+};
+
+// Filtered members - using optimized function
+const filteredMembers = computed(() => {
+  return applyFilters(props.members, membersTableColumns);
 });
 
-// Filtered officers
+// Filtered officers - using optimized function
 const filteredOfficers = computed(() => {
-  let filtered = props.officers;
-
-  // Apply search filter
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase();
-    filtered = filtered.filter(officer => 
-      officer.organization.toLowerCase().includes(query) ||
-      officer.student_name.toLowerCase().includes(query) ||
-      officer.position.toLowerCase().includes(query) ||
-      officer.student_number.toLowerCase().includes(query)
-    );
-  }
-
-  // Apply status filter
-  if (statusFilter.value !== 'all') {
-    filtered = filtered.filter(officer => 
-      officer.status.toLowerCase() === statusFilter.value.toLowerCase()
-    );
-  }
-
-  // Apply organization filter
-  if (organizationFilter.value) {
-    filtered = filtered.filter(officer => 
-      officer.organization === organizationFilter.value
-    );
-  }
-
-  // Apply column-level filters
-  filtered = filtered.filter(officer => {
-    return officersTableColumns.every(column => {
-      const filterData = columnFilters.value[column.key];
-      if (!filterData) return true;
-
-      const { operator, value } = filterData;
-      if (!value) {
-        return true;
-      }
-
-      // Handle multi-select
-      if (column.multiSelect && Array.isArray(value)) {
-        if (value.length === 0) {
-          return true;
-        }
-        const officerValue = officer[column.key];
-        if (officerValue === undefined || officerValue === null) {
-          return false;
-        }
-        return value.includes(officerValue.toString());
-      }
-
-      const officerValue = officer[column.key];
-      if (officerValue === undefined || officerValue === null) {
-        return false;
-      }
-
-      if (column.type === 'text') {
-        const recordStr = officerValue.toString().toLowerCase();
-        const searchStr = value.toString().toLowerCase();
-        if (operator === 'contains') return recordStr.includes(searchStr);
-        if (operator === 'equals') return recordStr === searchStr;
-        if (operator === 'startsWith') return recordStr.startsWith(searchStr);
-        if (operator === 'endsWith') return recordStr.endsWith(searchStr);
-        return true;
-      }
-
-      return true;
-    });
-  });
-
-  // Apply column sorting if active
-  if (sortState.value.column && sortState.value.direction) {
-    const column = officersTableColumns.find(col => col.key === sortState.value.column);
-    if (column) {
-      const directionMultiplier = sortState.value.direction === 'asc' ? 1 : -1;
-      filtered = [...filtered].sort((a, b) => {
-        const aVal = a[column.key];
-        const bVal = b[column.key];
-
-        const aStr = aVal?.toString().toLowerCase() ?? '';
-        const bStr = bVal?.toString().toLowerCase() ?? '';
-        if (aStr < bStr) return -1 * directionMultiplier;
-        if (aStr > bStr) return 1 * directionMultiplier;
-        return 0;
-      });
-    }
-  }
-
-  return filtered;
+  return applyFilters(props.officers, officersTableColumns);
 });
 
 // Current data based on active tab
