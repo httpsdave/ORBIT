@@ -88,7 +88,7 @@
 </div>
 
   <!-- Main Content Container with 3D Flip Animation - Mobile Optimized -->
-  <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden min-h-96 mx-1 sm:mx-0" style="perspective: 1000px;">
+  <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden min-h-96 mx-1 sm:mx-0 w-full" style="perspective: 1000px;">
     <!-- Calendar View -->
     <div 
       :class="[
@@ -105,7 +105,7 @@
          ]"
          style="backface-visibility: hidden; will-change: opacity;"
        >
-        <div class="p-2 sm:p-5">
+        <div class="p-2 sm:p-5 w-full" style="box-sizing: border-box;">
           <!-- Custom calendar header with your color scheme -->
           <div class="mb-4 sm:mb-6">
             <!-- Colored banner for the calendar -->
@@ -181,7 +181,7 @@
           <FullCalendar
             ref="fullCalendar"
             :options="calendarOptions"
-            :class="['full-calendar-custom', { 'calendar-admin': isAdmin }]"
+            :class="['full-calendar-custom', 'w-full', { 'calendar-admin': isAdmin }]"
           />
         </div>
       </div>
@@ -759,6 +759,55 @@
       --fc-list-event-hover-bg-color: #F3F4F6; /* gray-100 */
       --fc-neutral-bg-color: #ffffff; /* light mode background */
       --fc-neutral-text-color: #374151; /* light mode text */
+      width: 100% !important;
+      box-sizing: border-box !important;
+    }
+    
+    /* Ensure FullCalendar takes full width */
+    :deep(.fc) {
+      width: 100% !important;
+      max-width: 100% !important;
+      box-sizing: border-box !important;
+    }
+    
+    :deep(.fc-view-harness) {
+      width: 100% !important;
+      box-sizing: border-box !important;
+    }
+    
+    :deep(.fc-scrollgrid) {
+      width: 100% !important;
+      table-layout: fixed !important;
+      box-sizing: border-box !important;
+    }
+    
+    :deep(.fc-scrollgrid-sync-table) {
+      width: 100% !important;
+      table-layout: fixed !important;
+      box-sizing: border-box !important;
+    }
+    
+    :deep(.fc-col-header),
+    :deep(.fc-daygrid-body) {
+      width: 100% !important;
+      box-sizing: border-box !important;
+    }
+    
+    :deep(.fc-scrollgrid-section-body > td) {
+      width: 100% !important;
+      box-sizing: border-box !important;
+    }
+    
+    :deep(.fc-scrollgrid-sync-table tbody),
+    :deep(.fc-scrollgrid-sync-table thead) {
+      width: 100% !important;
+      box-sizing: border-box !important;
+    }
+    
+    /* Ensure all table cells are properly sized */
+    :deep(.fc-daygrid-day),
+    :deep(.fc-col-header-cell) {
+      box-sizing: border-box !important;
     }
 
     /* Dark mode FullCalendar styling */
@@ -1440,6 +1489,35 @@ export default {
       } else {
         filterExpiredEvents();
       }
+      
+      // Initial calendar size update after mount - multiple attempts to ensure proper sizing
+      nextTick(() => {
+        // First attempt - immediate
+        setTimeout(() => {
+          if (fullCalendar.value && fullCalendar.value.getApi) {
+            fullCalendar.value.getApi().updateSize();
+          }
+        }, 50);
+        
+        // Second attempt - after slight delay for DOM to settle
+        setTimeout(() => {
+          if (fullCalendar.value && fullCalendar.value.getApi) {
+            fullCalendar.value.getApi().updateSize();
+          }
+        }, 200);
+        
+        // Third attempt - after full render
+        setTimeout(() => {
+          if (fullCalendar.value && fullCalendar.value.getApi) {
+            fullCalendar.value.getApi().updateSize();
+          }
+        }, 500);
+      });
+      
+      // Add resize event listener
+      if (typeof window !== 'undefined') {
+        window.addEventListener('resize', handleResize);
+      }
     });
     
     // Clean up timer on component unmount
@@ -1449,7 +1527,24 @@ export default {
       }
       // Clean up autosave on unmount
       stopAutoSave();
+      // Clean up resize listener
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('resize', handleResize);
+      }
     });
+    
+    // Handle window resize with debouncing
+    let resizeTimer = null;
+    const handleResize = () => {
+      if (resizeTimer) {
+        clearTimeout(resizeTimer);
+      }
+      resizeTimer = setTimeout(() => {
+        if (fullCalendar.value && fullCalendar.value.getApi) {
+          fullCalendar.value.getApi().updateSize();
+        }
+      }, 150);
+    };
     
     // Watch for view changes and update calendar size when switching back to calendar view
     watch(currentView, async (newView) => {
@@ -1465,9 +1560,27 @@ export default {
       }
     });
     
+    // Watch for events changes and update calendar size
+    watch(displayedEvents, async () => {
+      await nextTick();
+      setTimeout(() => {
+        if (fullCalendar.value && fullCalendar.value.getApi) {
+          fullCalendar.value.getApi().updateSize();
+        }
+      }, 100);
+    }, { deep: true });
+    
     const calendarOptions = reactive({
       plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
       initialView: 'dayGridMonth',
+      height: 'auto',
+      contentHeight: 'auto',
+      handleWindowResize: true,
+      windowResize: function() {
+        if (fullCalendar.value && fullCalendar.value.getApi) {
+          fullCalendar.value.getApi().updateSize();
+        }
+      },
       headerToolbar: {
         left: 'prev,next today',
         center: 'title',
@@ -1539,6 +1652,14 @@ export default {
       dateClick: handleDateClick,
       select: handleDateSelect,
       datesSet: updateDatePickerFromCalendar, // Keep date picker in sync
+      viewDidMount: function() {
+        // Ensure proper sizing when view is mounted
+        if (fullCalendar.value && fullCalendar.value.getApi) {
+          setTimeout(() => {
+            fullCalendar.value.getApi().updateSize();
+          }, 50);
+        }
+      },
       // eventDrop: handleEventDrop (no longer needed)
     });
     
