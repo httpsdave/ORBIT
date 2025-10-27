@@ -50,84 +50,86 @@ const submit = async () => {
     isLoading.value = true;
     
     try {
-        // For now, skip Laravel user check and go directly to Firebase
-        // This will help us isolate if the issue is with Laravel API or Firebase
-        console.log('Attempting to send password reset email directly through Firebase to:', email.value);
+        // STEP 1: Check if user exists in Laravel database first
+        console.log('Checking if user exists in database:', email.value);
         
-        // Send password reset email through Firebase
+        const checkResponse = await axios.post('/api/check-email', {
+            email: email.value
+        });
+        
+        if (!checkResponse.data.exists) {
+            // User doesn't exist in database - show error
+            error.value = 'This email address is not registered in our system. Please check your email or contact your administrator.';
+            isLoading.value = false;
+            return;
+        }
+        
+        console.log('User exists in database, proceeding with password reset...');
+        
+        // STEP 2: User exists in database, now check Firebase
         try {
-            console.log('Checking if user exists in Firebase...');
-            
-            // First check if user exists in Firebase
             const signInMethods = await fetchSignInMethodsForEmail(auth, email.value);
             console.log('Firebase sign-in methods found:', signInMethods);
             
             if (signInMethods.length === 0) {
-                // User doesn't exist in Firebase, create them with a temporary password
-                console.log('User not found in Firebase, creating Firebase account...');
-                const tempPassword = Math.random().toString(36).slice(-12) + 'A1!'; // Generate secure temp password
+                // User exists in database but not in Firebase - create Firebase account
+                console.log('Creating Firebase account for existing database user...');
+                const tempPassword = Math.random().toString(36).slice(-12) + 'A1!';
                 await createUserWithEmailAndPassword(auth, email.value, tempPassword);
-                console.log('Firebase user created successfully');
-            } else {
-                console.log('User already exists in Firebase, proceeding with password reset...');
+                console.log('Firebase account created');
             }
             
-            // Now send the password reset email
+            // STEP 3: Send password reset email
             console.log('Sending password reset email...');
             await sendPasswordResetEmail(auth, email.value, {
                 url: window.location.origin + '/reset-password',
                 handleCodeInApp: false
             });
             
-            console.log('Firebase sendPasswordResetEmail completed successfully');
+            console.log('Password reset email sent successfully');
             message.value = 'Password reset email sent! Please check your inbox (including spam folder) and follow the instructions to reset your password.';
             
-        } catch (innerError) {
-            console.error('Inner Firebase error:', innerError);
+        } catch (firebaseError) {
+            console.error('Firebase error:', firebaseError);
             
-            // If the error is "email already in use" during user creation, 
-            // it means the user exists, so we can still try to send the reset email
-            if (innerError.code === 'auth/email-already-in-use') {
-                console.log('User already exists, attempting password reset anyway...');
+            // Handle Firebase-specific errors
+            if (firebaseError.code === 'auth/email-already-in-use') {
+                // User exists in Firebase, send reset email
                 try {
                     await sendPasswordResetEmail(auth, email.value, {
                         url: window.location.origin + '/reset-password',
                         handleCodeInApp: false
                     });
-                    console.log('Password reset email sent successfully');
                     message.value = 'Password reset email sent! Please check your inbox (including spam folder) and follow the instructions to reset your password.';
-                    return; // Success, exit the function
                 } catch (resetError) {
-                    console.error('Failed to send reset email:', resetError);
                     throw resetError;
                 }
+            } else if (firebaseError.code === 'auth/invalid-email') {
+                error.value = 'Please enter a valid email address.';
+            } else if (firebaseError.code === 'auth/too-many-requests') {
+                error.value = 'Too many requests. Please try again later.';
+            } else {
+                throw firebaseError;
             }
-            
-            throw innerError; // Re-throw other errors to be caught by outer catch
         }
         
-    } catch (firebaseError) {
-        console.error('Firebase error details:', firebaseError);
-        console.error('Error code:', firebaseError.code);
-        console.error('Error message:', firebaseError.message);
+    } catch (err) {
+        console.error('Error during password reset:', err);
         
-        // Handle specific Firebase error codes
-        switch (firebaseError.code) {
-            case 'auth/user-not-found':
-                error.value = 'No Firebase account found. The user may need to be created in Firebase first.';
-                break;
-            case 'auth/invalid-email':
-                error.value = 'Please enter a valid email address.';
-                break;
-            case 'auth/too-many-requests':
-                error.value = 'Too many requests. Please try again later.';
-                break;
-            case 'auth/configuration-not-found':
-                error.value = 'Firebase email configuration not found. Please check Firebase settings.';
-                break;
-            default:
-                error.value = `Firebase error (${firebaseError.code}): ${firebaseError.message}`;
-                break;
+        // Handle API/Network errors
+        if (err.response) {
+            // Server responded with error
+            if (err.response.status === 404) {
+                error.value = 'This email address is not registered in our system.';
+            } else {
+                error.value = 'An error occurred. Please try again later.';
+            }
+        } else if (err.code && err.code.startsWith('auth/')) {
+            // Firebase error not caught above
+            error.value = 'Unable to send password reset email. Please try again later.';
+        } else {
+            // Network or other error
+            error.value = 'Network error. Please check your connection and try again.';
         }
     } finally {
         isLoading.value = false;

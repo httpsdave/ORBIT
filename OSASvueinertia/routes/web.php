@@ -22,6 +22,23 @@ use App\Http\Controllers\ArchiveController;
 use App\Http\Controllers\Auth\FirebasePasswordController;
 use App\Http\Controllers\FormAutosaveController;
 
+// API endpoint to check if email exists in database (for password reset validation)
+Route::post('/api/check-email', function () {
+    $email = request()->input('email');
+    
+    if (!$email) {
+        return response()->json(['exists' => false, 'message' => 'Email is required'], 400);
+    }
+    
+    // Check if user exists in database
+    $userExists = User::where('email', $email)->exists();
+    
+    return response()->json([
+        'exists' => $userExists,
+        'message' => $userExists ? 'User found' : 'User not found'
+    ]);
+})->middleware('web');
+
 // Cookie reset route to clear corrupted browser cookies - IMPORTANT FOR 419 FIXES
 Route::get('/clear-cookies', function () {
     $response = redirect('/login')->with('message', 'Cookies cleared! Please try logging in again.');
