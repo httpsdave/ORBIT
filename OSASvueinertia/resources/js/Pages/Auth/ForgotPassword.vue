@@ -25,6 +25,14 @@ const slideInterval = ref(null);
 const gradientIndex = ref(0);
 const gradientInterval = ref(null);
 
+// Cooldown state
+const cooldownSeconds = ref(0);
+const cooldownInterval = ref(null);
+const lastAttemptTime = ref(null);
+const COOLDOWN_DURATION = 60; // 60 seconds cooldown
+const showCooldownMessage = ref(false); // Control when to show cooldown UI
+const errorDismissTimer = ref(null);
+
 // Slideshow images matching login page
 const slideshowImages = [
     '/images/LSPU9.jpg',
@@ -38,9 +46,19 @@ const slideshowImages = [
 const submit = async () => {
     if (isLoading.value) return;
     
-    // Clear previous messages
+    // Check cooldown
+    if (cooldownSeconds.value > 0) {
+        error.value = `Please wait ${cooldownSeconds.value} seconds before trying again.`;
+        return;
+    }
+    
+    // Clear previous messages and timers
     message.value = '';
     error.value = '';
+    showCooldownMessage.value = false;
+    if (errorDismissTimer.value) {
+        clearTimeout(errorDismissTimer.value);
+    }
     
     if (!email.value) {
         error.value = 'Please enter your email address.';
@@ -61,6 +79,16 @@ const submit = async () => {
             // User doesn't exist in database - show error
             error.value = 'This email address is not registered in our system. Please check your email or contact your administrator.';
             isLoading.value = false;
+            
+            // Start cooldown even for failed attempts to prevent email enumeration
+            startCooldown();
+            
+            // After 5 seconds, hide error and show cooldown message
+            errorDismissTimer.value = setTimeout(() => {
+                error.value = '';
+                showCooldownMessage.value = true;
+            }, 5000);
+            
             return;
         }
         
@@ -89,6 +117,9 @@ const submit = async () => {
             console.log('Password reset email sent successfully');
             message.value = 'Password reset email sent! Please check your inbox (including spam folder) and follow the instructions to reset your password.';
             
+            // Start cooldown after successful attempt
+            startCooldown();
+            
         } catch (firebaseError) {
             console.error('Firebase error:', firebaseError);
             
@@ -101,13 +132,16 @@ const submit = async () => {
                         handleCodeInApp: false
                     });
                     message.value = 'Password reset email sent! Please check your inbox (including spam folder) and follow the instructions to reset your password.';
+                    startCooldown();
                 } catch (resetError) {
                     throw resetError;
                 }
             } else if (firebaseError.code === 'auth/invalid-email') {
                 error.value = 'Please enter a valid email address.';
             } else if (firebaseError.code === 'auth/too-many-requests') {
-                error.value = 'Too many requests. Please try again later.';
+                error.value = 'Too many requests. Please try again in a few minutes.';
+                // Start longer cooldown for rate limit
+                startCooldown(300); // 5 minutes
             } else {
                 throw firebaseError;
             }
@@ -121,6 +155,10 @@ const submit = async () => {
             // Server responded with error
             if (err.response.status === 404) {
                 error.value = 'This email address is not registered in our system.';
+            } else if (err.response.status === 429) {
+                // Too many requests from server
+                error.value = 'Too many attempts. Please try again later.';
+                startCooldown(300); // 5 minutes
             } else {
                 error.value = 'An error occurred. Please try again later.';
             }
@@ -133,6 +171,61 @@ const submit = async () => {
         }
     } finally {
         isLoading.value = false;
+    }
+};
+
+const startCooldown = (duration = COOLDOWN_DURATION) => {
+    // Clear any existing cooldown
+    if (cooldownInterval.value) {
+        clearInterval(cooldownInterval.value);
+    }
+    
+    // Set cooldown duration
+    cooldownSeconds.value = duration;
+    lastAttemptTime.value = Date.now();
+    
+    // Store in localStorage to persist across page reloads
+    localStorage.setItem('forgotPasswordCooldown', JSON.stringify({
+        expiresAt: Date.now() + (duration * 1000),
+        email: email.value
+    }));
+    
+    // Start countdown
+    cooldownInterval.value = setInterval(() => {
+        cooldownSeconds.value--;
+        
+        if (cooldownSeconds.value <= 0) {
+            clearInterval(cooldownInterval.value);
+            cooldownInterval.value = null;
+            showCooldownMessage.value = false;
+            localStorage.removeItem('forgotPasswordCooldown');
+        }
+    }, 1000);
+};
+
+const checkExistingCooldown = () => {
+    const storedCooldown = localStorage.getItem('forgotPasswordCooldown');
+    
+    if (storedCooldown) {
+        try {
+            const { expiresAt, email: storedEmail } = JSON.parse(storedCooldown);
+            const now = Date.now();
+            
+            if (expiresAt > now) {
+                // Cooldown still active
+                const remainingSeconds = Math.ceil((expiresAt - now) / 1000);
+                email.value = storedEmail || '';
+                startCooldown(remainingSeconds);
+                // Show cooldown message immediately if reloading during cooldown
+                showCooldownMessage.value = true;
+            } else {
+                // Cooldown expired, clean up
+                localStorage.removeItem('forgotPasswordCooldown');
+            }
+        } catch (e) {
+            // Invalid data, clean up
+            localStorage.removeItem('forgotPasswordCooldown');
+        }
     }
 };
 
@@ -154,6 +247,9 @@ onMounted(() => {
         formElement.value.classList.add('opacity-100');
     }
     
+    // Check for existing cooldown
+    checkExistingCooldown();
+    
     // Start slideshow
     startSlideshow();
     
@@ -170,6 +266,16 @@ onBeforeUnmount(() => {
     // Clear gradient interval when component is unmounted
     if (gradientInterval.value) {
         clearInterval(gradientInterval.value);
+    }
+    
+    // Clear cooldown interval
+    if (cooldownInterval.value) {
+        clearInterval(cooldownInterval.value);
+    }
+    
+    // Clear error dismiss timer
+    if (errorDismissTimer.value) {
+        clearTimeout(errorDismissTimer.value);
     }
 });
 </script>
@@ -305,6 +411,36 @@ onBeforeUnmount(() => {
                         {{ error }}
                     </div>
                 </div>
+                
+                <!-- Cooldown indicator - only show when error is dismissed -->
+                <div v-else-if="cooldownSeconds > 0 && showCooldownMessage" class="mb-4 sm:mb-6 p-3 sm:p-4 bg-yellow-500 bg-opacity-20 border-l-4 border-yellow-500 text-yellow-400 text-xs sm:text-sm font-medium animate-fadeIn backdrop-blur-sm rounded-r-lg">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center flex-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 sm:mr-3 flex-shrink-0">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                            <span>Please wait {{ cooldownSeconds }} second{{ cooldownSeconds !== 1 ? 's' : '' }} before trying again</span>
+                        </div>
+                        <div class="ml-3 flex-shrink-0">
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 relative">
+                                <svg class="transform -rotate-90" width="40" height="40" viewBox="0 0 40 40">
+                                    <circle cx="20" cy="20" r="18" stroke="currentColor" stroke-width="3" fill="none" class="opacity-20" />
+                                    <circle 
+                                        cx="20" cy="20" r="18" 
+                                        stroke="currentColor" 
+                                        stroke-width="3" 
+                                        fill="none" 
+                                        class="transition-all duration-1000 ease-linear"
+                                        :stroke-dasharray="113"
+                                        :stroke-dashoffset="113 * (1 - cooldownSeconds / COOLDOWN_DURATION)"
+                                    />
+                                </svg>
+                                <span class="absolute inset-0 flex items-center justify-center text-xs font-bold">{{ cooldownSeconds }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Form -->
                 <form @submit.prevent="submit" class="space-y-4 sm:space-y-6" novalidate>
@@ -337,9 +473,6 @@ onBeforeUnmount(() => {
                                 Email Address
                             </label>
                         </div>
-
-                        <!-- Only show InputError if there's an actual error message for the email field -->
-                        <InputError v-if="error && error.includes('email')" class="mt-2 text-red-400 text-sm" :message="error" />
                     </div>
 
                     <!-- Action buttons -->
@@ -348,11 +481,11 @@ onBeforeUnmount(() => {
                             type="submit"
                             class="w-full text-white font-semibold py-3 sm:py-4 px-4 sm:px-6 rounded-lg transition-all duration-300 flex items-center justify-center relative overflow-hidden group shadow-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-opacity-50 transform hover:scale-105 disabled:transform-none disabled:opacity-50 disabled:cursor-not-allowed"
                             :class="[
-                                isLoading 
+                                isLoading || cooldownSeconds > 0
                                     ? 'bg-gradient-to-r from-gray-500 to-gray-600' 
                                     : 'bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600'
                             ]"
-                            :disabled="isLoading"
+                            :disabled="isLoading || cooldownSeconds > 0"
                             aria-label="Send Reset Link"
                         >
                             <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
@@ -361,11 +494,15 @@ onBeforeUnmount(() => {
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                 </svg>
+                                <svg v-else-if="cooldownSeconds > 0" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 sm:mr-3">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="12 6 12 12 16 14"></polyline>
+                                </svg>
                                 <svg v-else xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 sm:mr-3">
                                     <line x1="22" y1="2" x2="11" y2="13"></line>
                                     <polygon points="22,2 15,22 11,13 2,9"></polygon>
                                 </svg>
-                                {{ isLoading ? 'Sending...' : 'Send Reset Instructions' }}
+                                {{ isLoading ? 'Sending...' : cooldownSeconds > 0 ? `Wait ${cooldownSeconds}s` : 'Send Reset Instructions' }}
                             </span>
                         </button>
 

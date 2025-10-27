@@ -23,6 +23,7 @@ use App\Http\Controllers\Auth\FirebasePasswordController;
 use App\Http\Controllers\FormAutosaveController;
 
 // API endpoint to check if email exists in database (for password reset validation)
+// Rate limited to 5 attempts per minute per IP to prevent abuse
 Route::post('/api/check-email', function () {
     $email = request()->input('email');
     
@@ -37,7 +38,7 @@ Route::post('/api/check-email', function () {
         'exists' => $userExists,
         'message' => $userExists ? 'User found' : 'User not found'
     ]);
-})->middleware('web');
+})->middleware(['web', 'throttle:5,1']); // 5 requests per minute
 
 // Cookie reset route to clear corrupted browser cookies - IMPORTANT FOR 419 FIXES
 Route::get('/clear-cookies', function () {
