@@ -10,6 +10,7 @@ import StudentCertificationForm from '@/Components/forms/StudentCertificationFor
 import ListOfOfficersForm from '@/Components/forms/ListOfOfficersForm.vue';
 import ActivityAttendanceForm from '@/Components/forms/ActivityAttendanceForm.vue';
 import EvaluationForm from '@/Components/forms/EvaluationForm.vue';
+import ActivityStatusReport from '@/Components/forms/ActivityStatusReport.vue';
 
 const props = defineProps({
   application: {
@@ -149,6 +150,49 @@ const formData = computed(() => {
         signature: null
       }));
     }
+  }
+  
+  // Initialize data for Activity Status Report if needed
+  else if (props.application.form_type === 'LSPU-OSAS-SF-STATUS-REPORT') {
+    // Initialize activity arrays if they don't exist
+    if (!data.approved_activities || !Array.isArray(data.approved_activities)) {
+      data.approved_activities = Array(4).fill().map(() => ({
+        title: '',
+        planned_date: '',
+        actual_date: '',
+        proposed_budget: '',
+        actual_expenditure: '',
+        target_participants: '',
+        actual_participants: '',
+        status: '',
+        justification: ''
+      }));
+    }
+    if (!data.unapproved_activities || !Array.isArray(data.unapproved_activities)) {
+      data.unapproved_activities = Array(4).fill().map(() => ({
+        title: '',
+        planned_date: '',
+        actual_date: '',
+        proposed_budget: '',
+        actual_expenditure: '',
+        target_participants: '',
+        actual_participants: '',
+        status: '',
+        justification: ''
+      }));
+    }
+    // Ensure all required fields are preserved
+    const currentYear = new Date().getFullYear().toString().slice(-2);
+    const nextYear = (new Date().getFullYear() + 1).toString().slice(-2);
+    data.academic_year_start = data.academic_year_start || currentYear;
+    data.academic_year_end = data.academic_year_end || nextYear;
+    data.organization_name = data.organization_name || '';
+    data.president_name = data.president_name || '';
+    data.adviser_name = data.adviser_name || '';
+    data.dean_name = data.dean_name || '';
+    data.coordinator_name = data.coordinator_name || '';
+    data.director_name = data.director_name || '';
+    data.report_date = data.report_date || '';
   }
   
   console.log('Edit.vue - Final formData:', data);
@@ -467,6 +511,14 @@ const handleSpecialFormSubmit = () => {
       <!-- Evaluation Form -->
       <EvaluationForm
         v-else-if="props.application.form_type === 'LSPU-OSAS-SF-EVAL'"
+        :initialFormData="formData"
+        :isEdit="true"
+        @submitted="handleFormSubmitted"
+      />
+      
+      <!-- Activity Status Report -->
+      <ActivityStatusReport
+        v-else-if="props.application.form_type === 'LSPU-OSAS-SF-STATUS-REPORT'"
         :initialFormData="formData"
         :isEdit="true"
         @submitted="handleFormSubmitted"

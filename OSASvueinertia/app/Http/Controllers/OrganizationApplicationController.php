@@ -330,6 +330,8 @@ class OrganizationApplicationController extends Controller
             'coordinator_name' => 'required|string|max:255',
             'status' => 'string|in:Pending,Approved,Disapproved',
             'signed_document' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:20480', // 20MB limit for signed document
+            // application_date is nullable for Activity Status Report (uses report_date instead)
+            'application_date' => $request->form_type === 'LSPU-OSAS-SF-STATUS-REPORT' ? 'nullable|date' : 'required|date',
         ];
         
         // Add adviser fields for non-commitment forms
@@ -464,6 +466,31 @@ class OrganizationApplicationController extends Controller
                 'ratings' => 'required|array|size:15',
                 'ratings.*' => ['required', 'regex:/^(?:[1-4]\.[0-9]|5\.0)$/', 'numeric', 'min:1.0', 'max:5.0'],
                 'comments_suggestions' => 'nullable|string',
+            ]);
+        } elseif ($request->form_type === 'LSPU-OSAS-SF-STATUS-REPORT') {
+            // Activity Status Report validation
+            $validationRules = array_merge($validationRules, [
+                'report_date' => 'required|date',
+                'approved_activities' => 'nullable|array',
+                'approved_activities.*.title' => 'nullable|string|max:255',
+                'approved_activities.*.planned_date' => 'nullable|string|max:255',
+                'approved_activities.*.actual_date' => 'nullable|string|max:255',
+                'approved_activities.*.proposed_budget' => 'nullable|string|max:255',
+                'approved_activities.*.actual_expenditure' => 'nullable|string|max:255',
+                'approved_activities.*.target_participants' => 'nullable|string|max:255',
+                'approved_activities.*.actual_participants' => 'nullable|string|max:255',
+                'approved_activities.*.status' => 'nullable|string|max:255',
+                'approved_activities.*.justification' => 'nullable|string|max:1000',
+                'unapproved_activities' => 'nullable|array',
+                'unapproved_activities.*.title' => 'nullable|string|max:255',
+                'unapproved_activities.*.planned_date' => 'nullable|string|max:255',
+                'unapproved_activities.*.actual_date' => 'nullable|string|max:255',
+                'unapproved_activities.*.proposed_budget' => 'nullable|string|max:255',
+                'unapproved_activities.*.actual_expenditure' => 'nullable|string|max:255',
+                'unapproved_activities.*.target_participants' => 'nullable|string|max:255',
+                'unapproved_activities.*.actual_participants' => 'nullable|string|max:255',
+                'unapproved_activities.*.status' => 'nullable|string|max:255',
+                'unapproved_activities.*.justification' => 'nullable|string|max:1000',
             ]);
         }
         
@@ -922,6 +949,31 @@ class OrganizationApplicationController extends Controller
                     }
                 ],
                 'comments_suggestions' => 'nullable|string',
+            ]);
+        } elseif ($application->form_type === 'LSPU-OSAS-SF-STATUS-REPORT') {
+            // Activity Status Report validation
+            $validationRules = array_merge($validationRules, [
+                'report_date' => 'required|date',
+                'approved_activities' => 'nullable|array',
+                'approved_activities.*.title' => 'nullable|string|max:255',
+                'approved_activities.*.planned_date' => 'nullable|string|max:255',
+                'approved_activities.*.actual_date' => 'nullable|string|max:255',
+                'approved_activities.*.proposed_budget' => 'nullable|string|max:255',
+                'approved_activities.*.actual_expenditure' => 'nullable|string|max:255',
+                'approved_activities.*.target_participants' => 'nullable|string|max:255',
+                'approved_activities.*.actual_participants' => 'nullable|string|max:255',
+                'approved_activities.*.status' => 'nullable|string|max:255',
+                'approved_activities.*.justification' => 'nullable|string|max:1000',
+                'unapproved_activities' => 'nullable|array',
+                'unapproved_activities.*.title' => 'nullable|string|max:255',
+                'unapproved_activities.*.planned_date' => 'nullable|string|max:255',
+                'unapproved_activities.*.actual_date' => 'nullable|string|max:255',
+                'unapproved_activities.*.proposed_budget' => 'nullable|string|max:255',
+                'unapproved_activities.*.actual_expenditure' => 'nullable|string|max:255',
+                'unapproved_activities.*.target_participants' => 'nullable|string|max:255',
+                'unapproved_activities.*.actual_participants' => 'nullable|string|max:255',
+                'unapproved_activities.*.status' => 'nullable|string|max:255',
+                'unapproved_activities.*.justification' => 'nullable|string|max:1000',
             ]);
         }
         
@@ -1681,6 +1733,20 @@ class OrganizationApplicationController extends Controller
         }
         
         return $pdf->download('Evaluation_' . $application->organization_name . '.pdf');
+    }
+
+    public function exportStatusReportPdf(OrganizationApplication $application, Request $request)
+    {
+        $pdf = Pdf::loadView('pdfs.organization_statusreport', compact('application'))
+                ->setPaper('A4', 'landscape');
+                
+        $action = $request->query('action', 'download');
+        
+        if ($action === 'view') {
+            return $pdf->stream('Status_Report_' . $application->organization_name . '.pdf');
+        }
+        
+        return $pdf->download('Status_Report_' . $application->organization_name . '.pdf');
     }
 
     /**

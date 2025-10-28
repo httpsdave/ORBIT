@@ -195,6 +195,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/applications/{application}/export-attendance', [OrganizationApplicationController::class, 'exportAttendancePdf'])->name('applications.export-attendance');
     // Evaluation Form PDF export route
     Route::get('/applications/{application}/export-evaluation', [OrganizationApplicationController::class, 'exportEvaluationPdf'])->name('applications.export-evaluation');
+    // Activity Status Report PDF export route
+    Route::get('/applications/{application}/export-status-report', [OrganizationApplicationController::class, 'exportStatusReportPdf'])->name('applications.export-status-report');
 
     // Public Routes for Colleges and Student Organizations (view-only)
     Route::get('/colleges', [PublicCollegeController::class, 'index'])->name('colleges.index');

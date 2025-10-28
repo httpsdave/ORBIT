@@ -33,6 +33,7 @@ class OrganizationApplication extends Model
         'academic_year_start',
         'academic_year_end',
         'application_date',
+        'report_date', // Activity Status Report date
         'director_name',
 
         // New fields from the commitment form
@@ -76,6 +77,10 @@ class OrganizationApplication extends Model
         'event_letter_path',
         'signed_document_path',
         'signed_document_link',
+        
+        // Activity Status Report fields
+        'approved_activities',
+        'unapproved_activities',
 
     ];
 
@@ -84,6 +89,8 @@ class OrganizationApplication extends Model
         'archived_at' => 'datetime',
         'ratings' => 'array',
         'advisers' => 'array', // Cast advisers to array for easy JSON handling
+        'approved_activities' => 'array', // Cast approved_activities to array for Activity Status Report
+        'unapproved_activities' => 'array', // Cast unapproved_activities to array for Activity Status Report
     ];
 
     public function activities()

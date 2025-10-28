@@ -10,6 +10,7 @@ import StudentCertificationForm from '@/Components/forms/StudentCertificationFor
 import ListOfOfficersForm from '@/Components/forms/ListOfOfficersForm.vue';
 import ActivityAttendanceForm from '@/Components/forms/ActivityAttendanceForm.vue';
 import EvaluationForm from '@/Components/forms/EvaluationForm.vue';
+import ActivityStatusReport from '@/Components/forms/ActivityStatusReport.vue';
 import { router } from '@inertiajs/vue3';
 
 // Get current user and check if admin
@@ -449,6 +450,13 @@ const handleDirectUploadSubmit = () => {
       <!-- Evaluation Form -->
       <EvaluationForm 
         v-if="currentForm === 'LSPU-OSAS-SF-EVAL'" 
+        :initialFormData="formData"
+        @submitted="handleFormSubmitted"
+      />
+      
+      <!-- Activity Status Report -->
+      <ActivityStatusReport 
+        v-if="currentForm === 'LSPU-OSAS-SF-STATUS-REPORT'" 
         :initialFormData="formData"
         @submitted="handleFormSubmitted"
       />

@@ -76,6 +76,8 @@ const formTypeToName = (formType) => {
       return 'Student Activity Attendance Sheet';
     case 'LSPU-OSAS-SF-EVAL':
       return 'Evaluation Summary';
+    case 'LSPU-OSAS-SF-STATUS-REPORT':
+      return 'Activity Status Report';
     case 'LSPU-OSAS-SF-ACCOMPLISHMENT':
       return 'Accomplishment Report';
     case 'LSPU-OSAS-SF-NARRATIVE':
@@ -156,6 +158,8 @@ const getPdfRoute = (app, action = 'download') => {
     return `/applications/${app.id}/export-attendance${queryParams}`;
   } else if (app.form_type === 'LSPU-OSAS-SF-EVAL') {
     return `/applications/${app.id}/export-evaluation${queryParams}`;
+  } else if (app.form_type === 'LSPU-OSAS-SF-STATUS-REPORT') {
+    return `/applications/${app.id}/export-status-report${queryParams}`;
   } else {
     // Default case: do not warn for unknown direct-upload types
     return `/applications/${app.id}/pdf${queryParams}`;

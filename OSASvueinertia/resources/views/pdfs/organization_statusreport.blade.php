@@ -288,50 +288,42 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td class="text-left">&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td class="text-left">&nbsp;</td>
-                </tr>
-                <tr>
-                    <td class="text-left">&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td class="text-left">&nbsp;</td>
-                </tr>
-                <tr>
-                    <td class="text-left">&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td class="text-left">&nbsp;</td>
-                </tr>
-                <tr>
-                    <td class="text-left">&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td class="text-left">&nbsp;</td>
-                </tr>
+                @php
+                    $approvedActivities = is_array($application->approved_activities) 
+                        ? $application->approved_activities 
+                        : (is_string($application->approved_activities) 
+                            ? json_decode($application->approved_activities, true) 
+                            : []);
+                @endphp
+                @if(!empty($approvedActivities))
+                    @foreach($approvedActivities as $activity)
+                        <tr>
+                            <td class="text-left">{{ $activity['title'] ?? '' }}</td>
+                            <td>{{ $activity['planned_date'] ?? '' }}</td>
+                            <td>{{ $activity['actual_date'] ?? '' }}</td>
+                            <td>{{ $activity['proposed_budget'] ?? '' }}</td>
+                            <td>{{ $activity['actual_expenditure'] ?? '' }}</td>
+                            <td>{{ $activity['target_participants'] ?? '' }}</td>
+                            <td>{{ $activity['actual_participants'] ?? '' }}</td>
+                            <td>{{ $activity['status'] ?? '' }}</td>
+                            <td class="text-left">{{ $activity['justification'] ?? '' }}</td>
+                        </tr>
+                    @endforeach
+                @else
+                    @for($i = 0; $i < 4; $i++)
+                        <tr>
+                            <td class="text-left">&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td class="text-left">&nbsp;</td>
+                        </tr>
+                    @endfor
+                @endif
             </tbody>
         </table>
 
@@ -353,50 +345,42 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td class="text-left">&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td class="text-left">&nbsp;</td>
-                </tr>
-                <tr>
-                    <td class="text-left">&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td class="text-left">&nbsp;</td>
-                </tr>
-                <tr>
-                    <td class="text-left">&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td class="text-left">&nbsp;</td>
-                </tr>
-                <tr>
-                    <td class="text-left">&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td class="text-left">&nbsp;</td>
-                </tr>
+                @php
+                    $unapprovedActivities = is_array($application->unapproved_activities) 
+                        ? $application->unapproved_activities 
+                        : (is_string($application->unapproved_activities) 
+                            ? json_decode($application->unapproved_activities, true) 
+                            : []);
+                @endphp
+                @if(!empty($unapprovedActivities))
+                    @foreach($unapprovedActivities as $activity)
+                        <tr>
+                            <td class="text-left">{{ $activity['title'] ?? '' }}</td>
+                            <td>{{ $activity['planned_date'] ?? '' }}</td>
+                            <td>{{ $activity['actual_date'] ?? '' }}</td>
+                            <td>{{ $activity['proposed_budget'] ?? '' }}</td>
+                            <td>{{ $activity['actual_expenditure'] ?? '' }}</td>
+                            <td>{{ $activity['target_participants'] ?? '' }}</td>
+                            <td>{{ $activity['actual_participants'] ?? '' }}</td>
+                            <td>{{ $activity['status'] ?? '' }}</td>
+                            <td class="text-left">{{ $activity['justification'] ?? '' }}</td>
+                        </tr>
+                    @endforeach
+                @else
+                    @for($i = 0; $i < 4; $i++)
+                        <tr>
+                            <td class="text-left">&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td class="text-left">&nbsp;</td>
+                        </tr>
+                    @endfor
+                @endif
             </tbody>
         </table>
 

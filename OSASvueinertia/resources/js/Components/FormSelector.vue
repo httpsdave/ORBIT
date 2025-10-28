@@ -18,6 +18,7 @@ const props = defineProps({
     //   { value: 'LSPU-OSAS-SF-NARRATIVE', label: 'Narrative Report' },
     //   { value: 'LSPU-OSAS-SF-BYLAWS', label: 'Constitution & By-laws' },
     //   { value: 'LSPU-OSAS-SF-FINANCIAL', label: 'Financial Report' },
+    //   { value: 'LSPU-OSAS-SF-STATUS-REPORT', label: 'Activity Status Report' },
     //   { value: 'LSPU-ACAD-RL', label: 'Event Letter' }, // NEW
     // ]
   },
@@ -181,7 +182,7 @@ onUnmounted(() => {
           >
               <div class="flex justify-between items-center">
                 <span class="font-medium">{{ option?.label }}</span>
-                <span v-if="option && !['LSPU-OSAS-SF-EVAL','LSPU-OSAS-SF-ACCOMPLISHMENT','LSPU-OSAS-SF-NARRATIVE','LSPU-OSAS-SF-FINANCIAL','LSPU-OSAS-SF-BYLAWS','LSPU-OSAS-SF-007'].includes(option.value)" class="text-xs text-gray-500 dark:text-gray-400 font-mono ml-2">{{ option.value }}</span>
+                <span v-if="option && !['LSPU-OSAS-SF-EVAL','LSPU-OSAS-SF-ACCOMPLISHMENT','LSPU-OSAS-SF-NARRATIVE','LSPU-OSAS-SF-FINANCIAL','LSPU-OSAS-SF-BYLAWS','LSPU-OSAS-SF-STATUS-REPORT','LSPU-OSAS-SF-007'].includes(option.value)" class="text-xs text-gray-500 dark:text-gray-400 font-mono ml-2">{{ option.value }}</span>
               </div>
           </div>
         </div>
