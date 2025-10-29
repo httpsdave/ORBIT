@@ -11,6 +11,10 @@ const props = defineProps({
   isEdit: {
     type: Boolean,
     default: false
+  },
+  isAdmin: {
+    type: Boolean,
+    default: false
   }
 });
 
@@ -513,18 +517,7 @@ onUnmounted(() => {
           <p v-if="errors.organization_name" class="text-red-500 text-sm mt-1">{{ errors.organization_name }}</p>
         </div>
 
-        <!-- Right Column -->
-        <div>
-          <label class="block font-bold">Report Date</label>
-          <input 
-            type="date" 
-            v-model="form.report_date" 
-            class="border p-2 w-full rounded-md" 
-            required>
-          <p v-if="errors.report_date" class="text-red-500 text-sm mt-1">{{ errors.report_date }}</p>
-        </div>
-
-        <!-- Left Column -->
+        <!-- Right Column - Academic Year (readonly) -->
         <div>
           <label class="block font-bold">Academic Year</label>
           <div class="flex items-center space-x-2">
@@ -548,7 +541,7 @@ onUnmounted(() => {
           </div>
         </div>
 
-        <!-- Right Column -->
+        <!-- Left Column -->
         <div>
           <label class="block font-bold">President Name</label>
           <input 
@@ -558,6 +551,12 @@ onUnmounted(() => {
             style="text-transform: uppercase;" 
             required>
           <p v-if="errors.president_name" class="text-red-500 text-sm mt-1">{{ errors.president_name }}</p>
+        </div>
+
+        <!-- Right Column - Coordinator Name (readonly) -->
+        <div>
+          <label class="block font-bold">Coordinator Name</label>
+          <input v-model="form.coordinator_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none rounded-md" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none; text-transform: uppercase;">
         </div>
 
         <!-- Left Column -->
@@ -572,7 +571,13 @@ onUnmounted(() => {
           <p v-if="errors.adviser_name" class="text-red-500 text-sm mt-1">{{ errors.adviser_name }}</p>
         </div>
 
-        <!-- Right Column -->
+        <!-- Right Column - Director Name (readonly) -->
+        <div>
+          <label class="block font-bold">Director Name</label>
+          <input v-model="form.director_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none rounded-md" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none; text-transform: uppercase;">
+        </div>
+
+        <!-- Left Column -->
         <div>
           <label class="block font-bold">Dean Name</label>
           <input 
@@ -583,16 +588,18 @@ onUnmounted(() => {
           <p v-if="errors.dean_name" class="text-red-500 text-sm mt-1">{{ errors.dean_name }}</p>
         </div>
 
-        <!-- Left Column -->
-        <div>
-          <label class="block font-bold">Coordinator Name</label>
-          <input v-model="form.coordinator_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none rounded-md" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none; text-transform: uppercase;">
-        </div>
-
-        <!-- Right Column -->
-        <div>
-          <label class="block font-bold">Director Name</label>
-          <input v-model="form.director_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none rounded-md" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none; text-transform: uppercase;">
+        <!-- Right Column - Admin-only Date Field -->
+        <div v-if="props.isAdmin">
+          <label class="block font-bold">
+            Report Date
+            <span class="text-sm text-blue-600 font-normal ml-2">(Admin only)</span>
+          </label>
+          <input 
+            type="date" 
+            v-model="form.report_date" 
+            class="border p-2 w-full rounded-md bg-white text-gray-900 cursor-pointer" 
+            required>
+          <p v-if="errors.report_date" class="text-red-500 text-sm mt-1">{{ errors.report_date }}</p>
         </div>
       </div>
 

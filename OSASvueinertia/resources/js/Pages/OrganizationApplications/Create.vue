@@ -458,6 +458,7 @@ const handleDirectUploadSubmit = () => {
       <ActivityStatusReport 
         v-if="currentForm === 'LSPU-OSAS-SF-STATUS-REPORT'" 
         :initialFormData="formData"
+        :isAdmin="isAdmin"
         @submitted="handleFormSubmitted"
       />
     </div>

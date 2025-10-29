@@ -521,6 +521,7 @@ const handleSpecialFormSubmit = () => {
         v-else-if="props.application.form_type === 'LSPU-OSAS-SF-STATUS-REPORT'"
         :initialFormData="formData"
         :isEdit="true"
+        :isAdmin="isAdmin"
         @submitted="handleFormSubmitted"
       />
       
