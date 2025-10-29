@@ -322,7 +322,7 @@ onUnmounted(() => {
     <div class="text-right mt-4" style="font-family:'Times New Roman',serif;">
       <div class="inline-block text-center">
         <p class="border-b-2 border-black font-bold text-[11pt] px-4">{{ formattedDate }}</p>
-        <p class="text-[11pt] mt-1 pr-12">Date</p>
+        <p class="text-[11pt] mt-1 text-center">Date</p>
       </div>
     </div>
 
@@ -457,7 +457,7 @@ onUnmounted(() => {
         <div class="border-b border-black min-w-[220px] inline-block text-center pb-1 font-bold text-[11pt]">
           {{ form.president_name }}
         </div>
-        <div class="text-[11pt] mt-1">Organization President</div>
+        <div class="text-[11pt] mt-1 text-center" style="max-width: 220px;">Organization President</div>
       </div>
 
       <!-- Noted Section -->
@@ -471,13 +471,13 @@ onUnmounted(() => {
           <div class="border-b border-black min-w-[220px] inline-block text-center pb-1 font-bold text-[11pt]">
             {{ form.adviser_name }}
           </div>
-          <div class="text-[11pt] mt-1">Adviser, Student Organization</div>
+          <div class="text-[11pt] mt-1 text-center" style="max-width: 220px;">Adviser, Student Organization</div>
         </div>
         <div class="text-right" style="width: 48%;">
           <div class="border-b border-black min-w-[220px] inline-block text-center pb-1 font-bold text-[11pt]">
             {{ form.dean_name }}
           </div>
-          <div class="text-[11pt] mt-1 text-right">Dean/Assoc. Dean of College</div>
+          <div class="text-[11pt] mt-1 text-center" style="max-width: 220px; margin-left: auto;">Dean/Assoc. Dean of College</div>
         </div>
       </div>
 
@@ -517,6 +517,32 @@ onUnmounted(() => {
           <p v-if="errors.organization_name" class="text-red-500 text-sm mt-1">{{ errors.organization_name }}</p>
         </div>
 
+        <!-- Right Column - Admin-only Date Field -->
+        <div v-if="props.isAdmin">
+          <label class="block font-bold">
+            Report Date
+            <span class="text-sm text-blue-600 font-normal ml-2">(Admin only)</span>
+          </label>
+          <input 
+            type="date" 
+            v-model="form.report_date" 
+            class="border p-2 w-full rounded-md bg-white text-gray-900 cursor-pointer" 
+            required>
+          <p v-if="errors.report_date" class="text-red-500 text-sm mt-1">{{ errors.report_date }}</p>
+        </div>
+
+        <!-- Left Column -->
+        <div>
+          <label class="block font-bold">President Name</label>
+          <input 
+            v-model="form.president_name" 
+            @input="form.president_name = $event.target.value.toUpperCase()"
+            class="border p-2 w-full rounded-md" 
+            style="text-transform: uppercase;" 
+            required>
+          <p v-if="errors.president_name" class="text-red-500 text-sm mt-1">{{ errors.president_name }}</p>
+        </div>
+
         <!-- Right Column - Academic Year (readonly) -->
         <div>
           <label class="block font-bold">Academic Year</label>
@@ -543,24 +569,6 @@ onUnmounted(() => {
 
         <!-- Left Column -->
         <div>
-          <label class="block font-bold">President Name</label>
-          <input 
-            v-model="form.president_name" 
-            @input="form.president_name = $event.target.value.toUpperCase()"
-            class="border p-2 w-full rounded-md" 
-            style="text-transform: uppercase;" 
-            required>
-          <p v-if="errors.president_name" class="text-red-500 text-sm mt-1">{{ errors.president_name }}</p>
-        </div>
-
-        <!-- Right Column - Coordinator Name (readonly) -->
-        <div>
-          <label class="block font-bold">Coordinator Name</label>
-          <input v-model="form.coordinator_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none rounded-md" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none; text-transform: uppercase;">
-        </div>
-
-        <!-- Left Column -->
-        <div>
           <label class="block font-bold">Adviser Name</label>
           <input 
             v-model="form.adviser_name" 
@@ -571,10 +579,10 @@ onUnmounted(() => {
           <p v-if="errors.adviser_name" class="text-red-500 text-sm mt-1">{{ errors.adviser_name }}</p>
         </div>
 
-        <!-- Right Column - Director Name (readonly) -->
+        <!-- Right Column - Coordinator Name (readonly) -->
         <div>
-          <label class="block font-bold">Director Name</label>
-          <input v-model="form.director_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none rounded-md" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none; text-transform: uppercase;">
+          <label class="block font-bold">Coordinator Name</label>
+          <input v-model="form.coordinator_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none rounded-md" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none; text-transform: uppercase;">
         </div>
 
         <!-- Left Column -->
@@ -588,18 +596,10 @@ onUnmounted(() => {
           <p v-if="errors.dean_name" class="text-red-500 text-sm mt-1">{{ errors.dean_name }}</p>
         </div>
 
-        <!-- Right Column - Admin-only Date Field -->
-        <div v-if="props.isAdmin">
-          <label class="block font-bold">
-            Report Date
-            <span class="text-sm text-blue-600 font-normal ml-2">(Admin only)</span>
-          </label>
-          <input 
-            type="date" 
-            v-model="form.report_date" 
-            class="border p-2 w-full rounded-md bg-white text-gray-900 cursor-pointer" 
-            required>
-          <p v-if="errors.report_date" class="text-red-500 text-sm mt-1">{{ errors.report_date }}</p>
+        <!-- Right Column - Director Name (readonly) -->
+        <div>
+          <label class="block font-bold">Director Name</label>
+          <input v-model="form.director_name" class="border p-2 w-full bg-gray-200 text-gray-500 select-none pointer-events-none rounded-md" readonly tabindex="-1" style="user-select: none; -webkit-user-select: none; text-transform: uppercase;">
         </div>
       </div>
 
