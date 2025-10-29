@@ -1985,14 +1985,18 @@ class OrganizationApplicationController extends Controller
             ],
             'LSPU-OSAS-SF-STATUS' => [
                 'application' => (object)[
-                    'organization_name' => 'Sample Data',
+                    'organization_name' => '',
                     'president_name' => '',
-                    'coordinator_name' => 'Sample Data',
-                    'director_name' => 'Sample Data',
-                    'academic_year_start' => '2024',
-                    'academic_year_end' => '2025',
+                    'adviser_name' => '',
+                    'dean_name' => '',
+                    'coordinator_name' => '',
+                    'director_name' => '',
+                    'academic_year_start' => '24',
+                    'academic_year_end' => '25',
                     'report_date' => now(),
                     'form_type' => 'LSPU-OSAS-SF-STATUS',
+                    'approved_activities' => [],
+                    'unapproved_activities' => [],
                 ],
                 'activities' => [
                     [

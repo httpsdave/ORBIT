@@ -93,14 +93,20 @@
         .activities-table th,
         .activities-table td {
             border: 1px solid black;
-            padding: 4px;
+            padding: 2px 4px;
             text-align: center;
             vertical-align: middle;
+            min-height: 22px;
+            height: 22px;
+            line-height: 1.1;
         }
 
         .activities-table th {
             background-color: #f0f0f0;
             font-weight: bold;
+            min-height: 22px;
+            height: 22px;
+            line-height: 1.1;
         }
 
         .activities-table .text-left {
@@ -390,7 +396,7 @@
             </div>
 
             <div class="signature left-align">
-                <p style="margin:0 0 1px 0;"><span class="signature-line"><strong>{{ $application->president_name ?? '' }}</strong></span></p>
+                <p style="margin:0 0 1px 0;"><span class="signature-line"><strong>{!! !empty($application->president_name) ? $application->president_name : '&nbsp;' !!}</strong></span></p>
                 <p style="text-align:left; margin-top: -12px;"><span class="title-text">Organization President</span></p>
             </div>
 
@@ -400,13 +406,13 @@
 
         <div style="display: flex; justify-content: space-between; align-items: flex-start;">
             <div class="signature left-align" style="flex: 0 0 auto;">
-                <p style="margin:0 0 1px 0;"><span class="signature-line" style="min-width:220px;"><strong>{{ $application->adviser_name ?? '' }}</strong></span></p>
+                <p style="margin:0 0 1px 0;"><span class="signature-line" style="min-width:220px;"><strong>{!! !empty($application->adviser_name) ? $application->adviser_name : '&nbsp;' !!}</strong></span></p>
                 <p style="margin-top: -12px;"><span class="title-text">Adviser, Student Organization</span></p>
             </div>
 
             <div style="flex: 0 0 auto; text-align: right; position: relative; top: -60px;">
                 <div class="signature right-align" style="display: inline-block;">
-                    <p style="margin:0 0 1px 0;"><span class="signature-line" style="min-width:220px;"><strong>{{ $application->dean_name ?? '' }}</strong></span></p>
+                    <p style="margin:0 0 1px 0;"><span class="signature-line" style="min-width:220px;"><strong>{!! !empty($application->dean_name) ? $application->dean_name : '&nbsp;' !!}</strong></span></p>
                     <p style="margin-top: -12px; text-align: right;"><span class="title-text">Dean/Assoc. Dean of College</span></p>
                 </div>
             </div>
@@ -414,7 +420,7 @@
                 <p style="margin-bottom: 0;"><strong>Recommending Approval:</strong></p>
             </div>
             <div class="signature center-align" style="margin-top: 0;">
-                <p style="margin-bottom: 0; margin-top: -10px;"><strong><span class="signature-line" style="min-width:270px;">{{ isset($application->coordinator_name) ? $application->coordinator_name : 'AL JOSHUA VILLAREAL' }}</span></strong></p>
+                <p style="margin-bottom: 0; margin-top: -10px;"><strong><span class="signature-line" style="min-width:270px;">{!! !empty($application->coordinator_name) ? $application->coordinator_name : '&nbsp;' !!}</span></strong></p>
                 <p style="margin-top: -8px; margin-bottom: 0;"><span class="title-text long-title">Coordinator, Student Organization Unit</span></p>
             </div>
 
@@ -422,7 +428,7 @@
                 <p style="margin-bottom: 0;"><strong>Approved/Disapproved:</strong></p>
             </div>
             <div class="signature center-align" style="margin-top: 0;">
-                <p style="margin-bottom: 0; margin-top: -6px;"><strong><span class="signature-line" style="min-width:380px;">{{ isset($application->director_name) ? $application->director_name : 'DR. ALBERTO S. CASTILLO' }}</span></strong></p>
+                <p style="margin-bottom: 0; margin-top: -6px;"><strong><span class="signature-line" style="min-width:380px;">{!! !empty($application->director_name) ? $application->director_name : '&nbsp;' !!}</span></strong></p>
                 <p style="margin-top: -8px; margin-bottom: 0;"><span class="title-text long-title">Director/Chairperson, Office of Student Affairs and Services</span></p>
             </div>
         </div>
