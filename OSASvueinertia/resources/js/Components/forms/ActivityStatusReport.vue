@@ -347,47 +347,47 @@ onUnmounted(() => {
     <div class="text-center font-bold mt-4 mb-2" style="font-family:'Times New Roman',serif;font-size:11pt;">
       ACTIVITIES UNDER THE APPROVED PLAN OF ACTIVITIES
     </div>
-    <table class="w-full border-collapse border border-black mb-6" style="font-family:'Times New Roman',serif;font-size:10pt;">
+    <table class="w-full border-collapse border border-black mb-6" style="font-family:'Times New Roman',serif;font-size:9pt;">
       <thead>
         <tr class="bg-gray-100">
-          <th class="border border-black p-2" style="width:18%;">Title of Activity / Program</th>
-          <th class="border border-black p-2" style="width:10%;">Planned / Target Date</th>
-          <th class="border border-black p-2" style="width:10%;">Actual Date Conducted</th>
-          <th class="border border-black p-2" style="width:8%;">Proposed Budget</th>
-          <th class="border border-black p-2" style="width:8%;">Actual Expenditure</th>
-          <th class="border border-black p-2" style="width:12%;">Target No. of Participants</th>
-          <th class="border border-black p-2" style="width:12%;">Actual No. of Participants</th>
-          <th class="border border-black p-2" style="width:10%;">Remarks/ Status</th>
-          <th class="border border-black p-2" style="width:12%;">Justification / Notes</th>
+          <th class="border border-black" style="width:18%; padding: 4px 2px; line-height: 1.1;">Title of Activity / Program</th>
+          <th class="border border-black" style="width:9%; padding: 4px 2px; line-height: 1.1;">Planned / Target Date</th>
+          <th class="border border-black" style="width:9%; padding: 4px 2px; line-height: 1.1;">Actual Date Conducted</th>
+          <th class="border border-black" style="width:8%; padding: 4px 2px; line-height: 1.1;">Proposed Budget</th>
+          <th class="border border-black" style="width:9%; padding: 4px 2px; line-height: 1.1;">Actual Expenditure</th>
+          <th class="border border-black" style="width:11%; padding: 4px 2px; line-height: 1.1;">Target No. of Participants</th>
+          <th class="border border-black" style="width:11%; padding: 4px 2px; line-height: 1.1;">Actual No. of Participants</th>
+          <th class="border border-black" style="width:10%; padding: 4px 2px; line-height: 1.1;">Remarks/ Status</th>
+          <th class="border border-black" style="width:15%; padding: 4px 2px; line-height: 1.1;">Justification / Notes</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="(activity, index) in form.approved_activities" :key="'approved-' + index">
-          <td class="border border-black p-2 text-left">
+          <td class="border border-black text-left" style="padding: 2px 4px;">
             <input v-model="activity.title" class="w-full p-1 text-sm" type="text">
           </td>
-          <td class="border border-black p-2 text-center">
+          <td class="border border-black text-center" style="padding: 2px 4px;">
             <input v-model="activity.planned_date" class="w-full p-1 text-sm text-center" type="text">
           </td>
-          <td class="border border-black p-2 text-center">
+          <td class="border border-black text-center" style="padding: 2px 4px;">
             <input v-model="activity.actual_date" class="w-full p-1 text-sm text-center" type="text">
           </td>
-          <td class="border border-black p-2 text-center">
+          <td class="border border-black text-center" style="padding: 2px 4px;">
             <input v-model="activity.proposed_budget" class="w-full p-1 text-sm text-center" type="text">
           </td>
-          <td class="border border-black p-2 text-center">
+          <td class="border border-black text-center" style="padding: 2px 4px;">
             <input v-model="activity.actual_expenditure" class="w-full p-1 text-sm text-center" type="text">
           </td>
-          <td class="border border-black p-2 text-center">
+          <td class="border border-black text-center" style="padding: 2px 4px;">
             <input v-model="activity.target_participants" class="w-full p-1 text-sm text-center" type="text">
           </td>
-          <td class="border border-black p-2 text-center">
+          <td class="border border-black text-center" style="padding: 2px 4px;">
             <input v-model="activity.actual_participants" class="w-full p-1 text-sm text-center" type="text">
           </td>
-          <td class="border border-black p-2 text-center">
+          <td class="border border-black text-center" style="padding: 2px 4px;">
             <input v-model="activity.status" class="w-full p-1 text-sm text-center" type="text">
           </td>
-          <td class="border border-black p-2 text-left">
+          <td class="border border-black text-left" style="padding: 2px 4px;">
             <input v-model="activity.justification" class="w-full p-1 text-sm" type="text">
           </td>
         </tr>
@@ -398,47 +398,47 @@ onUnmounted(() => {
     <div class="text-center font-bold mt-6 mb-2" style="font-family:'Times New Roman',serif;font-size:11pt;">
       ACTIVITIES NOT IN THE APPROVED PLAN OF ACTIVITIES
     </div>
-    <table class="w-full border-collapse border border-black mb-6" style="font-family:'Times New Roman',serif;font-size:10pt;">
+    <table class="w-full border-collapse border border-black mb-6" style="font-family:'Times New Roman',serif;font-size:9pt;">
       <thead>
         <tr class="bg-gray-100">
-          <th class="border border-black p-2" style="width:18%;">Title of Activity / Program</th>
-          <th class="border border-black p-2" style="width:10%;">Planned / Target Date</th>
-          <th class="border border-black p-2" style="width:10%;">Actual Date Conducted</th>
-          <th class="border border-black p-2" style="width:8%;">Proposed Budget</th>
-          <th class="border border-black p-2" style="width:8%;">Actual Expenditure</th>
-          <th class="border border-black p-2" style="width:12%;">Target No. of Participants</th>
-          <th class="border border-black p-2" style="width:12%;">Actual No. of Participants</th>
-          <th class="border border-black p-2" style="width:10%;">Remarks/ Status</th>
-          <th class="border border-black p-2" style="width:12%;">Justification / Notes</th>
+          <th class="border border-black" style="width:18%; padding: 4px 2px; line-height: 1.1;">Title of Activity / Program</th>
+          <th class="border border-black" style="width:9%; padding: 4px 2px; line-height: 1.1;">Planned / Target Date</th>
+          <th class="border border-black" style="width:9%; padding: 4px 2px; line-height: 1.1;">Actual Date Conducted</th>
+          <th class="border border-black" style="width:8%; padding: 4px 2px; line-height: 1.1;">Proposed Budget</th>
+          <th class="border border-black" style="width:9%; padding: 4px 2px; line-height: 1.1;">Actual Expenditure</th>
+          <th class="border border-black" style="width:11%; padding: 4px 2px; line-height: 1.1;">Target No. of Participants</th>
+          <th class="border border-black" style="width:11%; padding: 4px 2px; line-height: 1.1;">Actual No. of Participants</th>
+          <th class="border border-black" style="width:10%; padding: 4px 2px; line-height: 1.1;">Remarks/ Status</th>
+          <th class="border border-black" style="width:15%; padding: 4px 2px; line-height: 1.1;">Justification / Notes</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="(activity, index) in form.unapproved_activities" :key="'unapproved-' + index">
-          <td class="border border-black p-2 text-left">
+          <td class="border border-black text-left" style="padding: 2px 4px;">
             <input v-model="activity.title" class="w-full p-1 text-sm" type="text">
           </td>
-          <td class="border border-black p-2 text-center">
+          <td class="border border-black text-center" style="padding: 2px 4px;">
             <input v-model="activity.planned_date" class="w-full p-1 text-sm text-center" type="text">
           </td>
-          <td class="border border-black p-2 text-center">
+          <td class="border border-black text-center" style="padding: 2px 4px;">
             <input v-model="activity.actual_date" class="w-full p-1 text-sm text-center" type="text">
           </td>
-          <td class="border border-black p-2 text-center">
+          <td class="border border-black text-center" style="padding: 2px 4px;">
             <input v-model="activity.proposed_budget" class="w-full p-1 text-sm text-center" type="text">
           </td>
-          <td class="border border-black p-2 text-center">
+          <td class="border border-black text-center" style="padding: 2px 4px;">
             <input v-model="activity.actual_expenditure" class="w-full p-1 text-sm text-center" type="text">
           </td>
-          <td class="border border-black p-2 text-center">
+          <td class="border border-black text-center" style="padding: 2px 4px;">
             <input v-model="activity.target_participants" class="w-full p-1 text-sm text-center" type="text">
           </td>
-          <td class="border border-black p-2 text-center">
+          <td class="border border-black text-center" style="padding: 2px 4px;">
             <input v-model="activity.actual_participants" class="w-full p-1 text-sm text-center" type="text">
           </td>
-          <td class="border border-black p-2 text-center">
+          <td class="border border-black text-center" style="padding: 2px 4px;">
             <input v-model="activity.status" class="w-full p-1 text-sm text-center" type="text">
           </td>
-          <td class="border border-black p-2 text-left">
+          <td class="border border-black text-left" style="padding: 2px 4px;">
             <input v-model="activity.justification" class="w-full p-1 text-sm" type="text">
           </td>
         </tr>
@@ -662,7 +662,7 @@ onUnmounted(() => {
 }
 
 .university-name {
-  max-width: 23%;
+  max-width: 25%;
   height: auto;
   margin: 4px 0;
   display: inline-block;
