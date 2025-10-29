@@ -637,8 +637,12 @@ onUnmounted(() => {
 .form-content {
   width: 297mm;
   min-height: 210mm;
-  padding: 1.5cm;
-  margin: auto;
+  padding-left: 1.5cm;
+  padding-right: 1.5cm;
+  padding-top: 0.5cm;
+  padding-bottom: 1.0cm;
+  margin-left: calc(50% - 148.5mm - -1cm);
+  margin-right: auto;
   background: white;
   font-family: 'Times New Roman', serif;
   font-size: 11pt;
@@ -691,7 +695,10 @@ table input:focus {
     width: 297mm;
     height: 210mm;
     margin: 0;
-    padding: 1.5cm;
+    padding-left: 1.5cm;
+    padding-right: 1.5cm;
+    padding-top: 0.5cm;
+    padding-bottom: 1.0cm;
   }
   
   table { 
