@@ -96,7 +96,7 @@ const handleActionClick = (event) => {
   <!-- Navigation Links - Wrap in overflow container -->
   <div class="flex-1 flex flex-col overflow-hidden min-h-0">
     <!-- Main navigation section -->
-    <nav class="flex-1 mt-4 px-2 space-y-4 overflow-y-auto overflow-x-hidden custom-scrollbar" aria-label="Main navigation">
+    <nav class="flex-1 mt-4 px-2 space-y-1 overflow-y-auto overflow-x-hidden custom-scrollbar" aria-label="Main navigation">
       <!-- Navigation items based on role -->
       <template v-for="(item, index) in navItems" :key="`nav-item-${index}`">
         <NavigationItem 

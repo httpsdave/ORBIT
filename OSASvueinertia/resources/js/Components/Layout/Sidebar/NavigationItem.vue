@@ -69,13 +69,13 @@ onBeforeUnmount(() => {
     @mouseleave="hideTooltip"
     @focus="!sidebarExpanded && !showingSidebar ? showTooltip() : null"
     @blur="hideTooltip"
-    class="relative"
+    class="relative my-1"
   >
     <Link 
       v-if="item && item.route"
       :href="route(item.route)" 
       @click="handleNavigationClick"
-      class="flex items-center px-4 py-2 text-gray-600 dark:text-gray-300 font-medium hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200 rounded-lg hover:bg-blue-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400 group overflow-hidden"
+      class="flex items-center px-4 py-2.5 text-gray-600 dark:text-gray-300 font-medium hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200 rounded-lg hover:bg-blue-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400 group"
       :class="[
         ((item.exactMatch === false && item.checkStartsWith && isRouteActive(item.route, false, true)) ||
         (!item.checkStartsWith && route().current(item.route))) ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/50 shadow-sm' : '',
