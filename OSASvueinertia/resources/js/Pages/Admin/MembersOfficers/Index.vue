@@ -747,7 +747,9 @@ const visiblePages = computed(() => {
 
         <!-- Members Table -->
         <div v-if="activeTab === 'members'" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-xl transition-shadow duration-300">
-          <div class="overflow-x-auto max-h-[600px] overflow-y-auto">
+          
+          <!-- Desktop Table View (hidden on mobile) -->
+          <div class="hidden md:block overflow-x-auto max-h-[600px] overflow-y-auto">
             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
               <thead class="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 sticky top-0 z-10">
                 <tr>
@@ -1032,11 +1034,90 @@ const visiblePages = computed(() => {
               </tbody>
             </table>
           </div>
+
+          <!-- Mobile Card View (visible on mobile only) -->
+          <div class="md:hidden divide-y divide-gray-200 dark:divide-gray-700">
+            <div 
+              v-for="member in currentPageData" 
+              :key="member.id"
+              class="p-4 hover:bg-gradient-to-r hover:from-blue-50 hover:to-transparent dark:hover:from-blue-900/20 dark:hover:to-transparent transition-all duration-200"
+            >
+              <!-- Organization & Status Header -->
+              <div class="flex items-start justify-between mb-3">
+                <div class="flex-1 min-w-0">
+                  <h3 class="text-sm font-semibold text-gray-900 dark:text-white break-words">
+                    {{ member.organization }}
+                  </h3>
+                  <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                    {{ member.submitted_at }}
+                  </p>
+                </div>
+                <span 
+                  :class="`ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium flex-shrink-0 ${getStatusColor(member.status)}`"
+                >
+                  {{ member.status }}
+                </span>
+              </div>
+
+              <!-- Member Details Grid -->
+              <div class="space-y-2">
+                <!-- Student Name -->
+                <div>
+                  <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Student Name</dt>
+                  <dd class="mt-1 text-sm font-semibold text-gray-900 dark:text-white">{{ member.student_name }}</dd>
+                </div>
+
+                <!-- Student Number -->
+                <div>
+                  <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Student Number</dt>
+                  <dd class="mt-1 text-sm text-gray-900 dark:text-white font-mono">{{ member.student_number }}</dd>
+                </div>
+
+                <!-- Course, Year & Section -->
+                <div>
+                  <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Course - Year & Section</dt>
+                  <dd class="mt-1 text-sm text-gray-700 dark:text-gray-300">{{ member.course_year_section }}</dd>
+                </div>
+
+                <!-- Key Info Row -->
+                <div class="grid grid-cols-2 gap-3 pt-2 border-t border-gray-100 dark:border-gray-700">
+                  <!-- Semester -->
+                  <div>
+                    <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Semester</dt>
+                    <dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ member.semester }}</dd>
+                  </div>
+
+                  <!-- Academic Year -->
+                  <div>
+                    <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Academic Year</dt>
+                    <dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ member.academic_year }}</dd>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Empty State for Mobile -->
+            <div v-if="currentPageData.length === 0" class="p-8 text-center">
+              <div class="flex flex-col items-center">
+                <div class="w-16 h-16 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900/30 dark:to-blue-800/30 flex items-center justify-center mb-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                </div>
+                <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-2">No members found</h3>
+                <p class="text-sm text-gray-500 dark:text-gray-400 max-w-xs">
+                  {{ hasActiveFilters ? 'Try adjusting your search or filter to find what you\'re looking for.' : 'No List of Members submissions have been created yet.' }}
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Officers Table -->
         <div v-if="activeTab === 'officers'" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-xl transition-shadow duration-300">
-          <div class="overflow-x-auto max-h-[600px] overflow-y-auto">
+          
+          <!-- Desktop Table View (hidden on mobile) -->
+          <div class="hidden md:block overflow-x-auto max-h-[600px] overflow-y-auto">
             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
               <thead class="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 sticky top-0 z-10">
                 <tr>
@@ -1310,6 +1391,68 @@ const visiblePages = computed(() => {
                 </tr>
               </tbody>
             </table>
+          </div>
+
+          <!-- Mobile Card View (visible on mobile only) -->
+          <div class="md:hidden divide-y divide-gray-200 dark:divide-gray-700">
+            <div 
+              v-for="officer in currentPageData" 
+              :key="officer.id"
+              class="p-4 hover:bg-gradient-to-r hover:from-blue-50 hover:to-transparent dark:hover:from-blue-900/20 dark:hover:to-transparent transition-all duration-200"
+            >
+              <!-- Organization & Status Header -->
+              <div class="flex items-start justify-between mb-3">
+                <div class="flex-1 min-w-0">
+                  <h3 class="text-sm font-semibold text-gray-900 dark:text-white break-words">
+                    {{ officer.organization }}
+                  </h3>
+                  <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                    {{ officer.submitted_at }}
+                  </p>
+                </div>
+                <span 
+                  :class="`ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium flex-shrink-0 ${getStatusColor(officer.status)}`"
+                >
+                  {{ officer.status }}
+                </span>
+              </div>
+
+              <!-- Officer Details Grid -->
+              <div class="space-y-2">
+                <!-- Student Name -->
+                <div>
+                  <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Student Name</dt>
+                  <dd class="mt-1 text-sm font-semibold text-gray-900 dark:text-white">{{ officer.student_name }}</dd>
+                </div>
+
+                <!-- Position -->
+                <div>
+                  <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Position</dt>
+                  <dd class="mt-1 text-sm font-medium text-blue-600 dark:text-blue-400">{{ officer.position }}</dd>
+                </div>
+
+                <!-- Student Number -->
+                <div>
+                  <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Student Number</dt>
+                  <dd class="mt-1 text-sm text-gray-900 dark:text-white font-mono">{{ officer.student_number }}</dd>
+                </div>
+              </div>
+            </div>
+
+            <!-- Empty State for Mobile -->
+            <div v-if="currentPageData.length === 0" class="p-8 text-center">
+              <div class="flex flex-col items-center">
+                <div class="w-16 h-16 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900/30 dark:to-blue-800/30 flex items-center justify-center mb-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                  </svg>
+                </div>
+                <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-2">No officers found</h3>
+                <p class="text-sm text-gray-500 dark:text-gray-400 max-w-xs">
+                  {{ hasActiveFilters ? 'Try adjusting your search or filter to find what you\'re looking for.' : 'No List of Officers submissions have been created yet.' }}
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
