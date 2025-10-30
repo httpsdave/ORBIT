@@ -82,31 +82,36 @@
             text-indent: 1.27cm;
         }
 
-        /* Table styling for activities */
+        /* Table styling for activities - prevent sideways expansion */
         .activities-table {
             width: 100%;
             border-collapse: collapse;
             margin: 20px 0;
             font-size: 10pt;
+            table-layout: fixed; /* Fixed layout ensures columns respect width settings */
+            overflow-wrap: break-word; /* Ensures text wraps within cells */
         }
 
         .activities-table th,
         .activities-table td {
             border: 1px solid black;
-            padding: 2px 4px;
+            padding: 2px 3px; /* Reduced padding slightly */
             text-align: center;
-            vertical-align: middle;
-            min-height: 22px;
-            height: 22px;
+            vertical-align: top; /* Text starts at the top of each cell */
+            height: auto; /* Allow height to grow naturally */
+            word-wrap: break-word;
+            word-break: break-word; /* Force breaking of long words */
+            hyphens: auto;
             line-height: 1.1;
+            overflow-wrap: anywhere; /* Break anywhere if needed */
+            max-width: 0; /* Force table-layout: fixed to respect column widths */
+            overflow: hidden; /* Prevent content overflow */
         }
 
         .activities-table th {
             background-color: #f0f0f0;
             font-weight: bold;
-            min-height: 22px;
-            height: 22px;
-            line-height: 1.1;
+            line-height: 1.0; /* Tighter line height for headers */
         }
 
         .activities-table .text-left {
@@ -304,15 +309,15 @@
                 @if(!empty($approvedActivities))
                     @foreach($approvedActivities as $activity)
                         <tr>
-                            <td class="text-left">{{ $activity['title'] ?? '' }}</td>
-                            <td>{{ $activity['planned_date'] ?? '' }}</td>
-                            <td>{{ $activity['actual_date'] ?? '' }}</td>
-                            <td>{{ $activity['proposed_budget'] ?? '' }}</td>
-                            <td>{{ $activity['actual_expenditure'] ?? '' }}</td>
-                            <td>{{ $activity['target_participants'] ?? '' }}</td>
-                            <td>{{ $activity['actual_participants'] ?? '' }}</td>
-                            <td>{{ $activity['status'] ?? '' }}</td>
-                            <td class="text-left">{{ $activity['justification'] ?? '' }}</td>
+                            <td class="text-left">{!! !empty($activity['title']) ? $activity['title'] : '&nbsp;' !!}</td>
+                            <td>{!! !empty($activity['planned_date']) ? $activity['planned_date'] : '&nbsp;' !!}</td>
+                            <td>{!! !empty($activity['actual_date']) ? $activity['actual_date'] : '&nbsp;' !!}</td>
+                            <td>{!! !empty($activity['proposed_budget']) ? $activity['proposed_budget'] : '&nbsp;' !!}</td>
+                            <td>{!! !empty($activity['actual_expenditure']) ? $activity['actual_expenditure'] : '&nbsp;' !!}</td>
+                            <td>{!! !empty($activity['target_participants']) ? $activity['target_participants'] : '&nbsp;' !!}</td>
+                            <td>{!! !empty($activity['actual_participants']) ? $activity['actual_participants'] : '&nbsp;' !!}</td>
+                            <td>{!! !empty($activity['status']) ? $activity['status'] : '&nbsp;' !!}</td>
+                            <td class="text-left">{!! !empty($activity['justification']) ? $activity['justification'] : '&nbsp;' !!}</td>
                         </tr>
                     @endforeach
                 @else
@@ -361,15 +366,15 @@
                 @if(!empty($unapprovedActivities))
                     @foreach($unapprovedActivities as $activity)
                         <tr>
-                            <td class="text-left">{{ $activity['title'] ?? '' }}</td>
-                            <td>{{ $activity['planned_date'] ?? '' }}</td>
-                            <td>{{ $activity['actual_date'] ?? '' }}</td>
-                            <td>{{ $activity['proposed_budget'] ?? '' }}</td>
-                            <td>{{ $activity['actual_expenditure'] ?? '' }}</td>
-                            <td>{{ $activity['target_participants'] ?? '' }}</td>
-                            <td>{{ $activity['actual_participants'] ?? '' }}</td>
-                            <td>{{ $activity['status'] ?? '' }}</td>
-                            <td class="text-left">{{ $activity['justification'] ?? '' }}</td>
+                            <td class="text-left">{!! !empty($activity['title']) ? $activity['title'] : '&nbsp;' !!}</td>
+                            <td>{!! !empty($activity['planned_date']) ? $activity['planned_date'] : '&nbsp;' !!}</td>
+                            <td>{!! !empty($activity['actual_date']) ? $activity['actual_date'] : '&nbsp;' !!}</td>
+                            <td>{!! !empty($activity['proposed_budget']) ? $activity['proposed_budget'] : '&nbsp;' !!}</td>
+                            <td>{!! !empty($activity['actual_expenditure']) ? $activity['actual_expenditure'] : '&nbsp;' !!}</td>
+                            <td>{!! !empty($activity['target_participants']) ? $activity['target_participants'] : '&nbsp;' !!}</td>
+                            <td>{!! !empty($activity['actual_participants']) ? $activity['actual_participants'] : '&nbsp;' !!}</td>
+                            <td>{!! !empty($activity['status']) ? $activity['status'] : '&nbsp;' !!}</td>
+                            <td class="text-left">{!! !empty($activity['justification']) ? $activity['justification'] : '&nbsp;' !!}</td>
                         </tr>
                     @endforeach
                 @else

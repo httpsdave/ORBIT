@@ -668,15 +668,38 @@ onUnmounted(() => {
   display: inline-block;
 }
 
-/* Table styling to match blade template */
+/* Table styling to match blade template - prevent sideways expansion */
 table {
-  table-layout: fixed;
-  overflow-wrap: break-word;
+  table-layout: fixed; /* Fixed layout ensures columns respect width settings */
+  overflow-wrap: break-word; /* Ensures text wraps within cells */
+  width: 100%;
+  border-collapse: collapse;
+}
+
+table th {
+  padding: 2px 3px; /* Reduced padding */
+  text-align: center;
+  vertical-align: middle;
+  font-weight: bold;
+  word-wrap: break-word;
+  word-break: break-word; /* Force breaking of long words */
+  hyphens: auto;
+  line-height: 1.0; /* Tighter line height */
 }
 
 table td {
-  vertical-align: top;
+  padding: 2px 3px; /* Reduced padding */
+  text-align: center;
+  vertical-align: top; /* Text starts at the top of each cell */
+  min-height: 40px; /* Prevent empty cells from squishing */
+  height: auto; /* Allow height to grow naturally */
   word-wrap: break-word;
+  word-break: break-word; /* Force breaking of long words */
+  hyphens: auto;
+  line-height: 1.1; /* Slightly tighter line height */
+  overflow-wrap: anywhere; /* Break anywhere if needed */
+  max-width: 0; /* Force table-layout: fixed to respect column widths */
+  overflow: hidden; /* Prevent content overflow */
 }
 
 table input {
@@ -720,7 +743,14 @@ table input:focus {
   
   td { 
     vertical-align: top; 
+    min-height: 40px; /* Prevent empty cells from squishing */
     word-wrap: break-word;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    hyphens: auto;
+    line-height: 1.1;
+    max-width: 0;
+    overflow: hidden;
   }
   
   .signatures-section {
