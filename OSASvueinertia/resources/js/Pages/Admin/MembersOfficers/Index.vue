@@ -767,9 +767,9 @@ const visiblePages = computed(() => {
         <div v-if="activeTab === 'members'" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-xl transition-shadow duration-300">
           
           <!-- Desktop Table View (hidden on mobile) -->
-          <div class="hidden md:block overflow-x-auto max-h-[600px] overflow-y-auto">
+          <div class="hidden md:block overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-              <thead class="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 sticky top-0 z-10">
+              <thead class="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
                 <tr>
                   <th
                     v-for="column in membersTableColumns"
@@ -1135,9 +1135,9 @@ const visiblePages = computed(() => {
         <div v-if="activeTab === 'officers'" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-xl transition-shadow duration-300">
           
           <!-- Desktop Table View (hidden on mobile) -->
-          <div class="hidden md:block overflow-x-auto max-h-[600px] overflow-y-auto">
+          <div class="hidden md:block overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-              <thead class="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 sticky top-0 z-10">
+              <thead class="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
                 <tr>
                   <th
                     v-for="column in officersTableColumns"
