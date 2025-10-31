@@ -331,8 +331,8 @@ class OrganizationApplicationController extends Controller
             'coordinator_name' => 'required|string|max:255',
             'status' => 'string|in:Pending,Approved,Disapproved',
             'signed_document' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:20480', // 20MB limit for signed document
-            // application_date is nullable for Plan of Activities (SF-004), Activity Attendance (SF-009), and Activity Status Report (uses activity_date/report_date/target_date instead)
-            'application_date' => in_array($request->form_type, ['LSPU-OSAS-SF-004', 'LSPU-OSAS-SF-009', 'LSPU-OSAS-SF-STATUS-REPORT']) ? 'nullable|date' : 'required|date',
+            // application_date is nullable for Plan of Activities (SF-004), Activity Attendance (SF-009), Evaluation (SF-EVAL), and Activity Status Report (uses date_start/activity_date/report_date instead)
+            'application_date' => in_array($request->form_type, ['LSPU-OSAS-SF-004', 'LSPU-OSAS-SF-009', 'LSPU-OSAS-SF-EVAL', 'LSPU-OSAS-SF-STATUS-REPORT']) ? 'nullable|date' : 'required|date',
         ];
         
         // Add adviser fields for non-commitment forms (except SF-009 which doesn't require adviser)
