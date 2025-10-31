@@ -36,6 +36,18 @@ const props = defineProps({
         type: String,
         default: '',
     },
+    currentPage: {
+        type: Number,
+        default: 1
+    },
+    hasMorePages: {
+        type: Boolean,
+        default: false
+    },
+    perPage: {
+        type: Number,
+        default: 20
+    }
 });
 
 const showRestoreModal = ref(false);
@@ -49,15 +61,34 @@ const dropdownButtonEl = ref(null);
 const dropdownRef = ref(null);
 const dropdownDirection = ref('down');
 
+// Infinite scroll state
+const allArchivedApplications = ref([...props.archivedApplications]);
+const isLoadingMore = ref(false);
+const isFiltering = ref(false);
+const currentPage = ref(props.currentPage);
+const hasMorePages = ref(props.hasMorePages);
+
 const filterForm = ref({
     user_filter: props.currentUserFilter,
     academic_year_filter: props.currentAcademicYearFilter,
 });
 
+// Check if any filters are active
+const hasActiveFilters = computed(() => {
+    return filterForm.value.user_filter || filterForm.value.academic_year_filter;
+});
+
 const applyFilters = () => {
+    // Reset pagination when applying filters
+    currentPage.value = 1;
+    hasMorePages.value = props.hasMorePages;
+    
     router.get(route('admin.archive.index'), filterForm.value, {
         preserveState: true,
         preserveScroll: true,
+        onSuccess: () => {
+            allArchivedApplications.value = [...props.archivedApplications];
+        }
     });
 };
 
@@ -66,7 +97,69 @@ const clearFilters = () => {
         user_filter: '',
         academic_year_filter: '',
     };
+    currentPage.value = 1;
+    hasMorePages.value = props.hasMorePages;
     applyFilters();
+};
+
+// Infinite scroll functionality
+const loadMoreApplications = async () => {
+    if (isLoadingMore.value || !hasMorePages.value || isFiltering.value) return;
+    
+    isLoadingMore.value = true;
+    
+    try {
+        const params = new URLSearchParams({
+            page: (currentPage.value + 1).toString(),
+            per_page: props.perPage.toString()
+        });
+        
+        // Add current filters to maintain consistency
+        if (filterForm.value.user_filter) params.append('user_filter', filterForm.value.user_filter);
+        if (filterForm.value.academic_year_filter) params.append('academic_year_filter', filterForm.value.academic_year_filter);
+        
+        const response = await fetch(`/admin/archive/load-more?${params.toString()}`, {
+            headers: {
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+            }
+        });
+        
+        if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        
+        const data = await response.json();
+        
+        // Only proceed if we got valid data
+        if (data.archivedApplications && Array.isArray(data.archivedApplications)) {
+            // Append new applications to the existing list, avoiding duplicates
+            const existingIds = new Set(allArchivedApplications.value.map(app => app.id));
+            const newApplications = data.archivedApplications.filter(app => !existingIds.has(app.id));
+            
+            allArchivedApplications.value = [...allArchivedApplications.value, ...newApplications];
+            currentPage.value = data.currentPage;
+            hasMorePages.value = data.hasMorePages;
+        }
+        
+    } catch (error) {
+        console.error('Error loading more archived applications:', error);
+    } finally {
+        isLoadingMore.value = false;
+    }
+};
+
+// Scroll detection for infinite scroll
+const handleScroll = () => {
+    // Throttle scroll events to avoid excessive calls
+    if (isLoadingMore.value || isFiltering.value) return;
+    
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const windowHeight = window.innerHeight;
+    const documentHeight = document.documentElement.scrollHeight;
+    
+    // Load more when user is 200px from bottom and there are more pages
+    if (hasMorePages.value && scrollTop + windowHeight >= documentHeight - 200) {
+        loadMoreApplications();
+    }
 };
 
 const confirmRestore = (application) => {
@@ -241,11 +334,13 @@ const previewApp = ref(null);
 
 onMounted(() => {
     window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('scroll', handleScroll, { passive: true });
 });
 
 onUnmounted(() => {
     removeDropdownListeners();
     window.removeEventListener('scroll', onScroll);
+    window.removeEventListener('scroll', handleScroll);
 });
 
 // Ensure dropdowns close when clicking outside
@@ -427,6 +522,21 @@ watch(showPreviewModal, (val) => {
     document.body.classList.remove('overflow-hidden');
   }
 });
+
+// Watch for changes in props to update local state
+watch(() => props.archivedApplications, (newApplications) => {
+    if (newApplications) {
+        allArchivedApplications.value = [...newApplications];
+    }
+}, { deep: true });
+
+watch(() => props.hasMorePages, (newValue) => {
+    hasMorePages.value = newValue;
+});
+
+watch(() => props.currentPage, (newValue) => {
+    currentPage.value = newValue;
+});
 </script>
 
 <template>
@@ -518,7 +628,7 @@ watch(showPreviewModal, (val) => {
                 </div>
             </div>
 
-            <div v-if="archivedApplications.length === 0" class="text-center py-8 max-w-4xl mx-auto px-4 sm:px-6">
+            <div v-if="allArchivedApplications.length === 0" class="text-center py-8 max-w-4xl mx-auto px-4 sm:px-6">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                 </svg>
@@ -526,8 +636,8 @@ watch(showPreviewModal, (val) => {
             </div>
 
             <!-- MOBILE CARD LAYOUT -->
-            <div v-if="archivedApplications.length > 0" class="sm:hidden p-2 space-y-4 max-w-4xl mx-auto">
-                <div v-for="application in archivedApplications" :key="application.id" 
+            <div v-if="allArchivedApplications.length > 0" class="sm:hidden p-2 space-y-4 max-w-4xl mx-auto">
+                <div v-for="application in allArchivedApplications" :key="application.id" 
           class="bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-100 dark:border-gray-700 p-4 flex flex-col gap-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition"
           @click="viewPdf(application)">
           <div class="flex items-center justify-between">
@@ -580,9 +690,9 @@ watch(showPreviewModal, (val) => {
                     </div>
 
                     <!-- Desktop Stacked List Layout -->
-                    <div v-if="archivedApplications.length > 0" class="hidden sm:block p-4 max-w-4xl mx-auto">
+                    <div v-if="allArchivedApplications.length > 0" class="hidden sm:block p-4 max-w-4xl mx-auto">
                         <div
-                            v-for="application in archivedApplications"
+                            v-for="application in allArchivedApplications"
                             :key="application.id"
                             class="bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-100 dark:border-gray-700 mb-4 flex flex-col md:flex-row md:items-center md:justify-between hover:shadow-lg transition cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
                             @click="viewPdf(application)"
@@ -631,6 +741,17 @@ watch(showPreviewModal, (val) => {
                             </div>
                         </div>
                     </div>
+
+            <!-- Loading More Indicator -->
+            <div v-if="isLoadingMore" class="text-center py-8 max-w-4xl mx-auto px-4 sm:px-6">
+                <div class="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                    <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span class="text-sm font-medium">Loading more...</span>
+                </div>
+            </div>
         </div>
 
         <!-- Render the dropdown only once, outside the table -->

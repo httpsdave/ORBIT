@@ -167,6 +167,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Archive routes for regular users
     Route::get('/archive', [ArchiveController::class, 'index'])->name('archive.index');
+    Route::get('/archive/load-more', [ArchiveController::class, 'loadMore'])->name('archive.load-more');
 
     // User Plan of Activities route
     Route::get('/plan-of-activities', [\App\Http\Controllers\Admin\PlanOfActivitiesController::class, 'index'])->name('plan-of-activities.index');
@@ -305,6 +306,7 @@ Route::middleware(['auth'])->group(function () {
 
         // Admin Archive Management Routes
         Route::get('/archive', [\App\Http\Controllers\Admin\ArchiveController::class, 'index'])->name('admin.archive.index');
+        Route::get('/archive/load-more', [\App\Http\Controllers\Admin\ArchiveController::class, 'loadMore'])->name('admin.archive.load-more');
         Route::post('/archive/end-year', [\App\Http\Controllers\Admin\ArchiveController::class, 'endYear'])->name('admin.archive.end-year');
         Route::patch('/archive/{application}/restore', [\App\Http\Controllers\Admin\ArchiveController::class, 'restore'])->name('admin.archive.restore');
         Route::get('/archive/stats', [\App\Http\Controllers\Admin\ArchiveController::class, 'getArchiveStats'])->name('admin.archive.stats');
