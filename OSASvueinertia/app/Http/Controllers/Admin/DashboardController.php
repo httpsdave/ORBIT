@@ -91,7 +91,8 @@ class DashboardController extends Controller
                     'LSPU-OSAS-SF-NARRATIVE', 
                     'LSPU-OSAS-SF-ACCOMPLISHMENT',
                     'LSPU-OSAS-SF-EVAL',
-                    'LSPU-OSAS-SF-009'
+                    'LSPU-OSAS-SF-009',
+                    'LSPU-OSAS-SF-STATUS-REPORT'
                 ];
                 
                 // Check each activity page (1 to activityCount)

@@ -75,6 +75,7 @@ class ActivityReport extends Model
             'LSPU-OSAS-SF-ACCOMPLISHMENT' => 'Accomplishment Report',
             'LSPU-OSAS-SF-EVAL' => 'Evaluation Summary',
             'LSPU-OSAS-SF-009' => 'Activity Attendance Sheet',
+            'LSPU-OSAS-SF-STATUS-REPORT' => 'Status Report',
             default => $this->report_type
         };
     }

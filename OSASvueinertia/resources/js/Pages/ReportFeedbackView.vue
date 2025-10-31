@@ -267,6 +267,8 @@ const getReportTypeDisplay = (reportType) => {
       return 'Evaluation Summary'
     case 'LSPU-OSAS-SF-009':
       return 'Activity Attendance Sheet'
+    case 'LSPU-OSAS-SF-STATUS-REPORT':
+      return 'Status Report'
     default:
       return reportType
   }

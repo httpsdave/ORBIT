@@ -94,17 +94,20 @@ class UserDashboardController extends Controller
         $totalReportsNeeded = 0;
         $totalReportsSubmitted = 0;
         
-        // Report types that need to be submitted (3 per activity page)
+        // Report types that need to be submitted (6 per activity page)
         $requiredReportTypes = [
             'LSPU-OSAS-SF-FINANCIAL',
             'LSPU-OSAS-SF-NARRATIVE', 
-            'LSPU-OSAS-SF-ACCOMPLISHMENT'
+            'LSPU-OSAS-SF-ACCOMPLISHMENT',
+            'LSPU-OSAS-SF-EVAL',
+            'LSPU-OSAS-SF-009',
+            'LSPU-OSAS-SF-STATUS-REPORT'
         ];
         
         foreach ($approvedPOAs as $poa) {
             $activityCount = $poa->activities->count();
             
-            // Each activity page requires 3 reports
+            // Each activity page requires 6 reports
             $totalReportsNeeded += $activityCount * count($requiredReportTypes);
             
             // Count submitted reports for this POA
