@@ -177,7 +177,7 @@
           <p class="mb-2 text-sm text-gray-600 dark:text-gray-300 text-center px-2">
             <span class="font-medium">Click to upload</span> or drag and drop
           </p>
-          <p class="text-xs text-gray-500 dark:text-gray-400 text-center px-2">PNG, JPG, PDF (MAX. 20MB)</p>
+          <p class="text-xs text-gray-500 dark:text-gray-400 text-center px-2">PNG, JPG, PDF (MAX. 10MB)</p>
         </div>
         <input 
           id="dropzone-file" 
