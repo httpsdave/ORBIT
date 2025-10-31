@@ -865,6 +865,13 @@
       color: #374151; /* gray-700 */
     }
 
+    :deep(.fc-daygrid-event) {
+      background: transparent !important;
+      border: none !important;
+      border-radius: 0.75rem !important;
+      overflow: visible !important;
+    }
+
     :deep(.fc-daygrid-day-number) {
       color: #374151; /* gray-700 */
       font-weight: 500;
@@ -982,26 +989,28 @@
     }
 
     /* Dark mode past event styling */
-    .dark :deep(.fc-past-event) {
+    .dark :deep(.fc-custom-event.fc-past-event) {
       background: rgba(59, 130, 246, 0.3) !important; /* More transparent in dark mode */
+      border-color: rgba(59, 130, 246, 0.25) !important;
       color: rgba(255, 255, 255, 0.7) !important; /* More transparent text in dark mode */
       box-shadow: 0 2px 8px rgba(59, 130, 246, 0.05) !important; /* Very light shadow */
     }
 
-    .dark :deep(.fc-past-event:hover) {
+    .dark :deep(.fc-custom-event.fc-past-event:hover) {
       background: rgba(37, 99, 235, 0.4) !important; /* Slightly more opaque on hover */
+      border-color: rgba(37, 99, 235, 0.35) !important;
       box-shadow: 0 4px 16px rgba(37, 99, 235, 0.1) !important; /* Lighter hover shadow */
     }
 
     /* Dark mode cancelled event styling */
-    .dark :deep(.fc-cancelled-event) {
+    .dark :deep(.fc-custom-event.fc-cancelled-event) {
       background: rgba(239, 68, 68, 0.3) !important; /* More transparent red in dark mode */
       color: rgba(255, 255, 255, 0.8) !important; /* More transparent text in dark mode */
       box-shadow: 0 2px 8px rgba(239, 68, 68, 0.08) !important; /* Very light red shadow */
       text-decoration: line-through !important; /* Strike-through to indicate cancellation */
     }
 
-    .dark :deep(.fc-cancelled-event:hover) {
+    .dark :deep(.fc-custom-event.fc-cancelled-event:hover) {
       background: rgba(220, 38, 38, 0.4) !important; /* Slightly more opaque on hover */
       box-shadow: 0 4px 16px rgba(220, 38, 38, 0.15) !important; /* Lighter hover shadow */
     }
@@ -1097,26 +1106,28 @@
     }
 
     /* Past event styling with transparency */
-    :deep(.fc-past-event) {
+    :deep(.fc-custom-event.fc-past-event) {
       background: rgba(59, 130, 246, 0.4) !important; /* More transparent blue */
+      border-color: rgba(59, 130, 246, 0.25) !important;
       color: rgba(255, 255, 255, 0.8) !important; /* Slightly transparent text */
       box-shadow: 0 2px 8px rgba(59, 130, 246, 0.08) !important; /* Lighter shadow */
     }
 
-    :deep(.fc-past-event:hover) {
+    :deep(.fc-custom-event.fc-past-event:hover) {
       background: rgba(37, 99, 235, 0.5) !important; /* Slightly more opaque on hover */
+      border-color: rgba(37, 99, 235, 0.35) !important;
       box-shadow: 0 4px 16px rgba(37, 99, 235, 0.15) !important; /* Lighter hover shadow */
     }
 
     /* Cancelled event styling with light red */
-    :deep(.fc-cancelled-event) {
+    :deep(.fc-custom-event.fc-cancelled-event) {
       background: rgba(239, 68, 68, 0.4) !important; /* Light red with transparency */
       color: rgba(255, 255, 255, 0.9) !important; /* Slightly transparent white text */
       box-shadow: 0 2px 8px rgba(239, 68, 68, 0.1) !important; /* Light red shadow */
       text-decoration: line-through !important; /* Strike-through to indicate cancellation */
     }
 
-    :deep(.fc-cancelled-event:hover) {
+    :deep(.fc-custom-event.fc-cancelled-event:hover) {
       background: rgba(220, 38, 38, 0.5) !important; /* Slightly more opaque red on hover */
       box-shadow: 0 4px 16px rgba(220, 38, 38, 0.2) !important; /* More visible hover shadow */
     }
@@ -1599,15 +1610,17 @@ export default {
         // Custom rendering for calendar events with responsive text truncation
         const title = arg.event.title;
         const today = dayjs();
-        
+
         // Get the full event object to check status
         const eventId = parseInt(arg.event.id);
         const fullEvent = events.value.find(e => e.id === eventId);
-        
-        // Check event status and date - use the original event's start_date for more reliable parsing
+
+        // Check event status and date - use full date range when available
         const isCancelledEvent = fullEvent?.status === 'cancelled';
-        const eventDate = fullEvent ? dayjs(fullEvent.start_date) : dayjs(arg.event.start);
-        const isPastEvent = eventDate.isBefore(today, 'day');
+        const eventStart = fullEvent?.start_date ? dayjs(fullEvent.start_date) : dayjs(arg.event.start);
+        const eventEndSource = fullEvent?.end_date || arg.event.end;
+        const eventEnd = eventEndSource ? dayjs(eventEndSource) : eventStart;
+        const isPastEvent = eventEnd.isBefore(today, 'day');
         
         // Determine truncation length based on viewport width
         let maxLength = 20; // Default for desktop
@@ -1633,7 +1646,7 @@ export default {
           html: `
             <div class="${eventClass}">
               <span class="font-bold event-title-truncated" title="${title}">${truncatedTitle}</span>
-              <span class="block text-xs">${dayjs(arg.event.start).format('h:mm A')}</span>
+              <span class="block text-xs">${eventStart.format('h:mm A')}</span>
             </div>
           `
         };
