@@ -402,10 +402,10 @@ onUnmounted(() => {
               <!-- Enhanced Logo with larger size class -->
               <ApplicationLogo :class="[logoSizeClass, 'block filter drop-shadow transform scale-125']" alt="ORBIT logo" />
             </div>
-            <!-- Company name text with bolder, wider font - hidden on small screens -->
+            <!-- Company name text with bolder, wider font - hidden on screens smaller than 660px -->
             <span 
-              class="ml-3 sm:ml-6 font-black text-lg sm:text-2xl md:text-3xl text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-green-500 uppercase select-none hidden sm:inline-block"
-              style="font-family: 'Montserrat SemiCondensed', 'Inter Tight', 'Arial Narrow', 'Montserrat', 'Inter', 'Poppins', 'Segoe UI', 'Arial', sans-serif; letter-spacing: -0.08em; font-stretch: condensed; transform: scaleX(1.35); display: inline-block;"
+              class="orbit-text ml-3 sm:ml-6 font-black text-lg sm:text-2xl md:text-3xl text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-green-500 uppercase select-none"
+              style="font-family: 'Montserrat SemiCondensed', 'Inter Tight', 'Arial Narrow', 'Montserrat', 'Inter', 'Poppins', 'Segoe UI', 'Arial', sans-serif; letter-spacing: -0.08em; font-stretch: condensed; transform: scaleX(1.35);"
             >
               ORBIT
             </span>
@@ -794,5 +794,16 @@ a:focus, button:focus {
 /* Define h-18 which isn't standard in Tailwind */
 .h-18 {
   height: 4.5rem;
+}
+
+/* Hide ORBIT text on screens smaller than 660px for more space */
+.orbit-text {
+  display: none;
+}
+
+@media (min-width: 330px) {
+  .orbit-text {
+    display: inline-block;
+  }
 }
 </style>
