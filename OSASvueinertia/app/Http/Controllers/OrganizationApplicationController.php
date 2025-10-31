@@ -324,20 +324,21 @@ class OrganizationApplicationController extends Controller
             'organization_name' => 'required|string|max:255',
             // president_name is nullable for specific forms: SF-003, SF-005, SF-006, SF-007, SF-009, SF-EVAL
             'president_name' => in_array($request->form_type, ['LSPU-OSAS-SF-003', 'LSPU-OSAS-SF-005', 'LSPU-OSAS-SF-006', 'LSPU-OSAS-SF-007', 'LSPU-OSAS-SF-009', 'LSPU-OSAS-SF-EVAL']) ? 'nullable|string|max:255' : 'required|string|max:255',
-            'dean_name' => in_array($request->form_type, ['LSPU-OSAS-SF-001', 'LSPU-OSAS-SF-002', 'LSPU-OSAS-SF-004', 'LSPU-OSAS-SF-005', 'LSPU-OSAS-SF-006', 'LSPU-OSAS-SF-007', 'LSPU-OSAS-SF-EVAL']) ? 'nullable|string|max:255' : 'required|string|max:255',
+            // dean_name is nullable for specific forms: SF-001, SF-002, SF-004, SF-005, SF-006, SF-007, SF-009, SF-EVAL
+            'dean_name' => in_array($request->form_type, ['LSPU-OSAS-SF-001', 'LSPU-OSAS-SF-002', 'LSPU-OSAS-SF-004', 'LSPU-OSAS-SF-005', 'LSPU-OSAS-SF-006', 'LSPU-OSAS-SF-007', 'LSPU-OSAS-SF-009', 'LSPU-OSAS-SF-EVAL']) ? 'nullable|string|max:255' : 'required|string|max:255',
             'dean_prefix' => 'nullable|string|max:50',
             'dean_suffix' => 'nullable|string|max:50',
             'coordinator_name' => 'required|string|max:255',
             'status' => 'string|in:Pending,Approved,Disapproved',
             'signed_document' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:20480', // 20MB limit for signed document
-            // application_date is nullable for Activity Status Report (uses report_date instead)
-            'application_date' => $request->form_type === 'LSPU-OSAS-SF-STATUS-REPORT' ? 'nullable|date' : 'required|date',
+            // application_date is nullable for Plan of Activities (SF-004), Activity Attendance (SF-009), and Activity Status Report (uses activity_date/report_date/target_date instead)
+            'application_date' => in_array($request->form_type, ['LSPU-OSAS-SF-004', 'LSPU-OSAS-SF-009', 'LSPU-OSAS-SF-STATUS-REPORT']) ? 'nullable|date' : 'required|date',
         ];
         
-        // Add adviser fields for non-commitment forms
+        // Add adviser fields for non-commitment forms (except SF-009 which doesn't require adviser)
         if ($request->form_type !== 'LSPU-OSAS-SF-003') {
             $validationRules = array_merge($validationRules, [
-                'adviser_name' => 'required|string|max:255',
+                'adviser_name' => $request->form_type === 'LSPU-OSAS-SF-009' ? 'nullable|string|max:255' : 'required|string|max:255',
                 'adviser_prefix' => 'nullable|string|max:50',
                 'adviser_suffix' => 'nullable|string|max:50',
             ]);
@@ -793,17 +794,18 @@ class OrganizationApplicationController extends Controller
             'organization_name' => 'required|string|max:255',
             // president_name is nullable for specific forms: SF-003, SF-005, SF-006, SF-007, SF-009, SF-EVAL
             'president_name' => in_array($application->form_type, ['LSPU-OSAS-SF-003', 'LSPU-OSAS-SF-005', 'LSPU-OSAS-SF-006', 'LSPU-OSAS-SF-007', 'LSPU-OSAS-SF-009', 'LSPU-OSAS-SF-EVAL']) ? 'nullable|string|max:255' : 'required|string|max:255',
-            'dean_name' => in_array($application->form_type, ['LSPU-OSAS-SF-001', 'LSPU-OSAS-SF-002', 'LSPU-OSAS-SF-004', 'LSPU-OSAS-SF-005', 'LSPU-OSAS-SF-006', 'LSPU-OSAS-SF-007', 'LSPU-OSAS-SF-EVAL']) ? 'nullable|string|max:255' : 'required|string|max:255',
+            // dean_name is nullable for specific forms: SF-001, SF-002, SF-004, SF-005, SF-006, SF-007, SF-009, SF-EVAL
+            'dean_name' => in_array($application->form_type, ['LSPU-OSAS-SF-001', 'LSPU-OSAS-SF-002', 'LSPU-OSAS-SF-004', 'LSPU-OSAS-SF-005', 'LSPU-OSAS-SF-006', 'LSPU-OSAS-SF-007', 'LSPU-OSAS-SF-009', 'LSPU-OSAS-SF-EVAL']) ? 'nullable|string|max:255' : 'required|string|max:255',
             'dean_prefix' => 'nullable|string|max:50',
             'dean_suffix' => 'nullable|string|max:50',
             'coordinator_name' => ($application->form_type === 'LSPU-OSAS-SF-006' || $application->form_type === 'LSPU-OSAS-SF-EVAL') ? 'nullable|string|max:255' : 'required|string|max:255',
             'signed_document' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:20480', // 20MB limit
         ];
         
-        // Add adviser fields for non-commitment forms
+        // Add adviser fields for non-commitment forms (except SF-009 and SF-EVAL which don't require adviser)
         if ($application->form_type !== 'LSPU-OSAS-SF-003') {
             $validationRules = array_merge($validationRules, [
-                'adviser_name' => $application->form_type === 'LSPU-OSAS-SF-EVAL' ? 'nullable|string|max:255' : 'required|string|max:255',
+                'adviser_name' => in_array($application->form_type, ['LSPU-OSAS-SF-009', 'LSPU-OSAS-SF-EVAL']) ? 'nullable|string|max:255' : 'required|string|max:255',
                 'adviser_prefix' => 'nullable|string|max:50',
                 'adviser_suffix' => 'nullable|string|max:50',
             ]);
