@@ -723,6 +723,19 @@
       padding: 8px 12px;
     }
 
+    /* Prevent text selection on UI elements */
+    h1, h2, h3, h4, h5, h6,
+    :deep(.fc-toolbar-title),
+    :deep(.fc-col-header-cell),
+    :deep(.fc-col-header-cell-cushion),
+    :deep(.fc-daygrid-day-number),
+    :deep(.fc-button) {
+      user-select: none !important;
+      -webkit-user-select: none !important;
+      -moz-user-select: none !important;
+      -ms-user-select: none !important;
+    }
+
     /* Ensure active (selected) calendar view button has white text on blue background in both light and dark mode */
     :deep(.fc .fc-button.fc-button-active),
     :deep(.fc .fc-button:active),
@@ -1246,6 +1259,23 @@
     }
     .overflow-wrap-anywhere {
       overflow-wrap: anywhere;
+    }
+    
+    /* Additional user-select prevention for component titles and labels */
+    :deep(.fc *) {
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+    }
+    
+    /* Allow text selection only in input fields and textareas */
+    :deep(input),
+    :deep(textarea) {
+      user-select: text !important;
+      -webkit-user-select: text !important;
+      -moz-user-select: text !important;
+      -ms-user-select: text !important;
     }
     </style>
 <script>

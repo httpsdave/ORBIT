@@ -19,9 +19,18 @@ const props = defineProps({
   <AuthenticatedLayout>
     <Head title="Calendar" />
 
-    <div class="w-full">
+    <div class="w-full select-none">
       <!-- Pass the isAdmin prop to the Calendar component -->
       <Calendar :initial-events="initialEvents" :is-admin="isAdmin" />
     </div>
   </AuthenticatedLayout>
 </template>
+
+<style scoped>
+.select-none {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+</style>
