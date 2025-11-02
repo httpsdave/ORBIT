@@ -515,79 +515,79 @@
   <Transition name="modal">
     <div 
       v-if="showEventDetailsModal" 
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-3 sm:p-4"
       @click.self="closeEventDetailsModal"
     >
-      <div class="bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-100 rounded-lg shadow-lg p-6 max-w-md w-full mx-4">
-      <div class="flex justify-between items-center mb-4">
-        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 break-words overflow-wrap-anywhere max-w-[90%]">{{selectedEvent.title}}</h3>
-        <button @click="closeEventDetailsModal" class="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-200 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div class="bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-100 rounded-lg shadow-lg p-4 sm:p-6 md:p-8 max-w-md w-full max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-start mb-4 sm:mb-6">
+        <h3 class="text-lg sm:text-xl md:text-2xl font-semibold text-gray-800 dark:text-gray-100 break-words overflow-wrap-anywhere max-w-[85%]">{{selectedEvent.title}}</h3>
+        <button @click="closeEventDetailsModal" class="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-200 p-1.5 sm:p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 flex-shrink-0">
+          <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
       </div>
       
       <!-- Colored banner -->
-      <div class="flex w-full mb-4 overflow-hidden rounded-md">
-        <div class="w-1/4 h-1 bg-blue-500"></div>
-        <div class="w-1/4 h-1 bg-green-500"></div>
-        <div class="w-1/4 h-1 bg-yellow-500"></div>
-        <div class="w-1/4 h-1 bg-red-500"></div>
+      <div class="flex w-full mb-4 sm:mb-6 overflow-hidden rounded-md">
+        <div class="w-1/4 h-0.5 sm:h-1 bg-blue-500"></div>
+        <div class="w-1/4 h-0.5 sm:h-1 bg-green-500"></div>
+        <div class="w-1/4 h-0.5 sm:h-1 bg-yellow-500"></div>
+        <div class="w-1/4 h-0.5 sm:h-1 bg-red-500"></div>
       </div>
       
-      <div class="space-y-4">
-        <div class="flex space-x-4">
-          <div class="flex-shrink-0 bg-blue-50 dark:bg-blue-900 rounded-lg p-3 text-center border-l-4 border-blue-500">
-            <span class="text-sm font-medium text-blue-500 dark:text-blue-200">{{ formatDate(selectedEvent.start_date, 'MMM') }}</span>
-            <p class="text-xl font-bold text-gray-800 dark:text-gray-100">{{ formatDate(selectedEvent.start_date, 'DD') }}</p>
+      <div class="space-y-3 sm:space-y-4 md:space-y-5">
+        <div class="flex space-x-3 sm:space-x-4 items-start">
+          <div class="flex-shrink-0 bg-blue-50 dark:bg-blue-900 rounded-lg p-2.5 sm:p-3 md:p-4 text-center border-l-3 sm:border-l-4 border-blue-500 min-w-[60px] sm:min-w-[70px] md:min-w-[80px]">
+            <span class="text-xs sm:text-sm font-medium text-blue-500 dark:text-blue-200 block mb-0.5 sm:mb-1">{{ formatDate(selectedEvent.start_date, 'MMM') }}</span>
+            <p class="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-100">{{ formatDate(selectedEvent.start_date, 'DD') }}</p>
           </div>
-          <div>
-            <p class="font-medium text-gray-700 dark:text-gray-100">
+          <div class="flex-1">
+            <p class="font-medium text-sm sm:text-base text-gray-700 dark:text-gray-100 leading-relaxed">
               <template v-if="selectedEvent.end_date && formatDate(selectedEvent.start_date, 'YYYY-MM-DD') !== formatDate(selectedEvent.end_date, 'YYYY-MM-DD')">
                 {{ formatDate(selectedEvent.start_date, 'dddd, MMMM D, YYYY') }}<br>
-                <span class="text-gray-600 dark:text-gray-300">{{ formatDate(selectedEvent.start_date, 'h:mm A') }} - </span>
+                <span class="text-xs sm:text-sm text-gray-600 dark:text-gray-300">{{ formatDate(selectedEvent.start_date, 'h:mm A') }} - </span>
                 <br>
                 {{ formatDate(selectedEvent.end_date, 'dddd, MMMM D, YYYY') }}<br>
-                <span class="text-gray-600 dark:text-gray-300">{{ formatDate(selectedEvent.end_date, 'h:mm A') }}</span>
+                <span class="text-xs sm:text-sm text-gray-600 dark:text-gray-300">{{ formatDate(selectedEvent.end_date, 'h:mm A') }}</span>
               </template>
               <template v-else>
                 {{ formatDate(selectedEvent.start_date, 'dddd, MMMM D, YYYY') }}<br>
-                <span class="text-gray-600 dark:text-gray-300">{{ formatDate(selectedEvent.start_date, 'h:mm A') }} - {{ formatDate(selectedEvent.end_date || selectedEvent.start_date, 'h:mm A') }}</span>
+                <span class="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mt-1 block">{{ formatDate(selectedEvent.start_date, 'h:mm A') }} - {{ formatDate(selectedEvent.end_date || selectedEvent.start_date, 'h:mm A') }}</span>
               </template>
             </p>
           </div>
         </div>
-        <div v-if="selectedEvent.description" class="mt-4 bg-gray-50 dark:bg-gray-700 p-4 rounded-lg max-h-40 overflow-y-auto">
-          <p class="text-sm text-gray-600 dark:text-gray-300 font-medium mb-2">Description:</p>
-          <p class="text-gray-700 dark:text-gray-100 whitespace-pre-line break-words overflow-wrap-anywhere">{{selectedEvent.description}}</p>
+        <div v-if="selectedEvent.description" class="bg-gray-50 dark:bg-gray-700 p-3 sm:p-4 md:p-5 rounded-lg max-h-40 sm:max-h-48 overflow-y-auto">
+          <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-300 font-semibold mb-2 sm:mb-3">Description:</p>
+          <p class="text-sm sm:text-base text-gray-700 dark:text-gray-100 whitespace-pre-line break-words overflow-wrap-anywhere leading-relaxed">{{selectedEvent.description}}</p>
         </div>
-        <div v-if="selectedEvent.location" class="mt-4 bg-blue-50 dark:bg-blue-900 p-4 rounded-lg">
-          <p class="text-sm text-blue-600 dark:text-blue-200 font-medium mb-2">Location:</p>
-          <p class="text-gray-700 dark:text-gray-100 whitespace-pre-line break-words overflow-wrap-anywhere">{{selectedEvent.location}}</p>
+        <div v-if="selectedEvent.location" class="bg-blue-50 dark:bg-blue-900 p-3 sm:p-4 md:p-5 rounded-lg">
+          <p class="text-xs sm:text-sm text-blue-600 dark:text-blue-200 font-semibold mb-2 sm:mb-3">Location:</p>
+          <p class="text-sm sm:text-base text-gray-700 dark:text-gray-100 whitespace-pre-line break-words overflow-wrap-anywhere leading-relaxed">{{selectedEvent.location}}</p>
         </div>
-        <div v-if="selectedEvent.organization" class="mt-4 bg-green-50 dark:bg-green-900 p-4 rounded-lg">
-          <p class="text-sm text-green-600 dark:text-green-200 font-medium mb-2">Organization:</p>
-          <p class="text-gray-700 dark:text-gray-100 whitespace-pre-line break-words overflow-wrap-anywhere">{{selectedEvent.organization}}</p>
+        <div v-if="selectedEvent.organization" class="bg-green-50 dark:bg-green-900 p-3 sm:p-4 md:p-5 rounded-lg">
+          <p class="text-xs sm:text-sm text-green-600 dark:text-green-200 font-semibold mb-2 sm:mb-3">Organization:</p>
+          <p class="text-sm sm:text-base text-gray-700 dark:text-gray-100 whitespace-pre-line break-words overflow-wrap-anywhere leading-relaxed">{{selectedEvent.organization}}</p>
         </div>
-        <div v-if="isAdmin" class="flex justify-end space-x-2 mt-4">
-          <button @click="editEvent(selectedEvent)" class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-sm font-medium text-white rounded-xl shadow-md hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group">
+        <div v-if="isAdmin" class="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 pt-3 sm:pt-4 border-t border-gray-200 dark:border-gray-600">
+          <button @click="editEvent(selectedEvent)" class="inline-flex items-center justify-center px-3 py-2 sm:px-4 sm:py-2.5 md:px-5 md:py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-xs sm:text-sm font-medium text-white rounded-lg sm:rounded-xl shadow-md hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group">
             <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
-            <svg class="w-4 h-4 mr-2 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
             </svg>
             <span class="relative z-10">Edit</span>
           </button>
-          <button v-if="selectedEvent.status !== 'cancelled'" @click="cancelEvent(selectedEvent.id)" class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-sm font-medium text-white rounded-xl shadow-md hover:from-orange-600 hover:to-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group">
+          <button v-if="selectedEvent.status !== 'cancelled'" @click="cancelEvent(selectedEvent.id)" class="inline-flex items-center justify-center px-3 py-2 sm:px-4 sm:py-2.5 md:px-5 md:py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-xs sm:text-sm font-medium text-white rounded-lg sm:rounded-xl shadow-md hover:from-orange-600 hover:to-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group">
             <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
-            <svg class="w-4 h-4 mr-2 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <span class="relative z-10">Cancel</span>
           </button>
-          <button @click="deleteEvent(selectedEvent.id)" class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-sm font-medium text-white rounded-xl shadow-md hover:from-red-600 hover:to-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group">
+          <button @click="deleteEvent(selectedEvent.id)" class="inline-flex items-center justify-center px-3 py-2 sm:px-4 sm:py-2.5 md:px-5 md:py-3 bg-gradient-to-r from-red-500 to-red-600 text-xs sm:text-sm font-medium text-white rounded-lg sm:rounded-xl shadow-md hover:from-red-600 hover:to-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group">
             <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
-            <svg class="w-4 h-4 mr-2 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
             </svg>
             <span class="relative z-10">Delete</span>
