@@ -87,6 +87,19 @@ const formatCurrentDateTime = computed(() => {
   });
 });
 
+// Format minimalist date time for mobile
+const formatMobileDateTime = computed(() => {
+  const date = currentDateTime.value;
+  const month = date.toLocaleDateString('en-US', { month: 'short' });
+  const day = date.getDate();
+  const time = date.toLocaleTimeString('en-US', { 
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true 
+  });
+  return `${month} ${day}, ${time}`;
+});
+
 // Get application status color
 const getStatusColor = (status) => {
   const colors = {
@@ -306,7 +319,10 @@ const displayedActivities = computed(() => {
       <template #header>
         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-2 sm:space-y-0 select-none">
           <h2 class="font-semibold text-lg sm:text-xl text-gray-800 dark:text-gray-200 leading-tight">My Dashboard</h2>
-          <div class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 order-first sm:order-last">{{ formatCurrentDateTime }}</div>
+          <div class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 order-first sm:order-last">
+            <span class="hidden md:inline">{{ formatCurrentDateTime }}</span>
+            <span class="md:hidden">{{ formatMobileDateTime }}</span>
+          </div>
         </div>
       </template>
   

@@ -163,6 +163,19 @@ const formatCurrentDateTime = computed(() => {
     });
 });
 
+// Format minimalist date time for mobile
+const formatMobileDateTime = computed(() => {
+    const date = currentDateTime.value;
+    const month = date.toLocaleDateString('en-US', { month: 'short' });
+    const day = date.getDate();
+    const time = date.toLocaleTimeString('en-US', { 
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true 
+    });
+    return `${month} ${day}, ${time}`;
+});
+
 // Get greeting based on time of day
 const greeting = computed(() => {
     const hour = new Date().getHours();
@@ -912,7 +925,10 @@ const stopMobileCarousel = () => {
         <template #header>
             <div class="flex items-center justify-between select-none">
                 <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Admin Dashboard</h2>
-                <div class="text-sm text-gray-500 dark:text-gray-400">{{ formatCurrentDateTime }}</div>
+                <div class="text-sm text-gray-500 dark:text-gray-400">
+                    <span class="hidden md:inline">{{ formatCurrentDateTime }}</span>
+                    <span class="md:hidden">{{ formatMobileDateTime }}</span>
+                </div>
             </div>
         </template>
 
