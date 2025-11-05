@@ -69,7 +69,7 @@ class DashboardController extends Controller
         $approvedApplications = OrganizationApplication::active()->where('status', 'Approved')->count();
         
         // Get rejected applications count (only active applications)
-        $rejectedApplications = OrganizationApplication::active()->where('status', 'Rejected')->count();
+        $rejectedApplications = OrganizationApplication::active()->where('status', 'Disapproved')->count();
         
         // Get approved Plan of Activities count that have ALL their activity reports approved
         $approvedPOAsCount = OrganizationApplication::active()
