@@ -385,15 +385,18 @@ const pieChartOptions = ref({
             color: '#ffffff',
             font: {
                 weight: 'bold',
-                    size: 20,
+                size: 20,
                 family: 'Inter, sans-serif'
             },
-                formatter: function(value) {
-                    // Display the raw count on the slice
-                    return value;
-                },
+            formatter: function(value) {
+                // Display the raw count on the slice
+                return value;
+            },
             textAlign: 'center',
-            textBaseline: 'middle'
+            anchor: 'end', // Position at the outer edge of the slice
+            align: 'end', // Align towards the outer edge
+            offset: -30, // Move inward by 30 pixels to keep it inside the slice
+            clamp: true // Ensure labels stay within chart bounds
         }
     }
 });
@@ -1178,7 +1181,11 @@ const stopMobileCarousel = () => {
                                 ]"
                             >
                                 <span class="hidden sm:inline">Members</span>
-                                <span class="sm:hidden">👥</span>
+                                <span class="sm:hidden inline-flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor">
+                                        <path d="M350-63q-46 0-82.5-24T211-153q-16 21-40.5 32.5T120-109q-51 0-85.5-35T0-229q0-43 28-77.5T99-346q-14-20-21.5-42.5T70-436q0-40 20.5-75t57.5-57q5 18 13.5 38.5T181-494q-14 11-22 26.5t-8 32.5q0 56 46 69t87 21l19 32q-11 32-19 54.5t-8 40.5q0 30 21.5 52.5T350-143q38 0 63-34t41-80q16-46 24.5-93t13.5-72l78 21q-9 45-22 103t-36.5 110.5Q488-135 449.5-99T350-63ZM120-189q17 0 28.5-11.5T160-229q0-17-11.5-28.5T120-269q-17 0-28.5 11.5T80-229q0 17 11.5 28.5T120-189Zm284-158q-46-41-83.5-76.5t-64.5-69q-27-33.5-41.5-67T200-629q0-65 44.5-109.5T354-783q4 0 7 .5t7 .5q-4-10-6-20t-2-21q0-50 35-85t85-35q50 0 85 35t35 85q0 11-2 20.5t-6 19.5h14q60 0 102 38.5t50 95.5q-18-3-40.5-3t-41.5 2q-7-23-25.5-38T606-703q-35 0-54.5 20.5T498-623h-37q-35-41-54.5-60.5T354-703q-32 0-53 21t-21 53q0 23 13 47.5t36.5 52q23.5 27.5 57 58.5t74.5 67l-57 57Zm76-436q17 0 28.5-11.5T520-823q0-17-11.5-28.5T480-863q-17 0-28.5 11.5T440-823q0 17 11.5 28.5T480-783ZM609-63q-22 0-43.5-6T524-88q11-14 22-33t20-35q11 7 22 10t22 3q32 0 53.5-22.5T685-219q0-19-8-41t-19-54l19-32q42-8 87.5-21t45.5-69q0-40-29.5-58T716-512q-42 0-98 16t-131 41l-21-78q78-25 139-42t112-17q69 0 121 41t52 115q0 25-7.5 47.5T861-346q43 5 71 39.5t28 77.5q0 50-34.5 85T840-109q-26 0-50.5-11.5T749-153q-20 42-56.5 66T609-63Zm232-126q17 0 28-11.5t11-28.5q0-17-11.5-29T840-270q-17 0-28.5 11.5T800-230q0 17 12 29t29 12Zm-721-40Zm360-594Zm360 593Z"/>
+                                    </svg>
+                                </span>
                             </button>
                             <button 
                                 @click="activeChart = 'pie'" 
@@ -1190,7 +1197,11 @@ const stopMobileCarousel = () => {
                                 ]"
                             >
                                 <span class="hidden sm:inline">Colleges</span>
-                                <span class="sm:hidden">🏫</span>
+                                <span class="sm:hidden inline-flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor">
+                                        <path d="M480-120 200-272v-240L40-600l440-240 440 240v320h-80v-276l-80 44v240L480-120Zm0-332 274-148-274-148-274 148 274 148Zm0 241 200-108v-151L480-360 280-470v151l200 108Zm0-241Zm0 90Zm0 0Z"/>
+                                    </svg>
+                                </span>
                             </button>
                             <button 
                                 @click="activeChart = 'advisers'" 
@@ -1202,7 +1213,11 @@ const stopMobileCarousel = () => {
                                 ]"
                             >
                                 <span class="hidden sm:inline">Advisers</span>
-                                <span class="sm:hidden">👨‍🏫</span>
+                                <span class="sm:hidden inline-flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor">
+                                        <path d="M412-168q45-91 120-121.5T660-320q23 0 45 4t43 10q24-38 38-82t14-92q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 45 11.5 86t34.5 76q41-20 85-31t89-11q32 0 61.5 5.5T500-340q-23 12-43.5 28T418-278q-12-2-20.5-2H380q-32 0-63.5 7T256-252q32 32 71.5 53.5T412-168Zm68 88q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80ZM380-420q-58 0-99-41t-41-99q0-58 41-99t99-41q58 0 99 41t41 99q0 58-41 99t-99 41Zm0-80q25 0 42.5-17.5T440-560q0-25-17.5-42.5T380-620q-25 0-42.5 17.5T320-560q0 25 17.5 42.5T380-500Zm280 120q-42 0-71-29t-29-71q0-42 29-71t71-29q42 0 71 29t29 71q0 42-29 71t-71 29ZM480-480Z"/>
+                                    </svg>
+                                </span>
                             </button>
                         </div>
                     </div>
