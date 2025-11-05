@@ -260,6 +260,9 @@ onMounted(() => {
     // Add click handler for adviser filters
     document.addEventListener('click', handleAdviserClickOutside);
     
+    // Start mobile carousel auto-advance
+    startMobileCarousel();
+    
     // Show tutorial if user hasn't seen it yet
     if (!props.hasSeenTutorial) {
         setTimeout(() => {
@@ -274,6 +277,9 @@ onUnmounted(() => {
     }
     // Remove click handler
     document.removeEventListener('click', handleAdviserClickOutside);
+    
+    // Stop mobile carousel
+    stopMobileCarousel();
 });
 
 const closeTutorial = () => {
@@ -583,6 +589,23 @@ const statsCards = computed(() => [
     // Removed Past Events card
 ]);
 
+// Mobile stats with custom grouping
+const mobileStatsCards = computed(() => {
+    const cards = statsCards.value;
+    // Reorder for mobile: 
+    // Page 1: Pending/Approved/Rejected Applications (index 2, flippable) + Total Activities Conducted (index 3)
+    // Page 2: Total Organizations (index 0) + Sub-Organizations (index 4)
+    // Page 3: College Affiliated Orgs (index 5) + Non-College Affiliated (index 1)
+    return [
+        cards[2], // Pending/Approved/Rejected Applications (flippable)
+        cards[3], // Total Activities Conducted
+        cards[0], // Total Organizations
+        cards[4], // Sub-Organizations
+        cards[5], // College Affiliated Orgs
+        cards[1]  // Non-College Affiliated Orgs
+    ];
+});
+
 function exportAdvisersToCSV() {
     if (!filteredAdvisersData.value.length) return;
     const headers = ['Organization', 'Adviser', 'Second Adviser'];
@@ -783,6 +806,93 @@ const handleAdviserClickOutside = (event) => {
         closeAdviserFilterDropdown();
     }
 };
+
+// Mobile stats carousel state
+const currentMobileStatIndex = ref(0);
+const mobileStatsPerView = 2; // Show 2 cards at a time on mobile
+const mobileCarouselPaused = ref(false); // Track if auto-advance is paused
+const mobileCarouselTimer = ref(null); // Timer for auto-advance
+
+const nextMobileStats = () => {
+    if (currentMobileStatIndex.value < mobileStatsCards.value.length - mobileStatsPerView) {
+        currentMobileStatIndex.value += mobileStatsPerView;
+    } else {
+        // Loop back to the beginning
+        currentMobileStatIndex.value = 0;
+    }
+};
+
+const prevMobileStats = () => {
+    if (currentMobileStatIndex.value > 0) {
+        currentMobileStatIndex.value -= mobileStatsPerView;
+    } else {
+        // Loop to the end
+        currentMobileStatIndex.value = Math.floor((mobileStatsCards.value.length - 1) / mobileStatsPerView) * mobileStatsPerView;
+    }
+};
+
+const goToMobileStatPage = (pageIndex) => {
+    currentMobileStatIndex.value = pageIndex * mobileStatsPerView;
+};
+
+// User interaction handlers that pause auto-advance
+const handleMobileStatNext = () => {
+    mobileCarouselPaused.value = true;
+    stopMobileCarousel();
+    nextMobileStats();
+};
+
+const handleMobileStatPrev = () => {
+    mobileCarouselPaused.value = true;
+    stopMobileCarousel();
+    prevMobileStats();
+};
+
+const handleMobileStatPageClick = (pageIndex) => {
+    mobileCarouselPaused.value = true;
+    stopMobileCarousel();
+    goToMobileStatPage(pageIndex);
+};
+
+// Handle card click - pause carousel and cycle if flippable
+const handleMobileCardClick = (card) => {
+    mobileCarouselPaused.value = true;
+    stopMobileCarousel();
+    if (card.flippable) {
+        cycleApplicationCard();
+    }
+};
+
+const totalMobilePages = computed(() => {
+    return Math.ceil(mobileStatsCards.value.length / mobileStatsPerView);
+});
+
+const currentMobilePage = computed(() => {
+    return Math.floor(currentMobileStatIndex.value / mobileStatsPerView);
+});
+
+const visibleMobileStats = computed(() => {
+    return mobileStatsCards.value.slice(
+        currentMobileStatIndex.value,
+        currentMobileStatIndex.value + mobileStatsPerView
+    );
+});
+
+// Auto-advance carousel
+const startMobileCarousel = () => {
+    if (!mobileCarouselPaused.value) {
+        mobileCarouselTimer.value = setInterval(() => {
+            nextMobileStats();
+        }, 5000); // Auto-advance every 5 seconds
+    }
+};
+
+const stopMobileCarousel = () => {
+    if (mobileCarouselTimer.value) {
+        clearInterval(mobileCarouselTimer.value);
+        mobileCarouselTimer.value = null;
+    }
+};
 </script>
 
 <template>
@@ -832,8 +942,131 @@ const handleAdviserClickOutside = (event) => {
 
         
 
-    <!-- Stats Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-6">
+    <!-- Stats Cards - Mobile Carousel (< md screens) -->
+    <div class="md:hidden mb-6">
+        <div class="relative">
+            <!-- Carousel Container -->
+            <div class="overflow-hidden">
+                <div class="grid grid-cols-2 gap-3 px-1 transition-all duration-300">
+                    <div v-for="(card, index) in visibleMobileStats" :key="currentMobileStatIndex + index" 
+                         :class="[
+                             'bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg border-l-4 transition-all duration-300',
+                             card.borderColor || `border-${card.color}-500`,
+                             card.flippable ? 'cursor-pointer active:scale-95' : ''
+                         ]"
+                         @click="handleMobileCardClick(card)">
+                        <div class="p-3">
+                            <div class="flex flex-col space-y-2">
+                                <!-- Icon -->
+                                <div class="flex items-center justify-between">
+                                    <div class="flex-shrink-0">
+                                        <!-- Users Group Icon -->
+                                        <div v-if="card.icon === 'users-group'" class="w-10 h-10 rounded-full flex items-center justify-center bg-blue-100 dark:bg-blue-900/50">
+                                            <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                            </svg>
+                                        </div>
+                                        <!-- Building Icon -->
+                                        <div v-else-if="card.icon === 'building'" class="w-10 h-10 rounded-full flex items-center justify-center bg-green-100 dark:bg-green-900/50">
+                                            <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                            </svg>
+                                        </div>
+                                        <!-- Clock Icon -->
+                                        <div v-else-if="card.icon === 'clock'" class="w-10 h-10 rounded-full flex items-center justify-center bg-yellow-100 dark:bg-yellow-900/50">
+                                            <svg class="w-5 h-5 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                        </div>
+                                        <!-- Document Text Icon -->
+                                        <div v-else-if="card.icon === 'document-text'" class="w-10 h-10 rounded-full flex items-center justify-center bg-red-100 dark:bg-red-900/50">
+                                            <svg class="w-5 h-5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                            </svg>
+                                        </div>
+                                        <!-- Organization Chart Icon -->
+                                        <div v-else-if="card.icon === 'organization-chart'" class="w-10 h-10 rounded-full flex items-center justify-center bg-green-100 dark:bg-green-900/50">
+                                            <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M20 7h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v3H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2zM10 4h4v3h-4V4zm10 16H4V9h5v1c0 .55.45 1 1 1h4c.55 0 1-.45 1-1V9h5v11z"/>
+                                            </svg>
+                                        </div>
+                                        <!-- Academic Cap Icon -->
+                                        <div v-else-if="card.icon === 'academic-cap'" class="w-10 h-10 rounded-full flex items-center justify-center bg-blue-100 dark:bg-blue-900/50">
+                                            <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+                                            </svg>
+                                        </div>
+                                        <!-- Check Circle Icon -->
+                                        <div v-else-if="card.icon === 'check-circle'" class="w-10 h-10 rounded-full flex items-center justify-center bg-green-100 dark:bg-green-900/50">
+                                            <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                        </div>
+                                        <!-- X Circle Icon -->
+                                        <div v-else-if="card.icon === 'x-circle'" class="w-10 h-10 rounded-full flex items-center justify-center bg-red-100 dark:bg-red-900/50">
+                                            <svg class="w-5 h-5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <!-- Flip indicator -->
+                                    <div v-if="card.flippable" class="flex-shrink-0">
+                                        <svg class="w-4 h-4 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                        </svg>
+                                    </div>
+                                </div>
+                                <!-- Title and Value -->
+                                <div class="select-none">
+                                    <h3 class="text-xs font-medium text-gray-500 dark:text-gray-400 line-clamp-2 min-h-[2rem]">{{ card.title }}</h3>
+                                    <p class="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">{{ card.value }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Navigation Dots -->
+            <div class="flex justify-center items-center space-x-2 mt-4">
+                <button 
+                    @click="handleMobileStatPrev"
+                    class="p-1.5 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-all"
+                >
+                    <svg class="w-4 h-4 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </button>
+                
+                <div class="flex space-x-1.5">
+                    <button
+                        v-for="pageIndex in totalMobilePages"
+                        :key="pageIndex"
+                        @click="handleMobileStatPageClick(pageIndex - 1)"
+                        :class="[
+                            'transition-all duration-300',
+                            currentMobilePage === pageIndex - 1
+                                ? 'w-6 h-2 bg-blue-600 dark:bg-blue-500 rounded-full'
+                                : 'w-2 h-2 bg-gray-300 dark:bg-gray-600 rounded-full hover:bg-gray-400 dark:hover:bg-gray-500'
+                        ]"
+                    />
+                </div>
+                
+                <button 
+                    @click="handleMobileStatNext"
+                    class="p-1.5 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-all"
+                >
+                    <svg class="w-4 h-4 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards - Desktop Grid (md+ screens) -->
+    <div class="hidden md:grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-6">
             <div v-for="(card, index) in statsCards" :key="index" 
                  :class="[
                      'bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg border-l-4 transition-all duration-300',
