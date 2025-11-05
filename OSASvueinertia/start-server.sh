@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "Starting application..."
+echo "Starting application with Nginx + PHP-FPM..."
 
 # Check if Railway volume is mounted
 echo "=== Storage Volume Check ==="
@@ -21,11 +21,7 @@ echo "=== Critical Configuration ==="
 echo "APP_URL: ${APP_URL:-'❌ NOT SET'}"
 echo "APP_ENV: ${APP_ENV:-'not set'}"
 echo "APP_DEBUG: ${APP_DEBUG:-'not set'}"
-echo "SESSION_SECURE_COOKIE: ${SESSION_SECURE_COOKIE:-'not set'}"
-echo "SESSION_DOMAIN: ${SESSION_DOMAIN:-'not set'}"
-echo "TRUSTED_PROXIES: ${TRUSTED_PROXIES:-'not set'}"
-echo "FORCE_HTTPS: ${FORCE_HTTPS:-'not set'}"
-echo "SSL_VERIFY: ${SSL_VERIFY:-'not set'}"
+echo "PORT: ${PORT:-8000}"
 echo "================================"
 
 # Debug: Show database configuration
@@ -46,24 +42,12 @@ rm -rf storage/framework/views/*
 rm -rf storage/logs/*.log
 
 # Clear Laravel caches multiple times
-echo "🧹 Clearing Laravel caches (Round 1)..."
+echo "🧹 Clearing Laravel caches..."
 php artisan config:clear
 php artisan route:clear
 php artisan view:clear
 php artisan cache:clear
 php artisan event:clear
-
-echo "🧹 Clearing Laravel caches (Round 2)..."
-php artisan config:clear
-php artisan route:clear
-php artisan view:clear
-php artisan cache:clear
-
-echo "🧹 Clearing Laravel caches (Round 3)..."
-php artisan config:clear
-php artisan route:clear
-php artisan view:clear
-php artisan cache:clear
 
 # Test database connection
 echo "Testing database connection..."
@@ -95,9 +79,6 @@ done
 if [ $ATTEMPT -gt $MAX_ATTEMPTS ]; then
     echo "Failed to connect to database after $MAX_ATTEMPTS attempts"
     echo "Starting web server anyway for debugging..."
-    
-    echo "Starting web server on port ${PORT:-8000}..."
-    exec php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
 else
     echo "Database connection successful! Proceeding with setup..."
     
@@ -146,15 +127,40 @@ else
     php artisan users:clean-missing-photos
 fi
 
-# Test configuration before caching
-echo "🔍 Testing current configuration..."
-php artisan about --only=environment
-php artisan config:show app.url
+# Prepare Nginx configuration
+echo "Preparing Nginx configuration..."
+export PORT=${PORT:-8000}
+envsubst '${PORT}' < nginx.conf > /etc/nginx/nginx.conf
 
-# DO NOT CACHE ANYTHING - Run without caching to avoid redirect loops
-echo "⚠️  RUNNING WITHOUT CONFIG CACHE TO PREVENT REDIRECT LOOPS"
-echo "Application setup completed!"
+# Ensure directories exist
+mkdir -p /var/log/nginx /var/run
 
-# Start the application with custom router for cache headers
-echo "Starting web server with cache headers on port ${PORT:-8000}..."
-exec php -S 0.0.0.0:${PORT:-8000} -t public router.php
+# Set proper permissions
+chmod -R 755 storage bootstrap/cache
+chown -R $(whoami):$(whoami) storage bootstrap/cache 2>/dev/null || true
+
+echo "✅ Application setup completed!"
+
+# Try to start PHP-FPM
+echo "Starting PHP-FPM..."
+if command -v php-fpm &> /dev/null; then
+    php-fpm -D 2>/dev/null || php-fpm -D -y /nix/store/*/etc/php-fpm.conf 2>/dev/null || {
+        echo "⚠️  PHP-FPM failed, falling back to php artisan serve"
+        exec php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
+    }
+    
+    # Give PHP-FPM a moment to start
+    sleep 2
+    
+    # Start Nginx in the foreground
+    echo "Starting Nginx on port ${PORT}..."
+    if command -v nginx &> /dev/null; then
+        exec nginx -g 'daemon off;'
+    else
+        echo "⚠️  Nginx not found, falling back to php artisan serve"
+        exec php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
+    fi
+else
+    echo "⚠️  PHP-FPM not found, using php artisan serve"
+    exec php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
+fi
