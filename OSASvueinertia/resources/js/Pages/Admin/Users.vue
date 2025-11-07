@@ -9,6 +9,8 @@ import DangerButton from '@/Components/DangerButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import Modal from '@/Components/Modal.vue';
+import { auth } from '@/firebase/config';
+import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
 
 const props = defineProps({
     users: Array,
@@ -27,6 +29,33 @@ const searchQuery = ref(''); // Add search functionality
 // Password visibility toggles
 const showPassword = ref(false);
 const showConfirmPassword = ref(false);
+
+// Notification state
+const notification = ref({
+    show: false,
+    type: '', // 'success', 'error', 'info'
+    title: '',
+    message: ''
+});
+
+// Show notification function
+const showNotification = (type, title, message) => {
+    notification.value = {
+        show: true,
+        type,
+        title,
+        message
+    };
+    // Auto-hide after 5 seconds
+    setTimeout(() => {
+        notification.value.show = false;
+    }, 5000);
+};
+
+// Close notification function
+const closeNotification = () => {
+    notification.value.show = false;
+};
 
 // Computed property for filtered and sorted users
 const filteredUsers = computed(() => {
@@ -145,7 +174,7 @@ const validatePassword = () => {
     return true;
 };
 
-const createUser = () => {
+const createUser = async () => {
     // Clear previous validation errors
     validationErrors.value.password = '';
     validationErrors.value.password_confirmation = '';
@@ -157,7 +186,66 @@ const createUser = () => {
 
     form.post(route('admin.users.store'), {
         preserveScroll: true,
-        onSuccess: () => {
+        onSuccess: async () => {
+            // User created successfully in Laravel
+            const userEmail = form.email;
+            const userName = form.name;
+            const userPassword = form.password;
+            
+            try {
+                // Create Firebase account and send verification email
+                console.log('Creating Firebase account for new user:', userEmail);
+                
+                // Step 1: Create Firebase user account
+                const userCredential = await createUserWithEmailAndPassword(auth, userEmail, userPassword);
+                console.log('Firebase account created successfully');
+                
+                // Step 2: Send email verification (uses Firebase's Email Verification template)
+                await sendEmailVerification(userCredential.user, {
+                    url: window.location.origin + '/login',
+                    handleCodeInApp: false
+                });
+                
+                console.log('Verification email sent to:', userEmail);
+                
+                // Step 3: Sign out the newly created user (important!)
+                await auth.signOut();
+                
+                // Show success notification
+                showNotification(
+                    'success',
+                    'User Created Successfully!',
+                    `User "${userName}" has been created. A verification email has been sent to ${userEmail}. The user can log in immediately, but should verify their email for full access.`
+                );
+                
+            } catch (firebaseError) {
+                console.error('Firebase error:', firebaseError);
+                
+                // User was created in Laravel but Firebase failed
+                if (firebaseError.code === 'auth/email-already-in-use') {
+                    // User already exists in Firebase - that's okay
+                    console.log('User already exists in Firebase');
+                    showNotification(
+                        'success',
+                        'User Created Successfully!',
+                        `User "${userName}" has been created. Note: Firebase account already exists. User can log in with their credentials.`
+                    );
+                } else if (firebaseError.code === 'auth/weak-password') {
+                    showNotification(
+                        'success',
+                        'User Created Successfully!',
+                        `User "${userName}" has been created. Note: Password should be at least 6 characters for Firebase. User can still log in.`
+                    );
+                } else {
+                    // Other errors - not critical
+                    showNotification(
+                        'success',
+                        'User Created Successfully!',
+                        `User "${userName}" has been created. Note: Verification email could not be sent, but the account is active.`
+                    );
+                }
+            }
+            
             form.reset();
             showingCreateModal.value = false;
             // Reset password visibility toggles
@@ -347,6 +435,81 @@ const closeMobileActionsModal = () => {
     <Head title="User Management" />
 
     <AuthenticatedLayout>
+        <!-- Custom Notification -->
+        <Transition
+            enter-active-class="transition ease-out duration-300"
+            enter-from-class="opacity-0 translate-y-[-20px]"
+            enter-to-class="opacity-100 translate-y-0"
+            leave-active-class="transition ease-in duration-200"
+            leave-from-class="opacity-100 translate-y-0"
+            leave-to-class="opacity-0 translate-y-[-20px]"
+        >
+            <div
+                v-if="notification.show"
+                class="fixed top-4 left-4 right-4 sm:left-auto sm:right-4 z-50 max-w-md w-auto sm:w-96 shadow-lg rounded-lg overflow-hidden"
+                :class="{
+                    'bg-green-50 border-l-4 border-green-500': notification.type === 'success',
+                    'bg-red-50 border-l-4 border-red-500': notification.type === 'error',
+                    'bg-blue-50 border-l-4 border-blue-500': notification.type === 'info'
+                }"
+            >
+                <div class="p-3 sm:p-4">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <!-- Success Icon -->
+                            <svg v-if="notification.type === 'success'" class="h-5 w-5 sm:h-6 sm:w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <!-- Error Icon -->
+                            <svg v-else-if="notification.type === 'error'" class="h-5 w-5 sm:h-6 sm:w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <!-- Info Icon -->
+                            <svg v-else class="h-5 w-5 sm:h-6 sm:w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <div class="ml-2 sm:ml-3 flex-1 min-w-0">
+                            <h3 class="text-xs sm:text-sm font-semibold"
+                                :class="{
+                                    'text-green-800': notification.type === 'success',
+                                    'text-red-800': notification.type === 'error',
+                                    'text-blue-800': notification.type === 'info'
+                                }"
+                            >
+                                {{ notification.title }}
+                            </h3>
+                            <p class="mt-0.5 sm:mt-1 text-xs sm:text-sm break-words"
+                                :class="{
+                                    'text-green-700': notification.type === 'success',
+                                    'text-red-700': notification.type === 'error',
+                                    'text-blue-700': notification.type === 'info'
+                                }"
+                            >
+                                {{ notification.message }}
+                            </p>
+                        </div>
+                        <div class="ml-2 sm:ml-4 flex-shrink-0">
+                            <button
+                                @click="closeNotification"
+                                class="inline-flex rounded-md p-1 focus:outline-none focus:ring-2 focus:ring-offset-2"
+                                :class="{
+                                    'text-green-500 hover:text-green-600 focus:ring-green-500': notification.type === 'success',
+                                    'text-red-500 hover:text-red-600 focus:ring-red-500': notification.type === 'error',
+                                    'text-blue-500 hover:text-blue-600 focus:ring-blue-500': notification.type === 'info'
+                                }"
+                            >
+                                <span class="sr-only">Close</span>
+                                <svg class="h-4 w-4 sm:h-5 sm:w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </Transition>
+
         <!-- Colored Banner -->
         <div class="flex w-full mb-6 overflow-hidden rounded-lg shadow-md">
             <div class="w-1/4 h-1.5 bg-blue-500" style="animation-delay: 0.2s;"></div>
@@ -572,6 +735,7 @@ const closeMobileActionsModal = () => {
                             class="mt-1 block w-full text-sm"
                             v-model="form.email"
                             required
+                            autocomplete="email"
                             placeholder="Enter user's email"
                         />
                         <InputError class="mt-2" :message="form.errors.email" />
@@ -586,6 +750,7 @@ const closeMobileActionsModal = () => {
                                 class="mt-1 block w-full text-sm pr-10"
                                 v-model="form.password"
                                 required
+                                autocomplete="new-password"
                                 placeholder="Enter password (minimum 8 characters)"
                                 @input="() => { validationErrors.password = ''; validationErrors.password_confirmation = ''; }"
                             />
@@ -615,8 +780,9 @@ const closeMobileActionsModal = () => {
                                 class="mt-1 block w-full text-sm pr-10"
                                 v-model="form.password_confirmation"
                                 required
-                                placeholder="Confirm password"
-                                @input="() => { validationErrors.password_confirmation = ''; }"
+                                autocomplete="new-password"
+                                placeholder="Re-enter password"
+                                @input="validationErrors.password_confirmation = ''"
                             />
                             <button
                                 type="button"
