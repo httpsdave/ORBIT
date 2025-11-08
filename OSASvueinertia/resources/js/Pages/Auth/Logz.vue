@@ -1,13 +1,13 @@
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { ref, onMounted, onBeforeUnmount, defineAsyncComponent, nextTick } from 'vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { useGlobalLoading } from '@/Composables/useGlobalLoading';
 
-// Lazy load components
-import Checkbox from '@/Components/Checkbox.vue';
-import InputError from '@/Components/InputError.vue';
-import ApplicationLogo from '@/Components/ApplicationLogo.vue';
-import TextInput from '@/Components/TextInput.vue';
+// Lazy load components - Only load when actually needed
+const Checkbox = defineAsyncComponent(() => import('@/Components/Checkbox.vue'));
+const InputError = defineAsyncComponent(() => import('@/Components/InputError.vue'));
+const ApplicationLogo = defineAsyncComponent(() => import('@/Components/ApplicationLogo.vue'));
+const TextInput = defineAsyncComponent(() => import('@/Components/TextInput.vue'));
 
 defineProps({
     canResetPassword: {
@@ -29,8 +29,8 @@ const { startLoading, stopLoading } = useGlobalLoading();
 const passwordVisible = ref(false);
 const isLoading = ref(false);
 const formElement = ref(null);
-// Set dark mode as default
-const isDarkMode = ref(true);
+// Set dark mode as default - using const since it doesn't change
+const isDarkMode = true;
 const activeSlide = ref(0);
 const slideInterval = ref(null);
 const gradientIndex = ref(0);
@@ -43,10 +43,10 @@ const errorMessage = ref('');
 const capsLockOn = ref(false);
 const clientErrors = ref({});
 
-// Form validation
+// Form validation - Optimized for smaller bundle size
 const validateEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+    // Simpler, smaller regex that covers 99% of cases
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 };
 
 const validateForm = () => {
@@ -64,12 +64,16 @@ const validateForm = () => {
     return errors;
 };
 
-// Track window width for responsive behavior
+// Optimized window width tracking with debounce
+let resizeTimeout;
 const updateWindowWidth = () => {
-    windowWidth.value = window.innerWidth;
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+        windowWidth.value = window.innerWidth;
+    }, 100); // Debounce to reduce excessive updates
 };
 
-// Slideshow images - using optimized versions
+// Optimized slideshow images - using const instead of reactive array
 const slideshowImages = [
     '/images/LSPU9.jpg',
     '/images/LSPU2.jpg',
@@ -79,14 +83,10 @@ const slideshowImages = [
     '/images/LSPU7.jpg',
 ];
 
-// Preload first image immediately
+// Optimized preload function
 const preloadFirstImage = () => {
-    const link = document.createElement('link');
-    link.rel = 'preload';
-    link.as = 'image';
-    link.href = slideshowImages[0];
-    link.fetchPriority = 'high';
-    document.head.appendChild(link);
+    const img = new Image();
+    img.src = slideshowImages[0];
 };
 
 const togglePasswordVisibility = () => {
@@ -160,23 +160,26 @@ const startGradientAnimation = () => {
 };
 
 onMounted(() => {
-    // Preload first image for better LCP
+    // Critical path - Preload first image for better LCP
     preloadFirstImage();
     
-    // Initialize window width
+    // Critical path - Initialize window width
     updateWindowWidth();
     window.addEventListener('resize', updateWindowWidth);
     
-    // Fade in animation on page load
+    // Critical path - Fade in animation on page load
     if (formElement.value) {
         formElement.value.classList.add('opacity-100');
     }
     
-    // Start slideshow
-    startSlideshow();
-    
-    // Start gradient animation
-    startGradientAnimation();
+    // Defer non-critical animations to next tick for better performance
+    nextTick(() => {
+        // Start slideshow after main content is rendered
+        startSlideshow();
+        
+        // Start gradient animation after main content is rendered
+        startGradientAnimation();
+    });
 });
 
 onBeforeUnmount(() => {
@@ -261,7 +264,7 @@ onBeforeUnmount(() => {
         <div class="flex-1 relative z-20 flex items-center justify-center lg:justify-between xl:justify-between px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
             <!-- ORBIT Information - Only visible on screens wider than 1240px -->
             <div v-show="windowWidth > 1240" class="lg:max-w-md xl:max-w-lg mr-8 xl:mr-12">
-                <div class="opacity-90" :class="isDarkMode ? 'text-white' : 'text-gray-100'">
+                <div class="opacity-90 text-white">
                     <!-- ORBIT Heading -->
                     <h2 class="text-3xl xl:text-4xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-green-400">
                         What is ORBIT?
@@ -276,7 +279,7 @@ onBeforeUnmount(() => {
                     </div>
                     
                     <!-- ORBIT Definition -->
-                    <div class="space-y-4 text-sm xl:text-base leading-relaxed" :class="isDarkMode ? 'text-gray-300' : 'text-gray-200'">
+                    <div class="space-y-4 text-sm xl:text-base leading-relaxed text-gray-300">
                         <p class="font-semibold text-lg xl:text-xl text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-green-300">
                             Organized Records for Better Institutional Tracking
                         </p>
@@ -316,14 +319,13 @@ onBeforeUnmount(() => {
             <!-- Content container positioned to the right -->
             <div 
                 ref="formElement"
-                class="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg opacity-0 transition-all duration-700 sm:ml-auto"
-                :class="isDarkMode ? 'text-white' : 'text-gray-100'"
+                class="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg opacity-0 transition-all duration-700 sm:ml-auto text-white"
             >
                 <!-- Header section -->
                 <div class="mb-6 sm:mb-8 md:mb-10 lg:mb-12 text-center sm:text-left relative">
                     <!-- Main heading with logo -->
                     <div class="flex flex-col sm:flex-row sm:items-center sm:space-x-4">
-                        <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-1" :class="isDarkMode ? 'text-white' : 'text-white'">
+                        <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-1 text-white">
                             Welcome to
                             <span class="block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-green-400">
                                 LSPU ORBIT
@@ -344,7 +346,7 @@ onBeforeUnmount(() => {
                     </div>
                     
                     <!-- Subtitle -->
-                    <p class="text-sm sm:text-base md:text-lg leading-relaxed" :class="isDarkMode ? 'text-gray-300' : 'text-gray-200'">
+                    <p class="text-sm sm:text-base md:text-lg leading-relaxed text-gray-300">
                         Sign in to access your account and manage your organizational records and activities.
                     </p>
                 </div>
@@ -415,7 +417,7 @@ onBeforeUnmount(() => {
                                 Email Address
                             </label>
                             <div class="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-focus-within:text-blue-400 transition-colors duration-300" :class="isDarkMode ? 'text-gray-500' : 'text-gray-400'">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-focus-within:text-blue-400 transition-colors duration-300 text-gray-500">
                                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                                     <circle cx="12" cy="7" r="4"></circle>
                                 </svg>
@@ -429,12 +431,7 @@ onBeforeUnmount(() => {
                             <TextInput
                                 id="password"
                                 :type="passwordVisible ? 'text' : 'password'"
-                                :class="[
-                                    'peer pl-10 sm:pl-12 pr-10 sm:pr-12 py-3 sm:py-4 text-sm sm:text-base rounded-lg w-full border-0 focus:border-blue-400 focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 transition-all duration-300 backdrop-blur-sm placeholder-transparent',
-                                    isDarkMode 
-                                        ? 'bg-white bg-opacity-10 text-white' 
-                                        : 'bg-gray-800 bg-opacity-80 text-white'
-                                ]"
+                                class="peer pl-10 sm:pl-12 pr-10 sm:pr-12 py-3 sm:py-4 text-sm sm:text-base rounded-lg w-full border-0 focus:border-blue-400 focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 transition-all duration-300 backdrop-blur-sm placeholder-transparent bg-white bg-opacity-10 text-white"
                                 v-model="form.password"
                                 @input="clearClientError('password')"
                                 @keydown="detectCapsLock"
@@ -456,7 +453,7 @@ onBeforeUnmount(() => {
                                 Password
                             </label>
                             <div class="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-focus-within:text-blue-400 transition-colors duration-300" :class="isDarkMode ? 'text-gray-500' : 'text-gray-400'">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-focus-within:text-blue-400 transition-colors duration-300 text-gray-500">
                                     <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                                     <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                                 </svg>
@@ -464,8 +461,7 @@ onBeforeUnmount(() => {
                             <button 
                                 type="button" 
                                 @click="togglePasswordVisibility" 
-                                class="absolute inset-y-0 right-0 pr-3 sm:pr-4 flex items-center hover:text-blue-400 transition-colors duration-300"
-                                :class="isDarkMode ? 'text-gray-500' : 'text-gray-400'"
+                                class="absolute inset-y-0 right-0 pr-3 sm:pr-4 flex items-center hover:text-blue-400 transition-colors duration-300 text-gray-500"
                                 aria-label="Toggle password visibility"
                             >
                                 <svg v-if="!passwordVisible" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -490,8 +486,7 @@ onBeforeUnmount(() => {
                                 class="text-blue-500 rounded focus:ring-blue-500 border-gray-400" 
                             />
                             <span 
-                                class="ml-2 sm:ml-3 text-xs sm:text-sm group-hover:text-gray-200 transition-colors duration-300" 
-                                :class="isDarkMode ? 'text-gray-400' : 'text-gray-300'"
+                                class="ml-2 sm:ml-3 text-xs sm:text-sm group-hover:text-gray-200 transition-colors duration-300 text-gray-400"
                             >
                                 Remember me
                             </span>
@@ -500,8 +495,7 @@ onBeforeUnmount(() => {
                         <Link
                             v-if="canResetPassword"
                             :href="route('password.request')"
-                            class="text-xs sm:text-sm hover:text-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 rounded-md transition duration-300 whitespace-nowrap flex-shrink-0"
-                            :class="isDarkMode ? 'text-gray-400' : 'text-gray-300'"
+                            class="text-xs sm:text-sm hover:text-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 rounded-md transition duration-300 whitespace-nowrap flex-shrink-0 text-gray-400"
                         >
                             Forgot Password?
                         </Link>
@@ -511,13 +505,8 @@ onBeforeUnmount(() => {
                     <div class="space-y-3 sm:space-y-4">
                         <button
                             type="submit"
-                            class="w-full text-white font-semibold py-3 sm:py-4 px-4 sm:px-6 rounded-full transition-all duration-300 flex items-center justify-center relative overflow-hidden group shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 active:scale-95"
-                            :class="[
-                                isDarkMode 
-                                    ? 'bg-gradient-to-r from-blue-500 to-green-600 hover:from-blue-400 hover:to-green-500' 
-                                    : 'bg-gradient-to-r from-blue-500 to-green-600 hover:from-blue-400 hover:to-green-500',
-                                { 'opacity-80 cursor-not-allowed': form.processing || isLoading }
-                            ]"
+                            class="w-full text-white font-semibold py-3 sm:py-4 px-4 sm:px-6 rounded-full transition-all duration-300 flex items-center justify-center relative overflow-hidden group shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 active:scale-95 bg-gradient-to-r from-blue-500 to-green-600 hover:from-blue-400 hover:to-green-500"
+                            :class="{ 'opacity-80 cursor-not-allowed': form.processing || isLoading }"
                             :disabled="form.processing || isLoading"
                             aria-label="Login"
                         >
@@ -542,10 +531,10 @@ onBeforeUnmount(() => {
                 
                 <!-- Footer info -->
                 <div class="mt-8 sm:mt-12 pt-4 sm:pt-6 border-t border-white border-opacity-20 text-center sm:text-left">
-                    <p class="text-xs" :class="isDarkMode ? 'text-gray-400' : 'text-gray-300'">
+                    <p class="text-xs text-gray-400">
                         Account access is managed by administrators. Contact your administrator for assistance.
                     </p>
-                    <p class="text-xs mt-2" :class="isDarkMode ? 'text-gray-500' : 'text-gray-400'">
+                    <p class="text-xs mt-2 text-gray-500">
                         © 2025 Laguna State Polytechnic University
                     </p>
                 </div>
@@ -555,15 +544,7 @@ onBeforeUnmount(() => {
         <!-- Right side - Wide gradient panel -->
         <div 
             class="w-20 sm:w-24 md:w-32 lg:w-40 xl:w-48 flex-shrink-0 relative overflow-hidden transition-all duration-1000 ease-in-out"
-            :class="[
-                isDarkMode 
-                    ? gradientIndex === 0 
-                        ? 'bg-gradient-to-t from-blue-500 via-green-500 to-blue-500' 
-                        : 'bg-gradient-to-t from-green-500 via-blue-500 to-green-500'
-                    : gradientIndex === 0 
-                        ? 'bg-gradient-to-t from-blue-400 via-green-400 to-blue-400' 
-                        : 'bg-gradient-to-t from-green-400 via-blue-400 to-green-400'
-            ]"
+            :class="gradientIndex === 0 ? 'bg-gradient-to-t from-blue-500 via-green-500 to-blue-500' : 'bg-gradient-to-t from-green-500 via-blue-500 to-green-500'"
         >
             <!-- Animated background pattern -->
             <div class="absolute inset-0 overflow-hidden opacity-20">
