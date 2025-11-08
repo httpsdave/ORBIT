@@ -212,7 +212,7 @@ const deselectAllMultiSelect = (columnKey) => {
 
 // Pagination state
 const currentPage = ref(1);
-const activitiesPerPage = ref(50);
+const activitiesPerPage = ref(10);
 const pageSizeOptions = [10, 25, 50, 100];
 
 // Optimized filter function to reduce redundant string operations
