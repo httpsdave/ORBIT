@@ -69,7 +69,7 @@ const updateWindowWidth = () => {
     windowWidth.value = window.innerWidth;
 };
 
-// Slideshow images
+// Slideshow images - using optimized versions
 const slideshowImages = [
     '/images/LSPU9.jpg',
     '/images/LSPU2.jpg',
@@ -78,6 +78,16 @@ const slideshowImages = [
     '/images/LSPU5.jpg',
     '/images/LSPU7.jpg',
 ];
+
+// Preload first image immediately
+const preloadFirstImage = () => {
+    const link = document.createElement('link');
+    link.rel = 'preload';
+    link.as = 'image';
+    link.href = slideshowImages[0];
+    link.fetchPriority = 'high';
+    document.head.appendChild(link);
+};
 
 const togglePasswordVisibility = () => {
     passwordVisible.value = !passwordVisible.value;
@@ -150,6 +160,9 @@ const startGradientAnimation = () => {
 };
 
 onMounted(() => {
+    // Preload first image for better LCP
+    preloadFirstImage();
+    
     // Initialize window width
     updateWindowWidth();
     window.addEventListener('resize', updateWindowWidth);
@@ -190,36 +203,57 @@ onBeforeUnmount(() => {
         <link rel="dns-prefetch" href="https://fonts.bunny.net" />
         <link rel="preconnect" href="https://fonts.bunny.net" crossorigin />
         
-        <!-- Preload the first slideshow image for better LCP -->
-        <link rel="preload" as="image" :href="slideshowImages[0]" fetchpriority="high" />
+        <!-- Preload the first slideshow image for better LCP - Critical for performance -->
+        <link rel="preload" as="image" :href="slideshowImages[0]" fetchpriority="high" imagesrcset="/images/LSPU9.jpg" imagesizes="100vw" />
+        
+        <!-- Preconnect to image domain if using external CDN -->
+        <link rel="dns-prefetch" href="/" />
     </Head>
     
     <!-- Full screen container with split layout -->
     <div class="min-h-screen flex relative overflow-hidden">
         <!-- Background slideshow for left side -->
         <div class="absolute inset-0 right-20 sm:right-24 md:right-32 lg:right-40 xl:right-48 z-0 bg-gray-900">
+            <!-- First image - always rendered for LCP optimization -->
+            <div 
+                v-show="activeSlide === 0"
+                class="absolute inset-0"
+            >
+                <!-- Use img tag for better LCP - First image with highest priority -->
+                <img 
+                    :src="slideshowImages[0]"
+                    alt="LSPU Campus"
+                    class="w-full h-full object-cover object-center filter brightness-[0.3] contrast-[1.2]"
+                    loading="eager"
+                    fetchpriority="high"
+                    width="1920"
+                    height="1080"
+                    decoding="async"
+                />
+            </div>
+            
+            <!-- Other slideshow images - lazy loaded -->
             <transition-group name="slideshow-fade">
                 <div 
-                    v-for="(image, index) in slideshowImages" 
-                    :key="index" 
-                    v-show="activeSlide === index"
+                    v-for="(image, index) in slideshowImages.slice(1)" 
+                    :key="index + 1" 
+                    v-show="activeSlide === index + 1"
                     class="absolute inset-0"
                 >
-                    <!-- Use img tag for better LCP -->
                     <img 
                         :src="image"
                         alt="LSPU Campus"
-                        class="w-full h-full object-cover object-center"
-                        :class="{ 'filter': true, 'brightness-[0.3] contrast-[1.2]': isDarkMode, 'brightness-[0.4] contrast-[1.1]': !isDarkMode }"
-                        :loading="index === 0 ? 'eager' : 'lazy'"
-                        :fetchpriority="index === 0 ? 'high' : 'low'"
+                        class="w-full h-full object-cover object-center filter brightness-[0.3] contrast-[1.2]"
+                        loading="lazy"
+                        fetchpriority="low"
                         width="1920"
                         height="1080"
+                        decoding="async"
                     />
                 </div>
             </transition-group>
             <!-- Subtle overlay -->
-            <div class="absolute inset-0" :class="isDarkMode ? 'bg-gray-900 bg-opacity-40' : 'bg-white bg-opacity-20'"></div>
+            <div class="absolute inset-0 bg-gray-900 bg-opacity-40"></div>
         </div>
         
         <!-- Left side - Main content area -->
