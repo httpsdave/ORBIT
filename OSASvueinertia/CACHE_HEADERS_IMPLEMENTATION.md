@@ -75,7 +75,7 @@ php -S localhost:8000 -t public router.php
 
 Then check headers:
 ```bash
-curl -I http://localhost:8000/images/lspu_logo_better.png
+curl -I http://localhost:8000/images/lspu_logo_better.webp
 ```
 
 Should see:

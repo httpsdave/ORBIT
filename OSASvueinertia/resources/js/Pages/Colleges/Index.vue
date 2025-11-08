@@ -156,7 +156,7 @@ const getCollegeLogo = (acronym, customLogoPath = null) => {
     }
     
     if (!acronym) {
-        return '/images/lspu_logo_better.png';
+        return '/images/lspu_logo_better.webp';
     }
     
     const logoMap = {
@@ -170,13 +170,13 @@ const getCollegeLogo = (acronym, customLogoPath = null) => {
         'CBAA': '/images/cbaa-logo.jpg'
     };
     
-    return logoMap[acronym.toUpperCase()] || '/images/lspu_logo_better.png'; // Default fallback
+    return logoMap[acronym.toUpperCase()] || '/images/lspu_logo_better.webp'; // Default fallback
 };
 
 const handleImageError = (event) => {
     // Fallback to default logo if image fails to load
     if (event && event.target) {
-        event.target.src = '/images/lspu_logo_better.png';
+        event.target.src = '/images/lspu_logo_better.webp';
     }
 };
 </script>

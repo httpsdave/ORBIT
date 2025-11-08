@@ -182,7 +182,7 @@ onBeforeUnmount(() => {
                 
                 <div class="relative z-10 flex flex-col items-center transform transition-all duration-500 hover:scale-105 p-6">
                     <div class="px-0.0 bg-white bg-opacity-10 backdrop-blur-sm rounded-full mb-6 shadow-lg hover:shadow-white/20 transition-all duration-300">
-                        <img src="/images/lspu_logo_better.png" alt="LSPU Logo" class="w-24 h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 object-cover filter drop-shadow-lg">
+                        <img src="/images/lspu_logo_better.webp" alt="LSPU Logo" class="w-24 h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 object-cover filter drop-shadow-lg">
                     </div>
                     
                     <div class="text-left mb-8">
@@ -251,7 +251,7 @@ onBeforeUnmount(() => {
                         style="opacity:0.85; pointer-events: none; transition: background 1s;"
                     ></div>
                     <div class="relative z-20 flex items-center">
-                        <img src="/images/lspu_logo_better.png" alt="LSPU Logo" class="w-20 h-20 mr-5">
+                        <img src="/images/lspu_logo_better.webp" alt="LSPU Logo" class="w-20 h-20 mr-5">
                         <div class="text-white">
                             <h2 class="text-3xl font-bold drop-shadow">LSPU ORBIT</h2>
                             <div class="h-0.5 w-20 bg-white opacity-70"></div>

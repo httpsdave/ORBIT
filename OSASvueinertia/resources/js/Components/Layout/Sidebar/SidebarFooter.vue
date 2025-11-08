@@ -31,7 +31,7 @@ const props = defineProps({
     </div>
     <!-- LSPU logo centered below the colored banner -->
     <div class="p-4">
-      <img src="/images/lspu_logo_better.png" alt="LSPU Logo" class="h-12 w-auto" />
+      <img src="/images/lspu_logo_better.webp" alt="LSPU Logo" class="h-12 w-auto" />
     </div>
   </div>
 </template>

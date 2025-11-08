@@ -94,7 +94,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <img src="{{ asset('images/lspu_logo_better.png') }}" alt="LSPU Logo" class="logo">
+            <img src="{{ asset('images/lspu_logo_better.webp') }}" alt="LSPU Logo" class="logo">
             <h1 class="title">Password Reset Request</h1>
             <p class="subtitle">LSPU ORBIT System</p>
         </div>

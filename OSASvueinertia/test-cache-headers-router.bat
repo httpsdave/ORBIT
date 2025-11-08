@@ -9,7 +9,7 @@ timeout /t 3 /nobreak >nul
 echo.
 echo Testing image cache headers:
 echo =============================
-curl -I http://localhost:8001/images/lspu_logo_better.png 2>nul | findstr /i "cache expires"
+curl -I http://localhost:8001/images/lspu_logo_better.webp 2>nul | findstr /i "cache expires"
 
 echo.
 echo Testing CSS cache headers:

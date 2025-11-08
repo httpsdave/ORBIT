@@ -479,7 +479,7 @@ const emailDisabled = computed(() => {
                         <div class="flex-shrink-0">
                             <div class="relative group">
                                 <img 
-                                    :src="photoPreview || '/images/lspu_logo_better.png'" 
+                                    :src="photoPreview || '/images/lspu_logo_better.webp'" 
                                     class="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover border-4 border-blue-200 dark:border-blue-600 shadow-md transition-all duration-200 group-hover:border-blue-300 dark:group-hover:border-blue-500" 
                                 />
                                 <div 

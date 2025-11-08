@@ -220,7 +220,7 @@
                 <div class="flex-shrink-0">
                   <div class="relative group">
                     <img 
-                      :src="logoPreview || '/images/lspu_logo_better.png'" 
+                      :src="logoPreview || '/images/lspu_logo_better.webp'" 
                       class="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover border-4 border-blue-200 shadow-md transition-all duration-200 group-hover:border-blue-300" 
                     />
                     <div 
@@ -717,7 +717,7 @@ export default {
       }
       
       if (!acronym) {
-        return '/images/lspu_logo_better.png';
+        return '/images/lspu_logo_better.webp';
       }
       
       const logoMap = {
@@ -731,13 +731,13 @@ export default {
         'CBAA': '/images/cbaa-logo.jpg'
       };
       
-      return logoMap[acronym.toUpperCase()] || '/images/lspu_logo_better.png'; // Default fallback
+      return logoMap[acronym.toUpperCase()] || '/images/lspu_logo_better.webp'; // Default fallback
     },
     
     handleImageError(event) {
       // Fallback to default logo if image fails to load
       if (event && event.target) {
-        event.target.src = '/images/lspu_logo_better.png';
+        event.target.src = '/images/lspu_logo_better.webp';
       }
     },
     

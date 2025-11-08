@@ -39,7 +39,7 @@ echo.
 echo ========================================
 echo Testing Images
 echo ========================================
-curl -I %BASE_URL%/images/lspu_logo_better.png 2>nul | findstr /i "cache-control expires"
+curl -I %BASE_URL%/images/lspu_logo_better.webp 2>nul | findstr /i "cache-control expires"
 echo.
 
 echo ========================================

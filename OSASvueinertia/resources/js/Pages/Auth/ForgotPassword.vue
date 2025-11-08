@@ -309,7 +309,7 @@ onBeforeUnmount(() => {
             <!-- Vertical logo and text -->
             <div class="absolute inset-0 flex flex-col items-center justify-center text-white p-2 sm:p-3">
                 <div class="mb-4 sm:mb-6 lg:mb-8 xl:mb-12">
-                    <img src="/images/lspu_logo_better.png" alt="LSPU Logo" class="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 xl:w-24 xl:h-24 object-cover filter drop-shadow-lg">
+                    <img src="/images/lspu_logo_better.webp" alt="LSPU Logo" class="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 xl:w-24 xl:h-24 object-cover filter drop-shadow-lg">
                 </div>
                 
                 <!-- Vertical text -->
