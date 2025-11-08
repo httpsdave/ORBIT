@@ -1,11 +1,13 @@
 <script setup>
+import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { Head, Link, useForm } from '@inertiajs/vue3';
+import { useGlobalLoading } from '@/Composables/useGlobalLoading';
+
+// Lazy load components
 import Checkbox from '@/Components/Checkbox.vue';
 import InputError from '@/Components/InputError.vue';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import TextInput from '@/Components/TextInput.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
-import { ref, onMounted, onBeforeUnmount } from 'vue';
-import { useGlobalLoading } from '@/Composables/useGlobalLoading';
 
 defineProps({
     canResetPassword: {
