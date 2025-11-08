@@ -482,15 +482,15 @@ onBeforeUnmount(() => {
                     </div>
 
                     <!-- Remember me and forgot password -->
-                    <div class="flex flex-col space-y-3 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
-                        <label class="flex items-center group cursor-pointer">
+                    <div class="flex flex-row items-center justify-between space-x-2 min-h-[2.5rem]">
+                        <label class="flex items-center group cursor-pointer flex-shrink-0">
                             <Checkbox 
                                 name="remember" 
                                 v-model:checked="form.remember" 
                                 class="text-blue-500 rounded focus:ring-blue-500 border-gray-400" 
                             />
                             <span 
-                                class="ml-2 sm:ml-3 text-xs sm:text-sm group-hover:text-gray-200 transition-colors duration-300" 
+                                class="ml-2 text-xs group-hover:text-gray-200 transition-colors duration-300" 
                                 :class="isDarkMode ? 'text-gray-400' : 'text-gray-300'"
                             >
                                 Remember me
@@ -500,7 +500,7 @@ onBeforeUnmount(() => {
                         <Link
                             v-if="canResetPassword"
                             :href="route('password.request')"
-                            class="text-xs sm:text-sm hover:text-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 rounded-md transition duration-300"
+                            class="text-xs hover:text-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 rounded-md transition duration-300 whitespace-nowrap flex-shrink-0"
                             :class="isDarkMode ? 'text-gray-400' : 'text-gray-300'"
                         >
                             Forgot Password?
