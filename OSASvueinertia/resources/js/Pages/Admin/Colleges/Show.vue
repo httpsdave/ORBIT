@@ -2,10 +2,10 @@
     <AuthenticatedLayout>
         <Head :title="college.name" />
 
-        <div class="py-8 bg-gray-50 dark:bg-gray-900">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="py-4 sm:py-8 bg-gray-50 dark:bg-gray-900">
+            <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
                 <!-- Animated colored banner -->
-                <div class="flex w-full mb-6 overflow-hidden rounded-lg shadow-md">
+                <div class="flex w-full mb-4 sm:mb-6 overflow-hidden rounded-lg shadow-md">
                     <div class="w-1/4 h-1.5 bg-blue-500" style="animation-delay: 0.2s;"></div>
                     <div class="w-1/4 h-1.5 bg-green-500" style="animation-delay: 0.4s;"></div>
                     <div class="w-1/4 h-1.5 bg-yellow-500" style="animation-delay: 0.6s;"></div>
@@ -13,7 +13,7 @@
                 </div>
 
                 <!-- Back button -->
-                <div class="mb-6">
+                <div class="mb-4 sm:mb-6">
                     <Link :href="route('admin.colleges.index')" class="inline-flex items-center text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -23,9 +23,9 @@
                 </div>
 
                 <!-- College details card -->
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden mb-8">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden mb-6 sm:mb-8">
                     <!-- College header with custom accent color -->
-                    <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 relative">
+                    <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 relative">
                         <div class="absolute top-0 left-0 w-full h-1" :class="{
                             'bg-blue-500': college.id % 4 === 0,
                             'bg-green-500': college.id % 4 === 1,  
@@ -33,33 +33,33 @@
                             'bg-red-500': college.id % 4 === 3,
                         }"></div>
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between pt-2">
-                            <div>
-                                <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-gray-100">{{ college.name }}</h1>
+                            <div class="mb-3 sm:mb-0">
+                                <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800 dark:text-gray-100">{{ college.name }}</h1>
                                 <div v-if="college.acronym" class="text-gray-600 dark:text-gray-400 text-sm sm:text-base mt-1">
                                     {{ college.acronym }}
                                 </div>
                             </div>
-                            <div class="mt-2 sm:mt-0 flex items-center space-x-3">
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
+                            <div class="mt-2 sm:mt-0 flex items-center gap-2 sm:gap-3 flex-wrap">
+                                <span class="inline-flex items-center px-2.5 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
                                     {{ college.users.length }} {{ college.users.length === 1 ? 'Organization' : 'Organizations' }}
                                 </span>
                                 <!-- Admin Actions -->
-                                <div class="flex space-x-2">
+                                <div class="flex gap-2">
                                     <button 
                                         @click="openEditModal(college)" 
-                                        class="p-2 bg-gray-100 dark:bg-gray-600 border border-gray-300 dark:border-gray-500 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 dark:focus:ring-offset-gray-800 transition-colors duration-150 ease-in-out"
+                                        class="p-1.5 sm:p-2 bg-gray-100 dark:bg-gray-600 border border-gray-300 dark:border-gray-500 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 dark:focus:ring-offset-gray-800 transition-colors duration-150 ease-in-out"
                                         title="Edit College"
                                     >
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 sm:h-4 sm:w-4 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                         </svg>
                                     </button>
                                     <button 
                                         @click="openDeleteModal(college)" 
-                                        class="p-2 bg-gray-100 dark:bg-gray-600 border border-gray-300 dark:border-gray-500 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 dark:focus:ring-offset-gray-800 transition-colors duration-150 ease-in-out"
+                                        class="p-1.5 sm:p-2 bg-gray-100 dark:bg-gray-600 border border-gray-300 dark:border-gray-500 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 dark:focus:ring-offset-gray-800 transition-colors duration-150 ease-in-out"
                                         title="Delete College"
                                     >
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-500 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 sm:h-4 sm:w-4 text-red-500 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                         </svg>
                                     </button>
@@ -69,36 +69,36 @@
                     </div>
 
                     <!-- College description -->
-                    <div class="px-6 py-4" v-if="college.description">
-                        <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2">About</h2>
-                        <p class="text-gray-600 dark:text-gray-400">{{ college.description }}</p>
+                    <div class="px-4 sm:px-6 py-3 sm:py-4" v-if="college.description">
+                        <h2 class="text-base sm:text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2">About</h2>
+                        <p class="text-sm sm:text-base text-gray-600 dark:text-gray-400">{{ college.description }}</p>
                     </div>
-                    <div class="px-6 py-4 italic text-gray-500 dark:text-gray-400" v-else>
+                    <div class="px-4 sm:px-6 py-3 sm:py-4 italic text-sm sm:text-base text-gray-500 dark:text-gray-400" v-else>
                         No description available for this college.
                     </div>
                 </div>
 
                 <!-- Student Organizations section -->
-                <div class="mb-8">
-                    <div class="flex items-center justify-between mb-6">
-                        <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Student Organizations</h2>
+                <div class="mb-6 sm:mb-8">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 mb-4 sm:mb-6">
+                        <h2 class="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-100">Student Organizations</h2>
                         <Link 
                             :href="route('admin.student-orgs.index')" 
-                            class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-sm font-medium text-white rounded-xl shadow-md hover:shadow-blue-300/30 hover:from-blue-400 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 active:from-blue-600 active:to-blue-700 transition-all duration-300 relative overflow-hidden group"
+                            class="inline-flex items-center justify-center px-3 sm:px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-xs sm:text-sm font-medium text-white rounded-xl shadow-md hover:shadow-blue-300/30 hover:from-blue-400 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 active:from-blue-600 active:to-blue-700 transition-all duration-300 relative overflow-hidden group"
                         >
                             <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                             </svg>
                             Manage Organizations
                         </Link>
                     </div>
 
-                    <div v-if="college.users.length === 0" class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-8 text-center">
-                        <div class="text-gray-500 dark:text-gray-400">No student organizations found for this college.</div>
+                    <div v-if="college.users.length === 0" class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 sm:p-8 text-center">
+                        <div class="text-sm sm:text-base text-gray-500 dark:text-gray-400">No student organizations found for this college.</div>
                     </div>
 
-                    <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                         <div
                             v-for="org in college.users"
                             :key="org.id"
@@ -107,9 +107,9 @@
                             <!-- Status indicator at top -->
                             <div class="w-full h-1.5" :class="org.status === 'active' ? 'bg-green-500' : 'bg-red-500'"></div>
                             
-                            <div class="p-5 flex-1 flex flex-col">
+                            <div class="p-4 sm:p-5 flex-1 flex flex-col">
                                 <div class="flex justify-between items-start">
-                                    <h3 class="font-semibold text-gray-800 dark:text-gray-100">
+                                    <h3 class="font-semibold text-sm sm:text-base text-gray-800 dark:text-gray-100">
                                         <Link 
                                             :href="route('admin.student-orgs.show', org.id)" 
                                             class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
@@ -118,21 +118,21 @@
                                         </Link>
                                     </h3>
                                     <span v-if="org.college && org.college.acronym" 
-                                          class="ml-2 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-xs px-2 py-1 rounded-md">
+                                          class="ml-2 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-md flex-shrink-0">
                                         {{ org.college.acronym }}
                                     </span>
                                 </div>
                                 
                                 <!-- Logo centered -->
-                                <div v-if="org.profile_photo_url" class="flex justify-center my-4">
+                                <div v-if="org.profile_photo_url" class="flex justify-center my-3 sm:my-4">
                                     <img
                                         :src="org.profile_photo_url"
                                         :alt="`${org.name} logo`"
-                                        class="h-20 w-20 object-cover rounded-full border border-gray-200 dark:border-gray-600 shadow-inner bg-gray-50 dark:bg-gray-700"
+                                        class="h-16 w-16 sm:h-20 sm:w-20 object-cover rounded-full border border-gray-200 dark:border-gray-600 shadow-inner bg-gray-50 dark:bg-gray-700"
                                     />
                                 </div>
-                                <div v-else class="flex justify-center my-4">
-                                    <div class="h-20 w-20 rounded-full bg-gradient-to-br from-blue-500 to-green-400 flex items-center justify-center text-white text-2xl font-medium shadow-inner select-none">
+                                <div v-else class="flex justify-center my-3 sm:my-4">
+                                    <div class="h-16 w-16 sm:h-20 sm:w-20 rounded-full bg-gradient-to-br from-blue-500 to-green-400 flex items-center justify-center text-white text-xl sm:text-2xl font-medium shadow-inner select-none">
                                         {{ org.name ? org.name.charAt(0).toUpperCase() : '?' }}
                                     </div>
                                 </div>
@@ -432,6 +432,7 @@ export default {
 .line-clamp-3 {
   display: -webkit-box;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
