@@ -73,20 +73,62 @@ const updateWindowWidth = () => {
     }, 100); // Debounce to reduce excessive updates
 };
 
-// Optimized slideshow images - using const instead of reactive array
+// Optimized slideshow images with responsive sources
 const slideshowImages = [
-    '/images/LSPU9.webp',
-    '/images/LSPU2.webp',
-    '/images/LSPU3.webp',
-    '/images/LSPU6.webp',
-    '/images/LSPU5.webp',
-    '/images/LSPU7.webp',
+    {
+        id: 'campus-1',
+        src: '/images/optimized/LSPU9.webp',
+        mobileSrc: '/images/optimized/LSPU9-mobile.webp',
+        alt: 'LSPU Campus aerial view',
+    },
+    {
+        id: 'campus-2',
+        src: '/images/optimized/LSPU2.webp',
+        mobileSrc: '/images/optimized/LSPU2-mobile.webp',
+        alt: 'LSPU Campus student plaza',
+    },
+    {
+        id: 'campus-3',
+        src: '/images/optimized/LSPU3.webp',
+        mobileSrc: '/images/optimized/LSPU3-mobile.webp',
+        alt: 'LSPU campus courtyard',
+    },
+    {
+        id: 'campus-4',
+        src: '/images/optimized/LSPU6.webp',
+        mobileSrc: '/images/optimized/LSPU6-mobile.webp',
+        alt: 'Students at LSPU grounds',
+    },
+    {
+        id: 'campus-5',
+        src: '/images/optimized/LSPU5.webp',
+        mobileSrc: '/images/optimized/LSPU5-mobile.webp',
+        alt: 'LSPU campus facade',
+    },
+    {
+        id: 'campus-6',
+        src: '/images/optimized/LSPU7.webp',
+        mobileSrc: '/images/optimized/LSPU7-mobile.webp',
+        alt: 'LSPU campus skyline',
+    },
 ];
+
+const slideshowSizes = '(max-width: 1024px) 100vw, 55vw';
+
+const getSrcSet = (image) => {
+    if (!image || !image.mobileSrc) {
+        return undefined;
+    }
+    return `${image.mobileSrc} 640w, ${image.src} 1920w`;
+};
 
 // Optimized preload function
 const preloadFirstImage = () => {
+    const firstImage = slideshowImages[0];
+    if (!firstImage) return;
+
     const img = new Image();
-    img.src = slideshowImages[0];
+    img.src = firstImage.src;
 };
 
 const togglePasswordVisibility = () => {
@@ -207,7 +249,14 @@ onBeforeUnmount(() => {
         <link rel="preconnect" href="https://fonts.bunny.net" crossorigin />
         
         <!-- Preload the first slideshow image for better LCP - Critical for performance -->
-        <link rel="preload" as="image" :href="slideshowImages[0]" fetchpriority="high" imagesrcset="/images/LSPU9.webp" imagesizes="100vw" />
+        <link
+            rel="preload"
+            as="image"
+            :href="slideshowImages[0]?.src"
+            fetchpriority="high"
+            :imagesrcset="getSrcSet(slideshowImages[0])"
+            :imagesizes="slideshowSizes"
+        />
         
         <!-- Preconnect to image domain if using external CDN -->
         <link rel="dns-prefetch" href="/" />
@@ -224,8 +273,10 @@ onBeforeUnmount(() => {
             >
                 <!-- Use img tag for better LCP - First image with highest priority -->
                 <img 
-                    :src="slideshowImages[0]"
-                    alt="LSPU Campus"
+                    :src="slideshowImages[0].src"
+                    :srcset="getSrcSet(slideshowImages[0])"
+                    :sizes="slideshowSizes"
+                    :alt="slideshowImages[0].alt"
                     class="w-full h-full object-cover object-center filter brightness-[0.3] contrast-[1.2]"
                     loading="eager"
                     fetchpriority="high"
@@ -239,13 +290,15 @@ onBeforeUnmount(() => {
             <transition-group name="slideshow-fade">
                 <div 
                     v-for="(image, index) in slideshowImages.slice(1)" 
-                    :key="index + 1" 
+                    :key="image.id" 
                     v-show="activeSlide === index + 1"
                     class="absolute inset-0"
                 >
                     <img 
-                        :src="image"
-                        alt="LSPU Campus"
+                        :src="image.src"
+                        :srcset="getSrcSet(image)"
+                        :sizes="slideshowSizes"
+                        :alt="image.alt"
                         class="w-full h-full object-cover object-center filter brightness-[0.3] contrast-[1.2]"
                         loading="lazy"
                         fetchpriority="low"
@@ -558,7 +611,16 @@ onBeforeUnmount(() => {
             <!-- Vertical logo and text -->
             <div class="absolute inset-0 flex flex-col items-center justify-center text-white p-2 sm:p-3">
                 <div class="mb-4 sm:mb-6 lg:mb-8 xl:mb-12">
-                    <img src="/images/lspu_logo_better.webp" alt="LSPU Logo" class="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 xl:w-24 xl:h-24 object-cover filter drop-shadow-lg">
+                    <img
+                        src="/images/optimized/lspu_logo_better-96.webp"
+                        srcset="/images/optimized/lspu_logo_better-96.webp 96w, /images/optimized/lspu_logo_better-192.webp 192w, /images/optimized/lspu_logo_better-256.webp 256w"
+                        sizes="(min-width: 1280px) 96px, (min-width: 1024px) 80px, (min-width: 768px) 64px, (min-width: 640px) 48px, 40px"
+                        alt="LSPU Logo"
+                        width="96"
+                        height="96"
+                        decoding="async"
+                        class="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 xl:w-24 xl:h-24 object-cover filter drop-shadow-lg"
+                    >
                 </div>
                 
                 <!-- Vertical text -->
@@ -587,7 +649,7 @@ onBeforeUnmount(() => {
         <div class="absolute top-4 sm:top-6 left-4 sm:left-6 flex space-x-1.5 sm:space-x-2 z-30">
             <button 
                 v-for="(_, index) in slideshowImages" 
-                :key="index"
+                :key="slideshowImages[index].id"
                 @click="activeSlide = index" 
                 class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full transition-all duration-300"
                 :class="[
