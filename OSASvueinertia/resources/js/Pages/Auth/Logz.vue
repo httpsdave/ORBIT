@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onBeforeUnmount, defineAsyncComponent, nextTick } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount, defineAsyncComponent, nextTick } from 'vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { useGlobalLoading } from '@/Composables/useGlobalLoading';
 
@@ -114,6 +114,27 @@ const slideshowImages = [
 ];
 
 const slideshowSizes = '(max-width: 1024px) 100vw, 55vw';
+
+const heroImageUrl = computed(() => {
+    const firstImage = slideshowImages[0];
+    if (!firstImage) {
+        return '';
+    }
+    if (windowWidth.value <= 1024 && firstImage.mobileSrc) {
+        return firstImage.mobileSrc;
+    }
+    return firstImage.src;
+});
+
+const getSlideBackground = (image) => {
+    if (!image) {
+        return {};
+    }
+    const source = windowWidth.value <= 1024 && image.mobileSrc ? image.mobileSrc : image.src;
+    return {
+        backgroundImage: `url('${source}')`
+    };
+};
 
 const getSrcSet = (image) => {
     if (!image || !image.mobileSrc) {
@@ -252,7 +273,7 @@ onBeforeUnmount(() => {
         <link
             rel="preload"
             as="image"
-            :href="slideshowImages[0]?.src"
+            :href="heroImageUrl"
             fetchpriority="high"
             :imagesrcset="getSrcSet(slideshowImages[0])"
             :imagesizes="slideshowSizes"
@@ -269,21 +290,9 @@ onBeforeUnmount(() => {
             <!-- First image - always rendered for LCP optimization -->
             <div 
                 v-show="activeSlide === 0"
-                class="absolute inset-0"
+                class="absolute inset-0 slideshow-image"
+                :style="getSlideBackground(slideshowImages[0])"
             >
-                <!-- Use img tag for better LCP - First image with highest priority -->
-                <img 
-                    :src="slideshowImages[0].src"
-                    :srcset="getSrcSet(slideshowImages[0])"
-                    :sizes="slideshowSizes"
-                    :alt="slideshowImages[0].alt"
-                    class="w-full h-full object-cover object-center filter brightness-[0.3] contrast-[1.2]"
-                    loading="eager"
-                    fetchpriority="high"
-                    width="1920"
-                    height="1080"
-                    decoding="async"
-                />
             </div>
             
             <!-- Other slideshow images - lazy loaded -->
@@ -292,20 +301,9 @@ onBeforeUnmount(() => {
                     v-for="(image, index) in slideshowImages.slice(1)" 
                     :key="image.id" 
                     v-show="activeSlide === index + 1"
-                    class="absolute inset-0"
+                    class="absolute inset-0 slideshow-image"
+                    :style="getSlideBackground(image)"
                 >
-                    <img 
-                        :src="image.src"
-                        :srcset="getSrcSet(image)"
-                        :sizes="slideshowSizes"
-                        :alt="image.alt"
-                        class="w-full h-full object-cover object-center filter brightness-[0.3] contrast-[1.2]"
-                        loading="lazy"
-                        fetchpriority="low"
-                        width="1920"
-                        height="1080"
-                        decoding="async"
-                    />
                 </div>
             </transition-group>
             <!-- Subtle overlay -->
@@ -736,6 +734,13 @@ onBeforeUnmount(() => {
   position: absolute;
   width: 100%;
   height: 100%;
+}
+
+.slideshow-image {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter: brightness(0.3) contrast(1.2);
 }
 
 /* Improve focus visibility for accessibility */
