@@ -452,7 +452,7 @@ onBeforeUnmount(() => {
                                 class="peer pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 text-sm sm:text-base rounded-lg w-full border-0 focus:border-blue-400 focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 transition-all duration-300 bg-white bg-opacity-10 backdrop-blur-sm text-white placeholder-transparent"
                                 v-model="form.email"
                                 @input="clearClientError('email')"
-                                placeholder="Email Address"
+                                placeholder=""
                                 required
                                 autofocus
                                 autocomplete="username"
@@ -462,7 +462,7 @@ onBeforeUnmount(() => {
                             />
                             <label 
                                 for="email" 
-                                class="floating-label absolute left-10 sm:left-12 top-3 sm:top-4 text-sm sm:text-base text-gray-300 pointer-events-none peer-focus:floating-label-active peer-[:not(:placeholder-shown)]:floating-label-active"
+                                class="floating-label absolute left-10 sm:left-12 top-3 sm:top-4 text-sm sm:text-base text-gray-300 pointer-events-none"
                                 :class="[
                                     form.email ? 'floating-label-active' : '',
                                 ]"
@@ -489,7 +489,7 @@ onBeforeUnmount(() => {
                                 @input="clearClientError('password')"
                                 @keydown="detectCapsLock"
                                 @keyup="detectCapsLock"
-                                placeholder="Password"
+                                placeholder=""
                                 required
                                 autocomplete="current-password"
                                 aria-label="Password"
@@ -498,7 +498,7 @@ onBeforeUnmount(() => {
                             />
                             <label 
                                 for="password" 
-                                class="floating-label absolute left-10 sm:left-12 top-3 sm:top-4 text-sm sm:text-base text-gray-300 pointer-events-none peer-focus:floating-label-active peer-[:not(:placeholder-shown)]:floating-label-active"
+                                class="floating-label absolute left-10 sm:left-12 top-3 sm:top-4 text-sm sm:text-base text-gray-300 pointer-events-none"
                                 :class="[
                                     form.password ? 'floating-label-active' : '',
                                 ]"
@@ -693,17 +693,8 @@ onBeforeUnmount(() => {
   backdrop-filter: blur(4px);
 }
 
-/* Peer-based animations for even smoother transitions */
+/* Focus state for labels - keep the label up when input is focused */
 .peer:focus ~ .floating-label {
-  transform: translateY(-1.75rem) translateX(-2rem) scale(0.75);
-  color: #60a5fa;
-  background-color: rgba(17, 24, 39, 0.9);
-  padding: 0.125rem 0.25rem;
-  border-radius: 0.25rem;
-  backdrop-filter: blur(4px);
-}
-
-.peer:not(:placeholder-shown) ~ .floating-label {
   transform: translateY(-1.75rem) translateX(-2rem) scale(0.75);
   color: #60a5fa;
   background-color: rgba(17, 24, 39, 0.9);
@@ -718,8 +709,7 @@ onBeforeUnmount(() => {
     transform: translateY(-1.875rem) translateX(-2.5rem) scale(0.75) !important;
   }
   
-  .peer:focus ~ .floating-label,
-  .peer:not(:placeholder-shown) ~ .floating-label {
+  .peer:focus ~ .floating-label {
     transform: translateY(-1.875rem) translateX(-2.5rem) scale(0.75);
   }
 }
