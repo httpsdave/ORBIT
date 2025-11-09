@@ -43,6 +43,7 @@ class Kernel extends HttpKernel
             // \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
             \App\Http\Middleware\FilterPreloadCss::class,
             \App\Http\Middleware\HandleInertiaNotifications::class,
+            \App\Http\Middleware\CacheGuestResponse::class,
         ],
 
         'api' => [
