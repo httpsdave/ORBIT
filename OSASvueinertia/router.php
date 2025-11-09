@@ -88,17 +88,14 @@ if ($uri !== '/' && file_exists(__DIR__ . '/public' . $uri)) {
         }
     }
 
+    $mime = mime_content_type($path) ?: 'application/octet-stream';
+    header('Content-Type: ' . $mime);
+    header('Content-Length: ' . filesize($path));
     if (isset($compressibleTypes[$extension])) {
-        $mime = mime_content_type($path) ?: $compressibleTypes[$extension];
-        header('Content-Type: ' . $mime);
-        header('Content-Length: ' . filesize($path));
         header('Vary: Accept-Encoding');
-        readfile($path);
-        exit;
     }
-    
-    // Return the file
-    return false;
+    readfile($path);
+    exit;
 }
 
 // Forward all other requests to Laravel's front controller
