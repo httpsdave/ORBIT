@@ -1,16 +1,46 @@
 <script setup>
-import { Head, router } from '@inertiajs/vue3';
-import { ref, onMounted, onUnmounted, onBeforeUnmount, watch, computed } from 'vue';
+import { Head } from '@inertiajs/vue3';
+import { ref, onMounted, onUnmounted, watch, computed, defineAsyncComponent } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title } from 'chart.js';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
-import { Pie, Bar } from 'vue-chartjs';
-import Modal from '@/Components/Modal.vue';
 import { Link } from '@inertiajs/vue3';
 import TutorialModal from '@/Components/Tutorial/TutorialModal.vue';
 
-// Register Chart.js components
-ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title, ChartDataLabels);
+const loadChartModules = (() => {
+    let loader;
+    return () => {
+        if (!loader) {
+            loader = Promise.all([
+                import('chart.js/auto'),
+                import('chartjs-plugin-datalabels'),
+                import('vue-chartjs'),
+            ]).then(([chartJs, dataLabels, vueChart]) => {
+                const Chart = chartJs.default || chartJs.Chart;
+                const dataLabelsPlugin = dataLabels.default || dataLabels;
+
+                if (Chart && dataLabelsPlugin) {
+                    Chart.register(dataLabelsPlugin);
+                }
+
+                return {
+                    Pie: vueChart.Pie,
+                    Bar: vueChart.Bar,
+                };
+            });
+        }
+
+        return loader;
+    };
+})();
+
+const Pie = defineAsyncComponent(async () => {
+    const modules = await loadChartModules();
+    return modules.Pie;
+});
+
+const Bar = defineAsyncComponent(async () => {
+    const modules = await loadChartModules();
+    return modules.Bar;
+});
 
 // Define props for data that will be passed from the controller
 const props = defineProps({

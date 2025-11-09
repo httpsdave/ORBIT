@@ -287,7 +287,15 @@
 <script>
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue';
 import dayjs from 'dayjs';
-import Chart from 'chart.js/auto';
+
+let chartModulePromise;
+
+const loadChartModule = () => {
+  if (!chartModulePromise) {
+    chartModulePromise = import('chart.js/auto').then((module) => module.default || module.Chart);
+  }
+  return chartModulePromise;
+};
 
 export default {
   name: 'EventStatistics',
@@ -386,7 +394,7 @@ export default {
     });
 
     // Update chart data based on selected time range
-    function updateChartData() {
+    async function updateChartData() {
       try {
         const now = dayjs();
         let startDate;
@@ -465,9 +473,8 @@ export default {
           ]
         };
 
-        nextTick(() => {
-          renderChart();
-        });
+        await nextTick();
+        await renderChart();
       } catch (error) {
         console.error('Error updating chart data:', error);
         hasError.value = true;
@@ -475,7 +482,7 @@ export default {
     }
 
     // Render chart
-    function renderChart() {
+    async function renderChart() {
       if (!chartCanvas.value) return;
 
       if (chart.value) {
@@ -483,7 +490,9 @@ export default {
       }
 
       const ctx = chartCanvas.value.getContext('2d');
-      
+
+      const Chart = await loadChartModule();
+
       chart.value = new Chart(ctx, {
         type: 'line',
         data: chartData.value,
@@ -603,9 +612,9 @@ export default {
     }
 
     // Refresh data
-    function refreshData() {
+    async function refreshData() {
       hasError.value = false;
-      updateChartData();
+      await updateChartData();
     }
 
     // Format date
