@@ -675,31 +675,37 @@ onUnmounted(() => {
       <div class="w-full mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 py-8">
         <!-- Header Section -->
           <div class="mb-8">
-          <div class="flex items-center justify-between mb-2">
-            <div>
-              <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+          <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-2">
+            <div class="flex-1">
+              <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
                 {{ isAdmin ? 'Plan of Activities' : 'My Plan of Activities' }}
               </h1>
-              <p class="text-gray-600 dark:text-gray-400 mt-1">
+              <p class="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-1">
                 {{ isAdmin ? 'Overview of all planned activities from submitted Plan of Activities forms' : 'Overview of your planned activities' }}
               </p>
             </div>
-            <div class="flex items-center gap-2">
+            <div class="flex items-center justify-between sm:justify-end gap-2 sm:gap-3 w-full sm:w-auto">
+              <!-- Total Activities - Now on the right on mobile -->
+              <div class="bg-white dark:bg-gray-800 px-3 sm:px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm whitespace-nowrap order-2 sm:order-1">
+                <span class="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Total:</span>
+                <span class="ml-1 sm:ml-2 text-base sm:text-lg font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">{{ totalActivities }}</span>
+              </div>
+              
               <!-- Export Dropdown -->
-              <div class="relative export-dropdown-container">
+              <div class="relative export-dropdown-container order-1 sm:order-2">
                 <button
                   @click="showExportDropdown = !showExportDropdown"
                   :disabled="filteredActivities.length === 0"
-                  class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:from-gray-400 disabled:to-gray-500 text-white text-sm font-semibold rounded-xl shadow-md hover:shadow-blue-300/30 transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-60"
+                  class="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:from-gray-400 disabled:to-gray-500 text-white text-xs sm:text-sm font-semibold rounded-xl shadow-md hover:shadow-blue-300/30 transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-60 whitespace-nowrap"
                   :title="filteredActivities.length === 0 ? 'No data to export' : 'Export filtered activities'"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                     <polyline points="7 10 12 15 17 10"></polyline>
                     <line x1="12" y1="15" x2="12" y2="3"></line>
                   </svg>
-                  <span>Export</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" :class="{ 'rotate-180': showExportDropdown }" viewBox="0 0 20 20" fill="currentColor">
+                  <span class="hidden xs:inline">Export</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:h-4 sm:w-4 ml-0.5 sm:ml-1" :class="{ 'rotate-180': showExportDropdown }" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
                   </svg>
                 </button>
@@ -715,7 +721,7 @@ onUnmounted(() => {
                 >
                   <div
                     v-if="showExportDropdown"
-                    class="absolute right-0 mt-2 w-56 rounded-lg shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-50"
+                    class="absolute left-0 sm:right-0 sm:left-auto mt-2 w-56 rounded-lg shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-[60] max-h-[calc(100vh-200px)] overflow-y-auto"
                   >
                     <div class="py-1">
                       <button
@@ -765,11 +771,6 @@ onUnmounted(() => {
                     </div>
                   </div>
                 </transition>
-              </div>
-              
-              <div class="bg-white dark:bg-gray-800 px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
-                <span class="text-sm text-gray-600 dark:text-gray-400">Total Activities:</span>
-                <span class="ml-2 text-lg font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">{{ totalActivities }}</span>
               </div>
             </div>
           </div>
