@@ -3,6 +3,9 @@ import { ref, computed, watch, onMounted, onBeforeUnmount, onUnmounted } from 'v
 import { Head, Link } from '@inertiajs/vue3';
 import SidebarLayout from '@/Components/Layout/Sidebar/SidebarLayout.vue';
 
+// Back-to-top button state
+const showBackToTop = ref(false);
+
 const props = defineProps({
   activities: {
     type: Array,
@@ -650,12 +653,30 @@ const closeDropdownOnClickOutside = (event) => {
   }
 };
 
+// Back-to-top scroll handler
+const onScroll = () => {
+  try {
+    const y = window.scrollY || window.pageYOffset;
+    showBackToTop.value = y > 300;
+  } catch (e) {
+    // ignore for SSR
+  }
+};
+
+// Scroll to top function
+const scrollToTop = (e) => {
+  e?.preventDefault();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
 onMounted(() => {
   document.addEventListener('click', closeDropdownOnClickOutside);
+  window.addEventListener('scroll', onScroll, { passive: true });
 });
 
 onUnmounted(() => {
   document.removeEventListener('click', closeDropdownOnClickOutside);
+  window.removeEventListener('scroll', onScroll);
 });
 </script>
 
@@ -1518,6 +1539,19 @@ onUnmounted(() => {
         </div>
       </div>
     </div>
+
+    <!-- Back to top floating button -->
+    <button
+      v-if="showBackToTop"
+      @click="scrollToTop"
+      aria-label="Back to top"
+      class="fixed z-50 right-6 bottom-8 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 shadow-lg hover:shadow-2xl rounded-full p-3 transition transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      title="Back to top"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <path fill-rule="evenodd" d="M10 5a1 1 0 01.707.293l5 5a1 1 0 01-1.414 1.414L10 7.414 5.707 11.707A1 1 0 014.293 10.293l5-5A1 1 0 0110 5z" clip-rule="evenodd" />
+      </svg>
+    </button>
 
     <!-- PDF Preview Modal -->
     <Teleport to="body">
