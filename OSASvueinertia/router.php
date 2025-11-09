@@ -7,6 +7,17 @@
 
 $uri = urldecode(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
 
+$compressibleTypes = [
+    'css' => 'text/css',
+    'js' => 'application/javascript',
+    'json' => 'application/json',
+    'xml' => 'application/xml',
+    'txt' => 'text/plain',
+    'html' => 'text/html',
+    'svg' => 'image/svg+xml',
+    'map' => 'application/json'
+];
+
 // Serve static files directly with cache headers
 if ($uri !== '/' && file_exists(__DIR__ . '/public' . $uri)) {
     $path = __DIR__ . '/public' . $uri;
@@ -42,6 +53,48 @@ if ($uri !== '/' && file_exists(__DIR__ . '/public' . $uri)) {
             
             break;
         }
+    }
+
+    $lastModified = filemtime($path);
+    if ($lastModified !== false) {
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $lastModified) . ' GMT');
+
+        if (!empty($_SERVER['HTTP_IF_MODIFIED_SINCE'])) {
+            $ifModifiedSince = strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']);
+            if ($ifModifiedSince !== false && $ifModifiedSince >= $lastModified) {
+                header($_SERVER['SERVER_PROTOCOL'] . ' 304 Not Modified');
+                exit;
+            }
+        }
+    }
+
+    $acceptEncoding = $_SERVER['HTTP_ACCEPT_ENCODING'] ?? '';
+    $supportsGzip = stripos($acceptEncoding, 'gzip') !== false;
+
+    if ($supportsGzip && isset($compressibleTypes[$extension])) {
+        $contents = file_get_contents($path);
+
+        if ($contents !== false) {
+            $compressed = gzencode($contents, 6);
+
+            if ($compressed !== false) {
+                header('Content-Encoding: gzip');
+                header('Vary: Accept-Encoding');
+                header('Content-Type: ' . $compressibleTypes[$extension]);
+                header('Content-Length: ' . strlen($compressed));
+                echo $compressed;
+                exit;
+            }
+        }
+    }
+
+    if (isset($compressibleTypes[$extension])) {
+        $mime = mime_content_type($path) ?: $compressibleTypes[$extension];
+        header('Content-Type: ' . $mime);
+        header('Content-Length: ' . filesize($path));
+        header('Vary: Accept-Encoding');
+        readfile($path);
+        exit;
     }
     
     // Return the file

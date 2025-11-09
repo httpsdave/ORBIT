@@ -10,6 +10,14 @@ if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php'))
     require $maintenance;
 }
 
+// Enable gzip compression when running behind the PHP built-in server
+if (PHP_SAPI === 'cli-server' && !headers_sent()) {
+    $acceptEncoding = $_SERVER['HTTP_ACCEPT_ENCODING'] ?? '';
+    if (strpos($acceptEncoding, 'gzip') !== false && function_exists('ob_gzhandler')) {
+        ob_start('ob_gzhandler');
+    }
+}
+
 // Register the Composer autoloader...
 require __DIR__.'/../vendor/autoload.php';
 
