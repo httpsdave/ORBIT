@@ -1,10 +1,11 @@
 <script setup>
 import { Head } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import Calendar from '@/Components/Calendar.vue';
-import { ref, onMounted } from 'vue';
+import { defineAsyncComponent } from 'vue';
 
-// Props definition
+// Lazy-load the heavy calendar widget so this page's initial bundle stays slim.
+const Calendar = defineAsyncComponent(() => import('@/Components/Calendar.vue'));
+
 const props = defineProps({
   initialEvents: Array,
   isAdmin: {
@@ -21,7 +22,7 @@ const props = defineProps({
 
     <div class="w-full select-none">
       <!-- Pass the isAdmin prop to the Calendar component -->
-      <Calendar :initial-events="initialEvents" :is-admin="isAdmin" />
+      <Calendar :initial-events="props.initialEvents" :is-admin="props.isAdmin" />
     </div>
   </AuthenticatedLayout>
 </template>
