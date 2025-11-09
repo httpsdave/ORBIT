@@ -35,12 +35,12 @@ const errorDismissTimer = ref(null);
 
 // Slideshow images matching login page
 const slideshowImages = [
-    '/images/LSPU9.jpg',
-    '/images/LSPU2.jpg',
-    '/images/LSPU3.jpg',
-    '/images/LSPU6.jpg',
-    '/images/LSPU5.jpg',
-    '/images/LSPU7.jpg',
+    '/images/LSPU9.webp',
+    '/images/LSPU2.webp',
+    '/images/LSPU3.webp',
+    '/images/LSPU6.webp',
+    '/images/LSPU5.webp',
+    '/images/LSPU7.webp',
 ];
 
 const submit = async () => {

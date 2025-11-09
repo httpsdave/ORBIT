@@ -207,7 +207,7 @@ onBeforeUnmount(() => {
         <link rel="preconnect" href="https://fonts.bunny.net" crossorigin />
         
         <!-- Preload the first slideshow image for better LCP - Critical for performance -->
-        <link rel="preload" as="image" :href="slideshowImages[0]" fetchpriority="high" imagesrcset="/images/LSPU9.jpg" imagesizes="100vw" />
+        <link rel="preload" as="image" :href="slideshowImages[0]" fetchpriority="high" imagesrcset="/images/LSPU9.webp" imagesizes="100vw" />
         
         <!-- Preconnect to image domain if using external CDN -->
         <link rel="dns-prefetch" href="/" />
