@@ -509,6 +509,12 @@ const pdfPreviewUrl = ref(null);
 const docxPreviewUrl = ref(null);
 const showExportDropdown = ref(false);
 
+// Mobile detection for export behavior
+const isMobile = computed(() => {
+  if (typeof window === 'undefined') return false;
+  return window.innerWidth < 768; // md breakpoint
+});
+
 // Function to build URL params
 const buildExportParams = () => {
   const params = new URLSearchParams();
@@ -550,8 +556,14 @@ const exportToPdf = async () => {
     params.append('action', 'view');
     
     const pdfUrl = `${baseUrl}?${params.toString()}`;
-    pdfPreviewUrl.value = pdfUrl;
-    showPdfPreviewModal.value = true;
+    
+    // For mobile devices, open in new window instead of modal
+    if (isMobile.value) {
+      window.open(pdfUrl, '_blank', 'noopener,noreferrer');
+    } else {
+      pdfPreviewUrl.value = pdfUrl;
+      showPdfPreviewModal.value = true;
+    }
   } catch (error) {
     console.error('PDF Preview Error:', error);
     alert('Failed to generate PDF preview. Please try again.');
@@ -593,15 +605,21 @@ const exportToDocx = async () => {
     params.append('action', 'view');
     
     const docxUrl = `${baseUrl}?${params.toString()}`;
-    docxPreviewUrl.value = docxUrl;
     
-    // Fetch the HTML content
-    const response = await fetch(docxUrl);
-    const html = await response.text();
-    docxHtmlContent.value = html;
-    docxZoom.value = 100; // Reset zoom
-    
-    showDocxPreviewModal.value = true;
+    // For mobile devices, open in new window instead of modal
+    if (isMobile.value) {
+      window.open(docxUrl, '_blank', 'noopener,noreferrer');
+    } else {
+      docxPreviewUrl.value = docxUrl;
+      
+      // Fetch the HTML content for desktop modal
+      const response = await fetch(docxUrl);
+      const html = await response.text();
+      docxHtmlContent.value = html;
+      docxZoom.value = 100; // Reset zoom
+      
+      showDocxPreviewModal.value = true;
+    }
   } catch (error) {
     console.error('DOCX Preview Error:', error);
     alert('Failed to generate DOCX preview. Please try again.');
@@ -663,6 +681,11 @@ const onScroll = () => {
   }
 };
 
+// Handle window resize for mobile detection
+const onResize = () => {
+  // Force reactivity update for mobile detection
+};
+
 // Scroll to top function
 const scrollToTop = (e) => {
   e?.preventDefault();
@@ -672,11 +695,13 @@ const scrollToTop = (e) => {
 onMounted(() => {
   document.addEventListener('click', closeDropdownOnClickOutside);
   window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onResize, { passive: true });
 });
 
 onUnmounted(() => {
   document.removeEventListener('click', closeDropdownOnClickOutside);
   window.removeEventListener('scroll', onScroll);
+  window.removeEventListener('resize', onResize);
 });
 </script>
 
@@ -764,7 +789,9 @@ onUnmounted(() => {
                         </svg>
                         <div>
                           <div class="font-medium">{{ isExporting ? 'Exporting...' : 'Export as PDF' }}</div>
-                          <div class="text-xs text-gray-500 dark:text-gray-400">View and download PDF format</div>
+                          <div class="text-xs text-gray-500 dark:text-gray-400">
+                            {{ isMobile ? 'Opens in new window for preview' : 'View and download PDF format' }}
+                          </div>
                         </div>
                       </button>
                       
@@ -786,7 +813,9 @@ onUnmounted(() => {
                         </svg>
                         <div>
                           <div class="font-medium">{{ isExportingDocx ? 'Exporting...' : 'Export as DOCX' }}</div>
-                          <div class="text-xs text-gray-500 dark:text-gray-400">View and download Word format</div>
+                          <div class="text-xs text-gray-500 dark:text-gray-400">
+                            {{ isMobile ? 'Opens in new window for preview' : 'View and download Word format' }}
+                          </div>
                         </div>
                       </button>
                     </div>
