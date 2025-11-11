@@ -1,8 +1,6 @@
 <script setup>
-import InputError from '@/Components/InputError.vue';
-import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import TextInput from '@/Components/TextInput.vue';
-import { Head, Link, router } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { auth } from '@/firebase/config';
 import { sendPasswordResetEmail, createUserWithEmailAndPassword, fetchSignInMethodsForEmail } from 'firebase/auth';
@@ -18,8 +16,6 @@ const isLoading = ref(false);
 const message = ref('');
 const error = ref('');
 const formElement = ref(null);
-// Set dark mode as default
-const isDarkMode = ref(true);
 const activeSlide = ref(0);
 const slideInterval = ref(null);
 const gradientIndex = ref(0);
@@ -29,19 +25,128 @@ const gradientInterval = ref(null);
 const cooldownSeconds = ref(0);
 const cooldownInterval = ref(null);
 const lastAttemptTime = ref(null);
-const COOLDOWN_DURATION = 60; // 60 seconds cooldown
+const COOLDOWN_DURATION = 30; // 30 seconds cooldown
 const showCooldownMessage = ref(false); // Control when to show cooldown UI
 const errorDismissTimer = ref(null);
 
-// Slideshow images matching login page
+const heroImageSizes = '(max-width: 640px) calc(100vw - 5rem), (max-width: 768px) calc(100vw - 6rem), (max-width: 1024px) calc(100vw - 8rem), (max-width: 1280px) calc(100vw - 10rem), calc(100vw - 12rem)';
+
 const slideshowImages = [
-    '/images/LSPU9.webp',
-    '/images/LSPU2.webp',
-    '/images/LSPU3.webp',
-    '/images/LSPU6.webp',
-    '/images/LSPU5.webp',
-    '/images/LSPU7.webp',
+    {
+        key: 'lspu-9',
+        alt: 'Laguna State Polytechnic University campus buildings at dusk',
+        width: 1920,
+        height: 1080,
+        sources: [
+            {
+                type: 'image/webp',
+                src: '/images/optimized/LSPU9.webp',
+                srcset: '/images/optimized/LSPU9-mobile.webp 768w, /images/optimized/LSPU9.webp 1920w',
+            },
+        ],
+        fallback: {
+            src: '/images/optimized/LSPU9.jpg',
+            srcset: '/images/optimized/LSPU9-mobile.jpg 768w, /images/optimized/LSPU9.jpg 1920w',
+        },
+    },
+    {
+        key: 'lspu-2',
+        alt: 'LSPU campus facade with greenery',
+        width: 1920,
+        height: 1080,
+        sources: [
+            {
+                type: 'image/webp',
+                src: '/images/optimized/LSPU2.webp',
+                srcset: '/images/optimized/LSPU2-mobile.webp 768w, /images/optimized/LSPU2.webp 1920w',
+            },
+        ],
+        fallback: {
+            src: '/images/optimized/LSPU2.jpg',
+            srcset: '/images/optimized/LSPU2-mobile.jpg 768w, /images/optimized/LSPU2.jpg 1920w',
+        },
+    },
+    {
+        key: 'lspu-3',
+        alt: 'Birds-eye view of the LSPU grounds',
+        width: 1920,
+        height: 1080,
+        sources: [
+            {
+                type: 'image/webp',
+                src: '/images/optimized/LSPU3.webp',
+                srcset: '/images/optimized/LSPU3-mobile.webp 768w, /images/optimized/LSPU3.webp 1920w',
+            },
+        ],
+        fallback: {
+            src: '/images/optimized/LSPU3.jpg',
+            srcset: '/images/optimized/LSPU3-mobile.jpg 768w, /images/optimized/LSPU3.jpg 1920w',
+        },
+    },
+    {
+        key: 'lspu-6',
+        alt: 'Students walking through the LSPU campus courtyard',
+        width: 1920,
+        height: 1080,
+        sources: [
+            {
+                type: 'image/webp',
+                src: '/images/optimized/LSPU6.webp',
+                srcset: '/images/optimized/LSPU6-mobile.webp 768w, /images/optimized/LSPU6.webp 1920w',
+            },
+        ],
+        fallback: {
+            src: '/images/optimized/LSPU6.jpg',
+            srcset: '/images/optimized/LSPU6-mobile.jpg 768w, /images/optimized/LSPU6.jpg 1920w',
+        },
+    },
+    {
+        key: 'lspu-5',
+        alt: 'Outdoor view of LSPU academic buildings',
+        width: 1920,
+        height: 1080,
+        sources: [
+            {
+                type: 'image/webp',
+                src: '/images/optimized/LSPU5.webp',
+                srcset: '/images/optimized/LSPU5-mobile.webp 768w, /images/optimized/LSPU5.webp 1920w',
+            },
+        ],
+        fallback: {
+            src: '/images/optimized/LSPU5.jpg',
+            srcset: '/images/optimized/LSPU5-mobile.jpg 768w, /images/optimized/LSPU5.jpg 1920w',
+        },
+    },
+    {
+        key: 'lspu-7',
+        alt: 'LSPU campus building with landscaped grounds',
+        width: 1920,
+        height: 1080,
+        sources: [
+            {
+                type: 'image/webp',
+                src: '/images/optimized/LSPU7.webp',
+                srcset: '/images/optimized/LSPU7-mobile.webp 768w, /images/optimized/LSPU7.webp 1920w',
+            },
+        ],
+        fallback: {
+            src: '/images/optimized/LSPU7.jpg',
+            srcset: '/images/optimized/LSPU7-mobile.jpg 768w, /images/optimized/LSPU7.jpg 1920w',
+        },
+    },
 ];
+
+const heroPreloadImage = slideshowImages[0];
+const logoWebpSrcset = '/images/optimized/lspu_logo_better-96.webp 96w, /images/optimized/lspu_logo_better-192.webp 192w, /images/optimized/lspu_logo_better-256.webp 256w';
+const logoSizes = '(max-width: 640px) 2.5rem, (max-width: 768px) 3rem, (max-width: 1024px) 4rem, (max-width: 1280px) 5rem, 6rem';
+
+// Clear client-side errors when user starts typing
+const clearClientError = (field) => {
+    // This function can be expanded later for client-side validation
+    if (error.value) {
+        error.value = '';
+    }
+};
 
 const submit = async () => {
     if (isLoading.value) return;
@@ -282,8 +387,24 @@ onBeforeUnmount(() => {
 
 <template>
     <Head title="Forgot Password | LSPU ORBIT">
-        <!-- Preload the first slideshow image for better LCP -->
-        <link rel="preload" as="image" :href="slideshowImages[0]" fetchpriority="high" />
+        <!-- Preload primary hero image using responsive metadata for faster LCP -->
+        <link
+            rel="preload"
+            as="image"
+            type="image/webp"
+            :href="heroPreloadImage.sources[0].src"
+            :imagesrcset="heroPreloadImage.sources[0].srcset"
+            :imagesizes="heroImageSizes"
+            fetchpriority="high"
+        />
+        <link
+            rel="preload"
+            as="image"
+            :href="heroPreloadImage.fallback.src"
+            :imagesrcset="heroPreloadImage.fallback.srcset"
+            :imagesizes="heroImageSizes"
+            fetchpriority="high"
+        />
     </Head>
     
     <!-- Full screen container with split layout -->
@@ -309,7 +430,19 @@ onBeforeUnmount(() => {
             <!-- Vertical logo and text -->
             <div class="absolute inset-0 flex flex-col items-center justify-center text-white p-2 sm:p-3">
                 <div class="mb-4 sm:mb-6 lg:mb-8 xl:mb-12">
-                    <img src="/images/lspu_logo_better.webp" alt="LSPU Logo" class="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 xl:w-24 xl:h-24 object-cover filter drop-shadow-lg">
+                    <picture>
+                        <source :srcset="logoWebpSrcset" type="image/webp" :sizes="logoSizes" />
+                        <img
+                            src="/images/lspu_logo_better.png"
+                            :sizes="logoSizes"
+                            width="96"
+                            height="96"
+                            alt="LSPU Logo"
+                            class="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 xl:w-24 xl:h-24 object-cover filter drop-shadow-lg"
+                            loading="lazy"
+                            decoding="async"
+                        />
+                    </picture>
                 </div>
                 
                 <!-- Vertical text -->
@@ -339,20 +472,31 @@ onBeforeUnmount(() => {
             <transition-group name="slideshow-fade">
                 <div 
                     v-for="(image, index) in slideshowImages" 
-                    :key="index" 
+                    :key="image.key" 
                     v-show="activeSlide === index"
                     class="absolute inset-0"
                 >
-                    <!-- Use img tag for better LCP -->
-                    <img 
-                        :src="image"
-                        alt="LSPU Campus"
-                        class="w-full h-full object-cover object-center filter brightness-[0.3] contrast-[1.2]"
-                        :loading="index === 0 ? 'eager' : 'lazy'"
-                        :fetchpriority="index === 0 ? 'high' : 'low'"
-                        width="1920"
-                        height="1080"
-                    />
+                    <picture class="w-full h-full">
+                        <source
+                            v-for="(source, sourceIndex) in image.sources"
+                            :key="`${image.key}-source-${sourceIndex}`"
+                            :type="source.type"
+                            :srcset="source.srcset"
+                            :sizes="heroImageSizes"
+                        />
+                        <img
+                            :src="image.fallback.src"
+                            :srcset="image.fallback.srcset"
+                            :sizes="heroImageSizes"
+                            :alt="image.alt"
+                            class="w-full h-full object-cover object-center filter brightness-[0.3] contrast-[1.2]"
+                            :loading="index === 0 ? 'eager' : 'lazy'"
+                            :fetchpriority="index === 0 ? 'high' : 'low'"
+                            :width="image.width"
+                            :height="image.height"
+                            decoding="async"
+                        />
+                    </picture>
                 </div>
             </transition-group>
             <!-- Subtle overlay -->
@@ -423,20 +567,26 @@ onBeforeUnmount(() => {
                             <span>Please wait {{ cooldownSeconds }} second{{ cooldownSeconds !== 1 ? 's' : '' }} before trying again</span>
                         </div>
                         <div class="ml-3 flex-shrink-0">
-                            <div class="w-10 h-10 sm:w-12 sm:h-12 relative">
-                                <svg class="transform -rotate-90" width="40" height="40" viewBox="0 0 40 40">
-                                    <circle cx="20" cy="20" r="18" stroke="currentColor" stroke-width="3" fill="none" class="opacity-20" />
+                            <div class="w-12 h-12 sm:w-14 sm:h-14 relative">
+                                <!-- Background circle -->
+                                <svg class="transform -rotate-90 w-full h-full" viewBox="0 0 40 40">
+                                    <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="2" fill="none" class="opacity-20" />
+                                    <!-- Progress circle -->
                                     <circle 
-                                        cx="20" cy="20" r="18" 
+                                        cx="20" cy="20" r="16" 
                                         stroke="currentColor" 
-                                        stroke-width="3" 
+                                        stroke-width="2" 
                                         fill="none" 
                                         class="transition-all duration-1000 ease-linear"
-                                        :stroke-dasharray="113"
-                                        :stroke-dashoffset="113 * (1 - cooldownSeconds / COOLDOWN_DURATION)"
+                                        stroke-linecap="round"
+                                        :stroke-dasharray="100.53"
+                                        :stroke-dashoffset="100.53 * (cooldownSeconds / COOLDOWN_DURATION)"
                                     />
                                 </svg>
-                                <span class="absolute inset-0 flex items-center justify-center text-xs font-bold">{{ cooldownSeconds }}</span>
+                                <!-- Countdown number in center -->
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <span class="text-sm font-bold tabular-nums transition-all duration-300">{{ cooldownSeconds }}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -446,32 +596,33 @@ onBeforeUnmount(() => {
                 <form @submit.prevent="submit" class="space-y-4 sm:space-y-6" novalidate>
                     <div>
                         <div class="relative group">
-                            <div class="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none z-10">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-focus-within:text-orange-400 transition-colors duration-300 text-gray-500">
-                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                                    <polyline points="22,6 12,13 2,6"></polyline>
-                                </svg>
-                            </div>
-
                             <TextInput
                                 id="email"
                                 type="email"
                                 class="peer pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 text-sm sm:text-base rounded-lg w-full border-0 focus:border-orange-400 focus:ring-2 focus:ring-orange-400 focus:ring-opacity-50 transition-all duration-300 bg-white bg-opacity-10 backdrop-blur-sm text-white placeholder-transparent"
                                 v-model="email"
-                                placeholder="Email Address"
+                                placeholder=" "
                                 required
                                 autofocus
                                 autocomplete="username"
                                 aria-label="Email address"
+                                @input="clearClientError('email')"
                             />
-
-                            <label
+                            <label 
                                 for="email"
-                                class="floating-label absolute left-10 sm:left-12 top-3 sm:top-4 text-xs sm:text-sm text-gray-300 pointer-events-none peer-focus:floating-label-active peer-[:not(:placeholder-shown)]:floating-label-active"
-                                :class="[ email ? 'floating-label-active' : '' ]"
+                                class="floating-label absolute left-10 sm:left-12 top-3 sm:top-4 text-xs sm:text-sm text-gray-300 pointer-events-none transition-all duration-300"
+                                :class="[ 
+                                    email ? 'floating-label-active' : '' 
+                                ]"
                             >
                                 Email Address
                             </label>
+                            <div class="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-focus-within:text-orange-400 transition-colors duration-300 text-gray-500">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                    <polyline points="22,6 12,13 2,6"></polyline>
+                                </svg>
+                            </div>
                         </div>
                     </div>
 
@@ -535,8 +686,8 @@ onBeforeUnmount(() => {
         <!-- Slideshow navigation - Top right corner -->
         <div class="absolute top-4 sm:top-6 right-4 sm:right-6 flex space-x-1.5 sm:space-x-2 z-30">
             <button 
-                v-for="(_, index) in slideshowImages" 
-                :key="index"
+                v-for="(slide, index) in slideshowImages" 
+                :key="slide.key"
                 @click="activeSlide = index" 
                 class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full transition-all duration-300"
                 :class="[
@@ -666,5 +817,25 @@ input[type="text"], input[type="email"], input[type="password"], textarea {
 /* Pointer cursor for interactive elements */
 a, button, label[for], input[type="checkbox"], input[type="radio"] {
   cursor: pointer;
+}
+
+/* Smooth cooldown animation */
+.cooldown-progress {
+    transition: stroke-dashoffset 1s linear;
+}
+
+/* Tabular numbers for consistent countdown display */
+.tabular-nums {
+    font-variant-numeric: tabular-nums;
+}
+
+/* Pulse animation for countdown number */
+@keyframes countdownPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.countdown-pulse {
+    animation: countdownPulse 1s ease-in-out;
 }
 </style>
