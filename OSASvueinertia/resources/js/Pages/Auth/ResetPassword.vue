@@ -29,22 +29,121 @@ const message = ref('');
 const error = ref('');
 const isCodeValid = ref(false);
 const formElement = ref(null);
-// Set dark mode as default
-const isDarkMode = ref(true);
 const activeSlide = ref(0);
 const slideInterval = ref(null);
 const gradientIndex = ref(0);
 const gradientInterval = ref(null);
 
-// Slideshow images matching login page
+const heroImageSizes = '(max-width: 640px) calc(100vw - 5rem), (max-width: 768px) calc(100vw - 6rem), (max-width: 1024px) calc(100vw - 8rem), (max-width: 1280px) calc(100vw - 10rem), calc(100vw - 12rem)';
+
 const slideshowImages = [
-    '/images/LSPU9.jpg',
-    '/images/LSPU2.jpg',
-    '/images/LSPU3.jpg',
-    '/images/LSPU6.jpg',
-    '/images/LSPU5.jpg',
-    '/images/LSPU7.jpg',
+    {
+        key: 'lspu-9',
+        alt: 'Laguna State Polytechnic University campus buildings at dusk',
+        width: 1920,
+        height: 1080,
+        sources: [
+            {
+                type: 'image/webp',
+                src: '/images/optimized/LSPU9.webp',
+                srcset: '/images/optimized/LSPU9-mobile.webp 768w, /images/optimized/LSPU9.webp 1920w',
+            },
+        ],
+        fallback: {
+            src: '/images/optimized/LSPU9.jpg',
+            srcset: '/images/optimized/LSPU9-mobile.jpg 768w, /images/optimized/LSPU9.jpg 1920w',
+        },
+    },
+    {
+        key: 'lspu-2',
+        alt: 'LSPU campus facade with greenery',
+        width: 1920,
+        height: 1080,
+        sources: [
+            {
+                type: 'image/webp',
+                src: '/images/optimized/LSPU2.webp',
+                srcset: '/images/optimized/LSPU2-mobile.webp 768w, /images/optimized/LSPU2.webp 1920w',
+            },
+        ],
+        fallback: {
+            src: '/images/optimized/LSPU2.jpg',
+            srcset: '/images/optimized/LSPU2-mobile.jpg 768w, /images/optimized/LSPU2.jpg 1920w',
+        },
+    },
+    {
+        key: 'lspu-3',
+        alt: 'Birds-eye view of the LSPU grounds',
+        width: 1920,
+        height: 1080,
+        sources: [
+            {
+                type: 'image/webp',
+                src: '/images/optimized/LSPU3.webp',
+                srcset: '/images/optimized/LSPU3-mobile.webp 768w, /images/optimized/LSPU3.webp 1920w',
+            },
+        ],
+        fallback: {
+            src: '/images/optimized/LSPU3.jpg',
+            srcset: '/images/optimized/LSPU3-mobile.jpg 768w, /images/optimized/LSPU3.jpg 1920w',
+        },
+    },
+    {
+        key: 'lspu-6',
+        alt: 'Students walking through the LSPU campus courtyard',
+        width: 1920,
+        height: 1080,
+        sources: [
+            {
+                type: 'image/webp',
+                src: '/images/optimized/LSPU6.webp',
+                srcset: '/images/optimized/LSPU6-mobile.webp 768w, /images/optimized/LSPU6.webp 1920w',
+            },
+        ],
+        fallback: {
+            src: '/images/optimized/LSPU6.jpg',
+            srcset: '/images/optimized/LSPU6-mobile.jpg 768w, /images/optimized/LSPU6.jpg 1920w',
+        },
+    },
+    {
+        key: 'lspu-5',
+        alt: 'Outdoor view of LSPU academic buildings',
+        width: 1920,
+        height: 1080,
+        sources: [
+            {
+                type: 'image/webp',
+                src: '/images/optimized/LSPU5.webp',
+                srcset: '/images/optimized/LSPU5-mobile.webp 768w, /images/optimized/LSPU5.webp 1920w',
+            },
+        ],
+        fallback: {
+            src: '/images/optimized/LSPU5.jpg',
+            srcset: '/images/optimized/LSPU5-mobile.jpg 768w, /images/optimized/LSPU5.jpg 1920w',
+        },
+    },
+    {
+        key: 'lspu-7',
+        alt: 'LSPU campus building with landscaped grounds',
+        width: 1920,
+        height: 1080,
+        sources: [
+            {
+                type: 'image/webp',
+                src: '/images/optimized/LSPU7.webp',
+                srcset: '/images/optimized/LSPU7-mobile.webp 768w, /images/optimized/LSPU7.webp 1920w',
+            },
+        ],
+        fallback: {
+            src: '/images/optimized/LSPU7.jpg',
+            srcset: '/images/optimized/LSPU7-mobile.jpg 768w, /images/optimized/LSPU7.jpg 1920w',
+        },
+    },
 ];
+
+const heroPreloadImage = slideshowImages[0];
+const logoWebpSrcset = '/images/optimized/lspu_logo_better-96.webp 96w, /images/optimized/lspu_logo_better-192.webp 192w, /images/optimized/lspu_logo_better-256.webp 256w';
+const logoSizes = '(max-width: 640px) 2.5rem, (max-width: 768px) 3rem, (max-width: 1024px) 4rem, (max-width: 1280px) 5rem, 6rem';
 
 const submit = async () => {
     if (isLoading.value) return;
@@ -195,8 +294,24 @@ onBeforeUnmount(() => {
 
 <template>
     <Head title="Reset Password | LSPU ORBIT">
-        <!-- Preload the first slideshow image for better LCP -->
-        <link rel="preload" as="image" :href="slideshowImages[0]" fetchpriority="high" />
+        <!-- Preload the first slideshow image using responsive sources to improve LCP -->
+        <link
+            rel="preload"
+            as="image"
+            type="image/webp"
+            :href="heroPreloadImage.sources[0].src"
+            :imagesrcset="heroPreloadImage.sources[0].srcset"
+            :imagesizes="heroImageSizes"
+            fetchpriority="high"
+        />
+        <link
+            rel="preload"
+            as="image"
+            :href="heroPreloadImage.fallback.src"
+            :imagesrcset="heroPreloadImage.fallback.srcset"
+            :imagesizes="heroImageSizes"
+            fetchpriority="high"
+        />
     </Head>
     
     <!-- Full screen container with split layout -->
@@ -222,7 +337,19 @@ onBeforeUnmount(() => {
             <!-- Vertical logo and text -->
             <div class="absolute inset-0 flex flex-col items-center justify-center text-white p-2 sm:p-3">
                 <div class="mb-4 sm:mb-6 lg:mb-8 xl:mb-12">
-                    <img src="/images/lspu_logo_better.webp" alt="LSPU Logo" class="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 xl:w-24 xl:h-24 object-cover filter drop-shadow-lg">
+                    <picture>
+                        <source :srcset="logoWebpSrcset" type="image/webp" :sizes="logoSizes" />
+                        <img
+                            src="/images/lspu_logo_better.png"
+                            :sizes="logoSizes"
+                            width="96"
+                            height="96"
+                            alt="LSPU Logo"
+                            class="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 xl:w-24 xl:h-24 object-cover filter drop-shadow-lg"
+                            loading="lazy"
+                            decoding="async"
+                        />
+                    </picture>
                 </div>
                 
                 <!-- Vertical text -->
@@ -252,20 +379,32 @@ onBeforeUnmount(() => {
             <transition-group name="fade">
                 <div 
                     v-for="(image, index) in slideshowImages" 
-                    :key="index" 
+                    :key="image.key" 
                     v-show="activeSlide === index"
                     class="absolute inset-0 transition-opacity duration-1000"
                 >
                     <!-- Use img tag for better LCP -->
-                    <img 
-                        :src="image"
-                        alt="LSPU Campus"
-                        class="w-full h-full object-cover object-center filter brightness-[0.3] contrast-[1.2]"
-                        :loading="index === 0 ? 'eager' : 'lazy'"
-                        :fetchpriority="index === 0 ? 'high' : 'low'"
-                        width="1920"
-                        height="1080"
-                    />
+                    <picture class="w-full h-full">
+                        <source
+                            v-for="(source, sourceIndex) in image.sources"
+                            :key="`${image.key}-source-${sourceIndex}`"
+                            :type="source.type"
+                            :srcset="source.srcset"
+                            :sizes="heroImageSizes"
+                        />
+                        <img
+                            :src="image.fallback.src"
+                            :srcset="image.fallback.srcset"
+                            :sizes="heroImageSizes"
+                            :alt="image.alt"
+                            class="w-full h-full object-cover object-center filter brightness-[0.3] contrast-[1.2]"
+                            :loading="index === 0 ? 'eager' : 'lazy'"
+                            :fetchpriority="index === 0 ? 'high' : 'low'"
+                            :width="image.width"
+                            :height="image.height"
+                            decoding="async"
+                        />
+                    </picture>
                 </div>
             </transition-group>
             <!-- Subtle overlay -->
@@ -458,8 +597,8 @@ onBeforeUnmount(() => {
         <!-- Slideshow navigation - Top right corner -->
         <div class="absolute top-4 sm:top-6 right-4 sm:right-6 flex space-x-1.5 sm:space-x-2 z-30">
             <button 
-                v-for="(_, index) in slideshowImages" 
-                :key="index"
+                v-for="(slide, index) in slideshowImages" 
+                :key="slide.key"
                 @click="activeSlide = index" 
                 class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full transition-all duration-300"
                 :class="[
