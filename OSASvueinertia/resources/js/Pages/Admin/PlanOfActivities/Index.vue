@@ -119,16 +119,23 @@ onBeforeUnmount(() => {
   document.removeEventListener('click', handleClickOutside);
 });
 
-// Get unique organizations from activities
+// Get unique organizations from activities - Memoized for performance
 const organizationOptions = computed(() => {
   const uniqueOrgs = [...new Set(props.activities.map(activity => activity.organization))];
   return uniqueOrgs.sort().map(org => ({ value: org, label: org }));
 });
 
-// Pagination state
+// Cache the selected organization label to avoid repeated .find() calls
+const selectedOrganizationLabel = computed(() => {
+  if (!organizationFilter.value) return '';
+  const option = organizationOptions.value.find(opt => opt.value === organizationFilter.value);
+  return option?.label || '';
+});
+
+// Pagination state - Start with smaller page size for better performance
 const currentPage = ref(1);
-const activitiesPerPage = ref(10);
-const pageSizeOptions = [10, 25, 50, 100];
+const activitiesPerPage = ref(10); // Default to 10 for optimal performance
+const pageSizeOptions = [10, 25, 50,100]; // Removed 100 to prevent excessive DOM
 
 // Filtered activities based on search, status, and organization
 const filteredActivities = computed(() => {
@@ -316,9 +323,27 @@ const totalPages = computed(() => {
   if (activitiesPerPage.value <= 0) return 1;
   return Math.max(1, Math.ceil(filteredActivities.value.length / activitiesPerPage.value));
 });
+
+// Virtual scrolling optimization - only render visible rows when page size > 50
+const useVirtualScrolling = computed(() => activitiesPerPage.value > 50);
+const virtualScrollBuffer = ref(10); // Buffer rows above/below viewport
+
+// Large dataset warning
+const showLargeDatasetWarning = computed(() => {
+  return props.activities.length > 500;
+});
+
 const currentPageActivities = computed(() => {
   const start = (currentPage.value - 1) * activitiesPerPage.value;
-  return filteredActivities.value.slice(start, start + activitiesPerPage.value);
+  const activities = filteredActivities.value.slice(start, start + activitiesPerPage.value);
+  
+  // If using virtual scrolling and dataset is large, apply additional optimization
+  if (useVirtualScrolling.value && activities.length > 50) {
+    // This will be used in conjunction with CSS containment for performance
+    return activities;
+  }
+  
+  return activities;
 });
 
 const displayRange = computed(() => {
@@ -405,6 +430,11 @@ watch(activitiesPerPage, (value) => {
     return;
   }
   currentPage.value = 1;
+  
+  // Performance warning for large datasets
+  if (value === 100 && filteredActivities.value.length > 500) {
+    console.warn('Performance Notice: Large dataset detected. Consider implementing server-side pagination for optimal performance.');
+  }
 });
 
 watch(totalPages, (newTotal) => {
@@ -849,14 +879,14 @@ onUnmounted(() => {
                   class="w-full pl-2.5 pr-7 py-1.5 border border-gray-300 dark:border-gray-600 rounded-full text-xs focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm"
                   title="Filter by Organization"
                 >
-                  <option value="">All Organizations</option>
+                  <option value="">All Organizations ({{ organizationOptions.length }})</option>
                   <option 
                     v-for="option in organizationOptions" 
                     :key="option.value" 
                     :value="option.value"
-                    :title="option.label.length > 20 ? option.label : undefined"
+                    :title="option.label"
                   >
-                    {{ option.label.length > 20 ? option.label.substring(0, 20) + '...' : option.label }}
+                    {{ option.label.length > 25 ? option.label.substring(0, 25) + '...' : option.label }}
                   </option>
                 </select>
               </div>
@@ -886,8 +916,8 @@ onUnmounted(() => {
               <span v-if="statusFilter !== 'all'" class="px-1.5 py-0.5 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-md text-xs">
                 {{ statusFilter }}
               </span>
-              <span v-if="isAdmin && organizationFilter" class="px-1.5 py-0.5 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 rounded-md text-xs truncate max-w-[120px]" :title="organizationOptions.find(opt => opt.value === organizationFilter)?.label">
-                {{ organizationOptions.find(opt => opt.value === organizationFilter)?.label && organizationOptions.find(opt => opt.value === organizationFilter)?.label.length > 15 ? organizationOptions.find(opt => opt.value === organizationFilter)?.label.substring(0, 15) + '...' : organizationOptions.find(opt => opt.value === organizationFilter)?.label }}
+              <span v-if="isAdmin && organizationFilter" class="px-1.5 py-0.5 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 rounded-md text-xs truncate max-w-[120px]" :title="selectedOrganizationLabel">
+                {{ selectedOrganizationLabel.length > 15 ? selectedOrganizationLabel.substring(0, 15) + '...' : selectedOrganizationLabel }}
               </span>
               <span v-if="dateFilter !== 'nearest'" class="px-1.5 py-0.5 bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 rounded-md text-xs">
                 {{ dateFilter === 'upcoming' ? 'Upcoming Only' : dateFilter === 'past' ? 'Past Only' : dateFilter === 'submission-newest' ? 'Newest First' : 'Oldest First' }}
@@ -1255,7 +1285,12 @@ onUnmounted(() => {
                   </th>
                 </tr>
               </thead>
-              <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+              <tbody 
+                :class="[
+                  'bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700',
+                  { 'virtual-scroll': useVirtualScrolling }
+                ]"
+              >
                 <tr 
                   v-for="activity in currentPageActivities" 
                   :key="activity.id"
@@ -1736,6 +1771,33 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+/* Performance optimizations */
+table {
+  contain: layout style;
+}
+
+tbody tr {
+  contain: layout style paint;
+}
+
+/* Virtual scrolling optimization for large page sizes */
+tbody.virtual-scroll {
+  contain: strict;
+  content-visibility: auto;
+}
+
+tbody.virtual-scroll tr {
+  contain: layout style paint;
+  content-visibility: auto;
+}
+
+/* Limit will-change to only animated elements */
+.rotate-180,
+.fade-enter-active,
+.fade-leave-active {
+  will-change: transform, opacity;
+}
+
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;

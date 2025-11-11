@@ -101,9 +101,15 @@ const hasUpcomingEvents = ref(false);
 const hasEventsToday = ref(false);
 const badgeWasClicked = ref(false);
 const eventCheckTimer = ref(null);
+const isCheckingEvents = ref(false); // Prevent concurrent API calls
 
-// Check for upcoming events
+// Check for upcoming events - Optimized with debouncing
 const checkUpcomingEvents = async () => {
+  // Prevent concurrent API calls
+  if (isCheckingEvents.value) return;
+  
+  isCheckingEvents.value = true;
+  
   try {
     const response = await axios.get('/api/events');
     const now = new Date();
@@ -145,6 +151,8 @@ const checkUpcomingEvents = async () => {
     }
   } catch (error) {
     console.error('Error fetching events:', error);
+  } finally {
+    isCheckingEvents.value = false;
   }
 };
 
