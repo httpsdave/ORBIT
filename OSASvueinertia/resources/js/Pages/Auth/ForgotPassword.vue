@@ -2,8 +2,6 @@
 import TextInput from '@/Components/TextInput.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { ref, onMounted, onBeforeUnmount } from 'vue';
-import { auth } from '@/firebase/config';
-import { sendPasswordResetEmail, createUserWithEmailAndPassword, fetchSignInMethodsForEmail } from 'firebase/auth';
 
 defineProps({
     status: {
@@ -28,6 +26,29 @@ const lastAttemptTime = ref(null);
 const COOLDOWN_DURATION = 30; // 30 seconds cooldown
 const showCooldownMessage = ref(false); // Control when to show cooldown UI
 const errorDismissTimer = ref(null);
+
+let firebaseAuthModule = null;
+
+const loadFirebaseAuth = async () => {
+    // Lazy-load Firebase bits so the main chunk avoids pulling in auth on first paint
+    if (firebaseAuthModule) {
+        return firebaseAuthModule;
+    }
+
+    const [{ auth }, authExports] = await Promise.all([
+        import('@/firebase/config'),
+        import('firebase/auth'),
+    ]);
+
+    firebaseAuthModule = {
+        auth,
+        sendPasswordResetEmail: authExports.sendPasswordResetEmail,
+        createUserWithEmailAndPassword: authExports.createUserWithEmailAndPassword,
+        fetchSignInMethodsForEmail: authExports.fetchSignInMethodsForEmail,
+    };
+
+    return firebaseAuthModule;
+};
 
 const heroImageSizes = '(max-width: 640px) calc(100vw - 5rem), (max-width: 768px) calc(100vw - 6rem), (max-width: 1024px) calc(100vw - 8rem), (max-width: 1280px) calc(100vw - 10rem), calc(100vw - 12rem)';
 
@@ -137,7 +158,7 @@ const slideshowImages = [
 ];
 
 const heroPreloadImage = slideshowImages[0];
-const logoWebpSrcset = '/images/optimized/lspu_logo_better-96.webp 96w, /images/optimized/lspu_logo_better-192.webp 192w, /images/optimized/lspu_logo_better-256.webp 256w';
+const logoWebpSrcset = '/images/optimized/lspu_logo_better-96.webp 96w, /images/optimized/lspu_logo_better-192.webp 192w';
 const logoSizes = '(max-width: 640px) 2.5rem, (max-width: 768px) 3rem, (max-width: 1024px) 4rem, (max-width: 1280px) 5rem, 6rem';
 
 // Clear client-side errors when user starts typing
@@ -173,6 +194,13 @@ const submit = async () => {
     isLoading.value = true;
     
     try {
+        const {
+            auth,
+            sendPasswordResetEmail,
+            createUserWithEmailAndPassword,
+            fetchSignInMethodsForEmail,
+        } = await loadFirebaseAuth();
+
         // STEP 1: Check if user exists in Laravel database first
         console.log('Checking if user exists in database:', email.value);
         
@@ -335,12 +363,18 @@ const checkExistingCooldown = () => {
 };
 
 const startSlideshow = () => {
+    if (slideInterval.value) {
+        return;
+    }
     slideInterval.value = setInterval(() => {
         activeSlide.value = (activeSlide.value + 1) % slideshowImages.length;
     }, 10000);
 };
 
 const startGradientAnimation = () => {
+    if (gradientInterval.value) {
+        return;
+    }
     gradientInterval.value = setInterval(() => {
         gradientIndex.value = (gradientIndex.value + 1) % 2;
     }, 30000); // 30 seconds
@@ -366,21 +400,25 @@ onBeforeUnmount(() => {
     // Clear slideshow interval when component is unmounted
     if (slideInterval.value) {
         clearInterval(slideInterval.value);
+        slideInterval.value = null;
     }
     
     // Clear gradient interval when component is unmounted
     if (gradientInterval.value) {
         clearInterval(gradientInterval.value);
+        gradientInterval.value = null;
     }
     
     // Clear cooldown interval
     if (cooldownInterval.value) {
         clearInterval(cooldownInterval.value);
+        cooldownInterval.value = null;
     }
     
     // Clear error dismiss timer
     if (errorDismissTimer.value) {
         clearTimeout(errorDismissTimer.value);
+        errorDismissTimer.value = null;
     }
 });
 </script>
@@ -745,18 +783,6 @@ a:focus, button:focus, input:focus {
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
 }
 
-/* Enhanced hover effects */
-button:hover:not(:disabled) {
-  transform: translateY(-1px);
-}
-
-/* Smooth transitions for all interactive elements */
-* {
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 300ms;
-}
-
 /* Floating label animations (match Logz.vue) */
 .floating-label {
     transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -802,40 +828,9 @@ button:hover:not(:disabled) {
         }
 }
 
-/* Use default cursor for all text content - no text selection cursor */
-p, span, h1, h2, h3, h4, h5, h6, div, label:not([for]) {
-  cursor: default;
-  user-select: none;
-}
-
-/* Only show text cursor for actual input fields */
-input[type="text"], input[type="email"], input[type="password"], textarea {
-  cursor: text;
-  user-select: text;
-}
-
-/* Pointer cursor for interactive elements */
-a, button, label[for], input[type="checkbox"], input[type="radio"] {
-  cursor: pointer;
-}
-
-/* Smooth cooldown animation */
-.cooldown-progress {
-    transition: stroke-dashoffset 1s linear;
-}
-
 /* Tabular numbers for consistent countdown display */
 .tabular-nums {
     font-variant-numeric: tabular-nums;
 }
 
-/* Pulse animation for countdown number */
-@keyframes countdownPulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-}
-
-.countdown-pulse {
-    animation: countdownPulse 1s ease-in-out;
-}
 </style>
