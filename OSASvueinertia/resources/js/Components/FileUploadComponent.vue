@@ -7,19 +7,19 @@
     <!-- Scanning Modal -->
     <div 
       v-if="isProcessing && selectedFile" 
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-backdrop"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4 modal-backdrop"
       @click.self="closeScanningModal"
     >
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden scanning-modal">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl max-w-4xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden scanning-modal">
         <!-- Modal Header -->
-        <div class="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700">
-          <div class="flex items-center space-x-3">
+        <div class="flex justify-between items-center p-3 sm:p-4 border-b border-gray-200 dark:border-gray-700">
+          <div class="flex items-center space-x-2 sm:space-x-3">
             <div class="flex space-x-1">
               <div class="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
               <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse" style="animation-delay: 0.2s;"></div>
               <div class="w-2 h-2 bg-yellow-400 rounded-full animate-pulse" style="animation-delay: 0.4s;"></div>
             </div>
-            <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">
+            <h3 class="text-base sm:text-lg font-semibold text-gray-800 dark:text-gray-100">
               {{ showExtractedText ? 'Extracted Text' : isExtracting ? 'Extracting Event Details' : 'Scanning Document' }}
             </h3>
           </div>
@@ -42,7 +42,7 @@
         </div>
 
         <!-- File Preview Container -->
-        <div class="relative bg-white dark:bg-gray-800 overflow-hidden" style="min-height: 400px; max-height: calc(90vh - 120px);">
+        <div class="relative bg-white dark:bg-gray-800 overflow-hidden" style="min-height: 300px; max-height: calc(95vh - 100px);">
           <!-- File Preview -->
           <div v-if="!showExtractedText && !isExtracting" class="relative h-full">
             <img 
@@ -100,31 +100,41 @@
           </div>
           
           <!-- Extracted Text Display -->
-          <div v-if="showExtractedText && !isExtracting" class="h-full bg-white dark:bg-gray-800 p-6 overflow-y-auto">
-            <div class="mb-4">
-              <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2">Extracted Text from Document</h4>
-              <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">Review the extracted text before proceeding to event extraction:</p>
+          <div v-if="showExtractedText && !isExtracting" class="h-full bg-white dark:bg-gray-800 p-3 sm:p-6 overflow-y-auto">
+            <div class="mb-3 sm:mb-4">
+              <h4 class="text-base sm:text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2">Extracted Text from Document</h4>
+              <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mb-3 sm:mb-4">Review the extracted text before proceeding to event extraction:</p>
+              
+              <!-- Warning Note -->
+              <div class="flex items-start space-x-2 p-2 sm:p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-md mb-3 sm:mb-4">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-600 dark:text-yellow-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                </svg>
+                <p class="text-xs sm:text-sm text-yellow-800 dark:text-yellow-200">
+                  <strong>Note:</strong> Please review the extracted text carefully as it may not always be accurate. Verify all information before proceeding.
+                </p>
+              </div>
             </div>
             
-                        <div class="p-6 bg-gray-50 dark:bg-gray-700 max-h-64 overflow-y-auto rounded-md border border-gray-200 dark:border-gray-600">
-              <pre class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap font-mono">{{ extractedText }}</pre>
+            <div class="p-3 sm:p-6 bg-gray-50 dark:bg-gray-700 max-h-48 sm:max-h-64 overflow-y-auto rounded-md border border-gray-200 dark:border-gray-600">
+              <pre class="text-xs sm:text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap font-mono leading-relaxed">{{ extractedText }}</pre>
             </div>
             
             <!-- Countdown timer centered below extracted text -->
-            <div v-if="countdown > 0" class="w-full flex justify-center my-4">
-              <span class="text-sm text-gray-500 dark:text-gray-400">Proceeding in {{ countdown }} second<span v-if="countdown !== 1">s</span>...</span>
+            <div v-if="countdown > 0" class="w-full flex justify-center my-3 sm:my-4">
+              <span class="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Proceeding in {{ countdown }} second<span v-if="countdown !== 1">s</span>...</span>
             </div>
             
-            <div class="mt-6 flex justify-end space-x-3">
+            <div class="mt-4 sm:mt-6 flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3">
               <button 
                 @click="cancelExtraction"
-                class="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 dark:focus:ring-gray-400 transition-colors duration-200"
+                class="w-full sm:w-auto px-4 py-2 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 dark:focus:ring-gray-400 transition-colors duration-200"
               >
                 Cancel
               </button>
               <button 
                 @click="proceedToEventExtraction"
-                class="px-4 py-2 bg-blue-500 dark:bg-blue-600 text-white rounded-md hover:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-colors duration-200"
+                class="w-full sm:w-auto px-4 py-2 text-sm bg-blue-500 dark:bg-blue-600 text-white rounded-md hover:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-colors duration-200"
               >
                 Extract Event Details
               </button>
@@ -132,20 +142,20 @@
           </div>
           
           <!-- Processing indicator overlay -->
-          <div v-if="!showExtractedText && !isExtracting" class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-white dark:from-gray-800 via-white/90 dark:via-gray-800/90 to-transparent p-6">
-            <div class="flex items-center justify-between text-gray-700 dark:text-gray-300">
-              <div class="flex items-center space-x-4">
+          <div v-if="!showExtractedText && !isExtracting" class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-white dark:from-gray-800 via-white/90 dark:via-gray-800/90 to-transparent p-3 sm:p-6">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between text-gray-700 dark:text-gray-300 space-y-2 sm:space-y-0">
+              <div class="flex items-center space-x-2 sm:space-x-4">
                 <div class="flex space-x-2">
                   <div class="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
                   <div class="w-3 h-3 bg-yellow-500 rounded-full animate-pulse" style="animation-delay: 0.4s;"></div>
                 </div>
                 <div>
-                  <p class="text-lg font-medium text-gray-800 dark:text-gray-100">Analyzing document content...</p>
-                  <p class="text-sm text-gray-600 dark:text-gray-300">Extracting text from document</p>
+                  <p class="text-sm sm:text-lg font-medium text-gray-800 dark:text-gray-100">Analyzing document content...</p>
+                  <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-300">Extracting text from document</p>
                 </div>
               </div>
-              <div class="text-right">
-                <p class="text-sm text-gray-600 dark:text-gray-300">{{ selectedFile.name }}</p>
+              <div class="text-left sm:text-right">
+                <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-300 truncate max-w-[200px] sm:max-w-none">{{ selectedFile.name }}</p>
                 <p class="text-xs text-gray-500 dark:text-gray-400">{{ formatFileSize(selectedFile.size) }}</p>
               </div>
             </div>
