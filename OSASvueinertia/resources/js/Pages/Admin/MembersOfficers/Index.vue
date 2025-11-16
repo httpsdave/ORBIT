@@ -134,12 +134,18 @@ onBeforeUnmount(() => {
   window.removeEventListener('scroll', onScroll);
 });
 
+const getUserOrganizationNames = (records) => {
+  return records
+    .filter(record => !record.submitted_by_admin)
+    .map(record => record.organization)
+    .filter(org => org !== null && org !== undefined && org !== '');
+};
+
 // Get unique organizations - memoized
 const organizationOptions = computed(() => {
-  const allOrgs = activeTab.value === 'members' 
-    ? [...new Set(props.members.map(m => m.organization))]
-    : [...new Set(props.officers.map(o => o.organization))];
-  return allOrgs.sort().map(org => ({ value: org, label: org }));
+  const source = activeTab.value === 'members' ? props.members : props.officers;
+  const organizations = [...new Set(getUserOrganizationNames(source))];
+  return organizations.sort().map(org => ({ value: org, label: org }));
 });
 
 // Get unique values for multi-select columns - optimized
@@ -147,6 +153,9 @@ const getUniqueColumnValues = (columnKey) => {
   const values = new Set();
   const data = activeTab.value === 'members' ? props.members : props.officers;
   data.forEach(item => {
+    if (columnKey === 'organization' && item.submitted_by_admin) {
+      return;
+    }
     const value = item[columnKey];
     if (value !== null && value !== undefined && value !== '') {
       values.add(value);

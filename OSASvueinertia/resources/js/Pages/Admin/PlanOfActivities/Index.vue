@@ -89,10 +89,20 @@ const parseNumericValue = (value) => {
   return Number.isNaN(parsed) ? null : parsed;
 };
 
+const getUserOrganizationNames = (records) => {
+  return records
+    .filter(record => !record.submitted_by_admin)
+    .map(record => record.organization)
+    .filter(org => org !== null && org !== undefined && org !== '');
+};
+
 // Get unique values for multi-select columns
 const getUniqueColumnValues = (columnKey) => {
   const values = new Set();
   props.activities.forEach(activity => {
+    if (columnKey === 'organization' && activity.submitted_by_admin) {
+      return;
+    }
     const value = activity[columnKey];
     if (value !== null && value !== undefined && value !== '') {
       values.add(value);
@@ -121,7 +131,7 @@ onBeforeUnmount(() => {
 
 // Get unique organizations from activities - Memoized for performance
 const organizationOptions = computed(() => {
-  const uniqueOrgs = [...new Set(props.activities.map(activity => activity.organization))];
+  const uniqueOrgs = [...new Set(getUserOrganizationNames(props.activities))];
   return uniqueOrgs.sort().map(org => ({ value: org, label: org }));
 });
 

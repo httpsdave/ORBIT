@@ -22,7 +22,7 @@ class PlanOfActivitiesController extends Controller
         
         // Get Plan of Activities applications (LSPU-OSAS-SF-004)
         $query = OrganizationApplication::where('form_type', 'LSPU-OSAS-SF-004')
-            ->with(['user', 'activities']);
+            ->with(['user.role', 'activities']);
         
         // If not admin, filter to show only the user's own submissions
         if (!$isAdmin) {
@@ -35,6 +35,12 @@ class PlanOfActivitiesController extends Controller
         $activities = [];
         
         foreach ($applications as $application) {
+            if (!$application->user) {
+                continue;
+            }
+
+            $isAdminSubmission = optional(optional($application->user)->role)->slug === 'admin';
+
             foreach ($application->activities as $activity) {
                 $activities[] = [
                     'id' => $activity->id,
@@ -49,6 +55,7 @@ class PlanOfActivitiesController extends Controller
                     'budget' => $activity->budget,
                     'target_participants' => $activity->target_participants ?? 'N/A',
                     'status' => $application->status,
+                    'submitted_by_admin' => $isAdminSubmission,
                 ];
             }
         }
@@ -125,7 +132,7 @@ class PlanOfActivitiesController extends Controller
             
             // Get Plan of Activities applications
             $query = OrganizationApplication::where('form_type', 'LSPU-OSAS-SF-004')
-                ->with(['user', 'activities']);
+                ->with(['user.role', 'activities']);
             
             // If not admin, filter to show only the user's own submissions
             if (!$isAdmin) {
@@ -138,6 +145,12 @@ class PlanOfActivitiesController extends Controller
             $activities = [];
             
             foreach ($applications as $application) {
+                if (!$application->user) {
+                    continue;
+                }
+
+                $isAdminSubmission = optional(optional($application->user)->role)->slug === 'admin';
+
                 foreach ($application->activities as $activity) {
                     $activities[] = [
                         'id' => $activity->id,
@@ -152,6 +165,7 @@ class PlanOfActivitiesController extends Controller
                         'budget' => $activity->budget ?? 0,
                         'target_participants' => $activity->target_participants ?? 'N/A',
                         'status' => $application->status ?? 'Pending',
+                        'submitted_by_admin' => $isAdminSubmission,
                     ];
                 }
             }
@@ -341,7 +355,7 @@ class PlanOfActivitiesController extends Controller
             
             // Get Plan of Activities applications
             $query = OrganizationApplication::where('form_type', 'LSPU-OSAS-SF-004')
-                ->with(['user', 'activities']);
+                ->with(['user.role', 'activities']);
             
             // If not admin, filter to show only the user's own submissions
             if (!$isAdmin) {
@@ -354,6 +368,12 @@ class PlanOfActivitiesController extends Controller
             $activities = [];
             
             foreach ($applications as $application) {
+                if (!$application->user) {
+                    continue;
+                }
+
+                $isAdminSubmission = optional(optional($application->user)->role)->slug === 'admin';
+
                 foreach ($application->activities as $activity) {
                     $activities[] = [
                         'id' => $activity->id,
@@ -368,6 +388,7 @@ class PlanOfActivitiesController extends Controller
                         'budget' => $activity->budget ?? 0,
                         'target_participants' => $activity->target_participants ?? 'N/A',
                         'status' => $application->status ?? 'Pending',
+                        'submitted_by_admin' => $isAdminSubmission,
                     ];
                 }
             }

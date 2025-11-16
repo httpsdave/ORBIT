@@ -17,11 +17,11 @@ class MembersOfficersController extends Controller
 
             // Build base query for List of Members applications (LSPU-OSAS-SF-005)
             $membersQuery = OrganizationApplication::where('form_type', 'LSPU-OSAS-SF-005')
-                ->with(['user', 'members']);
+                ->with(['user.role', 'members']);
 
             // Build base query for List of Officers applications (LSPU-OSAS-SF-007)
             $officersQuery = OrganizationApplication::where('form_type', 'LSPU-OSAS-SF-007')
-                ->with(['user', 'officers']);
+                ->with(['user.role', 'officers']);
 
             // If not admin, only show the user's own organization data
             if (!$isAdmin) {
@@ -40,6 +40,8 @@ class MembersOfficersController extends Controller
                 continue;
             }
             
+            $isAdminSubmission = optional(optional($application->user)->role)->slug === 'admin';
+
             foreach ($application->members as $member) {
                 $members[] = [
                     'id' => $member->id,
@@ -52,6 +54,7 @@ class MembersOfficersController extends Controller
                     'academic_year' => ($application->academic_year_start ?? '') . '-' . ($application->academic_year_end ?? ''),
                     'status' => $application->status ?? 'pending',
                     'submitted_at' => $application->created_at ? $application->created_at->format('M d, Y') : 'N/A',
+                    'submitted_by_admin' => $isAdminSubmission,
                 ];
             }
         }
@@ -64,6 +67,8 @@ class MembersOfficersController extends Controller
                 continue;
             }
             
+            $isAdminSubmission = optional(optional($application->user)->role)->slug === 'admin';
+
             foreach ($application->officers as $officer) {
                 $officers[] = [
                     'id' => $officer->id,
@@ -74,6 +79,7 @@ class MembersOfficersController extends Controller
                     'student_number' => $officer->student_number ?? 'N/A',
                     'status' => $application->status ?? 'pending',
                     'submitted_at' => $application->created_at ? $application->created_at->format('M d, Y') : 'N/A',
+                    'submitted_by_admin' => $isAdminSubmission,
                 ];
             }
         }
