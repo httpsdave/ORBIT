@@ -17,6 +17,9 @@ class PublicCollegeController extends Controller
         $colleges = College::withCount('users')->get();
         
         return Inertia::render('Colleges/Index', [
+            'auth' => [
+                'user' => auth()->user()
+            ],
             'colleges' => $colleges
         ]);
     }
@@ -26,9 +29,16 @@ class PublicCollegeController extends Controller
      */
     public function show(College $college)
     {
-        $college->load('users');
+        // Load users without the college relationship to prevent circular references
+        $college->load(['users' => function ($query) {
+            // Only select necessary fields and don't load the college relationship
+            $query->select('id', 'name', 'email', 'profile_photo_path', 'college_id', 'description', 'status');
+        }]);
         
         return Inertia::render('Colleges/Show', [
+            'auth' => [
+                'user' => auth()->user()
+            ],
             'college' => $college
         ]);
     }

@@ -16,12 +16,12 @@
                     <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100 flex items-center">
                         <span class="mr-2">Colleges</span>
                         <span class="text-sm bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 py-1 px-2 rounded-full">
-                            {{ colleges.length }} total
+                            {{ (colleges || []).length }} total
                         </span>
                     </h1>
                 </div>
 
-                <div v-if="colleges.length === 0" class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-8 text-center">
+                <div v-if="!colleges || colleges.length === 0" class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-8 text-center">
                     <div class="text-gray-500 dark:text-gray-400">No colleges found</div>
                 </div>
 

@@ -41,7 +41,7 @@
                             </div>
                             <div class="mt-2 sm:mt-0">
                                 <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
-                                    {{ college.users.length }} {{ college.users.length === 1 ? 'Organization' : 'Organizations' }}
+                                    {{ (college.users || []).length }} {{ (college.users || []).length === 1 ? 'Organization' : 'Organizations' }}
                                 </span>
                             </div>
                         </div>
@@ -63,7 +63,7 @@
                         <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Student Organizations</h2>
                     </div>
 
-                    <div v-if="college.users.length === 0" class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-8 text-center">
+                    <div v-if="!college.users || college.users.length === 0" class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-8 text-center">
                         <div class="text-gray-500 dark:text-gray-400">No student organizations found for this college.</div>
                     </div>
 
@@ -86,9 +86,9 @@
                                             {{ org.name }}
                                         </Link>
                                     </h3>
-                                    <span v-if="org.college && org.college.acronym" 
+                                    <span v-if="college.acronym" 
                                           class="ml-2 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-xs px-2 py-1 rounded-md">
-                                        {{ org.college.acronym }}
+                                        {{ college.acronym }}
                                     </span>
                                 </div>
                                 
