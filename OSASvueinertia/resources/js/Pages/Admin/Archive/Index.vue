@@ -465,7 +465,28 @@ const getReportPath = (app) => {
   return path && path !== '' ? path : null;
 };
 
+// Helper function to check if application has a signed document
+const hasSignedDocument = (app) => {
+  return (app.signed_document_path && app.signed_document_path.trim() !== '') || 
+         (app.signed_document_link && app.signed_document_link.trim() !== '');
+};
+
+// Helper function to get signed document type
+const getSignedDocumentType = (app) => {
+  if (app.signed_document_path && app.signed_document_path.trim() !== '') {
+    return 'file';
+  } else if (app.signed_document_link && app.signed_document_link.trim() !== '') {
+    return 'link';
+  }
+  return null;
+};
+
 const getViewUrl = (app) => {
+  // If there's a signed document (file), prioritize showing that
+  if (app.signed_document_path && app.signed_document_path.trim() !== '') {
+    return `/storage/${app.signed_document_path}`;
+  }
+  
   // For direct-upload forms, link directly to the PDF
   const reportPath = getReportPath(app);
   if ([
@@ -656,6 +677,14 @@ watch(() => props.currentPage, (newValue) => {
               <div class="flex flex-wrap gap-2 text-xs text-gray-500 dark:text-gray-400 font-medium">
                 <span><span class="font-semibold text-gray-700 dark:text-gray-200">Archived At:</span> {{ formatDate(application.archived_at) }}</span>
               </div>
+              <div v-if="hasSignedDocument(application)" class="flex items-center gap-1 text-xs">
+                <span class="text-green-600 dark:text-green-400 flex items-center gap-1 font-medium">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                  </svg>
+                  {{ getSignedDocumentType(application) === 'link' ? 'Document Link' : 'Signed Document' }}
+                </span>
+              </div>
                     <div class="flex gap-2 mt-2 flex-wrap">
                         <button
                             @click.stop="toggleDropdown(application, $event)"
@@ -720,6 +749,14 @@ watch(() => props.currentPage, (newValue) => {
                                         <span><span class="font-semibold text-gray-700 dark:text-gray-200">Academic Year:</span> {{ application.academic_year_archived || 'N/A' }}</span>
                                         <span>&bull; <span :class="`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(application.status)}`">{{ application.status }}</span></span>
                                         <span><span class="font-semibold text-gray-700 dark:text-gray-200">Archived At:</span> {{ formatDate(application.archived_at) }}</span>
+                                    </div>
+                                    <div v-if="hasSignedDocument(application)" class="flex items-center gap-1 text-xs mt-1">
+                                        <span class="text-green-600 dark:text-green-400 flex items-center gap-1 font-medium">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                            </svg>
+                                            {{ getSignedDocumentType(application) === 'link' ? 'Document Link' : 'Signed Document' }}
+                                        </span>
                                     </div>
                                 </div>
                             </div>
