@@ -63,6 +63,10 @@ const hasMorePages = ref(props.hasMorePages);
 // Back-to-top button state
 const showBackToTop = ref(false);
 
+// Preview modal state
+const showPreviewModal = ref(false);
+const previewApp = ref(null);
+
 // Check if any filters are active
 const hasActiveFilters = computed(() => {
     return filterForm.value.academic_year_filter;
@@ -234,6 +238,39 @@ const getFormTypeLabel = (formType) => {
     return formTypes[formType] || formType;
 };
 
+// Preview modal functions
+const openPreview = (app) => {
+    previewApp.value = app;
+    showPreviewModal.value = true;
+};
+
+const closePreviewModal = () => {
+    showPreviewModal.value = false;
+    previewApp.value = null;
+};
+
+const openPreviewInNewWindow = () => {
+    if (typeof window !== 'undefined' && previewApp.value) {
+        const url = getViewUrl(previewApp.value);
+        if (url && url !== '#') {
+            window.open(url, '_blank');
+        }
+    }
+};
+
+const viewPdf = (app) => {
+    const url = getViewUrl(app);
+    if (url && url !== '#') {
+        // For mobile screens, open in new window
+        if (window.innerWidth < 640) {
+            window.open(url, '_blank');
+        } else {
+            // For desktop screens, use modal
+            openPreview(app);
+        }
+    }
+};
+
 // Toggle action dropdown
 const toggleDropdown = (app, event) => {
     if (window.innerWidth < 640) { // Mobile: show inline dropdown
@@ -324,6 +361,15 @@ watch(() => props.hasMorePages, (newValue) => {
 
 watch(() => props.currentPage, (newValue) => {
     currentPage.value = newValue;
+});
+
+// Watch for modal open/close to lock body scroll
+watch(showPreviewModal, (val) => {
+    if (val) {
+        document.body.classList.add('overflow-hidden');
+    } else {
+        document.body.classList.remove('overflow-hidden');
+    }
 });
 </script>
 
@@ -429,7 +475,8 @@ watch(() => props.currentPage, (newValue) => {
             <!-- MOBILE CARD LAYOUT -->
             <div v-if="allArchivedApplications.length > 0" class="sm:hidden p-2 space-y-4 max-w-4xl mx-auto">
                 <div v-for="application in allArchivedApplications" :key="application.id" 
-                    class="bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-100 dark:border-gray-700 p-4 flex flex-col gap-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                    class="bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-100 dark:border-gray-700 p-4 flex flex-col gap-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                    @click="viewPdf(application)">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#2563eb">
@@ -497,6 +544,7 @@ watch(() => props.currentPage, (newValue) => {
                             v-for="application in allArchivedApplications"
                             :key="application.id"
                             class="bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-100 dark:border-gray-700 mb-4 flex flex-col md:flex-row md:items-center md:justify-between hover:shadow-lg transition cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
+                            @click="viewPdf(application)"
                         >
                             <div class="flex items-center gap-4 p-5 flex-1 min-w-0">
                                 <div class="flex-shrink-0">
@@ -608,5 +656,80 @@ watch(() => props.currentPage, (newValue) => {
                 <path fill-rule="evenodd" d="M10 5a1 1 0 01.707.293l5 5a1 1 0 01-1.414 1.414L10 7.414 5.707 11.707A1 1 0 014.293 10.293l5-5A1 1 0 0110 5z" clip-rule="evenodd" />
             </svg>
         </button>
+
+        <!-- PDF Preview Modal -->
+        <transition name="fade">
+          <div v-if="showPreviewModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60" @click="closePreviewModal">
+            <div
+              class="relative bg-transparent shadow-2xl flex flex-col w-[95vw] max-w-4xl md:w-[70vw] md:max-w-3xl lg:w-[60vw] lg:max-w-4xl xl:w-[50vw] xl:max-w-5xl h-[75vh] md:h-[85vh] lg:h-[90vh] xl:h-[95vh] max-h-[95vh] overflow-hidden border border-transparent"
+              @click.stop
+            >
+              <!-- Close Button: floating at top-right, outside header -->
+              <button
+                @click="closePreviewModal"
+                class="absolute top-4 right-4 flex items-center justify-center text-white hover:text-gray-200 focus:outline-none transition z-20 opacity-90"
+                title="Close Preview"
+                aria-label="Close Preview"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+              <!-- Header -->
+              <div class="flex items-center justify-between px-4 py-3 pr-16 bg-transparent relative">
+                <div class="font-semibold text-gray-200 text-base truncate opacity-90">
+                  {{ previewApp ? getFormTypeLabel(previewApp.form_type) : '' }}
+                </div>
+                <div class="flex items-center gap-2">
+                  <button
+                    v-if="previewApp"
+                    @click="openPreviewInNewWindow"
+                    class="inline-flex items-center justify-center px-4 py-2 bg-blue-500 text-sm font-medium text-white rounded-xl shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group"
+                    title="Open in New Window"
+                    aria-label="Open in New Window"
+                  >
+                    <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 3h7v7m0 0L10 21l-7-7 11-11z" />
+                    </svg>
+                    New Window
+                  </button>
+                </div>
+              </div>
+              <!-- PDF Iframe -->
+              <div class="flex-1 w-full h-full flex items-center justify-center bg-gray-100">
+                <iframe
+                  v-if="previewApp"
+                  :src="getViewUrl(previewApp)"
+                  class="w-full h-full border-0 bg-white"
+                  style="min-height: 300px;"
+                  allowfullscreen
+                  title="PDF Preview"
+                >
+                </iframe>
+                <!-- Fallback message for browsers that don't support iframes -->
+                <div v-if="previewApp" class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <p class="text-gray-500 text-sm pointer-events-auto hidden">
+                    Your browser does not support PDFs. 
+                    <a :href="getViewUrl(previewApp)" class="text-blue-600 hover:underline">Download the PDF</a>.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </transition>
     </AuthenticatedLayout>
-</template> 
+</template>
+
+<style scoped>
+/* Fade transition for modal */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style> 
