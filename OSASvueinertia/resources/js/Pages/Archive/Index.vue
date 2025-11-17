@@ -211,6 +211,12 @@ const getViewUrl = (app) => {
     return route('applications.pdf', app.id) + '?action=view';
 };
 
+// Get the original unsigned submission URL (ignores signed document)
+const getUnsignedViewUrl = (app) => {
+    // Always use the generated PDF route for unsigned version
+    return route('applications.pdf', app.id) + '?action=view';
+};
+
 const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
         case 'approved':
@@ -251,7 +257,8 @@ const closePreviewModal = () => {
 
 const openPreviewInNewWindow = () => {
     if (typeof window !== 'undefined' && previewApp.value) {
-        const url = getViewUrl(previewApp.value);
+        // Use unsigned URL if forced, otherwise use regular view URL
+        const url = previewApp.value._forceUnsigned ? getUnsignedViewUrl(previewApp.value) : getViewUrl(previewApp.value);
         if (url && url !== '#') {
             window.open(url, '_blank');
         }
@@ -269,6 +276,24 @@ const viewPdf = (app) => {
             openPreview(app);
         }
     }
+};
+
+// View unsigned document (original submission)
+const viewUnsignedDocument = (app) => {
+    const url = getUnsignedViewUrl(app);
+    if (url && url !== '#') {
+        // For mobile screens, open in new window
+        if (window.innerWidth < 640) {
+            window.open(url, '_blank');
+        } else {
+            // For desktop screens, use modal with unsigned URL
+            previewApp.value = { ...app, _forceUnsigned: true };
+            showPreviewModal.value = true;
+        }
+    }
+    // Close dropdowns
+    activeMobileDropdownId.value = null;
+    activeDropdownApp.value = null;
 };
 
 // Toggle action dropdown
@@ -336,13 +361,22 @@ function removeDropdownListeners() {
     window.removeEventListener('resize', updateDropdownPosition);
 }
 
+// Close dropdowns when clicking outside
+const closeDropdowns = (event) => {
+  if (!event.target.closest('.dropdown-container')) {
+    activeDropdownApp.value = null;
+  }
+};
+
 // Lifecycle hooks
 onMounted(() => {
+    document.addEventListener('click', closeDropdowns);
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('scroll', handleScroll, { passive: true });
 });
 
 onUnmounted(() => {
+    document.removeEventListener('click', closeDropdowns);
     removeDropdownListeners();
     window.removeEventListener('scroll', onScroll);
     window.removeEventListener('scroll', handleScroll);
@@ -522,18 +556,15 @@ watch(showPreviewModal, (val) => {
                     </div>
                     <!-- MOBILE INLINE DROPDOWN -->
                     <div v-if="activeMobileDropdownId === application.id" class="mobile-dropdown-menu mt-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg shadow p-3 flex flex-col gap-2 z-10" @click.stop>
-                        <a
-                            :href="getViewUrl(application)"
-                            @click="activeMobileDropdownId = null"
+                        <button
+                            @click="viewUnsignedDocument(application)"
                             class="w-full text-left px-2 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200"
-                            target="_blank"
                         >
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-600 dark:text-green-400" viewBox="0 0 20 20" fill="currentColor">
-                                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                                <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600 dark:text-gray-400" viewBox="0 -960 960 960" fill="currentColor">
+                                <path d="M760-200H320q-33 0-56.5-23.5T240-280v-560q0-33 23.5-56.5T320-920h280l240 240v400q0 33-23.5 56.5T760-200ZM560-640v-200H320v560h440v-360H560ZM160-40q-33 0-56.5-23.5T80-120v-560h80v560h440v80H160Zm160-800v200-200 560-560Z"/>
                             </svg>
-                            View PDF
-                        </a>
+                            View Unsigned
+                        </button>
                     </div>
                         </div>
                     </div>
@@ -610,23 +641,21 @@ watch(showPreviewModal, (val) => {
             <div 
                 ref="dropdownRef"
                 v-if="activeDropdownApp"
-                class="fixed z-50 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 w-full max-w-xs sm:w-64"
+                class="dropdown-container fixed z-50 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 w-full max-w-xs sm:w-64"
                 :style="{ top: `${dropdownPosition.top}px`, left: `${dropdownPosition.left}px`, visibility: activeDropdownApp ? 'visible' : 'hidden' }"
                 @click.stop
             >
-                <!-- View PDF option -->
-                <a
-                    :href="getViewUrl(activeDropdownApp)"
+                <!-- View Unsigned option - Only show if signed document exists -->
+                <button
+                    v-if="hasSignedDocument(activeDropdownApp)"
+                    @click="viewUnsignedDocument(activeDropdownApp)"
                     class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200 font-medium"
-                    target="_blank"
-                    @click="activeDropdownApp = null"
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-600 dark:text-green-400" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                        <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600 dark:text-gray-400" viewBox="0 -960 960 960" fill="currentColor">
+                        <path d="M760-200H320q-33 0-56.5-23.5T240-280v-560q0-33 23.5-56.5T320-920h280l240 240v400q0 33-23.5 56.5T760-200ZM560-640v-200H320v560h440v-360H560ZM160-40q-33 0-56.5-23.5T80-120v-560h80v560h440v80H160Zm160-800v200-200 560-560Z"/>
                     </svg>
-                    View PDF
-                </a>
+                    View Unsigned
+                </button>
             </div>
         </Teleport>
 
@@ -700,7 +729,7 @@ watch(showPreviewModal, (val) => {
               <div class="flex-1 w-full h-full flex items-center justify-center bg-gray-100">
                 <iframe
                   v-if="previewApp"
-                  :src="getViewUrl(previewApp)"
+                  :src="previewApp._forceUnsigned ? getUnsignedViewUrl(previewApp) : getViewUrl(previewApp)"
                   class="w-full h-full border-0 bg-white"
                   style="min-height: 300px;"
                   allowfullscreen

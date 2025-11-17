@@ -286,19 +286,8 @@ function removeDropdownListeners() {
 
 // Close dropdowns when clicking outside
 const closeDropdowns = (event) => {
-  try {
-    // If click happened inside the dropdown element, ignore
-    if (dropdownRef.value && dropdownRef.value.contains(event.target)) return;
-
-    // If click happened on a dropdown trigger button, ignore (so toggle still works)
-    if (event.target.closest && event.target.closest('[data-dropdown-trigger]')) return;
-
-    // Otherwise close any open floating dropdown
+  if (!event.target.closest('.dropdown-container')) {
     activeDropdownApp.value = null;
-    dropdownButtonEl.value = null;
-    removeDropdownListeners();
-  } catch (e) {
-    // ignore non-browser environments
   }
 };
 
@@ -503,6 +492,24 @@ const getViewUrl = (app) => {
   return pdfRoute ? pdfRoute : '#';
 };
 
+// Get the original unsigned submission URL (ignores signed document)
+const getUnsignedViewUrl = (app) => {
+  // For direct-upload forms, link directly to the original PDF
+  const reportPath = getReportPath(app);
+  if ([
+    'LSPU-OSAS-SF-ACCOMPLISHMENT',
+    'LSPU-OSAS-SF-NARRATIVE',
+    'LSPU-OSAS-SF-BYLAWS',
+    'LSPU-OSAS-SF-FINANCIAL',
+    'LSPU-ACAD-RL',
+  ].includes(app.form_type) && reportPath) {
+    return `/storage/${reportPath}`;
+  }
+  // Otherwise, use the generated PDF route (if available)
+  const pdfRoute = getPdfRoute(app, 'view');
+  return pdfRoute ? pdfRoute : '#';
+};
+
 const openPreview = (app) => {
   previewApp.value = app;
   showPreviewModal.value = true;
@@ -515,7 +522,8 @@ const closePreviewModal = () => {
 
 const openPreviewInNewWindow = () => {
   if (typeof window !== 'undefined' && previewApp.value) {
-    const url = getViewUrl(previewApp.value);
+    // Use unsigned URL if forced, otherwise use regular view URL
+    const url = previewApp.value._forceUnsigned ? getUnsignedViewUrl(previewApp.value) : getViewUrl(previewApp.value);
     if (url && url !== '#') {
       window.open(url, '_blank');
     }
@@ -533,6 +541,24 @@ const viewPdf = (app) => {
       openPreview(app);
     }
   }
+};
+
+// View unsigned document (original submission)
+const viewUnsignedDocument = (app) => {
+  const url = getUnsignedViewUrl(app);
+  if (url && url !== '#') {
+    // For mobile screens, open in new window
+    if (window.innerWidth < 640) {
+      window.open(url, '_blank');
+    } else {
+      // For desktop screens, use modal with unsigned URL
+      previewApp.value = { ...app, _forceUnsigned: true };
+      showPreviewModal.value = true;
+    }
+  }
+  // Close dropdowns
+  activeMobileDropdownId.value = null;
+  activeDropdownApp.value = null;
 };
 
 // Watch for modal open/close to lock body scroll
@@ -704,7 +730,17 @@ watch(() => props.currentPage, (newValue) => {
                     </div>
                     <!-- MOBILE INLINE DROPDOWN -->
                     <div v-if="activeMobileDropdownId === application.id" class="mobile-dropdown-menu mt-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg shadow p-3 flex flex-col gap-2 z-10" @click.stop>
-              <!-- View PDF removed for archive actions -->
+                        <!-- View Unsigned option -->
+                        <button
+                            @click="viewUnsignedDocument(application)"
+                            class="w-full text-left px-2 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600 dark:text-gray-400" viewBox="0 -960 960 960" fill="currentColor">
+                                <path d="M760-200H320q-33 0-56.5-23.5T240-280v-560q0-33 23.5-56.5T320-920h280l240 240v400q0 33-23.5 56.5T760-200ZM560-640v-200H320v560h440v-360H560ZM160-40q-33 0-56.5-23.5T80-120v-560h80v560h440v80H160Zm160-800v200-200 560-560Z"/>
+                            </svg>
+                            View Unsigned
+                        </button>
+                        <!-- Restore option -->
                         <button 
                             @click="activeMobileDropdownId = null; confirmRestore(application)" 
                             class="w-full text-left px-2 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200"
@@ -796,11 +832,21 @@ watch(() => props.currentPage, (newValue) => {
             <div 
                 ref="dropdownRef"
                 v-if="activeDropdownApp"
-                class="fixed z-50 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 w-full max-w-xs sm:w-64"
+                class="dropdown-container fixed z-50 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 w-full max-w-xs sm:w-64"
                 :style="{ top: `${dropdownPosition.top}px`, left: `${dropdownPosition.left}px`, visibility: activeDropdownApp ? 'visible' : 'hidden' }"
                 @click.stop
             >
-        <!-- View PDF option removed for archive actions -->
+                <!-- View Unsigned option - Only show if signed document exists -->
+                <button
+                    v-if="hasSignedDocument(activeDropdownApp)"
+                    @click="viewUnsignedDocument(activeDropdownApp)"
+                    class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200 font-medium"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600 dark:text-gray-400" viewBox="0 -960 960 960" fill="currentColor">
+                        <path d="M760-200H320q-33 0-56.5-23.5T240-280v-560q0-33 23.5-56.5T320-920h280l240 240v400q0 33-23.5 56.5T760-200ZM560-640v-200H320v560h440v-360H560ZM160-40q-33 0-56.5-23.5T80-120v-560h80v560h440v80H160Zm160-800v200-200 560-560Z"/>
+                    </svg>
+                    View Unsigned
+                </button>
                 <!-- Restore option -->
                 <button 
                     @click="confirmRestore(activeDropdownApp); activeDropdownApp = null;"
@@ -915,7 +961,7 @@ watch(() => props.currentPage, (newValue) => {
               <div class="flex-1 w-full h-full flex items-center justify-center bg-gray-100">
                 <iframe
                   v-if="previewApp"
-                  :src="getViewUrl(previewApp)"
+                  :src="previewApp._forceUnsigned ? getUnsignedViewUrl(previewApp) : getViewUrl(previewApp)"
                   class="w-full h-full border-0 bg-white"
                   style="min-height: 300px;"
                   allowfullscreen
