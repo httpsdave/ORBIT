@@ -61,6 +61,10 @@ const dropdownButtonEl = ref(null);
 const dropdownRef = ref(null);
 const dropdownDirection = ref('down');
 
+// Mobile modal state
+const showMobileActionsModal = ref(false);
+const selectedMobileApp = ref(null);
+
 // Infinite scroll state
 const allArchivedApplications = ref([...props.archivedApplications]);
 const isLoadingMore = ref(false);
@@ -218,12 +222,9 @@ const getFormTypeLabel = (formType) => {
 
 // Toggle action dropdown
 const toggleDropdown = (app, event) => {
-    if (window.innerWidth < 640) { // Mobile: show inline dropdown
-        if (activeMobileDropdownId.value === app.id) {
-            activeMobileDropdownId.value = null;
-        } else {
-            activeMobileDropdownId.value = app.id;
-        }
+    if (window.innerWidth < 640) { // Mobile: show modal popup
+        selectedMobileApp.value = app;
+        showMobileActionsModal.value = true;
         return;
     }
     // Desktop/table: floating dropdown
@@ -288,6 +289,32 @@ function removeDropdownListeners() {
 const closeDropdowns = (event) => {
   if (!event.target.closest('.dropdown-container')) {
     activeDropdownApp.value = null;
+  }
+};
+
+// Close mobile actions modal
+const closeMobileActionsModal = () => {
+  showMobileActionsModal.value = false;
+  selectedMobileApp.value = null;
+};
+
+// Handle mobile action
+const handleMobileAction = (action) => {
+  const app = selectedMobileApp.value;
+  if (!app) return;
+  
+  // Close mobile modal
+  showMobileActionsModal.value = false;
+  selectedMobileApp.value = null;
+  
+  // Handle specific actions
+  switch(action) {
+    case 'viewUnsigned':
+      viewUnsignedDocument(app);
+      break;
+    case 'restore':
+      confirmRestore(app);
+      break;
   }
 };
 
@@ -728,29 +755,6 @@ watch(() => props.currentPage, (newValue) => {
                             </span>
                         </button>
                     </div>
-                    <!-- MOBILE INLINE DROPDOWN -->
-                    <div v-if="activeMobileDropdownId === application.id" class="mobile-dropdown-menu mt-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg shadow p-3 flex flex-col gap-2 z-10" @click.stop>
-                        <!-- View Unsigned option -->
-                        <button
-                            @click="viewUnsignedDocument(application)"
-                            class="w-full text-left px-2 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600 dark:text-gray-400" viewBox="0 -960 960 960" fill="currentColor">
-                                <path d="M760-200H320q-33 0-56.5-23.5T240-280v-560q0-33 23.5-56.5T320-920h280l240 240v400q0 33-23.5 56.5T760-200ZM560-640v-200H320v560h440v-360H560ZM160-40q-33 0-56.5-23.5T80-120v-560h80v560h440v80H160Zm160-800v200-200 560-560Z"/>
-                            </svg>
-                            View Unsigned
-                        </button>
-                        <!-- Restore option -->
-                        <button 
-                            @click="activeMobileDropdownId = null; confirmRestore(application)" 
-                            class="w-full text-left px-2 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l-4-4m0 0l4-4m-4 4h11a4 4 0 110 8h-1" />
-                            </svg>
-                            Restore
-                        </button>
-                    </div>
                         </div>
                     </div>
 
@@ -917,6 +921,75 @@ watch(() => props.currentPage, (newValue) => {
             <span>Back to Applications</span>
           </Link>
         </div>
+
+        <!-- Mobile Actions Modal -->\n        <Teleport to="body">
+            <div v-if="showMobileActionsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-end justify-center z-50" @click="closeMobileActionsModal">
+                <transition
+                    enter-active-class="transition-transform ease-out duration-250"
+                    enter-from-class="translate-y-full"
+                    enter-to-class="translate-y-0"
+                    leave-active-class="transition-transform ease-in duration-200"
+                    leave-from-class="translate-y-0"
+                    leave-to-class="translate-y-full"
+                >
+                    <div v-if="showMobileActionsModal" class="bg-white dark:bg-gray-800 w-full max-w-sm rounded-t-lg shadow-xl" @click.stop>
+                <!-- Modal Header -->
+                <div class="px-3 py-2 border-b border-gray-200 dark:border-gray-700">
+                    <div class="flex items-center space-x-2">
+                        <div class="flex-shrink-0 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full p-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor">
+                                <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h168q13-36 43.5-58t68.5-22q38 0 68.5 22t43.5 58h168q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm80-80h280v-80H280v80Zm0-160h400v-80H280v80Zm0-160h400v-80H280v80Zm200-190q13 0 21.5-8.5T510-820q0-13-8.5-21.5T480-850q-13 0-21.5 8.5T450-820q0 13 8.5 21.5T480-790ZM200-200v-560 560Z"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                                {{ selectedMobileApp ? getFormTypeLabel(selectedMobileApp.form_type) : '' }}
+                            </h3>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 truncate">
+                                {{ selectedMobileApp ? selectedMobileApp.form_type : '' }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Modal Actions -->
+                <div class="py-1">
+                    <button 
+                        v-if="selectedMobileApp && hasSignedDocument(selectedMobileApp)"
+                        @click="handleMobileAction('viewUnsigned')"
+                        class="w-full flex items-center px-3 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-150 active:scale-[0.98]"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600 dark:text-gray-400 mr-2.5" viewBox="0 -960 960 960" fill="currentColor">
+                            <path d="M760-200H320q-33 0-56.5-23.5T240-280v-560q0-33 23.5-56.5T320-920h280l240 240v400q0 33-23.5 56.5T760-200ZM560-640v-200H320v560h440v-360H560ZM160-40q-33 0-56.5-23.5T80-120v-560h80v560h440v80H160Zm160-800v200-200 560-560Z"/>
+                        </svg>
+                        <span class="text-sm text-gray-900 dark:text-gray-100">View Unsigned</span>
+                    </button>
+
+                    <button 
+                        v-if="selectedMobileApp"
+                        @click="handleMobileAction('restore')"
+                        class="w-full flex items-center px-3 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-150 active:scale-[0.98]"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600 dark:text-blue-400 mr-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l-4-4m0 0l4-4m-4 4h11a4 4 0 110 8h-1" />
+                        </svg>
+                        <span class="text-sm text-gray-900 dark:text-gray-100">Restore</span>
+                    </button>
+                </div>
+                
+                <!-- Close Button -->
+                <div class="p-2 border-t border-gray-200 dark:border-gray-700">
+                    <button
+                        @click="closeMobileActionsModal"
+                        class="w-full px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors duration-150"
+                    >
+                        Close
+                    </button>
+                </div>
+            </div>
+                </transition>
+            </div>
+        </Teleport>
 
         <!-- PDF Preview Modal (exact copy from ApplicationsTable.vue) -->
         <transition name="fade">
