@@ -371,7 +371,7 @@ const displayedActivities = computed(() => {
                     </div>
                   </div>
                   <div class="ml-3 sm:ml-4 select-none">
-                    <p class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Applications</p>
+                    <p class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Submitted Documents</p>
                     <p class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">{{ props.myApplications.length }}</p>
                   </div>
                 </div>
@@ -405,7 +405,7 @@ const displayedActivities = computed(() => {
                     </div>
                   </div>
                   <div class="ml-3 sm:ml-4 select-none">
-                    <p class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Reports to be approved</p>
+                    <p class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Reports to be Approved</p>
                     <p class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">{{ props.reportsToBeSubmitted }}</p>
                   </div>
                 </div>
