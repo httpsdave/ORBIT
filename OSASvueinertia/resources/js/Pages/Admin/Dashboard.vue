@@ -364,6 +364,9 @@ onMounted(() => {
     // Add click handler for adviser filters
     document.addEventListener('click', handleAdviserClickOutside);
     
+    // Add scroll handler to close dropdown on scroll
+    window.addEventListener('scroll', closeAdviserFilterDropdown, true);
+    
     // Start mobile carousel auto-advance
     startMobileCarousel();
     
@@ -381,6 +384,9 @@ onUnmounted(() => {
     }
     // Remove click handler
     document.removeEventListener('click', handleAdviserClickOutside);
+    
+    // Remove scroll handler
+    window.removeEventListener('scroll', closeAdviserFilterDropdown, true);
     
     // Stop mobile carousel
     stopMobileCarousel();
@@ -989,19 +995,34 @@ const toggleAdviserFilterDropdown = (columnKey, event) => {
         const dropdownWidth = 256; // w-64 = 16rem = 256px
         const viewportWidth = window.innerWidth;
         const viewportHeight = window.innerHeight;
+        const padding = 16; // Add padding from edges
         
         // Determine if dropdown should open to the left or right
         let left = rect.left;
-        if (left + dropdownWidth > viewportWidth) {
+        const spaceOnRight = viewportWidth - rect.right;
+        const spaceOnLeft = rect.left;
+        
+        // Check if there's enough space on the right
+        if (spaceOnRight >= dropdownWidth + padding) {
+            // Align to left of button (opens to the right)
+            left = rect.left;
+        } else if (spaceOnLeft >= dropdownWidth + padding) {
+            // Align to right of button (opens to the left)
             left = rect.right - dropdownWidth;
+        } else {
+            // Not enough space on either side, center with padding
+            left = Math.max(padding, Math.min(rect.left, viewportWidth - dropdownWidth - padding));
         }
         
         // Determine if dropdown should open above or below
         let top = rect.bottom + 8; // 8px gap
         const estimatedDropdownHeight = 300;
-        if (top + estimatedDropdownHeight > viewportHeight) {
+        if (top + estimatedDropdownHeight > viewportHeight && rect.top > estimatedDropdownHeight) {
             top = rect.top - estimatedDropdownHeight - 8;
         }
+        
+        // Ensure dropdown stays within viewport
+        top = Math.max(padding, Math.min(top, viewportHeight - estimatedDropdownHeight - padding));
         
         adviserFilterDropdownStyle.value = {
             top: `${top}px`,
@@ -1012,6 +1033,7 @@ const toggleAdviserFilterDropdown = (columnKey, event) => {
 
 const closeAdviserFilterDropdown = () => {
     activeAdviserFilterDropdown.value = null;
+    adviserFilterDropdownStyle.value = {};
 };
 
 const clearAdviserColumnFilter = (columnKey) => {
