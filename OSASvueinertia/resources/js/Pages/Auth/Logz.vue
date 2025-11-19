@@ -42,6 +42,36 @@ const showError = ref(false);
 const errorMessage = ref('');
 const capsLockOn = ref(false);
 const clientErrors = ref({});
+const emailAutofilled = ref(false);
+const passwordAutofilled = ref(false);
+
+// Function to check if inputs are autofilled
+const checkAutofill = () => {
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    
+    if (emailInput) {
+        try {
+            const emailFilled = emailInput.matches(':-webkit-autofill') || 
+                              emailInput.value.length > 0;
+            emailAutofilled.value = emailFilled;
+        } catch (e) {
+            // Fallback for browsers that don't support :-webkit-autofill
+            emailAutofilled.value = emailInput.value.length > 0;
+        }
+    }
+    
+    if (passwordInput) {
+        try {
+            const passwordFilled = passwordInput.matches(':-webkit-autofill') || 
+                                  passwordInput.value.length > 0;
+            passwordAutofilled.value = passwordFilled;
+        } catch (e) {
+            // Fallback for browsers that don't support :-webkit-autofill
+            passwordAutofilled.value = passwordInput.value.length > 0;
+        }
+    }
+};
 
 // Form validation - Optimized for smaller bundle size
 const validateEmail = (email) => {
@@ -197,7 +227,10 @@ const submit = () => {
 
 // Caps lock detection
 const detectCapsLock = (event) => {
-    capsLockOn.value = event.getModifierState('CapsLock');
+    // Check if getModifierState exists (only available on keyboard events)
+    if (event && typeof event.getModifierState === 'function') {
+        capsLockOn.value = event.getModifierState('CapsLock');
+    }
 };
 
 // Clear client-side errors when user starts typing
@@ -233,6 +266,44 @@ onMounted(() => {
     // Critical path - Fade in animation on page load
     if (formElement.value) {
         formElement.value.classList.add('opacity-100');
+    }
+    
+    // Check for autofilled inputs immediately and after a short delay
+    nextTick(() => {
+        checkAutofill();
+        // Check again after browser has time to autofill
+        setTimeout(checkAutofill, 100);
+        setTimeout(checkAutofill, 300);
+        setTimeout(checkAutofill, 500);
+    });
+    
+    // Monitor for autofill changes
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    
+    if (emailInput) {
+        emailInput.addEventListener('animationstart', (e) => {
+            if (e.animationName === 'onAutoFillStart') {
+                emailAutofilled.value = true;
+            }
+        });
+        emailInput.addEventListener('input', () => {
+            emailAutofilled.value = emailInput.value.length > 0;
+        });
+    }
+    
+    if (passwordInput) {
+        passwordInput.addEventListener('animationstart', (e) => {
+            if (e.animationName === 'onAutoFillStart') {
+                passwordAutofilled.value = true;
+            }
+        });
+        passwordInput.addEventListener('input', () => {
+            passwordAutofilled.value = passwordInput.value.length > 0;
+        });
+        // Add keyboard listeners specifically for caps lock detection
+        passwordInput.addEventListener('keydown', detectCapsLock);
+        passwordInput.addEventListener('keyup', detectCapsLock);
     }
     
     // Defer non-critical animations to next tick for better performance
@@ -449,7 +520,7 @@ onBeforeUnmount(() => {
                                 type="email"
                                 class="peer pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 text-sm sm:text-base rounded-lg w-full border-0 focus:border-blue-400 focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 transition-all duration-300 bg-white bg-opacity-10 backdrop-blur-sm text-white placeholder-transparent"
                                 v-model="form.email"
-                                @input="clearClientError('email')"
+                                @input="clearClientError('email'); emailAutofilled = true"
                                 placeholder=""
                                 required
                                 autofocus
@@ -462,7 +533,7 @@ onBeforeUnmount(() => {
                                 for="email" 
                                 class="floating-label absolute left-10 sm:left-12 top-3 sm:top-4 text-sm sm:text-base text-gray-300 pointer-events-none"
                                 :class="[
-                                    form.email ? 'floating-label-active' : '',
+                                    (form.email || emailAutofilled) ? 'floating-label-active' : '',
                                 ]"
                             >
                                 Email Address
@@ -484,7 +555,7 @@ onBeforeUnmount(() => {
                                 :type="passwordVisible ? 'text' : 'password'"
                                 class="peer pl-10 sm:pl-12 pr-10 sm:pr-12 py-3 sm:py-4 text-sm sm:text-base rounded-lg w-full border-0 focus:border-blue-400 focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 transition-all duration-300 backdrop-blur-sm placeholder-transparent bg-white bg-opacity-10 text-white"
                                 v-model="form.password"
-                                @input="clearClientError('password')"
+                                @input="clearClientError('password'); passwordAutofilled = true"
                                 @keydown="detectCapsLock"
                                 @keyup="detectCapsLock"
                                 placeholder=""
@@ -498,7 +569,7 @@ onBeforeUnmount(() => {
                                 for="password" 
                                 class="floating-label absolute left-10 sm:left-12 top-3 sm:top-4 text-sm sm:text-base text-gray-300 pointer-events-none"
                                 :class="[
-                                    form.password ? 'floating-label-active' : '',
+                                    (form.password || passwordAutofilled) ? 'floating-label-active' : '',
                                 ]"
                             >
                                 Password
@@ -675,6 +746,17 @@ onBeforeUnmount(() => {
   animation: fadeIn 0.6s ease-out forwards;
 }
 
+/* Special animation to detect autofill */
+@keyframes onAutoFillStart {
+  from { opacity: 0.99; }
+  to { opacity: 1; }
+}
+
+@keyframes onAutoFillCancel {
+  from { opacity: 1; }
+  to { opacity: 0.99; }
+}
+
 /* Floating label animations */
 .floating-label {
   transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -701,6 +783,28 @@ onBeforeUnmount(() => {
   backdrop-filter: blur(4px);
 }
 
+/* Autofill detection - Float label when input is autofilled */
+input:-webkit-autofill ~ .floating-label,
+input:-webkit-autofill:hover ~ .floating-label,
+input:-webkit-autofill:focus ~ .floating-label,
+input:-webkit-autofill:active ~ .floating-label {
+  transform: translateY(-1.75rem) translateX(-2rem) scale(0.75) !important;
+  color: #60a5fa !important;
+  background-color: rgba(17, 24, 39, 0.9) !important;
+  padding: 0.125rem 0.25rem !important;
+  border-radius: 0.25rem !important;
+  backdrop-filter: blur(4px);
+}
+
+/* Trigger animation on autofill for JS detection */
+input:-webkit-autofill {
+  animation: onAutoFillStart 0s forwards;
+}
+
+input:not(:-webkit-autofill) {
+  animation: onAutoFillCancel 0s forwards;
+}
+
 /* Responsive adjustments */
 @media (min-width: 640px) {
   .floating-label-active {
@@ -709,6 +813,13 @@ onBeforeUnmount(() => {
   
   .peer:focus ~ .floating-label {
     transform: translateY(-1.875rem) translateX(-2.5rem) scale(0.75);
+  }
+  
+  input:-webkit-autofill ~ .floating-label,
+  input:-webkit-autofill:hover ~ .floating-label,
+  input:-webkit-autofill:focus ~ .floating-label,
+  input:-webkit-autofill:active ~ .floating-label {
+    transform: translateY(-1.875rem) translateX(-2.5rem) scale(0.75) !important;
   }
 }
 
@@ -820,7 +931,7 @@ button:focus {
 }
 
 /* Use default cursor for all text content - no text selection cursor */
-p, span, h1, h2, h3, h4, h5, h6, div, label:not([for]) {
+p, span, h1, h2, h3, h4, h5, h6, div:not(button div), label:not([for]) {
   cursor: default;
   user-select: none;
 }
@@ -831,8 +942,8 @@ input[type="text"], input[type="email"], input[type="password"], textarea {
   user-select: text;
 }
 
-/* Pointer cursor for interactive elements */
-a, button, label[for], input[type="checkbox"], input[type="radio"] {
-  cursor: pointer;
+/* Pointer cursor for interactive elements - with higher specificity */
+a, button, button *, label[for], input[type="checkbox"], input[type="radio"] {
+  cursor: pointer !important;
 }
 </style>
