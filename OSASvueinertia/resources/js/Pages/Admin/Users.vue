@@ -21,10 +21,12 @@ const props = defineProps({
 const showingCreateModal = ref(false);
 const showingEditModal = ref(false);
 const showingDeleteModal = ref(false);
+const showingRoleChangeConfirmModal = ref(false);
 const userToDelete = ref(null);
 const userToEdit = ref(null);
 const deleteConfirmation = ref(''); // Add this line
 const searchQuery = ref(''); // Add search functionality
+const originalRoleId = ref(null); // Track original role for confirmation
 
 // Password visibility toggles
 const showPassword = ref(false);
@@ -269,25 +271,50 @@ const confirmUserEdit = (user) => {
     editForm.name = user.name;
     editForm.email = user.email;
     editForm.role_id = user.role.id;
+    // Store original role for comparison
+    originalRoleId.value = user.role.id;
     // password fields removed
     showingEditModal.value = true;
 };
 
 const updateUser = () => {
+    // Check if role has changed
+    if (editForm.role_id !== originalRoleId.value) {
+        // Hide edit modal and show confirmation modal for role change
+        showingEditModal.value = false;
+        showingRoleChangeConfirmModal.value = true;
+    } else {
+        // No role change, proceed with update
+        proceedWithUpdate();
+    }
+};
+
+const proceedWithUpdate = () => {
     editForm.put(route('admin.users.update', userToEdit.value.id), {
         preserveScroll: true,
         onSuccess: () => {
             showingEditModal.value = false;
+            showingRoleChangeConfirmModal.value = false;
             userToEdit.value = null;
+            originalRoleId.value = null;
             editForm.reset(); // Reset form after successful update
+            showNotification('success', 'User Updated', 'User information has been successfully updated.');
         },
     });
+};
+
+const cancelRoleChange = () => {
+    showingRoleChangeConfirmModal.value = false;
+    // Reopen the edit modal so user can make changes
+    showingEditModal.value = true;
 };
 
 // Add a function to handle modal cancellation
 const cancelEdit = () => {
     showingEditModal.value = false;
+    showingRoleChangeConfirmModal.value = false;
     userToEdit.value = null;
+    originalRoleId.value = null;
     editForm.reset(); // Reset form when canceling
     editForm.clearErrors(); // Clear any validation errors
 };
@@ -892,6 +919,68 @@ const closeMobileActionsModal = () => {
                         </PrimaryButton>
                     </div>
                 </form>
+            </div>
+        </Modal>
+        
+        <!-- Role Change Confirmation Modal -->
+        <Modal :show="showingRoleChangeConfirmModal" @close="cancelRoleChange" max-width="lg">
+            <div class="p-3 sm:p-6 max-h-[90vh] overflow-y-auto">
+                <div class="flex items-center mb-3 sm:mb-4">
+                    <div class="bg-amber-500 p-2 rounded-lg mr-2 sm:mr-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                    </div>
+                    <h2 class="text-base sm:text-lg font-medium text-gray-900 dark:text-gray-100">
+                        Confirm Role Change
+                    </h2>
+                </div>
+
+                <div v-if="userToEdit" class="space-y-4">
+                    <p class="text-sm text-gray-700 dark:text-gray-300">
+                        Are you sure you want to change <strong class="text-gray-900 dark:text-gray-100">{{ userToEdit.name }}'s</strong> role?
+                    </p>
+
+                    <div class="bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-500 p-3 rounded-md">
+                        <div class="flex items-start">
+                            <svg class="h-5 w-5 text-amber-500 mt-0.5 mr-2 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                            <div class="text-sm text-amber-800 dark:text-amber-200">
+                                <p class="font-medium mb-1">Role Change Details:</p>
+                                <div class="space-y-1">
+                                    <p><span class="font-medium">Current Role:</span> <span class="px-2 py-0.5 rounded text-xs bg-amber-100 dark:bg-amber-800">{{ roles.find(r => r.id === originalRoleId)?.name }}</span></p>
+                                    <p><span class="font-medium">New Role:</span> <span class="px-2 py-0.5 rounded text-xs bg-green-100 dark:bg-green-800 text-green-800 dark:text-green-200">{{ roles.find(r => r.id === editForm.role_id)?.name }}</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 dark:bg-gray-800 p-3 rounded-md border border-gray-200 dark:border-gray-700">
+                        <p class="text-xs text-gray-600 dark:text-gray-400">
+                            <strong>Note:</strong> Changing a user's role will affect their permissions and access to system features. This change takes effect immediately.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="mt-4 sm:mt-6 flex flex-col sm:flex-row justify-end gap-2">
+                    <SecondaryButton 
+                        type="button" 
+                        @click="cancelRoleChange"
+                        class="w-full sm:w-auto order-2 sm:order-1"
+                    >
+                        Cancel
+                    </SecondaryButton>
+                    <PrimaryButton
+                        type="button"
+                        @click="proceedWithUpdate"
+                        :class="{ 'opacity-25': editForm.processing }" 
+                        :disabled="editForm.processing"
+                        class="w-full sm:w-auto order-1 sm:order-2 bg-amber-600 hover:bg-amber-700 focus:bg-amber-700"
+                    >
+                        Confirm Role Change
+                    </PrimaryButton>
+                </div>
             </div>
         </Modal>
         
