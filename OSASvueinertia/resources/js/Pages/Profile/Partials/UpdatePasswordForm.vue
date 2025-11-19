@@ -20,6 +20,9 @@ const showConfirmPassword = ref(false);
 // Track which field is currently focused
 const focusedField = ref(null);
 
+// Readonly state for current password to prevent autofill
+const currentPasswordReadonly = ref(true);
+
 // Track if password input is focused or has content
 const isPasswordActive = computed(() => focusedField.value === 'new' || form.password.length > 0);
 
@@ -121,6 +124,11 @@ const handleFocus = (fieldName) => {
         blurTimeout.value = null;
     }
     focusedField.value = fieldName;
+    
+    // Remove readonly from current password when user interacts with it
+    if (fieldName === 'current') {
+        currentPasswordReadonly.value = false;
+    }
 };
 
 const blurTimeout = ref(null);
@@ -161,17 +169,7 @@ const handleToggleMouseDown = (event) => {
             </p>
         </div>
 
-        <form @submit.prevent="updatePassword" class="space-y-6">
-            <!-- Hidden username/email field for accessibility and autofill -->
-            <input
-                type="text"
-                name="username"
-                :value="user.email"
-                autocomplete="username"
-                style="display: none;"
-                tabindex="-1"
-                aria-hidden="true"
-            />
+        <form @submit.prevent="updatePassword" class="space-y-6" data-form-type="password-change">
             <!-- Password fields in responsive layout -->
             <div class="space-y-6 md:space-y-0 md:grid md:grid-cols-2 md:gap-6">
                 <!-- Current password field -->
@@ -188,7 +186,10 @@ const handleToggleMouseDown = (event) => {
                             v-model="form.current_password"
                             :type="showCurrentPassword ? 'text' : 'password'"
                             class="mt-1 block w-full border-gray-300 dark:border-gray-600 focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50 rounded-md shadow-sm pr-10 dark:bg-gray-700 dark:text-gray-300"
-                            autocomplete="current-password"
+                            autocomplete="off"
+                            :readonly="currentPasswordReadonly"
+                            data-lpignore="true"
+                            data-form-type="other"
                             @focus="handleFocus('current')"
                             @blur="handleBlur($event)"
                         />
