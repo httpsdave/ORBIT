@@ -1745,23 +1745,37 @@ const stopMobileCarousel = () => {
                     </div>
                     
                     <div v-if="displayEvent" class="border border-gray-200 dark:border-gray-700 rounded-lg p-3 sm:p-4 bg-white dark:bg-gray-800 shadow-sm cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-700 transition">
-                      <Link :href="route('calendar')" class="block">
-                        <h4 class="font-medium text-base sm:text-lg text-gray-800 dark:text-gray-200 mb-3 truncate line-clamp-2 overflow-hidden">{{ displayEvent.title }}</h4>
-                        <div class="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-2 space-y-2">
-                          <div class="flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:h-4 sm:w-4 mr-2 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                            <span>Start: {{ formatDate(displayEvent.start_date) }}</span>
+                      <Link :href="route('calendar')" class="block select-none">
+                        <div v-if="props.todayEvent" class="flex justify-between items-center mb-2">
+                          <span class="bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-md">TODAY</span>
+                          <span class="text-xs text-gray-600 dark:text-gray-400">{{ formatTime(displayEvent.start_date) }}</span>
+                        </div>
+                        <div class="flex">
+                          <div v-if="!props.todayEvent" class="mr-4 flex-shrink-0">
+                            <div class="h-12 w-12 rounded-md bg-green-100 dark:bg-green-900/50 flex flex-col items-center justify-center">
+                              <span class="text-xs font-medium text-green-600 dark:text-green-400">{{ formatDateOnly(displayEvent.start_date).split(' ')[0] }}</span>
+                              <span class="text-lg font-bold text-green-800 dark:text-green-300">{{ formatDateOnly(displayEvent.start_date).split(' ')[1] }}</span>
+                            </div>
                           </div>
-                          <div class="flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:h-4 sm:w-4 mr-2 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <span>End: {{ formatDate(displayEvent.end_date) }}</span>
+                          <div class="flex-1 min-w-0">
+                            <h4 class="font-medium text-base sm:text-lg text-gray-800 dark:text-gray-200 mb-3 truncate line-clamp-2 overflow-hidden">{{ displayEvent.title }}</h4>
+                            <div class="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-2 space-y-2">
+                              <div class="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:h-4 sm:w-4 mr-2 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                <span>Start: {{ formatDate(displayEvent.start_date) }}</span>
+                              </div>
+                              <div class="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:h-4 sm:w-4 mr-2 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <span>End: {{ formatDate(displayEvent.end_date) }}</span>
+                              </div>
+                            </div>
                           </div>
                         </div>
-                        <div class="mt-4 border-t border-gray-100 dark:border-gray-700 pt-3">
+                        <div v-if="displayEvent.description" class="mt-4 border-t border-gray-100 dark:border-gray-700 pt-3">
                           <p class="text-xs sm:text-sm text-gray-700 dark:text-gray-300 line-clamp-3 overflow-hidden">{{ displayEvent.description }}</p>
                         </div>
                       </Link>

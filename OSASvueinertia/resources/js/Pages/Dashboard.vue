@@ -561,13 +561,18 @@ const displayedActivities = computed(() => {
               style="transition-delay: 200ms;"
             >
               <div class="p-4 sm:p-6">
-                <div class="flex items-center mb-4 select-none">
-                  <div class="p-2 rounded-md bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 mr-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
+                <div class="flex items-center justify-between mb-4 select-none">
+                  <div class="flex items-center">
+                    <div class="p-2 rounded-md mr-3" :class="props.todayEvent ? 'bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-400' : 'bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400'">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                    <h3 class="text-base sm:text-lg font-medium text-gray-800 dark:text-gray-200">{{ props.todayEvent ? "Today's Event" : "Upcoming Events" }}</h3>
                   </div>
-                  <h3 class="text-lg font-medium text-gray-800 dark:text-gray-200">Upcoming Events</h3>
+                  <Link v-if="props.upcomingEvents && props.upcomingEvents.length > 0" :href="route('calendar')" class="text-xs sm:text-sm text-blue-500 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium">
+                    Events Held: {{ props.upcomingEvents.length }}
+                  </Link>
                 </div>
                 
                 <div v-if="props.todayEvent" class="mb-6 border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-white dark:bg-gray-800 shadow-sm cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-700 transition" >
@@ -576,16 +581,16 @@ const displayedActivities = computed(() => {
                       <span class="bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-md">TODAY</span>
                       <span class="text-xs text-gray-600 dark:text-gray-400">{{ formatTime(props.todayEvent.start_date) }}</span>
                     </div>
-                    <h4 class="font-medium text-lg text-gray-800 dark:text-gray-200">{{ props.todayEvent.title }}</h4>
-                    <div class="text-sm text-gray-600 dark:text-gray-400 mt-2 space-y-2">
+                    <h4 class="font-medium text-base sm:text-lg text-gray-800 dark:text-gray-200 mb-3 truncate line-clamp-2 overflow-hidden">{{ props.todayEvent.title }}</h4>
+                    <div class="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-2 space-y-2">
                       <div class="flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:h-4 sm:w-4 mr-2 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
                         <span>Start: {{ formatDate(props.todayEvent.start_date) }}</span>
                       </div>
                       <div class="flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:h-4 sm:w-4 mr-2 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                         <span>End: {{ formatDate(props.todayEvent.end_date) }}</span>
@@ -608,23 +613,23 @@ const displayedActivities = computed(() => {
                             <span class="text-lg font-bold text-green-800 dark:text-green-300">{{ formatDateOnly(event.start_date).split(' ')[1] }}</span>
                           </div>
                         </div>
-                        <div class="min-w-0 flex-1">
-                          <h4 class="font-medium text-gray-800 dark:text-gray-200 text-base truncate line-clamp-2 overflow-hidden">{{ event.title }}</h4>
-                          <div class="text-sm text-gray-600 dark:text-gray-400 mt-2 space-y-1">
-                            <div class="flex items-center text-xs">
-                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <div class="flex-1 min-w-0">
+                          <h4 class="font-medium text-base sm:text-lg text-gray-800 dark:text-gray-200 mb-3 truncate line-clamp-2 overflow-hidden">{{ event.title }}</h4>
+                          <div class="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-2 space-y-2">
+                            <div class="flex items-center">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:h-4 sm:w-4 mr-2 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                               </svg>
                               <span>Start: {{ formatDate(event.start_date) }}</span>
                             </div>
-                            <div class="flex items-center text-xs">
-                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <div class="flex items-center">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:h-4 sm:w-4 mr-2 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                               </svg>
                               <span>End: {{ formatDate(event.end_date) }}</span>
                             </div>
-                            <div v-if="event.description" class="mt-2 pt-2 border-t border-gray-100 dark:border-gray-700">
-                              <p class="text-xs text-gray-600 dark:text-gray-400 line-clamp-2 overflow-hidden">{{ event.description }}</p>
+                            <div v-if="event.description" class="mt-4 border-t border-gray-100 dark:border-gray-700 pt-3">
+                              <p class="text-xs sm:text-sm text-gray-700 dark:text-gray-300 line-clamp-2 overflow-hidden">{{ event.description }}</p>
                             </div>
                           </div>
                         </div>
