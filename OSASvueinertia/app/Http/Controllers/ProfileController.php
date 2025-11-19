@@ -113,19 +113,26 @@ class ProfileController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
-        $request->validate([
-            'password' => ['required', 'current_password'],
-        ]);
-
         $user = $request->user();
-
-        Auth::logout();
-
-        $user->delete();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return Redirect::to('/');
+        
+        // Check if user is admin
+        $isAdmin = $user && ($user->role === 'admin' || 
+                   (is_object($user->role) && (
+                       (isset($user->role->name) && $user->role->name === 'admin') || 
+                       (isset($user->role->slug) && $user->role->slug === 'admin') || 
+                       (isset($user->role->id) && $user->role->id === 1)
+                   )));
+        
+        // Administrators cannot delete their own accounts
+        if ($isAdmin) {
+            return Redirect::back()->withErrors([
+                'error' => 'Administrators cannot delete their own accounts. Please contact another administrator for assistance.'
+            ]);
+        }
+        
+        // Regular users also cannot delete their own accounts
+        return Redirect::back()->withErrors([
+            'error' => 'Account deletion is not permitted. Please contact an administrator if you need assistance.'
+        ]);
     }
 }

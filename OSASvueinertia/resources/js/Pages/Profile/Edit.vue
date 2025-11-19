@@ -1,6 +1,5 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import DeleteUserForm from './Partials/DeleteUserForm.vue';
 import UpdatePasswordForm from './Partials/UpdatePasswordForm.vue';
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm.vue';
 import UpdateFormDefaultsForm from './Partials/UpdateFormDefaultsForm.vue';
@@ -100,20 +99,6 @@ defineProps({
                             <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Set global default values for coordinator and director names that will auto-populate in all users' forms.</p>
                         </div>
                         <UpdateFormDefaultsForm class="max-w-4xl" />
-                    </div>
-
-                    <!-- Delete Account Section - Admin Only -->
-                    <div class="bg-white dark:bg-gray-800 p-6 shadow-md rounded-lg border-l-4 border-red-500 transition-all duration-300 hover:shadow-xl">
-                        <div class="mb-4">
-                            <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                </svg>
-                                Delete Account
-                            </h3>
-                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Permanently delete your account.</p>
-                        </div>
-                        <DeleteUserForm class="max-w-4xl" />
                     </div>
                 </div>
                 
