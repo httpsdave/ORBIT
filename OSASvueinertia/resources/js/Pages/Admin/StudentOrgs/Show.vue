@@ -38,10 +38,13 @@
                         </span>
                         
                         <Link :href="route('admin.colleges.show', studentOrg.college.id)" class="inline-flex items-center text-sm px-3 py-1.5 rounded-full transition duration-300 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-200 hover:bg-blue-100 dark:hover:bg-blue-800">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a2 2 0 012-2h6a2 2 0 012 2v5" />
-                            </svg>
-                            {{ studentOrg.college.name }}
+                            <img 
+                                :src="getCollegeLogo(studentOrg.college.acronym, studentOrg.college.logo_path)" 
+                                :alt="`${studentOrg.college.name} logo`"
+                                class="h-5 w-5 rounded-full object-cover border border-gray-300 dark:border-gray-600 mr-2"
+                                @error="handleImageError"
+                            />
+                            {{ studentOrg.college.acronym }} - {{ studentOrg.college.name }}
                         </Link>
                     </div>
 
@@ -172,6 +175,37 @@ export default {
   props: {
     studentOrg: Object,
     organizationDetails: Object
+  },
+  
+  methods: {
+    getCollegeLogo(acronym, customLogoPath = null) {
+      // If college has a custom uploaded logo, use it
+      if (customLogoPath) {
+        return `/storage/${customLogoPath}`;
+      }
+      
+      if (!acronym) {
+        return '/images/lspu_logo_better.webp';
+      }
+      
+      const logoMap = {
+        'CAS': '/images/cas-logo.jpg',
+        'CCS': '/images/ccs-logo.jpg',
+        'CCJE': '/images/ccje-logo.jpg',
+        'COE': '/images/coe-logo.jpg',
+        'CIT': '/images/cit-logo.jpg',
+        'CTE': '/images/cte-logo.jpg',
+        'CIHTM': '/images/chmt-logo.jpg',
+        'CBAA': '/images/cbaa-logo.jpg'
+      };
+      
+      return logoMap[acronym.toUpperCase()] || '/images/lspu_logo_better.webp';
+    },
+    handleImageError(event) {
+      if (event && event.target) {
+        event.target.src = '/images/lspu_logo_better.webp';
+      }
+    }
   }
 };
 </script>

@@ -207,6 +207,12 @@
                     class="flex justify-between items-center cursor-pointer"
                   >
                     <div class="flex items-center flex-1 min-w-0">
+                      <img 
+                        :src="getCollegeLogo(college.acronym, college.logo_path)" 
+                        :alt="`${college.name} logo`"
+                        class="h-10 w-10 rounded-full object-cover border-2 border-gray-200 dark:border-gray-600 mr-3 flex-shrink-0"
+                        @error="handleImageError"
+                      />
                       <div class="min-w-0 flex-1">
                         <h4 class="font-semibold text-gray-900 dark:text-gray-100 text-sm sm:text-base lg:text-lg truncate">{{ college.acronym }}</h4>
                         <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-400 truncate">{{ college.name }}</p>
@@ -566,6 +572,12 @@
                     class="flex justify-between items-center p-4 cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-150"
                   >
                     <div class="flex items-center">
+                      <img 
+                        :src="getCollegeLogo(college.acronym, college.logo_path)" 
+                        :alt="`${college.name} logo`"
+                        class="h-12 w-12 rounded-full object-cover border-2 border-gray-200 dark:border-gray-600 mr-4 flex-shrink-0"
+                        @error="handleImageError"
+                      />
                       <div>
                         <span class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ college.acronym }}</span>
                         <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">{{ college.name }}</span>
@@ -1582,6 +1594,34 @@ export default {
       // 2. It's NOT a sub-organization (doesn't have a parent)
       return !(organization.sub_organizations && organization.sub_organizations.length > 0) && 
              !organization.parent_organization_id;
+    },
+    getCollegeLogo(acronym, customLogoPath = null) {
+      // If college has a custom uploaded logo, use it
+      if (customLogoPath) {
+        return `/storage/${customLogoPath}`;
+      }
+      
+      if (!acronym) {
+        return '/images/lspu_logo_better.webp';
+      }
+      
+      const logoMap = {
+        'CAS': '/images/cas-logo.jpg',
+        'CCS': '/images/ccs-logo.jpg',
+        'CCJE': '/images/ccje-logo.jpg',
+        'COE': '/images/coe-logo.jpg',
+        'CIT': '/images/cit-logo.jpg',
+        'CTE': '/images/cte-logo.jpg',
+        'CIHTM': '/images/chmt-logo.jpg',
+        'CBAA': '/images/cbaa-logo.jpg'
+      };
+      
+      return logoMap[acronym.toUpperCase()] || '/images/lspu_logo_better.webp';
+    },
+    handleImageError(event) {
+      if (event && event.target) {
+        event.target.src = '/images/lspu_logo_better.webp';
+      }
     }
   }
 };
