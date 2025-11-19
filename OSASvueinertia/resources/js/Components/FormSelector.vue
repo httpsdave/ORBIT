@@ -171,7 +171,7 @@ onUnmounted(() => {
         <!-- Dropdown Menu -->
         <div
           v-show="isOpen"
-          class="absolute z-50 mt-1 w-full bg-white dark:bg-gray-700 shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black dark:ring-gray-600 ring-opacity-5 dark:ring-opacity-25 overflow-auto focus:outline-none transition-all duration-150"
+          class="absolute z-50 mt-1 w-full bg-white dark:bg-gray-700 shadow-lg max-h-[50vh] sm:max-h-[60vh] md:max-h-[70vh] lg:max-h-[500px] rounded-md py-1 text-base ring-1 ring-black dark:ring-gray-600 ring-opacity-5 dark:ring-opacity-25 overflow-auto focus:outline-none transition-all duration-150"
         >
           <div
             v-for="option in visibleOptions"
