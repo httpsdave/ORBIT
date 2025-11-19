@@ -101,6 +101,9 @@ const props = defineProps({
 // Tutorial state
 const showTutorial = ref(false);
 
+// Modal state for viewing all organizations
+const showAllOrganizationsModal = ref(false);
+
 // Colors for the charts - using our primary color scheme
 const COLORS = ['#3B82F6', '#10B981', '#FBBF24', '#EF4444', '#8B5CF6', '#EC4899', '#06B6D4', '#6366F1', '#D946EF', '#A855F7'];
 const COLORS_WITH_OPACITY = COLORS.map(color => `${color}CC`);
@@ -240,10 +243,22 @@ const membersBarChartData = ref({
     ]
 });
 
-const updateMembersBarChartData = () => {
-    // Filter organizations with members_count > 0
+// Get organizations with members, sorted by member count (descending)
+const sortedOrgsWithMembers = computed(() => {
     const orgsWithMembers = (props.advisersData || []).filter(org => org.members_count && org.members_count > 0);
-    if (orgsWithMembers.length === 0) {
+    return orgsWithMembers.sort((a, b) => b.members_count - a.members_count);
+});
+
+// Get top 5 organizations for the main chart
+const top5OrgsWithMembers = computed(() => {
+    return sortedOrgsWithMembers.value.slice(0, 5);
+});
+
+const updateMembersBarChartData = () => {
+    // Use top 5 organizations for the main display
+    const orgsToDisplay = top5OrgsWithMembers.value;
+    
+    if (orgsToDisplay.length === 0) {
         membersBarChartData.value = {
             labels: ['No Data'],
             datasets: [{
@@ -263,12 +278,12 @@ const updateMembersBarChartData = () => {
         return;
     }
     membersBarChartData.value = {
-        labels: orgsWithMembers.map(org => org.organization || 'Unknown'),
+        labels: orgsToDisplay.map(org => org.organization || 'Unknown'),
         datasets: [
             {
                 label: 'Number of Members',
                 backgroundColor: COLORS_WITH_OPACITY,
-                data: orgsWithMembers.map(org => org.members_count),
+                data: orgsToDisplay.map(org => org.members_count),
                 borderRadius: 8,
                 datalabels: {
                     color: '#ffffff',
@@ -284,6 +299,52 @@ const updateMembersBarChartData = () => {
         ]
     };
 };
+
+// Prepare chart data for ALL organizations (for modal)
+const allMembersBarChartData = computed(() => {
+    const allOrgs = sortedOrgsWithMembers.value;
+    
+    if (allOrgs.length === 0) {
+        return {
+            labels: ['No Data'],
+            datasets: [{
+                label: 'Number of Members',
+                backgroundColor: '#e0e0e0',
+                data: [0],
+                borderRadius: 8,
+                datalabels: {
+                    color: '#666666',
+                    font: {
+                        weight: 'bold',
+                        size: 16
+                    }
+                }
+            }]
+        };
+    }
+    
+    return {
+        labels: allOrgs.map(org => org.organization || 'Unknown'),
+        datasets: [
+            {
+                label: 'Number of Members',
+                backgroundColor: COLORS_WITH_OPACITY,
+                data: allOrgs.map(org => org.members_count),
+                borderRadius: 8,
+                datalabels: {
+                    color: '#ffffff',
+                    font: {
+                        weight: 'bold',
+                        size: 16
+                    },
+                    formatter: function(value) {
+                        return value;
+                    }
+                }
+            }
+        ]
+    };
+});
 
 // Watch for changes in advisersData
 watch(() => props.advisersData, () => {
@@ -449,6 +510,9 @@ const barChartOptions = ref({
     responsive: true,
     maintainAspectRatio: false,
     indexAxis: 'y',
+    onClick: () => {
+        showAllOrganizationsModal.value = true;
+    },
     plugins: {
         legend: {
             display: false
@@ -459,10 +523,19 @@ const barChartOptions = ref({
                     return `${context.raw} members`;
                 },
                 title: function(context) {
-                    // Show full org name in tooltip title
+                    // Always show FULL organization name in tooltip
                     return context[0].label;
                 }
-            }
+            },
+            titleFont: {
+                size: 14,
+                weight: 'bold'
+            },
+            bodyFont: {
+                size: 13
+            },
+            padding: 12,
+            displayColors: false
         },
         datalabels: {
             color: '#ffffff',
@@ -496,12 +569,122 @@ const barChartOptions = ref({
             ticks: {
                 font: {
                     family: 'Inter, sans-serif',
-                    size: 12
+                    size: 11
                 },
+                // Allow text wrapping for long names
+                autoSkip: false,
                 callback: function(value, index, ticks) {
-                    // Use the label from the chart data
                     const label = this.getLabelForValue ? this.getLabelForValue(value) : value;
-                    return typeof label === 'string' && label.length > 20 ? label.slice(0, 20) + '…' : label;
+                    if (typeof label === 'string' && label.length > 25) {
+                        // Split into multiple lines at word boundaries
+                        const words = label.split(' ');
+                        const lines = [];
+                        let currentLine = '';
+                        
+                        words.forEach(word => {
+                            if ((currentLine + ' ' + word).length > 25) {
+                                if (currentLine) lines.push(currentLine);
+                                currentLine = word;
+                            } else {
+                                currentLine = currentLine ? currentLine + ' ' + word : word;
+                            }
+                        });
+                        if (currentLine) lines.push(currentLine);
+                        
+                        return lines;
+                    }
+                    return label;
+                }
+            }
+        }
+    }
+});
+
+// Chart options for the modal (all organizations)
+const allOrgsBarChartOptions = ref({
+    responsive: true,
+    maintainAspectRatio: false,
+    indexAxis: 'y',
+    plugins: {
+        legend: {
+            display: false
+        },
+        tooltip: {
+            callbacks: {
+                label: function(context) {
+                    return `${context.raw} members`;
+                },
+                title: function(context) {
+                    // Always show FULL organization name in tooltip
+                    return context[0].label;
+                }
+            },
+            titleFont: {
+                size: 14,
+                weight: 'bold'
+            },
+            bodyFont: {
+                size: 13
+            },
+            padding: 12,
+            displayColors: false
+        },
+        datalabels: {
+            color: '#ffffff',
+            font: {
+                weight: 'bold',
+                size: 14
+            },
+            formatter: function(value) {
+                return value;
+            }
+        }
+    },
+    scales: {
+        x: {
+            grid: {
+                display: false
+            },
+            title: {
+                display: true,
+                text: 'Number of Members',
+                font: {
+                    family: 'Inter, sans-serif',
+                    size: 12
+                }
+            }
+        },
+        y: {
+            grid: {
+                display: false
+            },
+            ticks: {
+                font: {
+                    family: 'Inter, sans-serif',
+                    size: 10
+                },
+                autoSkip: false,
+                callback: function(value, index, ticks) {
+                    const label = this.getLabelForValue ? this.getLabelForValue(value) : value;
+                    if (typeof label === 'string' && label.length > 30) {
+                        // Split into multiple lines for modal (slightly longer per line)
+                        const words = label.split(' ');
+                        const lines = [];
+                        let currentLine = '';
+                        
+                        words.forEach(word => {
+                            if ((currentLine + ' ' + word).length > 30) {
+                                if (currentLine) lines.push(currentLine);
+                                currentLine = word;
+                            } else {
+                                currentLine = currentLine ? currentLine + ' ' + word : word;
+                            }
+                        });
+                        if (currentLine) lines.push(currentLine);
+                        
+                        return lines;
+                    }
+                    return label;
                 }
             }
         }
@@ -1212,10 +1395,21 @@ const stopMobileCarousel = () => {
             <div class="xl:col-span-2 bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
                 <div class="p-3 sm:p-4 lg:p-6">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-6 space-y-3 sm:space-y-0">
-                        <h3 class="text-base sm:text-lg font-medium text-gray-800 dark:text-gray-200 select-none">
-                            <template v-if="activeChart === 'bar'">Members per Organization</template>
-                            <template v-else>Student Organizations by College</template>
-                        </h3>
+                        <div class="flex items-center justify-between w-full sm:w-auto">
+                            <h3 class="text-base sm:text-lg font-medium text-gray-800 dark:text-gray-200 select-none">
+                                <template v-if="activeChart === 'bar'">Members per Organization</template>
+                                <template v-else>Student Organizations by College</template>
+                            </h3>
+                            <button 
+                                v-if="activeChart === 'bar' && sortedOrgsWithMembers.length > 5"
+                                @click="showAllOrganizationsModal = true"
+                                class="ml-3 text-xs sm:text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium flex items-center gap-1 transition-colors">
+                                View All ({{ sortedOrgsWithMembers.length }})
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </button>
+                        </div>
                         <div class="inline-flex rounded-md shadow-sm w-full sm:w-auto">
                             <button 
                                 @click="activeChart = 'bar'" 
@@ -1275,11 +1469,16 @@ const stopMobileCarousel = () => {
                         />
                     </div>
                     
-                    <div v-else-if="activeChart === 'bar'" class="h-64 sm:h-80">
+                    <div v-else-if="activeChart === 'bar'" class="h-64 sm:h-80 relative">
                         <Bar 
                             :data="membersBarChartData" 
                             :options="barChartOptions" 
+                            class="cursor-pointer"
                         />
+                        <div v-if="sortedOrgsWithMembers.length > 5" 
+                             class="absolute bottom-2 right-2 text-xs text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 px-2 py-1 rounded shadow">
+                            Showing top 5 of {{ sortedOrgsWithMembers.length }} • Click to view all
+                        </div>
                     </div>
                     <div v-else-if="activeChart === 'advisers'">
                         <!-- Export Button - Only show when data exists -->
@@ -1608,6 +1807,52 @@ const stopMobileCarousel = () => {
                             <span class="hidden sm:inline">View Applications</span>
                             <span class="sm:hidden">Applications</span>
                         </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- All Organizations Modal -->
+        <div v-if="showAllOrganizationsModal" 
+             @click="showAllOrganizationsModal = false"
+             class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 p-4">
+            <div @click.stop 
+                 class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col">
+                <!-- Modal Header -->
+                <div class="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700">
+                    <h3 class="text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100">
+                        All Organizations - Members Count
+                    </h3>
+                    <button 
+                        @click="showAllOrganizationsModal = false"
+                        class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+                        aria-label="Close modal">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- Modal Content - Scrollable Chart -->
+                <div class="flex-1 overflow-y-auto p-4 sm:p-6">
+                    <div v-if="sortedOrgsWithMembers.length === 0" 
+                         class="text-center text-gray-500 dark:text-gray-400 py-12">
+                        <p class="text-lg">No organizations with members found.</p>
+                    </div>
+                    <div v-else :style="{ height: Math.max(400, sortedOrgsWithMembers.length * 50) + 'px' }">
+                        <Bar :data="allMembersBarChartData" :options="allOrgsBarChartOptions" />
+                    </div>
+                </div>
+                
+                <!-- Modal Footer -->
+                <div class="p-4 sm:p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+                    <div class="flex justify-between items-center text-sm text-gray-600 dark:text-gray-400">
+                        <span>Total Organizations: <strong class="text-gray-900 dark:text-gray-100">{{ sortedOrgsWithMembers.length }}</strong></span>
+                        <button 
+                            @click="showAllOrganizationsModal = false"
+                            class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors font-medium">
+                            Close
+                        </button>
                     </div>
                 </div>
             </div>
