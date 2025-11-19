@@ -577,27 +577,27 @@ const barChartOptions = ref({
                     family: 'Inter, sans-serif',
                     size: 11
                 },
-                // Allow text wrapping for long names
                 autoSkip: false,
                 callback: function(value, index, ticks) {
                     const label = this.getLabelForValue ? this.getLabelForValue(value) : value;
-                    if (typeof label === 'string' && label.length > 25) {
-                        // Split into multiple lines at word boundaries
-                        const words = label.split(' ');
-                        const lines = [];
-                        let currentLine = '';
+                    if (typeof label === 'string') {
+                        // Check viewport width for responsive truncation
+                        const viewportWidth = window.innerWidth;
+                        let maxLength;
                         
-                        words.forEach(word => {
-                            if ((currentLine + ' ' + word).length > 25) {
-                                if (currentLine) lines.push(currentLine);
-                                currentLine = word;
-                            } else {
-                                currentLine = currentLine ? currentLine + ' ' + word : word;
-                            }
-                        });
-                        if (currentLine) lines.push(currentLine);
+                        if (viewportWidth < 640) {  // Mobile
+                            maxLength = 15;
+                        } else if (viewportWidth < 1024) {  // Tablet
+                            maxLength = 20;
+                        } else if (viewportWidth < 1280) {  // Small desktop
+                            maxLength = 30;
+                        } else {  // Large desktop
+                            maxLength = 40;
+                        }
                         
-                        return lines;
+                        if (label.length > maxLength) {
+                            return label.substring(0, maxLength) + '...';
+                        }
                     }
                     return label;
                 }
@@ -672,23 +672,22 @@ const allOrgsBarChartOptions = ref({
                 autoSkip: false,
                 callback: function(value, index, ticks) {
                     const label = this.getLabelForValue ? this.getLabelForValue(value) : value;
-                    if (typeof label === 'string' && label.length > 30) {
-                        // Split into multiple lines for modal (slightly longer per line)
-                        const words = label.split(' ');
-                        const lines = [];
-                        let currentLine = '';
+                    if (typeof label === 'string') {
+                        // Check viewport width for responsive truncation in modal
+                        const viewportWidth = window.innerWidth;
+                        let maxLength;
                         
-                        words.forEach(word => {
-                            if ((currentLine + ' ' + word).length > 30) {
-                                if (currentLine) lines.push(currentLine);
-                                currentLine = word;
-                            } else {
-                                currentLine = currentLine ? currentLine + ' ' + word : word;
-                            }
-                        });
-                        if (currentLine) lines.push(currentLine);
+                        if (viewportWidth < 640) {  // Mobile
+                            maxLength = 20;
+                        } else if (viewportWidth < 1024) {  // Tablet
+                            maxLength = 30;
+                        } else {  // Desktop
+                            maxLength = 45;
+                        }
                         
-                        return lines;
+                        if (label.length > maxLength) {
+                            return label.substring(0, maxLength) + '...';
+                        }
                     }
                     return label;
                 }
@@ -1186,9 +1185,12 @@ const stopMobileCarousel = () => {
                             </svg>
                         </div>
                     </div>
-                    <div class="ml-4 select-none">
-                        <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-200">{{ greeting }}, {{ userName || 'Administrator' }}!</h2>
-                        <p class="mt-1 text-gray-600 dark:text-gray-400">Welcome to ORBIT. Here's an overview of your system.</p>
+                    <div class="ml-4 select-none flex-1 min-w-0">
+                        <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 dark:text-gray-200">
+                            <span>{{ greeting }}, </span>
+                            <span class="inline-block max-w-[200px] sm:max-w-[300px] md:max-w-full truncate align-bottom" :title="userName || 'Administrator'">{{ userName || 'Administrator' }}</span><span>!</span>
+                        </h2>
+                        <p class="mt-1 text-sm sm:text-base text-gray-600 dark:text-gray-400">Welcome to ORBIT. Here's an overview of your system.</p>
                     </div>
                 </div>
             </div>
