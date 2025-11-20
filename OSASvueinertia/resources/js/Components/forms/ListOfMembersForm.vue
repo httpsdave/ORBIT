@@ -4,6 +4,7 @@ import { useForm } from '@inertiajs/vue3';
 import { usePage } from '@inertiajs/vue3';
 import { useFormAutoSave } from '@/Composables/useFormAutoSave';
 import Modal from '@/Components/Modal.vue';
+import SubmissionConfirmationModal from '@/Components/SubmissionConfirmationModal.vue';
 
 const props = defineProps({
   initialFormData: {
@@ -79,6 +80,7 @@ const displaySecondAdviserName = computed(() => {
 
 // Add errors ref object
 const errors = ref({});
+const showConfirmationModal = ref(false);
 
 // CSV modal states
 const showCsvModal = ref(false);
@@ -668,11 +670,26 @@ const validateForm = () => {
 // REMOVE:   setTimeout(() => { showStatus.value = false; }, 5000);
 // REMOVE: };
 
-const submit = async () => {
+const handleSubmitClick = () => {
   if (!validateForm()) {
     emit('error', 'Please fill in all required fields.');
     return;
   }
+  
+  // Show confirmation modal
+  showConfirmationModal.value = true;
+};
+
+const handleConfirmSubmit = () => {
+  showConfirmationModal.value = false;
+  submit();
+};
+
+const handleCancelSubmit = () => {
+  showConfirmationModal.value = false;
+};
+
+const submit = async () => {
   
   // Warn user if they're submitting a large number of members
   if (isOverLimit.value) {
@@ -768,6 +785,14 @@ onUnmounted(() => {
 
 <template>
   <div class="mt-6 form-content">
+    <!-- Submission Confirmation Modal -->
+    <SubmissionConfirmationModal
+      :show="showConfirmationModal"
+      :isEdit="props.isEdit"
+      @confirm="handleConfirmSubmit"
+      @cancel="handleCancelSubmit"
+    />
+
     <!-- Restore Autosave Prompt Modal -->
     <div v-if="showRestorePrompt" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style="font-family: system-ui, -apple-system, sans-serif;">
       <div class="bg-white rounded-lg p-6 max-w-md shadow-xl">
@@ -1362,8 +1387,8 @@ onUnmounted(() => {
             </div>
             
             <button
-              type="submit"
-              @click="submit"
+              type="button"
+              @click="handleSubmitClick"
               class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-sm font-medium text-white rounded-xl shadow-md hover:shadow-green-300/30 hover:from-green-400 hover:to-green-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 active:from-green-600 active:to-green-700 transition-all duration-300 relative overflow-hidden group"
               style="font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Liberation Sans', sans-serif;"
             >
