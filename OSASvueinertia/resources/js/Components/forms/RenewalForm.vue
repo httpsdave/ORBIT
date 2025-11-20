@@ -24,6 +24,7 @@ function handleCollegeChange(e) {
 import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import { useFormAutoSave } from '@/Composables/useFormAutoSave';
+import SubmissionConfirmationModal from '@/Components/SubmissionConfirmationModal.vue';
 
 const props = defineProps({
   initialFormData: {
@@ -109,6 +110,7 @@ const form = useForm({
 const errors = ref({});
 const showRestorePrompt = ref(false);
 const autosavedData = ref(null);
+const showConfirmationModal = ref(false);
 
 // Initialize autosave - DISABLED by default until we determine what to do
 const formDataForAutosave = computed(() => form.data());
@@ -272,10 +274,25 @@ const validateForm = () => {
   return isValid;
 };
 
-const submit = () => {
+const handleSubmitClick = () => {
   if (!validateForm()) {
     return;
   }
+  
+  // Show confirmation modal
+  showConfirmationModal.value = true;
+};
+
+const handleConfirmSubmit = () => {
+  showConfirmationModal.value = false;
+  submit();
+};
+
+const handleCancelSubmit = () => {
+  showConfirmationModal.value = false;
+};
+
+const submit = () => {
   stop(); // Stop auto-save before submitting!
   isSubmitting.value = true;
   if (autoSaveTimeout) clearTimeout(autoSaveTimeout); // Stop any pending auto-save
@@ -315,6 +332,14 @@ const submit = () => {
 </script>
 
 <template>
+
+<!-- Submission Confirmation Modal -->
+<SubmissionConfirmationModal
+  :show="showConfirmationModal"
+  :isEdit="props.isEdit"
+  @confirm="handleConfirmSubmit"
+  @cancel="handleCancelSubmit"
+/>
 
 <!-- Restore Prompt Modal -->
 <div v-if="showRestorePrompt" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
@@ -641,7 +666,8 @@ const submit = () => {
         </div>
         
         <button
-          type="submit"
+          type="button"
+          @click="handleSubmitClick"
           class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-sm font-medium text-white rounded-xl shadow-md hover:shadow-green-300/30 hover:from-green-400 hover:to-green-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 active:from-green-600 active:to-green-700 transition-all duration-300 relative overflow-hidden group"
           style="font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Liberation Sans', sans-serif;"
         >
