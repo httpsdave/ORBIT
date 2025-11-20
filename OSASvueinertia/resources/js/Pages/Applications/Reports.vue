@@ -780,6 +780,13 @@ watch(showStatusModal, (val) => {
   
   <AuthenticatedLayout>
     <template #header>
+      <!-- Segmented Color Banner -->
+      <div class="flex w-full overflow-hidden shadow-md rounded-t-lg mb-2">
+        <div class="w-1/4 h-1.5 bg-blue-600"></div>
+        <div class="w-1/4 h-1.5 bg-green-500"></div>
+        <div class="w-1/4 h-1.5 bg-amber-500"></div>
+        <div class="w-1/4 h-1.5 bg-red-500"></div>
+      </div>
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 w-full">
         <div>
           <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-100 leading-tight mb-1">
@@ -833,6 +840,13 @@ watch(showStatusModal, (val) => {
             :key="page.pageNumber"
             class="bg-white dark:bg-gray-800 overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 rounded-xl border border-gray-100 dark:border-gray-700"
           >
+            <!-- Color Banner -->
+            <div class="flex w-full overflow-hidden rounded-t-xl">
+              <div class="w-1/4 h-1.5 bg-blue-600"></div>
+              <div class="w-1/4 h-1.5 bg-green-500"></div>
+              <div class="w-1/4 h-1.5 bg-amber-500"></div>
+              <div class="w-1/4 h-1.5 bg-red-500"></div>
+            </div>
             <div class="p-6">
               <!-- Activity Header -->
               <div class="border-b dark:border-gray-700 pb-4 mb-6">

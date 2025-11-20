@@ -435,20 +435,19 @@ watch(showPreviewModal, (val) => {
     <Head title="My Archived Applications" />
 
     <AuthenticatedLayout>
-        <template #header>
-            <!-- Segmented Animated Color Banner for Consistency -->
-            <div class="flex w-full overflow-hidden shadow-md rounded-t-lg mb-2">
-              <div class="w-1/4 h-1.5 bg-blue-600 animate-pulse" style="animation-delay: 0.2s;"></div>
-              <div class="w-1/4 h-1.5 bg-green-500 animate-pulse" style="animation-delay: 0.4s;"></div>
-              <div class="w-1/4 h-1.5 bg-amber-500 animate-pulse" style="animation-delay: 0.6s;"></div>
-              <div class="w-1/4 h-1.5 bg-red-500 animate-pulse" style="animation-delay: 0.8s;"></div>
+        <!-- Header Section -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between mb-2">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+                        My Archived Applications
+                    </h1>
+                    <p class="text-gray-600 dark:text-gray-400 mt-1">
+                        View your archived organization applications
+                    </p>
+                </div>
             </div>
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 w-full">
-                <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-100 leading-tight">
-                    My Archived Applications
-                </h2>
-            </div>
-        </template>
+        </div>
 
         <!-- Success/Error Messages -->
         <div v-if="successMessage" class="mb-4 p-4 bg-green-100 dark:bg-green-900/30 border border-green-400 dark:border-green-600 text-green-700 dark:text-green-300 rounded">

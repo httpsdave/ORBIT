@@ -617,14 +617,6 @@ watch(() => props.currentPage, (newValue) => {
     <Head title="Archive Management" />
 
     <AuthenticatedLayout>
-        <!-- Colored Banner -->
-        <div class="flex w-full mb-6 overflow-hidden rounded-lg shadow-md">
-            <div class="w-1/4 h-1.5 bg-blue-500" style="animation-delay: 0.2s;"></div>
-            <div class="w-1/4 h-1.5 bg-green-500" style="animation-delay: 0.4s;"></div>
-            <div class="w-1/4 h-1.5 bg-yellow-500" style="animation-delay: 0.6s;"></div>
-            <div class="w-1/4 h-1.5 bg-red-500" style="animation-delay: 0.8s;"></div>
-        </div>
-
         <!-- Header Section -->
         <div class="mb-8">
             <div class="flex items-center justify-between mb-2">
