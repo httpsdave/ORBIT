@@ -4,6 +4,7 @@ import { useForm } from '@inertiajs/vue3';
 import { usePage } from '@inertiajs/vue3';
 import { useFormAutoSave } from '@/Composables/useFormAutoSave';
 import Modal from '@/Components/Modal.vue';
+import SubmissionConfirmationModal from '@/Components/SubmissionConfirmationModal.vue';
 
 const props = defineProps({
   initialFormData: {
@@ -39,6 +40,7 @@ const nextYear = computed(() => {
 
 // Add errors ref object
 const errors = ref({});
+const showConfirmationModal = ref(false);
 
 // Autosave state
 const showRestorePrompt = ref(false);
@@ -613,11 +615,26 @@ onUnmounted(() => {
 
 // REMOVE: statusMessage, statusType, showStatus, showBanner
 
-const submit = async () => {
+const handleSubmitClick = () => {
   if (!validateForm()) {
     emit('error', 'Please fill in all required fields.');
     return;
   }
+  
+  // Show confirmation modal
+  showConfirmationModal.value = true;
+};
+
+const handleConfirmSubmit = () => {
+  showConfirmationModal.value = false;
+  submit();
+};
+
+const handleCancelSubmit = () => {
+  showConfirmationModal.value = false;
+};
+
+const submit = async () => {
   
   stopAutoSave();
   
@@ -651,6 +668,14 @@ const submit = async () => {
 </script>
 
 <template>
+<!-- Submission Confirmation Modal -->
+<SubmissionConfirmationModal
+  :show="showConfirmationModal"
+  :isEdit="props.isEdit"
+  @confirm="handleConfirmSubmit"
+  @cancel="handleCancelSubmit"
+/>
+
 <!-- Restore Prompt Modal -->
 <div v-if="showRestorePrompt" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
   <div class="bg-white rounded-lg shadow-xl p-6 max-w-md mx-4">
@@ -1048,8 +1073,8 @@ const submit = async () => {
           </div>
           
           <button
-            type="submit"
-            @click="submit"
+            type="button"
+            @click="handleSubmitClick"
             class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-sm font-medium text-white rounded-xl shadow-md hover:shadow-green-300/30 hover:from-green-400 hover:to-green-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 active:from-green-600 active:to-green-700 transition-all duration-300 relative overflow-hidden group"
             style="font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Liberation Sans', sans-serif;"
           >
