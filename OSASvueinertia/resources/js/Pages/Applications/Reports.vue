@@ -15,6 +15,10 @@ const props = defineProps({
   isAdmin: {
     type: Boolean,
     default: false
+  },
+  isArchived: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -118,6 +122,12 @@ const activityPages = computed(() => {
 })
 
 const uploadReport = async (activityPageNumber, reportType) => {
+  // Prevent upload if archived
+  if (props.isArchived) {
+    showMessageWithType('Cannot upload reports for archived applications.', 'error')
+    return
+  }
+  
   const fileInputKey = `${activityPageNumber}-${reportType}`
   const file = selectedFiles.value[fileInputKey]
   
@@ -169,6 +179,12 @@ const uploadReport = async (activityPageNumber, reportType) => {
 }
 
 const deleteReport = async (reportId, activityPageNumber, reportType) => {
+  // Prevent delete if archived
+  if (props.isArchived) {
+    showMessageWithType('Cannot delete reports from archived applications.', 'error')
+    return
+  }
+  
   deleteTarget.value = { reportId, activityPageNumber, reportType }
   showDeleteModal.value = true
 }
@@ -461,6 +477,14 @@ const viewReportFromDropdown = () => {
 
 const deleteReportFromDropdown = () => {
   if (activeDropdownReport.value) {
+    // Check if archived
+    if (props.isArchived) {
+      showMessageWithType('Cannot delete reports from archived applications.', 'error')
+      activeDropdownReport.value = null
+      removeDropdownListeners()
+      return
+    }
+    
     // Check if report is approved
     if (isReportApproved(activeDropdownReport.value)) {
       showMessageWithType('Cannot delete an approved report.', 'error')
@@ -492,6 +516,14 @@ const deleteReportFromDropdown = () => {
 
 const editReportFromDropdown = () => {
   if (activeDropdownReport.value) {
+    // Check if archived
+    if (props.isArchived) {
+      showMessageWithType('Cannot edit reports in archived applications.', 'error')
+      activeDropdownReport.value = null
+      removeDropdownListeners()
+      return
+    }
+    
     // Check if report is approved
     if (isReportApproved(activeDropdownReport.value)) {
       showMessageWithType('Cannot edit an approved report.', 'error')
@@ -638,6 +670,12 @@ const handleEditFileSelect = (event, activityPageNumber, reportType) => {
 }
 
 const updateReport = async (reportId, activityPageNumber, reportType) => {
+  // Prevent update if archived
+  if (props.isArchived) {
+    showMessageWithType('Cannot update reports in archived applications.', 'error')
+    return
+  }
+  
   // Find the report being updated and check if it's approved
   let reportToUpdate = null
   for (const page of activityPages.value) {
@@ -756,6 +794,15 @@ watch(showStatusModal, (val) => {
           </svg>
           Back to Applications
         </button>
+        
+        <!-- Archived Badge -->
+        <div v-if="isArchived" class="inline-flex items-center gap-2 px-4 py-2 bg-amber-100 dark:bg-amber-900/30 border border-amber-300 dark:border-amber-600 rounded-lg text-sm font-medium text-amber-800 dark:text-amber-200 w-full sm:w-auto justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M4 3a2 2 0 100 4h12a2 2 0 100-4H4z" />
+            <path fill-rule="evenodd" d="M3 8h14v7a2 2 0 01-2 2H5a2 2 0 01-2-2V8zm5 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" clip-rule="evenodd" />
+          </svg>
+          Archived - Read Only
+        </div>
       </div>
     </template>
 
@@ -916,12 +963,18 @@ watch(showStatusModal, (val) => {
 
                   <!-- If no report exists -->
                   <div v-else class="space-y-2 sm:space-y-3">
-                    <div class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-2 sm:mb-3">
+                    <!-- Show archived message if archived -->
+                    <div v-if="isArchived" class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-2 sm:mb-3 italic">
+                      No report uploaded - Application is archived
+                    </div>
+                    <!-- Normal message for non-archived -->
+                    <div v-else class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-2 sm:mb-3">
                       No report uploaded yet
                     </div>
                     
-                    <!-- Drag and Drop Zone -->
+                    <!-- Drag and Drop Zone - Only show if not archived -->
                     <div 
+                      v-if="!isArchived"
                       :class="[
                         'relative border-2 border-dashed rounded-xl p-3 sm:p-4 lg:p-6 transition-all duration-200',
                         dragStates[`${page.pageNumber}-${reportType}`] 
@@ -1086,9 +1139,9 @@ watch(showStatusModal, (val) => {
           </svg>
           View Feedback
         </button>
-        <!-- Edit Report - Only show if not approved -->
+        <!-- Edit Report - Only show if not approved and not archived -->
         <button 
-          v-if="!isReportApproved(activeDropdownReport)"
+          v-if="!isReportApproved(activeDropdownReport) && !isArchived"
           @click="editReportFromDropdown()"
           class="w-full text-left px-3 py-1.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200 font-medium"
         >
@@ -1097,9 +1150,9 @@ watch(showStatusModal, (val) => {
           </svg>
           Edit Report
         </button>
-        <!-- Delete Report - Only show if not approved -->
+        <!-- Delete Report - Only show if not approved and not archived -->
         <button 
-          v-if="!isReportApproved(activeDropdownReport)"
+          v-if="!isReportApproved(activeDropdownReport) && !isArchived"
           @click="deleteReportFromDropdown()"
           class="w-full text-left px-3 py-1.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 flex items-center gap-2 transition duration-200 border-t border-gray-100 dark:border-gray-600 mt-1 pt-1 font-medium"
         >

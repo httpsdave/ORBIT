@@ -533,7 +533,7 @@ watch(showPreviewModal, (val) => {
             <!-- MOBILE CARD LAYOUT -->
             <div v-if="allArchivedApplications.length > 0" class="sm:hidden p-2 space-y-4 max-w-4xl mx-auto">
                 <div v-for="application in allArchivedApplications" :key="application.id" 
-                    class="bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-100 dark:border-gray-700 p-4 flex flex-col gap-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                    class="relative bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-100 dark:border-gray-700 p-4 flex flex-col gap-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition"
                     @click="viewPdf(application)">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-2">
@@ -578,6 +578,19 @@ watch(showPreviewModal, (val) => {
                             </span>
                         </button>
                     </div>
+                    
+                    <!-- View Reports button for Plan of Activities (LSPU-OSAS-SF-004) - positioned absolutely at bottom -->
+                    <button
+                        v-if="application.form_type === 'LSPU-OSAS-SF-004' && application.status === 'Approved'"
+                        @click.stop="$event => { router.visit(`/applications/${application.id}/reports`) }"
+                        class="absolute -bottom-3 right-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-medium px-3 py-1.5 rounded-b-lg rounded-tl-lg shadow-lg border-2 border-white dark:border-gray-800 flex items-center gap-1.5 hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-200 z-10"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path d="M2.458 12C3.732 7.943 7.523 5 12 5s8.268 2.943 9.542 7c-1.274 4.057-5.065 7-9.542 7s-8.268-2.943-9.542-7z" />
+                        </svg>
+                        View Reports
+                    </button>
                         </div>
                     </div>
 
@@ -586,7 +599,7 @@ watch(showPreviewModal, (val) => {
                         <div
                             v-for="application in allArchivedApplications"
                             :key="application.id"
-                            class="bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-100 dark:border-gray-700 mb-4 flex flex-col md:flex-row md:items-center md:justify-between hover:shadow-lg transition cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
+                            class="relative bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-100 dark:border-gray-700 mb-4 flex flex-col md:flex-row md:items-center md:justify-between hover:shadow-lg transition cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
                             @click="viewPdf(application)"
                         >
                             <div class="flex items-center gap-4 p-5 flex-1 min-w-0">
@@ -633,6 +646,19 @@ watch(showPreviewModal, (val) => {
                                     </span>
                                 </button>
                             </div>
+                            
+                            <!-- View Reports hanging tag for approved Plan of Activities -->
+                            <button
+                                v-if="application.form_type === 'LSPU-OSAS-SF-004' && application.status === 'Approved'"
+                                @click.stop="$event => { router.visit(`/applications/${application.id}/reports`) }"
+                                class="absolute -bottom-3 left-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-medium px-3 py-1.5 rounded-b-lg rounded-tr-lg shadow-lg border-2 border-white dark:border-gray-800 flex items-center gap-1.5 hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-200 z-10"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path d="M2.458 12C3.732 7.943 7.523 5 12 5s8.268 2.943 9.542 7c-1.274 4.057-5.065 7-9.542 7s-8.268-2.943-9.542-7z" />
+                                </svg>
+                                View Reports
+                            </button>
                         </div>
                     </div>
 

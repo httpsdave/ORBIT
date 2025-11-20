@@ -2339,7 +2339,8 @@ class OrganizationApplicationController extends Controller
                 'LSPU-OSAS-SF-009' => 'Activity Attendance Sheet',
                 'LSPU-OSAS-SF-STATUS-REPORT' => 'Status Report',
             ],
-            'isAdmin' => auth()->user()->isAdmin()
+            'isAdmin' => auth()->user()->isAdmin(),
+            'isArchived' => $application->is_archived ?? false
         ]);
     }
 
