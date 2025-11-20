@@ -68,12 +68,16 @@ class UserDashboardController extends Controller
         // Calculate reports to be submitted
         $reportsToBeSubmitted = $this->calculateReportsToBeSubmitted($user->id);
         
+        // Calculate conducted events count (approved POAs with all reports approved)
+        $conductedEventsCount = $this->calculateConductedEvents($user->id);
+        
         return Inertia::render('Dashboard', [
             'myApplications' => $myApplications,
             'todayEvent' => $todayEvent,
             'upcomingEvents' => $upcomingEvents,
             'recentActivity' => $recentActivity,
             'reportsToBeSubmitted' => $reportsToBeSubmitted,
+            'conductedEventsCount' => $conductedEventsCount,
             'hasSeenTutorial' => $user->has_seen_tutorial ?? false,
         ]);
     }
@@ -121,6 +125,54 @@ class UserDashboardController extends Controller
         }
         
         return max(0, $totalReportsNeeded - $totalReportsSubmitted);
+    }
+    
+    /**
+     * Calculate conducted events count for user
+     * Only counts approved Plan of Activities where ALL required reports are also approved
+     */
+    private function calculateConductedEvents($userId)
+    {
+        // Get approved Plan of Activities applications for this user
+        $approvedPOAs = OrganizationApplication::where('user_id', $userId)
+            ->where('status', 'Approved')
+            ->where('form_type', 'LSPU-OSAS-SF-004')
+            ->whereHas('activities') // Must have activities
+            ->with(['activities', 'activityReports'])
+            ->get();
+        
+        // Report types that need to be approved (6 per activity page)
+        $requiredReportTypes = [
+            'LSPU-OSAS-SF-FINANCIAL',
+            'LSPU-OSAS-SF-NARRATIVE', 
+            'LSPU-OSAS-SF-ACCOMPLISHMENT',
+            'LSPU-OSAS-SF-EVAL',
+            'LSPU-OSAS-SF-009',
+            'LSPU-OSAS-SF-STATUS-REPORT'
+        ];
+        
+        $conductedCount = 0;
+        
+        foreach ($approvedPOAs as $poa) {
+            $activityCount = $poa->activities->count();
+            
+            // Each activity page requires 6 reports, all must be approved
+            $requiredReportsCount = $activityCount * count($requiredReportTypes);
+            
+            // Count approved reports for this POA
+            $approvedReportsCount = $poa->activityReports()
+                ->whereIn('report_type', $requiredReportTypes)
+                ->where('status', 'approved')
+                ->whereNotNull('file_path')
+                ->count();
+            
+            // Only count this POA if ALL required reports are approved
+            if ($approvedReportsCount >= $requiredReportsCount && $requiredReportsCount > 0) {
+                $conductedCount += $activityCount;
+            }
+        }
+        
+        return $conductedCount;
     }
     
 

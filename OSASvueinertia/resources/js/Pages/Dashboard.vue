@@ -27,6 +27,10 @@ const props = defineProps({
     type: Number,
     default: 0,
   },
+  conductedEventsCount: {
+    type: Number,
+    default: 0,
+  },
   hasSeenTutorial: {
     type: Boolean,
     default: false,
@@ -388,8 +392,8 @@ const displayedActivities = computed(() => {
                     </div>
                   </div>
                   <div class="ml-3 sm:ml-4 select-none">
-                    <p class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Upcoming Events</p>
-                    <p class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">{{ props.upcomingEvents.length + (props.todayEvent ? 1 : 0) }}</p>
+                    <p class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Conducted Events</p>
+                    <p class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">{{ props.conductedEventsCount }}</p>
                   </div>
                 </div>
               </div>
