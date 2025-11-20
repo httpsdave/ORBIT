@@ -961,16 +961,37 @@ const confirmClearData = () => {
         </div>
       </div>
 
-      <!-- Status pill buttons (All | Pending | Approved | Disapproved) - Non-Admin Users -->
-      <div v-if="!isAdmin" class="flex justify-center sm:justify-end">
-        <div class="inline-flex flex-wrap rounded-full bg-gray-100 dark:bg-gray-800 p-0.5 gap-1 w-full sm:w-auto justify-center">
-          <button @click="setStatusFilter('')" :class="['px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-xs font-medium text-center transition-all whitespace-nowrap', !statusFilter ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200']">All</button>
-          <button @click="setStatusFilter('pending')" :class="['px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-xs font-medium text-center transition-all whitespace-nowrap', statusFilter && statusFilter.toLowerCase() === 'pending' ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200']">Pending</button>
-          <button v-if="hasPendingWithSigned" @click="setStatusFilter('pending_with_signed')" :class="['px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-xs font-medium text-center transition-all whitespace-nowrap', statusFilter && statusFilter.toLowerCase() === 'pending_with_signed' ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200']">Pending w/ Signed</button>
-          <button @click="setStatusFilter('approved')" :class="['px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-xs font-medium text-center transition-all whitespace-nowrap', statusFilter && statusFilter.toLowerCase() === 'approved' ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200']">Approved</button>
-          <button v-if="hasApprovedWithSigned" @click="setStatusFilter('approved_with_signed')" :class="['px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-xs font-medium text-center transition-all whitespace-nowrap', statusFilter && statusFilter.toLowerCase() === 'approved_with_signed' ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200']">Approved w/ Signed</button>
-          <button @click="setStatusFilter('disapproved')" :class="['px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-xs font-medium text-center transition-all whitespace-nowrap', statusFilter && statusFilter.toLowerCase() === 'disapproved' ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200']">Disapproved</button>
-          <button v-if="hasDisapprovedWithSigned" @click="setStatusFilter('disapproved_with_signed')" :class="['px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-xs font-medium text-center transition-all whitespace-nowrap', statusFilter && statusFilter.toLowerCase() === 'disapproved_with_signed' ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200']">Disapproved w/ Signed</button>
+      <!-- Status pill buttons and Form Type Filter - Non-Admin Users -->
+      <div v-if="!isAdmin" class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
+        <!-- Form Type Filter - Left side on larger screens -->
+        <div class="w-full sm:w-auto">
+          <select 
+            v-model="formTypeFilter"
+            class="w-full pl-2.5 pr-7 py-1.5 sm:pl-3 sm:pr-8 sm:py-2 border border-gray-300 dark:border-gray-600 rounded-full text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm"
+          >
+            <option value="">All Form Types</option>
+            <option 
+              v-for="option in formTypeOptions" 
+              :key="option.value" 
+              :value="option.value"
+              :title="option.formType"
+            >
+              {{ option.label }}
+            </option>
+          </select>
+        </div>
+        
+        <!-- Status pill buttons - Right side on larger screens -->
+        <div class="flex justify-center sm:justify-end">
+          <div class="inline-flex flex-wrap rounded-full bg-gray-100 dark:bg-gray-800 p-0.5 gap-1 w-full sm:w-auto justify-center">
+            <button @click="setStatusFilter('')" :class="['px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-xs font-medium text-center transition-all whitespace-nowrap', !statusFilter ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200']">All</button>
+            <button @click="setStatusFilter('pending')" :class="['px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-xs font-medium text-center transition-all whitespace-nowrap', statusFilter && statusFilter.toLowerCase() === 'pending' ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200']">Pending</button>
+            <button v-if="hasPendingWithSigned" @click="setStatusFilter('pending_with_signed')" :class="['px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-xs font-medium text-center transition-all whitespace-nowrap', statusFilter && statusFilter.toLowerCase() === 'pending_with_signed' ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200']">Pending w/ Signed</button>
+            <button @click="setStatusFilter('approved')" :class="['px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-xs font-medium text-center transition-all whitespace-nowrap', statusFilter && statusFilter.toLowerCase() === 'approved' ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200']">Approved</button>
+            <button v-if="hasApprovedWithSigned" @click="setStatusFilter('approved_with_signed')" :class="['px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-xs font-medium text-center transition-all whitespace-nowrap', statusFilter && statusFilter.toLowerCase() === 'approved_with_signed' ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200']">Approved w/ Signed</button>
+            <button @click="setStatusFilter('disapproved')" :class="['px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-xs font-medium text-center transition-all whitespace-nowrap', statusFilter && statusFilter.toLowerCase() === 'disapproved' ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200']">Disapproved</button>
+            <button v-if="hasDisapprovedWithSigned" @click="setStatusFilter('disapproved_with_signed')" :class="['px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-xs font-medium text-center transition-all whitespace-nowrap', statusFilter && statusFilter.toLowerCase() === 'disapproved_with_signed' ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200']">Disapproved w/ Signed</button>
+          </div>
         </div>
       </div>
 
