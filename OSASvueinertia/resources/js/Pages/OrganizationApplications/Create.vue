@@ -11,6 +11,7 @@ import ListOfOfficersForm from '@/Components/forms/ListOfOfficersForm.vue';
 import ActivityAttendanceForm from '@/Components/forms/ActivityAttendanceForm.vue';
 import EvaluationForm from '@/Components/forms/EvaluationForm.vue';
 import ActivityStatusReport from '@/Components/forms/ActivityStatusReport.vue';
+import SubmissionConfirmationModal from '@/Components/SubmissionConfirmationModal.vue';
 import { router } from '@inertiajs/vue3';
 
 // Get current user and check if admin
@@ -36,6 +37,9 @@ const uploadError = ref('');
 const uploadProgress = ref(0);
 const uploadSuccess = ref('');
 const pdfPreviewUrl = ref(null);
+
+// Submission confirmation modal state
+const showConfirmationModal = ref(false);
 
 // Store original viewport for restoration
 let originalViewport = null;
@@ -286,20 +290,58 @@ const handleFileChange = (e) => {
     uploadFile.value = file;
     uploadError.value = '';
 };
-const handleDirectUploadSubmit = () => {
+const handleDirectUploadClick = () => {
+    // Clear any previous errors
+    uploadError.value = '';
+    
+    // Validate that a file has been selected
     if (!uploadFile.value) {
-        uploadError.value = 'Please select a PDF file.';
+        uploadError.value = 'Please select a PDF file before submitting.';
+        
+        // Scroll to error message for better visibility
+        setTimeout(() => {
+            const errorElement = document.querySelector('.text-red-600');
+            if (errorElement) {
+                errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }, 100);
+        
         return;
     }
     
-    // Double-check file size before submitting
+    // Validate file type
+    if (uploadFile.value.type !== 'application/pdf') {
+        uploadError.value = 'Only PDF files are allowed.';
+        return;
+    }
+    
+    // Validate file size (20MB maximum)
     const maxSize = 20 * 1024 * 1024; // 20MB in bytes
     if (uploadFile.value.size > maxSize) {
         uploadError.value = 'The file you\'re attempting to upload is over the limit (20MB). Please compress your file and try again.';
         return;
     }
     
-    uploadError.value = '';
+    // Validate file is not empty
+    if (uploadFile.value.size === 0) {
+        uploadError.value = 'The selected file is empty. Please choose a valid PDF file.';
+        return;
+    }
+    
+    // All validations passed, show confirmation modal
+    showConfirmationModal.value = true;
+};
+
+const handleConfirmUpload = () => {
+    showConfirmationModal.value = false;
+    handleDirectUploadSubmit();
+};
+
+const handleCancelUpload = () => {
+    showConfirmationModal.value = false;
+};
+
+const handleDirectUploadSubmit = () => {
     uploadProgress.value = 0;
     const formData = new FormData();
     formData.append('form_type', currentForm.value);
@@ -370,9 +412,14 @@ const handleDirectUploadSubmit = () => {
         </div>
         <div class="flex justify-center mt-8">
           <button
-            @click="handleDirectUploadSubmit"
-            :disabled="!uploadFile || uploadProgress > 0 && uploadProgress < 100"
-            class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-sm font-medium text-white rounded-xl shadow-md hover:shadow-green-300/30 hover:from-green-400 hover:to-green-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 active:from-green-600 active:to-green-700 transition-all duration-300 relative overflow-hidden group"
+            @click="handleDirectUploadClick"
+            :disabled="uploadProgress > 0 && uploadProgress < 100"
+            :class="[
+              'inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white rounded-xl shadow-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group',
+              uploadProgress > 0 && uploadProgress < 100
+                ? 'bg-gray-400 cursor-not-allowed'
+                : 'bg-gradient-to-r from-green-500 to-green-600 hover:shadow-green-300/30 hover:from-green-400 hover:to-green-500 active:from-green-600 active:to-green-700'
+            ]"
             style="font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Liberation Sans', sans-serif;"
           >
             <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
@@ -462,6 +509,14 @@ const handleDirectUploadSubmit = () => {
         @submitted="handleFormSubmitted"
       />
     </div>
+
+    <!-- Submission Confirmation Modal -->
+    <SubmissionConfirmationModal 
+      :show="showConfirmationModal"
+      :isEdit="false"
+      @confirm="handleConfirmUpload"
+      @cancel="handleCancelUpload"
+    />
   </div>
   
 </template>
