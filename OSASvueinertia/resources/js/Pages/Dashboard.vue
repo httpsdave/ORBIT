@@ -27,6 +27,14 @@ const props = defineProps({
     type: Number,
     default: 0,
   },
+  approvedReportsCount: {
+    type: Number,
+    default: 0,
+  },
+  disapprovedReportsCount: {
+    type: Number,
+    default: 0,
+  },
   conductedEventsCount: {
     type: Number,
     default: 0,
@@ -307,6 +315,49 @@ const displayedActivities = computed(() => {
   if (!props.recentActivity || props.recentActivity.length === 0) return [];
   return showAllActivities.value ? props.recentActivity : props.recentActivity.slice(0, 3);
 });
+
+// Reports card flip state (0 = to be submitted, 1 = approved, 2 = disapproved)
+const reportsCardState = ref(0);
+
+const cycleReportsCard = () => {
+  reportsCardState.value = (reportsCardState.value + 1) % 3;
+};
+
+const reportsCardData = computed(() => {
+  const states = [
+    {
+      title: 'Reports to be Submitted',
+      value: props.reportsToBeSubmitted,
+      icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+      </svg>`,
+      bgColor: 'bg-yellow-100 dark:bg-yellow-900/50',
+      textColor: 'text-yellow-600 dark:text-yellow-400',
+      borderColor: 'border-yellow-500'
+    },
+    {
+      title: 'Approved Reports',
+      value: props.approvedReportsCount,
+      icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>`,
+      bgColor: 'bg-green-100 dark:bg-green-900/50',
+      textColor: 'text-green-600 dark:text-green-400',
+      borderColor: 'border-green-500'
+    },
+    {
+      title: 'Disapproved Reports',
+      value: props.disapprovedReportsCount,
+      icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>`,
+      bgColor: 'bg-red-100 dark:bg-red-900/50',
+      textColor: 'text-red-600 dark:text-red-400',
+      borderColor: 'border-red-500'
+    }
+  ];
+  return states[reportsCardState.value];
+});
 </script>
 
 <template>
@@ -398,19 +449,36 @@ const displayedActivities = computed(() => {
                 </div>
               </div>
             </div>
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg border-l-4 border-yellow-500 transition hover:shadow-md">
+            <div 
+              class="bg-white dark:bg-gray-800 overflow-visible shadow-sm rounded-lg transition hover:shadow-md cursor-pointer"
+              :class="`border-l-4 ${reportsCardData.borderColor}`"
+              @click="cycleReportsCard"
+            >
               <div class="p-4 sm:p-5">
                 <div class="flex items-center">
                   <div class="flex-shrink-0">
-                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-yellow-100 dark:bg-yellow-900/50">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 text-yellow-500 dark:text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                      </svg>
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center" :class="reportsCardData.bgColor">
+                      <div :class="reportsCardData.textColor" v-html="reportsCardData.icon"></div>
                     </div>
                   </div>
-                  <div class="ml-3 sm:ml-4 select-none">
-                    <p class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Reports to be Approved</p>
-                    <p class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">{{ props.reportsToBeSubmitted }}</p>
+                  <div class="ml-3 sm:ml-4 select-none flex-grow">
+                    <div class="flex items-center gap-2">
+                      <p class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">{{ reportsCardData.title }}</p>
+                      <!-- Flip indicator icon -->
+                      <div class="flex-shrink-0 relative group/tooltip">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 dark:text-gray-500 animate-spin-slow" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                        <!-- Tooltip -->
+                        <div class="absolute left-full top-1/2 -translate-y-1/2 ml-2 hidden group-hover/tooltip:block z-50 pointer-events-none">
+                          <div class="bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-lg py-2 px-3 whitespace-nowrap shadow-lg">
+                            Click to flip card
+                            <div class="absolute right-full top-1/2 -translate-y-1/2 w-0 h-0 border-t-4 border-b-4 border-r-4 border-t-transparent border-b-transparent border-r-gray-900 dark:border-r-gray-700"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <p class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">{{ reportsCardData.value }}</p>
                   </div>
                 </div>
               </div>
@@ -714,5 +782,20 @@ const displayedActivities = computed(() => {
         
       </div>
     </div>
-  </AuthenticatedLayout>
+    </AuthenticatedLayout>
 </template>
+
+<style scoped>
+.animate-spin-slow {
+    animation: spin 3s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+</style>

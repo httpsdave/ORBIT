@@ -71,12 +71,18 @@ class UserDashboardController extends Controller
         // Calculate conducted events count (approved POAs with all reports approved)
         $conductedEventsCount = $this->calculateConductedEvents($user->id);
         
+        // Calculate approved and disapproved reports counts
+        $approvedReportsCount = $this->calculateApprovedReports($user->id);
+        $disapprovedReportsCount = $this->calculateDisapprovedReports($user->id);
+        
         return Inertia::render('Dashboard', [
             'myApplications' => $myApplications,
             'todayEvent' => $todayEvent,
             'upcomingEvents' => $upcomingEvents,
             'recentActivity' => $recentActivity,
             'reportsToBeSubmitted' => $reportsToBeSubmitted,
+            'approvedReportsCount' => $approvedReportsCount,
+            'disapprovedReportsCount' => $disapprovedReportsCount,
             'conductedEventsCount' => $conductedEventsCount,
             'hasSeenTutorial' => $user->has_seen_tutorial ?? false,
         ]);
@@ -175,5 +181,30 @@ class UserDashboardController extends Controller
         return $conductedCount;
     }
     
+    /**
+     * Calculate approved reports count for user
+     */
+    private function calculateApprovedReports($userId)
+    {
+        return ActivityReport::whereHas('organizationApplication', function($query) use ($userId) {
+            $query->where('user_id', $userId);
+        })
+        ->where('status', 'approved')
+        ->whereNotNull('file_path')
+        ->count();
+    }
+    
+    /**
+     * Calculate disapproved reports count for user
+     */
+    private function calculateDisapprovedReports($userId)
+    {
+        return ActivityReport::whereHas('organizationApplication', function($query) use ($userId) {
+            $query->where('user_id', $userId);
+        })
+        ->whereIn('status', ['rejected', 'disapproved', 'Disapproved', 'Rejected'])
+        ->whereNotNull('file_path')
+        ->count();
+    }
 
 }
