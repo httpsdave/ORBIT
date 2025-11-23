@@ -11,7 +11,7 @@
         </div>
 
         <div class="py-4 px-3 sm:py-8 sm:px-6 lg:px-8">
-            <div class="mb-4 sm:mb-6">
+            <div v-if="studentOrg.college" class="mb-4 sm:mb-6">
                 <Link :href="route('admin.colleges.show', studentOrg.college.id)" class="inline-flex items-center transition duration-300 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -37,7 +37,7 @@
                             {{ studentOrg.status === 'active' ? 'Active' : 'Inactive' }}
                         </span>
                         
-                        <Link :href="route('admin.colleges.show', studentOrg.college.id)" class="inline-flex items-center text-sm px-3 py-1.5 rounded-full transition duration-300 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-200 hover:bg-blue-100 dark:hover:bg-blue-800">
+                        <Link v-if="studentOrg.college" :href="route('admin.colleges.show', studentOrg.college.id)" class="inline-flex items-center text-sm px-3 py-1.5 rounded-full transition duration-300 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-200 hover:bg-blue-100 dark:hover:bg-blue-800">
                             <img 
                                 :src="getCollegeLogo(studentOrg.college.acronym, studentOrg.college.logo_path)" 
                                 :alt="`${studentOrg.college.name} logo`"
