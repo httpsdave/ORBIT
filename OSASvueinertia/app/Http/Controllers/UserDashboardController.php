@@ -29,8 +29,10 @@ class UserDashboardController extends Controller
     {
         $user = $request->user();
         
-        // Get the user's applications (most recent first)
+        // Get the user's applications (most recent interaction first)
+        // Only show non-archived applications, sorted by most recent update
         $myApplications = OrganizationApplication::where('user_id', $user->id)
+            ->where('is_archived', false)
             ->orderBy('updated_at', 'desc')
             ->take(5)
             ->get()
@@ -38,8 +40,10 @@ class UserDashboardController extends Controller
                 return [
                     'id' => $application->id,
                     'title' => $application->organization_name,
+                    'form_type' => $application->form_type,
                     'status' => $application->status,
                     'updated_at' => $application->updated_at,
+                    'is_archived' => $application->is_archived,
                 ];
             });
         

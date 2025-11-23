@@ -112,6 +112,28 @@ const formatMobileDateTime = computed(() => {
   return `${month} ${day}, ${time}`;
 });
 
+// Get form type label
+const getFormTypeLabel = (formType) => {
+  const formLabels = {
+    'LSPU-OSAS-SF-001': 'Recognition Form',
+    'LSPU-OSAS-SF-002': 'Renewal Form',
+    'LSPU-OSAS-SF-003': 'Commitment Form',
+    'LSPU-OSAS-SF-004': 'Plan of Activities',
+    'LSPU-OSAS-SF-005': 'List of Members',
+    'LSPU-OSAS-SF-006': 'Student Certification',
+    'LSPU-OSAS-SF-007': 'List of Officers',
+    'LSPU-OSAS-SF-009': 'Student Activity Attendance Sheet',
+    'LSPU-OSAS-SF-EVAL': 'Evaluation Form',
+    'LSPU-OSAS-SF-ACCOMPLISHMENT': 'Accomplishment Report',
+    'LSPU-OSAS-SF-NARRATIVE': 'Narrative Report',
+    'LSPU-OSAS-SF-BYLAWS': 'Constitution & By-laws',
+    'LSPU-OSAS-SF-FINANCIAL': 'Financial Report',
+    'LSPU-OSAS-SF-STATUS-REPORT': 'Activity Status Report',
+    'LSPU-ACAD-RL': 'Event Letter',
+  };
+  return formLabels[formType] || formType;
+};
+
 // Get application status color
 const getStatusColor = (status) => {
   const colors = {
@@ -530,7 +552,7 @@ const reportsCardData = computed(() => {
                           </svg>
                         </div>
                         <div class="min-w-0 flex-1 select-none">
-                          <h4 class="font-medium text-gray-800 dark:text-gray-200 text-sm sm:text-base truncate">{{ application.title }}</h4>
+                          <h4 class="font-medium text-gray-800 dark:text-gray-200 text-sm sm:text-base truncate">{{ getFormTypeLabel(application.form_type) }}</h4>
                           <p class="text-xs text-gray-500 dark:text-gray-400">Updated: {{ formatDate(application.updated_at) }}</p>
                         </div>
                       </div>
@@ -538,7 +560,11 @@ const reportsCardData = computed(() => {
                         <span :class="`px-2 py-1 sm:px-3 sm:py-1 rounded-full text-xs font-medium ring-1 ring-inset ${getStatusColor(application.status)} select-none`">
                           {{ application.status }}
                         </span>
-                        <Link :href="`/applications`" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 bg-blue-50 dark:bg-blue-900/50 hover:bg-blue-100 dark:hover:bg-blue-900/70 p-2 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md">
+                        <Link 
+                          :href="application.is_archived ? route('archive.index') : route('applications.index')" 
+                          class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 bg-blue-50 dark:bg-blue-900/50 hover:bg-blue-100 dark:hover:bg-blue-900/70 p-2 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md"
+                          :title="application.is_archived ? 'View in Archive' : 'View in Applications'"
+                        >
                           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
