@@ -20,9 +20,9 @@ class SpacyTransformerEventExtractionService
     }
 
     /**
-     * Parse event information using Spacy Transformer NLP API
-     * Uses transformer-based models for enhanced entity recognition and context understanding
-     * Falls back to the original EventExtractionService if API fails
+     * Parse event information using Spacy Transformer 
+     * 
+     * 
      */
     public function parseEventInformation($text)
     {
@@ -78,7 +78,7 @@ class SpacyTransformerEventExtractionService
                 'extract_times' => true,
                 'use_dependency_parsing' => true,
                 'use_ner' => true,
-                'confidence_threshold' => 0.75,
+                
             ]);
 
         if (!$response->successful()) {

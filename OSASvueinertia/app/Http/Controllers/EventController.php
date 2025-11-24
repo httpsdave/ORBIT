@@ -164,14 +164,23 @@ class EventController extends Controller
         if (in_array($extension, ['jpg', 'jpeg', 'png'])) {
             // Try Tesseract OCR first
             try {
-                $ocr = new TesseractOCR(storage_path('app/public/' . $filePath));
+                // Optionally upscale low-resolution images before OCR
+                $processedPath = $this->preprocessImageForOCR(storage_path('app/public/' . $filePath), $extension);
                 
-                // Configure Tesseract for better accuracy
+                $ocr = new TesseractOCR($processedPath);
+                
+                // Configure Tesseract for better accuracy with resolution scaling
                 $ocr->lang('eng')  // English language
-                    ->psm(3)       // Automatic page segmentation
-                    ->oem(1);      // Neural nets LSTM engine
+                    ->psm(3)       // Automatic page segmentation (assumes single block of text)
+                    ->oem(1)       // Neural nets LSTM engine (better accuracy)
+                    ->dpi(300);    // Set DPI to 300 for optimal character recognition
                 
                 $text = $ocr->run();
+                
+                // Clean up temporary preprocessed file if it was created
+                if ($processedPath !== storage_path('app/public/' . $filePath) && file_exists($processedPath)) {
+                    @unlink($processedPath);
+                }
                 
                 // If text is empty or too short, it might have failed
                 if (empty(trim($text)) || strlen(trim($text)) < 10) {
@@ -302,6 +311,101 @@ class EventController extends Controller
             if ($isCompressed && file_exists($filePath)) {
                 @unlink($filePath);
             }
+        }
+    }
+
+    /**
+     * Preprocess image for better OCR accuracy
+     * Upscales low-resolution images and enhances contrast
+     */
+    private function preprocessImageForOCR($filePath, $extension)
+    {
+        $minDPI = 200; // Minimum recommended DPI for OCR
+        $targetDPI = 300; // Optimal DPI for OCR
+        
+        try {
+            // Load image based on type
+            $image = null;
+            switch (strtolower($extension)) {
+                case 'jpg':
+                case 'jpeg':
+                    $image = imagecreatefromjpeg($filePath);
+                    break;
+                case 'png':
+                    $image = imagecreatefrompng($filePath);
+                    break;
+                default:
+                    return $filePath; // Return original if unsupported type
+            }
+            
+            if (!$image) {
+                return $filePath;
+            }
+            
+            $width = imagesx($image);
+            $height = imagesy($image);
+            
+            // Calculate approximate DPI based on image dimensions
+            // Assume standard letter size (8.5 x 11 inches) if image is small
+            $estimatedDPI = max($width / 8.5, $height / 11);
+            
+            // Only upscale if image appears to be low resolution
+            if ($estimatedDPI < $minDPI) {
+                $scaleFactor = $targetDPI / $estimatedDPI;
+                $newWidth = (int)($width * $scaleFactor);
+                $newHeight = (int)($height * $scaleFactor);
+                
+                // Create high-resolution image with bicubic interpolation
+                $upscaled = imagecreatetruecolor($newWidth, $newHeight);
+                
+                // Preserve transparency for PNG
+                if (strtolower($extension) === 'png') {
+                    imagealphablending($upscaled, false);
+                    imagesavealpha($upscaled, true);
+                    $transparent = imagecolorallocatealpha($upscaled, 0, 0, 0, 127);
+                    imagefill($upscaled, 0, 0, $transparent);
+                }
+                
+                // Use bicubic interpolation for smoother upscaling
+                imagecopyresampled($upscaled, $image, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+                
+                // Apply slight sharpening to enhance text edges
+                $sharpenMatrix = [
+                    [-1, -1, -1],
+                    [-1, 16, -1],
+                    [-1, -1, -1]
+                ];
+                $divisor = 8;
+                $offset = 0;
+                imageconvolution($upscaled, $sharpenMatrix, $divisor, $offset);
+                
+                // Enhance contrast for better OCR
+                imagefilter($upscaled, IMG_FILTER_CONTRAST, -10);
+                
+                // Save preprocessed image
+                $tempPath = storage_path('app/temp_ocr_' . uniqid() . '.' . $extension);
+                if (strtolower($extension) === 'png') {
+                    imagepng($upscaled, $tempPath, 0); // No compression for OCR
+                } else {
+                    imagejpeg($upscaled, $tempPath, 95); // High quality for OCR
+                }
+                
+                imagedestroy($image);
+                imagedestroy($upscaled);
+                
+                return $tempPath;
+            }
+            
+            // Image is already good resolution, return original
+            imagedestroy($image);
+            return $filePath;
+            
+        } catch (\Exception $e) {
+            // If preprocessing fails, return original
+            if (isset($image) && $image) {
+                imagedestroy($image);
+            }
+            return $filePath;
         }
     }
 
