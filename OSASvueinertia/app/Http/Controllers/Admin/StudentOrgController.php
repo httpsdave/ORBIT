@@ -25,11 +25,11 @@ class StudentOrgController extends Controller
             },
             'users.role', 
             'users.parentOrganization', 
-            'users.subOrganizations'
+            'users.subOrganizations.college'
         ])->get();
         
         // For selection modal, exclude admin accounts
-        $users = User::with(['role', 'parentOrganization', 'subOrganizations'])
+        $users = User::with(['role', 'college', 'parentOrganization', 'subOrganizations.college'])
             ->where('role_id', '!=', $adminRoleId)
             ->get();
             
