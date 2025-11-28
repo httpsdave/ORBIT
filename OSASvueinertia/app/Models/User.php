@@ -156,6 +156,47 @@ class User extends Authenticatable
     }
 
     /**
+     * Get all organization IDs that this user can view applications from.
+     * Includes: self, parent organization, and sibling sub-organizations.
+     */
+    public function getViewableOrganizationIds()
+    {
+        $viewableIds = [$this->id]; // Always include self
+        
+        // If this user has a parent organization, add it and all siblings
+        if ($this->parent_organization_id) {
+            $viewableIds[] = $this->parent_organization_id;
+            
+            // Add all sibling sub-organizations (same parent)
+            $siblings = User::where('parent_organization_id', $this->parent_organization_id)
+                ->where('id', '!=', $this->id)
+                ->pluck('id')
+                ->toArray();
+            $viewableIds = array_merge($viewableIds, $siblings);
+        }
+        
+        // If this user is a parent organization, add all sub-organizations
+        $subOrgIds = $this->subOrganizations()->pluck('id')->toArray();
+        $viewableIds = array_merge($viewableIds, $subOrgIds);
+        
+        return array_unique($viewableIds);
+    }
+
+    /**
+     * Check if this user can view an application.
+     */
+    public function canViewApplication($application)
+    {
+        // Admins can view everything
+        if ($this->isAdmin()) {
+            return true;
+        }
+        
+        // Check if application belongs to viewable organizations
+        return in_array($application->user_id, $this->getViewableOrganizationIds());
+    }
+
+    /**
      * Send the password reset notification.
      *
      * @param  string  $token

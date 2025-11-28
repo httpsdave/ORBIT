@@ -14,6 +14,16 @@ const props = defineProps({
 
 const emit = defineEmits(['openStatusModal', 'deleteApplication', 'uploadDocument', 'submitLink', 'refreshData', 'confirmDeleteDocument']);
 
+// Helper function to check if an application is read-only for current user
+const isReadOnly = (app) => {
+  return app.is_read_only === true;
+};
+
+// Helper function to get the owner organization name for read-only applications
+const getOwnerOrgName = (app) => {
+  return app.owner_organization_name || app.user?.name || 'Unknown Organization';
+};
+
 // Upload document functionality
 const showUploadModal = ref(false);
 const selectedApplicationForUpload = ref(null);
@@ -746,6 +756,7 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
       <div v-for="app in applications" :key="app.id" 
         class="relative bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-100 dark:border-gray-700 p-4 flex flex-col gap-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition"
         @click="viewPdf(app)">
+        
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#2563eb"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h168q13-36 43.5-58t68.5-22q38 0 68.5 22t43.5 58h168q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm80-80h280v-80H280v80Zm0-160h400v-80H280v80Zm0-160h400v-80H280v80Zm200-190q13 0 21.5-8.5T510-820q0-13-8.5-21.5T480-850q-13 0-21.5 8.5T450-820q0 13 8.5 21.5T480-790ZM200-200v-560 560Z"/></svg>
@@ -755,8 +766,13 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
             {{ app.status }}
           </span>
         </div>
+        
+        <!-- Show organization name for read-only applications or admin view -->
         <div class="flex flex-wrap gap-2 text-xs text-gray-500 dark:text-gray-400 font-medium">
-          <span v-if="isAdmin" :title="app.user.name.length > 35 ? `Organization: ${app.user.name}` : undefined"><span class="font-semibold text-gray-700 dark:text-gray-200">Org:</span> {{ app.user.name.length > 35 ? app.user.name.substring(0, 35) + '...' : app.user.name }}</span>
+          <span v-if="isAdmin || isReadOnly(app)" :title="(app.user?.name || getOwnerOrgName(app)).length > 35 ? `Organization: ${app.user?.name || getOwnerOrgName(app)}` : undefined">
+            <span class="font-semibold text-gray-700 dark:text-gray-200">Org:</span> 
+            {{ (app.user?.name || getOwnerOrgName(app)).length > 35 ? (app.user?.name || getOwnerOrgName(app)).substring(0, 35) + '...' : (app.user?.name || getOwnerOrgName(app)) }}
+          </span>
           <span><span class="font-semibold text-gray-700 dark:text-gray-200">Submitted:</span> {{ formatDate(app.created_at) }}</span>
         </div>
         <div class="flex flex-wrap gap-2 text-xs mt-1">
@@ -826,6 +842,7 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
         class="relative bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-100 dark:border-gray-700 mb-4 flex flex-col md:flex-row md:items-center md:justify-between hover:shadow-lg transition cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
         @click="viewPdf(app)"
       >
+        
         <div class="flex items-center gap-4 p-5 flex-1 min-w-0">
           <div class="flex-shrink-0">
             <div class="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full p-3">
@@ -837,10 +854,10 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
               <!-- Use a flex container so we can apply independent truncation rules to the form type and org name -->
               <div class="flex items-center gap-2 min-w-0">
                 <span class="truncate flex-shrink-0">{{ formTypeToName(app.form_type) }}</span>
-                <span v-if="isAdmin" class="inline-flex items-center text-sm text-gray-700 dark:text-gray-200 min-w-0" :title="`Organization: ${app.user.name}`">
+                <span v-if="isAdmin || isReadOnly(app)" class="inline-flex items-center text-sm text-gray-700 dark:text-gray-200 min-w-0" :title="`Organization: ${app.user?.name || getOwnerOrgName(app)}`">
                   <svg class="mx-1 text-gray-400 dark:text-gray-500 w-2.5 h-2.5 flex-shrink-0" width="10" height="10" viewBox="0 0 10 10" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><polygon points="0,0 10,5 0,10"/></svg>
                   <!-- Allow the organization name to take more room but still truncate with ellipsis when it's too long -->
-                  <span class="truncate max-w-[40ch]">{{ app.user.name }}</span>
+                  <span class="truncate max-w-[40ch]">{{ app.user?.name || getOwnerOrgName(app) }}</span>
                 </span>
               </div>
             </div>
@@ -926,9 +943,9 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
           </svg>
           Update Status
         </button>
-        <!-- Upload document option -->
+        <!-- Upload document option (hidden for read-only applications) -->
         <button
-          v-if="!hasSignedDocument(activeDropdownApp)"
+          v-if="!hasSignedDocument(activeDropdownApp) && !isReadOnly(activeDropdownApp)"
           @click="openUploadModal(activeDropdownApp)"
           class="w-full text-left px-3 py-1.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200 font-medium"
         >
@@ -937,9 +954,9 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
           </svg>
           Upload Document
         </button>
-        <!-- Delete document option (only if signed document exists and status is not approved) -->
+        <!-- Delete document option (only if signed document exists and status is not approved, hidden for read-only) -->
         <button 
-          v-if="hasSignedDocument(activeDropdownApp) && activeDropdownApp.status.toLowerCase() !== 'approved'"
+          v-if="hasSignedDocument(activeDropdownApp) && activeDropdownApp.status.toLowerCase() !== 'approved' && !isReadOnly(activeDropdownApp)"
           @click="deleteDocument(activeDropdownApp.id)"
           class="w-full text-left px-3 py-1.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200 font-medium"
         >
@@ -974,9 +991,9 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
           </svg>
           View Feedback
         </button>
-        <!-- Edit Application -->
+        <!-- Edit Application (hidden for read-only applications) -->
         <Link 
-          v-if="isAdmin || (!isAdmin && activeDropdownApp.status !== 'Approved')"
+          v-if="(isAdmin || (!isAdmin && activeDropdownApp.status !== 'Approved')) && !isReadOnly(activeDropdownApp)"
           :href="`/applications/${activeDropdownApp.id}/edit`" 
           class="w-full text-left px-3 py-1.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200 font-medium"
         >
@@ -1008,8 +1025,9 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
           Download
         </span>
         <!-- Delete Application -->
+        <!-- Delete Application (hidden for read-only applications) -->
         <button 
-          v-if="isAdmin || (!isAdmin && activeDropdownApp.status !== 'Approved')"
+          v-if="(isAdmin || (!isAdmin && activeDropdownApp.status !== 'Approved')) && !isReadOnly(activeDropdownApp)"
           @click="handleAction(activeDropdownApp, 'delete')" 
           class="w-full text-left px-3 py-1.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 flex items-center gap-2 transition duration-200 border-t border-gray-100 dark:border-gray-600 mt-1 pt-1 font-medium"
         >
@@ -1279,7 +1297,7 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
                     </button>
 
                     <button 
-                        v-if="selectedMobileApp && !hasSignedDocument(selectedMobileApp)"
+                        v-if="selectedMobileApp && !hasSignedDocument(selectedMobileApp) && !isReadOnly(selectedMobileApp)"
                         @click="handleMobileAction('uploadDocument')"
                         class="w-full flex items-center px-3 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-150 active:scale-[0.98]"
                     >
@@ -1290,7 +1308,7 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
                     </button>
 
                     <button 
-                        v-if="selectedMobileApp && hasSignedDocument(selectedMobileApp) && selectedMobileApp.status.toLowerCase() !== 'approved'"
+                        v-if="selectedMobileApp && hasSignedDocument(selectedMobileApp) && selectedMobileApp.status.toLowerCase() !== 'approved' && !isReadOnly(selectedMobileApp)"
                         @click="handleMobileAction('deleteDocument')"
                         class="w-full flex items-center px-3 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-150 active:scale-[0.98]"
                     >
@@ -1325,7 +1343,7 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
                     </button>
 
                     <button 
-                        v-if="selectedMobileApp && (isAdmin || (!isAdmin && selectedMobileApp.status !== 'Approved'))"
+                        v-if="selectedMobileApp && (isAdmin || (!isAdmin && selectedMobileApp.status !== 'Approved')) && !isReadOnly(selectedMobileApp)"
                         @click="handleMobileAction('edit')"
                         class="w-full flex items-center px-3 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-150 active:scale-[0.98]"
                     >
@@ -1347,7 +1365,7 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
                     </button>
 
                     <button 
-                        v-if="selectedMobileApp && (isAdmin || (!isAdmin && selectedMobileApp.status !== 'Approved'))"
+                        v-if="selectedMobileApp && (isAdmin || (!isAdmin && selectedMobileApp.status !== 'Approved')) && !isReadOnly(selectedMobileApp)"
                         @click="handleMobileAction('delete')"
                         class="w-full flex items-center px-3 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-150 active:scale-[0.98]"
                     >

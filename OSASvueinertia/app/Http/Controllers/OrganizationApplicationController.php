@@ -109,11 +109,21 @@ class OrganizationApplicationController extends Controller
             ->get();
             
     } else {
-        // For regular users, only show their own applications
-        $paginatedApplications = $query->where('user_id', auth()->id())
+        // For regular users, show their own applications AND applications from related organizations
+        $viewableOrgIds = auth()->user()->getViewableOrganizationIds();
+        
+        $paginatedApplications = $query->whereIn('user_id', $viewableOrgIds)
             ->with(['user', 'activities'])
             ->orderBy('created_at', 'desc')
             ->paginate($perPage);
+            
+        // Mark applications as read-only if they don't belong to current user
+        $paginatedApplications->getCollection()->transform(function ($application) {
+            $application->is_read_only = $application->user_id !== auth()->id();
+            $application->owner_organization_name = $application->user->name ?? 'Unknown';
+            return $application;
+        });
+        
         $users = collect(); // Empty collection for non-admins
     }
     
@@ -240,13 +250,32 @@ class OrganizationApplicationController extends Controller
                 $query->where('user_id', $request->user_filter);
             }
         } else {
-            // For regular users, only show their own applications
-            $query->where('user_id', auth()->id());
+            // For regular users, show applications from viewable organizations
+            $viewableOrgIds = auth()->user()->getViewableOrganizationIds();
+            $query->whereIn('user_id', $viewableOrgIds);
         }
         
         $paginatedApplications = $query->with(['user', 'activities'])
             ->orderBy('created_at', 'desc')
             ->paginate($perPage, ['*'], 'page', $page);
+        
+        // Mark applications as read-only if they don't belong to current user (for non-admins)
+        if (!auth()->user()->isAdmin()) {
+            $paginatedApplications->getCollection()->transform(function ($application) {
+                $application->is_read_only = $application->user_id !== auth()->id();
+                $application->owner_organization_name = $application->user->name ?? 'Unknown';
+                return $application;
+            });
+        }
+        
+        // Mark applications as read-only if they don't belong to current user (for non-admins)
+        if (!auth()->user()->isAdmin()) {
+            $paginatedApplications->getCollection()->transform(function ($application) {
+                $application->is_read_only = $application->user_id !== auth()->id();
+                $application->owner_organization_name = $application->user->name ?? 'Unknown';
+                return $application;
+            });
+        }
         
         return response()->json([
             'applications' => $paginatedApplications->items(),
@@ -655,6 +684,16 @@ class OrganizationApplicationController extends Controller
 
     public function edit(OrganizationApplication $application)
     {
+        // Check if user can view this application
+        if (!auth()->user()->canViewApplication($application)) {
+            abort(403, 'Unauthorized access to this application.');
+        }
+        
+        // Check if application belongs to current user or if user is admin
+        if (!auth()->user()->isAdmin() && $application->user_id !== auth()->id()) {
+            abort(403, 'You can only edit your own applications.');
+        }
+        
         // Check if application is archived - only admins can edit archived applications
         if ($application->is_archived && !auth()->user()->isAdmin()) {
             return redirect()->route('applications.index')->with('error', 'You cannot edit an archived application.');
@@ -749,6 +788,16 @@ class OrganizationApplicationController extends Controller
 
     public function update(Request $request, OrganizationApplication $application)
     {
+        // Check if user can view this application
+        if (!auth()->user()->canViewApplication($application)) {
+            abort(403, 'Unauthorized access to this application.');
+        }
+        
+        // Check if application belongs to current user or if user is admin
+        if (!auth()->user()->isAdmin() && $application->user_id !== auth()->id()) {
+            abort(403, 'You can only update your own applications.');
+        }
+        
         // Check if application is archived - only admins can update archived applications
         if ($application->is_archived && !auth()->user()->isAdmin()) {
             return redirect()->route('applications.index')->with('error', 'You cannot update an archived application.');
@@ -1143,6 +1192,16 @@ class OrganizationApplicationController extends Controller
 
     public function destroy(OrganizationApplication $application)
     {
+        // Check if user can view this application
+        if (!auth()->user()->canViewApplication($application)) {
+            abort(403, 'Unauthorized access to this application.');
+        }
+        
+        // Check if application belongs to current user or if user is admin
+        if (!auth()->user()->isAdmin() && $application->user_id !== auth()->id()) {
+            abort(403, 'You can only delete your own applications.');
+        }
+        
         // Only allow deleting if not approved or user is admin
         if (!auth()->user()->isAdmin() && $application->status === 'Approved') {
             return redirect()->route('applications.index')->with('error', 'You cannot delete an approved application.');
