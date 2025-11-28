@@ -21,6 +21,7 @@ use App\Models\Role;
 use App\Http\Controllers\ArchiveController;
 use App\Http\Controllers\Auth\FirebasePasswordController;
 use App\Http\Controllers\FormAutosaveController;
+use App\Http\Controllers\TwoFactorController;
 
 // API endpoint to check if email exists in database (for password reset validation)
 // Rate limited to 5 attempts per minute per IP to prevent abuse
@@ -94,6 +95,14 @@ Route::get('/debug-config', function () {
 // Authentication routes (login, register, password reset)
 require __DIR__.'/auth.php';
 
+// Two-Factor Authentication routes (outside auth middleware)
+Route::middleware(['guest'])->group(function () {
+    Route::get('/two-factor-challenge', [TwoFactorController::class, 'show'])->name('two-factor.login');
+    Route::post('/two-factor-challenge', [TwoFactorController::class, 'verify'])
+        ->middleware('throttle:5,1') // 5 attempts per minute
+        ->name('two-factor.verify');
+});
+
 // Redirect root to login if not authenticated
 Route::redirect('/', '/login');
 
@@ -152,6 +161,12 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/profile', [ProfileController::class, 'update']);
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::patch('/profile/form-defaults', [ProfileController::class, 'updateFormDefaults'])->name('profile.form-defaults.update');
+    
+    // Two-Factor Authentication routes (inside auth middleware)
+    Route::post('/two-factor/enable', [TwoFactorController::class, 'enable'])->name('two-factor.enable');
+    Route::post('/two-factor/confirm', [TwoFactorController::class, 'confirm'])->name('two-factor.confirm');
+    Route::post('/two-factor/disable', [TwoFactorController::class, 'disable'])->name('two-factor.disable');
+    Route::post('/two-factor/regenerate-recovery-codes', [TwoFactorController::class, 'regenerateRecoveryCodes'])->name('two-factor.regenerate-recovery-codes');
     
     // Applications routes
     Route::get('/applications', [OrganizationApplicationController::class, 'index'])->name('applications.index');

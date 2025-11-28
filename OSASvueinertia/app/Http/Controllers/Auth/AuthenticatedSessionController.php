@@ -42,10 +42,23 @@ class AuthenticatedSessionController extends Controller
         
         $request->authenticate();
 
+        $user = Auth::user();
+
+        // Check if user has 2FA enabled
+        if ($user->two_factor_enabled && $user->two_factor_secret) {
+            // Don't log the user in yet, store their ID in session
+            Auth::logout();
+            
+            $request->session()->put('2fa:user:id', $user->id);
+            $request->session()->put('2fa:remember', $request->boolean('remember'));
+            
+            return redirect()->route('two-factor.login');
+        }
+
         $request->session()->regenerate();
 
         // Redirect based on user role
-        if (Auth::user()->isAdmin()) {
+        if ($user->isAdmin()) {
             return redirect()->intended(route('admin.dashboard'));
         }
 

@@ -27,6 +27,9 @@ class User extends Authenticatable
         'status',
         'social_links',
         'has_seen_tutorial',
+        'two_factor_secret',
+        'two_factor_enabled',
+        'two_factor_recovery_codes',
     ];
 
     protected $appends = ['profile_photo_url'];
@@ -34,6 +37,8 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'two_factor_secret',
+        'two_factor_recovery_codes',
     ];
 
     protected $casts = [
@@ -42,6 +47,8 @@ class User extends Authenticatable
         'last_name_change_at' => 'datetime',
         'social_links' => 'array',
         'has_seen_tutorial' => 'boolean',
+        'two_factor_enabled' => 'boolean',
+        'two_factor_recovery_codes' => 'array',
     ];
 
     public function role()
