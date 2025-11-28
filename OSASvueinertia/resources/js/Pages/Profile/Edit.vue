@@ -66,6 +66,20 @@ defineProps({
                                 class="w-full"
                             />
                         </div>
+
+                        <!-- Form Default Values Section - Admin Only -->
+                        <div v-if="isAdmin" class="bg-white dark:bg-gray-800 p-6 shadow-md rounded-lg border-l-4 border-amber-500 transition-all duration-300 hover:shadow-xl h-fit">
+                            <div class="mb-4">
+                                <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    Form Default Values
+                                </h3>
+                                <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Set global default values for coordinator and director names that will auto-populate in all users' forms.</p>
+                            </div>
+                            <UpdateFormDefaultsForm class="w-full" />
+                        </div>
                     </div>
 
                     <!-- Right Column -->
@@ -97,23 +111,6 @@ defineProps({
                             </div>
                             <TwoFactorAuthenticationForm class="w-full" />
                         </div>
-                    </div>
-                </div>
-
-                <!-- Full Width Sections for Admin -->
-                <div v-if="isAdmin" class="space-y-6">
-                    <!-- Form Default Values Section - Admin Only -->
-                    <div class="bg-white dark:bg-gray-800 p-6 shadow-md rounded-lg border-l-4 border-amber-500 transition-all duration-300 hover:shadow-xl">
-                        <div class="mb-4">
-                            <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                </svg>
-                                Form Default Values
-                            </h3>
-                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Set global default values for coordinator and director names that will auto-populate in all users' forms.</p>
-                        </div>
-                        <UpdateFormDefaultsForm class="max-w-4xl" />
                     </div>
                 </div>
                 
