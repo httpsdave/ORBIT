@@ -49,7 +49,7 @@
                 </div>
             </div>
 
-            <div class="flex space-x-3">
+            <div class="flex flex-wrap gap-3">
                 <button
                     @click="showRecoveryCodes"
                     type="button"
@@ -392,6 +392,8 @@ const confirmTwoFactor = () => {
         onSuccess: () => {
             closeEnableModal();
             confirmForm.code = '';
+            // Reload the page to refresh the user state
+            window.location.reload();
         },
         onError: () => {
             confirmForm.code = '';
@@ -423,6 +425,8 @@ const confirmDisable = () => {
             showDisableModal.value = false;
             disableForm.password = '';
             recoveryCodes.value = [];
+            // Reload the page to refresh the user state
+            window.location.reload();
         },
         onError: () => {
             disableForm.password = '';

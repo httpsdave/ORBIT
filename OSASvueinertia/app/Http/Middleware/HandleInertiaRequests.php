@@ -59,6 +59,8 @@ class HandleInertiaRequests extends Middleware
                     'allow_link_submissions' => SystemSetting::allowLinkSubmissions(), // Get from system settings
                     'last_name_change_at' => $user->last_name_change_at,
                     'email_verified_at' => $user->email_verified_at,
+                    'two_factor_enabled' => $user->two_factor_enabled, // Added 2FA status
+                    'two_factor_recovery_codes' => $user->two_factor_recovery_codes, // Added recovery codes for display
                 ] : null,
                 'unreadNotificationsCount' => $unreadCount,
             ],
