@@ -35,9 +35,13 @@ class TwoFactorController extends Controller
 
         // Verify password
         if (!Hash::check($request->password, $user->password)) {
-            return back()->withErrors([
-                'password' => 'The provided password is incorrect.',
-            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'The provided password is incorrect.',
+                'errors' => [
+                    'password' => ['The provided password is incorrect.']
+                ]
+            ], 422);
         }
 
         // Generate a new secret
@@ -253,15 +257,23 @@ class TwoFactorController extends Controller
         $user = Auth::user();
 
         if (!Hash::check($request->password, $user->password)) {
-            return back()->withErrors([
-                'password' => 'The provided password is incorrect.',
-            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'The provided password is incorrect.',
+                'errors' => [
+                    'password' => ['The provided password is incorrect.']
+                ]
+            ], 422);
         }
 
         if (!$user->two_factor_enabled) {
-            return back()->withErrors([
-                'error' => '2FA is not enabled.',
-            ]);
+            return response()->json([
+                'success' => false,
+                'message' => '2FA is not enabled.',
+                'errors' => [
+                    'error' => ['2FA is not enabled.']
+                ]
+            ], 422);
         }
 
         $recoveryCodes = $this->generateRecoveryCodes();

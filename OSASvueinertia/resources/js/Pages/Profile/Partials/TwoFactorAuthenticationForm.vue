@@ -100,17 +100,31 @@
                                     Please confirm your password to continue.
                                 </p>
 
+                                <!-- Error Alert -->
+                                <div v-if="passwordError" class="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                                    <div class="flex">
+                                        <div class="flex-shrink-0">
+                                            <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
+                                            </svg>
+                                        </div>
+                                        <div class="ml-3">
+                                            <p class="text-sm font-medium text-red-800 dark:text-red-200">
+                                                {{ passwordError }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div class="mt-4">
                                     <input
                                         v-model="passwordInput"
                                         type="password"
                                         placeholder="Password"
                                         class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-blue-500 dark:focus:border-blue-600 focus:ring-blue-500 dark:focus:ring-blue-600 rounded-md shadow-sm"
+                                        :class="{ 'border-red-300 dark:border-red-700 focus:border-red-500 focus:ring-red-500': passwordError }"
                                         @keyup.enter="confirmPassword"
                                     />
-                                    <p v-if="passwordError" class="mt-2 text-sm text-red-600 dark:text-red-400">
-                                        {{ passwordError }}
-                                    </p>
                                 </div>
                             </div>
 
