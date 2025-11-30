@@ -86,7 +86,7 @@ class OrganizationApplicationController extends Controller
         $query->where('form_type', $request->get('form_type_filter'));
     }
     
-    // Apply organization filter (admin only)
+    // Apply organization filter
     if ($request->filled('organization_filter')) {
         $query->where('user_id', $request->get('organization_filter'));
     }
@@ -112,8 +112,21 @@ class OrganizationApplicationController extends Controller
         // For regular users, show their own applications AND applications from related organizations
         $viewableOrgIds = auth()->user()->getViewableOrganizationIds();
         
-        $paginatedApplications = $query->whereIn('user_id', $viewableOrgIds)
-            ->with(['user', 'activities'])
+        // By default, only show current user's applications unless organization_filter is set
+        if (!$request->filled('organization_filter')) {
+            $query->where('user_id', auth()->id());
+        } else {
+            // If organization filter is set, verify it's a viewable organization
+            $filteredOrgId = $request->get('organization_filter');
+            if (in_array($filteredOrgId, $viewableOrgIds)) {
+                $query->where('user_id', $filteredOrgId);
+            } else {
+                // If trying to filter by non-viewable org, show only own apps
+                $query->where('user_id', auth()->id());
+            }
+        }
+        
+        $paginatedApplications = $query->with(['user', 'activities'])
             ->orderBy('created_at', 'desc')
             ->paginate($perPage);
             
@@ -124,7 +137,11 @@ class OrganizationApplicationController extends Controller
             return $application;
         });
         
-        $users = collect(); // Empty collection for non-admins
+        // Get viewable organizations for the filter dropdown
+        $users = \App\Models\User::whereIn('id', $viewableOrgIds)
+            ->select('id', 'name')
+            ->orderBy('name')
+            ->get();
     }
     
     // Get filter options from all applications (not just paginated)
@@ -154,6 +171,7 @@ class OrganizationApplicationController extends Controller
         'applications' => $paginatedApplications->items(),
         'users' => $users,
         'currentUserFilter' => $request->user_filter,
+        'currentOrganizationFilter' => $request->organization_filter,
         'currentArchiveFilter' => $request->archive_filter ?? 'active',
         'userId' => auth()->id(),
         'isAdmin' => auth()->user()->isAdmin(),
@@ -238,7 +256,7 @@ class OrganizationApplicationController extends Controller
             $query->where('form_type', $request->get('form_type_filter'));
         }
         
-        // Apply organization filter (admin only)
+        // Apply organization filter
         if ($request->filled('organization_filter')) {
             $query->where('user_id', $request->get('organization_filter'));
         }
@@ -250,9 +268,22 @@ class OrganizationApplicationController extends Controller
                 $query->where('user_id', $request->user_filter);
             }
         } else {
-            // For regular users, show applications from viewable organizations
+            // For regular users, apply same default filtering as index method
             $viewableOrgIds = auth()->user()->getViewableOrganizationIds();
-            $query->whereIn('user_id', $viewableOrgIds);
+            
+            // By default, only show current user's applications unless organization_filter is set
+            if (!$request->filled('organization_filter')) {
+                $query->where('user_id', auth()->id());
+            } else {
+                // If organization filter is set, verify it's a viewable organization
+                $filteredOrgId = $request->get('organization_filter');
+                if (in_array($filteredOrgId, $viewableOrgIds)) {
+                    $query->where('user_id', $filteredOrgId);
+                } else {
+                    // If trying to filter by non-viewable org, show only own apps
+                    $query->where('user_id', auth()->id());
+                }
+            }
         }
         
         $paginatedApplications = $query->with(['user', 'activities'])

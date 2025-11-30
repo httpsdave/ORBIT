@@ -74,6 +74,8 @@ const props = defineProps({
   isAdmin: Boolean,
   users: Array,
   currentUserFilter: String,
+  currentOrganizationFilter: String,
+  currentArchiveFilter: String,
   updateMessage: String,
   currentPage: {
     type: Number,
@@ -144,7 +146,7 @@ const activeDropdown = ref(null);
 // Filter states
 const statusFilter = ref('');
 const formTypeFilter = ref('');
-const organizationFilter = ref('');
+const organizationFilter = ref(props.currentOrganizationFilter || (!props.isAdmin ? props.userId?.toString() : ''));
 
 // Status update variables
 const showStatusModal = ref(false);
@@ -236,7 +238,13 @@ const formTypeOptions = computed(() => {
 });
 
 const organizationOptions = computed(() => {
+  if (!props.users || props.users.length === 0) return [];
   return props.users.map(user => ({ value: user.id.toString(), label: user.name }));
+});
+
+// Check if user has multiple viewable organizations (parent/sub-orgs)
+const hasMultipleViewableOrgs = computed(() => {
+  return !props.isAdmin && props.users && props.users.length > 1;
 });
 
 // Helper to check if an app has a signed document
@@ -329,7 +337,8 @@ const clearAllFilters = async () => {
   searchQuery.value = '';
   statusFilter.value = '';
   formTypeFilter.value = '';
-  organizationFilter.value = '';
+  // Reset organization filter to user's own ID for non-admins, empty for admins
+  organizationFilter.value = props.isAdmin ? '' : props.userId?.toString();
   // Reset pagination when filters change
   resetPagination();
   await filterApplications();
@@ -347,7 +356,12 @@ const resetPagination = () => {
 
 // Check if any filters are active
 const hasActiveFilters = computed(() => {
-  return searchQuery.value || statusFilter.value || formTypeFilter.value || organizationFilter.value;
+  // For non-admin users, don't count organization filter as "active" if it's their own ID (default)
+  const orgFilterActive = props.isAdmin 
+    ? !!organizationFilter.value 
+    : organizationFilter.value && organizationFilter.value !== props.userId?.toString();
+  
+  return searchQuery.value || statusFilter.value || formTypeFilter.value || orgFilterActive;
 });
 
 const clearSearch = async () => {
@@ -963,22 +977,37 @@ const confirmClearData = () => {
 
       <!-- Status pill buttons and Form Type Filter - Non-Admin Users -->
       <div v-if="!isAdmin" class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
-        <!-- Form Type Filter - Left side on larger screens -->
-        <div class="w-full sm:w-auto">
-          <select 
-            v-model="formTypeFilter"
-            class="w-full pl-2.5 pr-7 py-1.5 sm:pl-3 sm:pr-8 sm:py-2 border border-gray-300 dark:border-gray-600 rounded-full text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm"
-          >
-            <option value="">All Form Types</option>
-            <option 
-              v-for="option in formTypeOptions" 
-              :key="option.value" 
-              :value="option.value"
-              :title="option.formType"
+        <!-- Filters Row - Left side on larger screens -->
+        <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+          <!-- Organization Filter (only show if user has parent/sub orgs) -->
+          <div v-if="hasMultipleViewableOrgs" class="w-full sm:w-auto">
+            <select 
+              v-model="organizationFilter"
+              class="w-full pl-2.5 pr-7 py-1.5 sm:pl-3 sm:pr-8 sm:py-2 border border-gray-300 dark:border-gray-600 rounded-full text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm"
             >
-              {{ option.label }}
-            </option>
-          </select>
+              <option v-for="option in organizationOptions" :key="option.value" :value="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+          
+          <!-- Form Type Filter -->
+          <div class="w-full sm:w-auto">
+            <select 
+              v-model="formTypeFilter"
+              class="w-full pl-2.5 pr-7 py-1.5 sm:pl-3 sm:pr-8 sm:py-2 border border-gray-300 dark:border-gray-600 rounded-full text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm"
+            >
+              <option value="">All Form Types</option>
+              <option 
+                v-for="option in formTypeOptions" 
+                :key="option.value" 
+                :value="option.value"
+                :title="option.formType"
+              >
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
         </div>
         
         <!-- Status pill buttons - Right side on larger screens -->
@@ -1071,7 +1100,8 @@ const confirmClearData = () => {
         <span v-if="formTypeFilter" class="px-1.5 py-0.5 sm:px-2 sm:py-1 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 rounded-md text-xs truncate max-w-[120px] sm:max-w-xs" :title="`Form Type: ${formTypeFilter}`">
           {{ formTemplates.find(f => f.type === formTypeFilter)?.label || formTypeFilter }}
         </span>
-        <span v-if="organizationFilter" class="px-1.5 py-0.5 sm:px-2 sm:py-1 bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 rounded-md text-xs truncate max-w-[120px] sm:max-w-xs" :title="organizationOptions.find(opt => opt.value === organizationFilter)?.label">
+        <!-- Only show organization filter badge if it's not the user's own organization (for non-admins) or if admin -->
+        <span v-if="organizationFilter && (isAdmin || organizationFilter !== userId?.toString())" class="px-1.5 py-0.5 sm:px-2 sm:py-1 bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 rounded-md text-xs truncate max-w-[120px] sm:max-w-xs" :title="organizationOptions.find(opt => opt.value === organizationFilter)?.label">
           {{ organizationOptions.find(opt => opt.value === organizationFilter)?.label && organizationOptions.find(opt => opt.value === organizationFilter)?.label.length > 15 ? organizationOptions.find(opt => opt.value === organizationFilter)?.label.substring(0, 15) + '...' : organizationOptions.find(opt => opt.value === organizationFilter)?.label }}
         </span>
       </div>
