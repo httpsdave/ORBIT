@@ -112,11 +112,17 @@
                       </svg>
                       {{ formatDate(letter.event_date) }}
                     </span>
-                    <span v-if="letter.event_letter_path" class="text-green-600 dark:text-green-400 flex items-center gap-1">
+                    <span v-if="hasSignedDocument(letter)" class="text-green-600 dark:text-green-400 flex items-center gap-1">
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.707a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                       </svg>
-                      Document Available
+                      {{ getSignedDocumentType(letter) === 'link' ? 'Document Link' : 'Signed Document' }}
+                    </span>
+                    <span v-else class="text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M18 10A8 8 0 112 10a8 8 0 0116 0zm-8-3a1 1 0 100 2 1 1 0 000-2zm2 7a1 1 0 10-2 0v-4a1 1 0 112 0v4z" clip-rule="evenodd"/>
+                      </svg>
+                      No document
                     </span>
                   </div>
                 </div>
@@ -328,6 +334,22 @@ const formatDate = (dateString) => {
     month: 'short',
     day: 'numeric'
   });
+};
+
+// Helper function to check if letter has a signed document (file or link)
+const hasSignedDocument = (letter) => {
+  return (letter.signed_document_path && letter.signed_document_path.trim() !== '') || 
+         (letter.signed_document_link && letter.signed_document_link.trim() !== '');
+};
+
+// Helper function to get signed document type
+const getSignedDocumentType = (letter) => {
+  if (letter.signed_document_path && letter.signed_document_path.trim() !== '') {
+    return 'file';
+  } else if (letter.signed_document_link && letter.signed_document_link.trim() !== '') {
+    return 'link';
+  }
+  return null;
 };
 
 const viewDocument = (letter) => {
