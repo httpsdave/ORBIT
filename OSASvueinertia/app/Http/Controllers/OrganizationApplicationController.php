@@ -337,6 +337,30 @@ class OrganizationApplicationController extends Controller
     }
 
     /**
+     * Get all event letter submissions (LSPU-ACAD-RL) for calendar view
+     */
+    public function getEventLetters(Request $request)
+    {
+        $query = OrganizationApplication::query()
+            ->where('form_type', 'LSPU-ACAD-RL')
+            ->with('user')
+            ->orderBy('created_at', 'desc');
+
+        // If user is not admin, filter by viewable organizations
+        if (!auth()->user()->isAdmin()) {
+            $viewableOrgIds = auth()->user()->getViewableOrganizationIds();
+            $query->whereIn('user_id', $viewableOrgIds);
+        }
+
+        $eventLetters = $query->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $eventLetters
+        ]);
+    }
+
+    /**
      * Show form selector page
      */
     public function selectForm()

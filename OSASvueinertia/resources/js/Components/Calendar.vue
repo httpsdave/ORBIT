@@ -75,16 +75,47 @@
     </button>
   </div>
   
-  <!-- Event History Button -->
-  <button 
-    @click="showPastEventsModal = true" 
-    class="flex items-center space-x-2 px-4 py-2 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200"
-  >
-    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-    </svg>
-    <span class="text-sm font-medium">View Past Events</span>
-  </button>
+  <!-- View Options Dropdown -->
+  <div class="relative">
+    <button 
+      @click="showViewDropdown = !showViewDropdown"
+      class="flex items-center space-x-2 px-4 py-2 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200"
+    >
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" />
+      </svg>
+      <span class="text-sm font-medium">Events</span>
+      <svg class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-180': showViewDropdown }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+      </svg>
+    </button>
+    
+    <!-- Dropdown Menu -->
+    <div 
+      v-if="showViewDropdown" 
+      class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-40"
+      @click.stop
+    >
+      <button
+        @click="showPastEventsModal = true; showViewDropdown = false"
+        class="w-full flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span>Past Events</span>
+      </button>
+      <button
+        @click="showEventLettersModal = true; showViewDropdown = false"
+        class="w-full flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        <span>Event Letters</span>
+      </button>
+    </div>
+  </div>
 </div>
 
   <!-- Main Content Container with 3D Flip Animation - Mobile Optimized -->
@@ -608,6 +639,13 @@
   @export-csv="exportPastEventsCsv"
   @delete-past-event="handleDeletePastEvent"
 />
+
+  <!-- Event Letters Modal -->
+  <EventLettersModal 
+    :show-modal="showEventLettersModal"
+    @close="showEventLettersModal = false"
+    @error="handleEventLettersError"
+  />
 
   <!-- Delete Confirmation Modal -->
   <ConfirmationModal
@@ -1287,6 +1325,7 @@ import interactionPlugin from '@fullcalendar/interaction';
 import FileUploadComponent from './FileUploadComponent.vue';
 import TodayUpcomingEvents from './TodayUpcomingEvents.vue';
 import EventHistoryModal from './EventHistoryModal.vue';
+import EventLettersModal from './EventLettersModal.vue';
 import EventStatistics from './EventStatistics.vue';
 import ConfirmationModal from './ConfirmationModal.vue';
 import StatusBanner from './StatusBanner.vue';
@@ -1300,6 +1339,7 @@ export default {
     FileUploadComponent,
     TodayUpcomingEvents,
     EventHistoryModal,
+    EventLettersModal,
     EventStatistics,
     ConfirmationModal,
     StatusBanner
@@ -1352,6 +1392,12 @@ export default {
   const wasViewingBeforeEdit = ref(false);
     const checkEventsTimer = ref(null);
     const showPastEventsModal = ref(false);
+    
+    // Event letters modal
+    const showEventLettersModal = ref(false);
+    
+    // View options dropdown
+    const showViewDropdown = ref(false);
     
     // Autosave state
     const showRestorePrompt = ref(false);
@@ -1489,6 +1535,16 @@ export default {
         // Keep all events (past, present, future, and cancelled)
         return true;
       });
+    };
+    
+    // Handle event letters error
+    const handleEventLettersError = (errorMessage) => {
+      statusMessage.value = errorMessage;
+      showStatusBanner.value = true;
+      statusType.value = 'error';
+      setTimeout(() => {
+        showStatusBanner.value = false;
+      }, 5000);
     };
     
     // Apply initial filter
@@ -2807,7 +2863,12 @@ function exportPastEventsCsv(pastEvents) {
       autosavedData,
       isAutoSaving,
       restoreAutosave,
-      dismissAutosave
+      dismissAutosave,
+      // Event letters
+      showEventLettersModal,
+      handleEventLettersError,
+      // View dropdown
+      showViewDropdown
     };
   }
 };
