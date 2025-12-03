@@ -348,6 +348,8 @@ export default {
     const extractedData = ref(null);
     const isExtracting = ref(false);
     let autoExtractTimer = null;
+    let extractionTimeout = null;
+    let cancelTokenSource = null;
     const countdown = ref(5);
     const showCancelConfirmation = ref(false);
     
@@ -408,8 +410,16 @@ export default {
       showExtractedText.value = false;
       isExtracting.value = false;
       
-      axios.post('/api/extract-event-info', formData)
+      // Create cancel token
+      cancelTokenSource = axios.CancelToken.source();
+      
+      axios.post('/api/extract-event-info', formData, {
+        cancelToken: cancelTokenSource.token
+      })
         .then(response => {
+          // Check if still processing (not cancelled)
+          if (!isProcessing.value) return;
+          
           // Store the extracted text and data
           extractedText.value = response.data.raw_text || 'No text extracted';
           extractedData.value = response.data;
@@ -418,6 +428,10 @@ export default {
           showExtractedText.value = true;
         })
         .catch(error => {
+          // Ignore if request was cancelled
+          if (axios.isCancel(error)) {
+            return;
+          }
           console.error('Error processing document:', error);
           alert('Failed to process document. Please try again.');
           resetFileState();
@@ -425,6 +439,23 @@ export default {
     }
     
     function resetFileState() {
+      // Cancel any pending axios request
+      if (cancelTokenSource) {
+        cancelTokenSource.cancel('Operation cancelled by user');
+        cancelTokenSource = null;
+      }
+      
+      // Clear timers
+      if (autoExtractTimer) {
+        clearInterval(autoExtractTimer);
+        autoExtractTimer = null;
+      }
+      if (extractionTimeout) {
+        clearTimeout(extractionTimeout);
+        extractionTimeout = null;
+      }
+      
+      // Reset all state
       isProcessing.value = false;
       selectedFile.value = null;
       filePreview.value = null;
@@ -433,11 +464,11 @@ export default {
       extractedText.value = '';
       extractedData.value = null;
       isExtracting.value = false;
+      countdown.value = 5;
+      
       if (fileInput.value) {
         fileInput.value.value = '';
       }
-      clearInterval(autoExtractTimer);
-      countdown.value = 5;
     }
     
     function createNewEvent() {
@@ -474,12 +505,21 @@ export default {
     }
     
     function proceedToEventExtraction() {
+      // Check if still processing
+      if (!isProcessing.value) return;
+      
       clearInterval(autoExtractTimer);
+      autoExtractTimer = null;
+      
       // Show extracting animation
       isExtracting.value = true;
       showExtractedText.value = false;
+      
       // Simulate extraction time (2 seconds)
-      setTimeout(() => {
+      extractionTimeout = setTimeout(() => {
+        // Check again if still processing (not cancelled during timeout)
+        if (!isProcessing.value) return;
+        
         // Emit the extracted data to parent component for event creation
         if (extractedData.value) {
           emit('file-processed', extractedData.value);
