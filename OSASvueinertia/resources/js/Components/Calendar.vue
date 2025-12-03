@@ -1615,6 +1615,9 @@ export default {
       if (typeof window !== 'undefined') {
         window.addEventListener('resize', handleResize);
       }
+      
+      // Add click-outside listener for dropdown
+      document.addEventListener('click', closeDropdownOnClickOutside);
     });
     
     // Clean up timer on component unmount
@@ -1628,6 +1631,8 @@ export default {
       if (typeof window !== 'undefined') {
         window.removeEventListener('resize', handleResize);
       }
+      // Clean up click-outside listener
+      document.removeEventListener('click', closeDropdownOnClickOutside);
     });
     
     // Handle window resize with debouncing
@@ -1641,6 +1646,17 @@ export default {
           fullCalendar.value.getApi().updateSize();
         }
       }, 150);
+    };
+    
+    // Close dropdown when clicking outside
+    const closeDropdownOnClickOutside = (event) => {
+      // Check if click is outside the dropdown container
+      const dropdownContainer = event.target.closest('.relative');
+      const isDropdownButton = event.target.closest('button')?.textContent?.includes('Events');
+      
+      if (!dropdownContainer || !isDropdownButton) {
+        showViewDropdown.value = false;
+      }
     };
     
     // Watch for view changes and update calendar size when switching back to calendar view
