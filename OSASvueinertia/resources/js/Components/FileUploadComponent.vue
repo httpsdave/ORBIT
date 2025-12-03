@@ -8,7 +8,7 @@
     <div 
       v-if="isProcessing && selectedFile" 
       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4 modal-backdrop"
-      @click.self="closeScanningModal"
+      @click.self="showCancelConfirmation = true"
     >
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl max-w-4xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden scanning-modal">
         <!-- Modal Header -->
@@ -127,7 +127,7 @@
             
             <div class="mt-4 sm:mt-6 flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3">
               <button 
-                @click="cancelExtraction"
+                @click="showCancelConfirmation = true"
                 class="w-full sm:w-auto px-4 py-2 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 dark:focus:ring-gray-400 transition-colors duration-200"
               >
                 Cancel
@@ -160,6 +160,44 @@
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Cancel Confirmation Modal -->
+    <div 
+      v-if="showCancelConfirmation" 
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60] p-4"
+      @click.self="dismissCancel"
+    >
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-md w-full p-6">
+        <div class="flex items-start space-x-3 mb-4">
+          <div class="flex-shrink-0 w-10 h-10 bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center">
+            <svg class="w-6 h-6 text-yellow-600 dark:text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Cancel Document Scan?</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+              Are you sure you want to cancel the scanning process? All progress will be lost.
+            </p>
+          </div>
+        </div>
+        
+        <div class="flex space-x-3 justify-end">
+          <button
+            @click="dismissCancel"
+            class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200"
+          >
+            Continue Scanning
+          </button>
+          <button
+            @click="confirmCancel"
+            class="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors duration-200"
+          >
+            Yes, Cancel
+          </button>
         </div>
       </div>
     </div>
@@ -311,6 +349,7 @@ export default {
     const isExtracting = ref(false);
     let autoExtractTimer = null;
     const countdown = ref(5);
+    const showCancelConfirmation = ref(false);
     
     function onFileChange(e) {
       const file = e.target.files[0];
@@ -406,8 +445,19 @@ export default {
     }
     
     function closeScanningModal() {
-      // Allow closing modal, but keep processing in background
-      // The modal will automatically close when processing completes
+      // Show confirmation modal before canceling
+      showCancelConfirmation.value = true;
+    }
+    
+    function confirmCancel() {
+      // User confirmed cancellation
+      showCancelConfirmation.value = false;
+      cancelExtraction();
+    }
+    
+    function dismissCancel() {
+      // User dismissed cancellation
+      showCancelConfirmation.value = false;
     }
     
     function formatFileSize(bytes) {
@@ -472,7 +522,10 @@ export default {
       cancelExtraction,
       proceedToEventExtraction,
       isExtracting,
-      countdown
+      countdown,
+      showCancelConfirmation,
+      confirmCancel,
+      dismissCancel
     };
   }
 };
