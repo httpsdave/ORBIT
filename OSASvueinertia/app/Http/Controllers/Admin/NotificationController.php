@@ -28,7 +28,29 @@ class NotificationController extends Controller
                 
                 // Determine if it was sent to all users or specific users
                 $totalUsers = User::count();
-                $targetAudience = $userCount === $totalUsers ? 'All Users' : "Specific Users ({$userCount})";
+                
+                if ($userCount === $totalUsers) {
+                    $targetAudience = 'All Users';
+                    $targetUsers = null;
+                } else {
+                    // Get the specific users for this notification
+                    $users = User::with('latestApplication')
+                        ->whereIn('id', function($query) use ($notification) {
+                            $query->select('user_id')
+                                ->from('user_notifications')
+                                ->where('notification_id', $notification->id);
+                        })->get();
+                    
+                    // Format user names with their organizations
+                    $userNames = $users->map(function($user) {
+                        // Get organization name from latest application
+                        $orgName = $user->latestApplication?->organization_name ?? null;
+                        return $orgName ? "{$user->name} ({$orgName})" : $user->name;
+                    })->toArray();
+                    
+                    $targetAudience = "Specific Users ({$userCount})";
+                    $targetUsers = $userNames;
+                }
                 
                 return [
                     'id' => $notification->id,
@@ -38,6 +60,7 @@ class NotificationController extends Controller
                     'is_active' => $notification->is_active,
                     'created_at' => $notification->created_at->diffForHumans(),
                     'target_audience' => $targetAudience,
+                    'target_users' => $targetUsers,
                     'user_count' => $userCount,
                 ];
             });

@@ -674,6 +674,21 @@ input[type="checkbox"]:indeterminate {
                 </div>
               </div>
               
+              <!-- Show specific users if available -->
+              <div v-if="selectedNotification?.target_users && selectedNotification.target_users.length > 0" class="mb-4">
+                <h4 class="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">Target Users:</h4>
+                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 max-h-40 overflow-y-auto">
+                  <ul class="text-sm text-gray-700 dark:text-gray-300 space-y-1">
+                    <li v-for="(user, index) in selectedNotification.target_users" :key="index" class="flex items-start">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 mt-0.5 text-blue-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                      <span>{{ user }}</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              
               <div class="prose prose-sm max-w-none">
                 <h4 class="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">Message:</h4>
                 <p class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
