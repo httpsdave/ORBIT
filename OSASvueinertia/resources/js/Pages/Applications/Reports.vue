@@ -397,6 +397,26 @@ const formatDate = (dateString) => {
   return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
 }
 
+// Convert stored rich-text (with HTML entities) into plain text for UI display
+const normalizeRichText = (value) => {
+  if (!value) return ''
+
+  // Support non-browser (SSR/testing) environments by falling back to regex stripping
+  if (typeof window === 'undefined' || typeof document === 'undefined') {
+    return value
+      .replace(/<br\s*\/?\s*>/gi, ' ')
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/&nbsp;/gi, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+  }
+
+  const container = document.createElement('div')
+  container.innerHTML = value
+  const text = container.textContent || container.innerText || ''
+  return text.replace(/\s+/g, ' ').trim()
+}
+
 // Dropdown functionality
 const toggleDropdown = (report, event) => {
   if (activeDropdownReport.value && activeDropdownReport.value.id === report.id) {
@@ -852,9 +872,9 @@ watch(showStatusModal, (val) => {
               <div class="border-b dark:border-gray-700 pb-4 mb-6">
                 <h2 
                   class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2 truncate"
-                  :title="page.activityData?.name && page.activityData.name.length > 50 ? page.activityData.name : undefined"
+                  :title="page.activityData?.name && normalizeRichText(page.activityData.name).length > 50 ? normalizeRichText(page.activityData.name) : undefined"
                 >
-                  {{ page.activityData?.name || `Activity ${page.pageNumber}` }}
+                  {{ normalizeRichText(page.activityData?.name) || `Activity ${page.pageNumber}` }}
                 </h2>
                 <div v-if="page.activityData" class="text-sm text-gray-600 dark:text-gray-400">
                   <p><strong>Target Date:</strong> {{ page.activityData.target_date || 'Not specified' }}</p>
