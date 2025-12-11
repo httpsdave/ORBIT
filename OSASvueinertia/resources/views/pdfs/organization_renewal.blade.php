@@ -267,7 +267,7 @@
         <div class="section">
             <p style="margin-top:5px;">Sir/Madam:</p>
             <div style="height:15px;"></div>
-            <p class="indented">The <span class="dynamic-text"><u><strong>{{ $application->organization_name }}</strong></u></span><span style="word-spacing:3px;"> wishes to seek renewal of its recognition to function as a duly recognized LSPU Organization for Academic Year 20</span><span class="dynamic-text"><u><strong>{{ $application->academic_year_start }}</strong></u></span> - 20<span class="dynamic-text"><u><strong>{{ $application->academic_year_end }}</strong></u></span>.</p>
+            <p class="indented">The <span class="dynamic-text"><u><strong>{!! $application->organization_name !!}</strong></u></span><span style="word-spacing:3px;"> wishes to seek renewal of its recognition to function as a duly recognized LSPU Organization for Academic Year 20</span><span class="dynamic-text"><u><strong>{!! $application->academic_year_start !!}</strong></u></span> - 20<span class="dynamic-text"><u><strong>{!! $application->academic_year_end !!}</strong></u></span>.</p>
             
             <p class="indented" style="word-spacing:9.5px;">In this connection, we are respectfully requesting from your good office to grant us permission to operate in our institution, subject to the existing rules<span style="margin-right:6px;"></span>    & regulations of our University.</p>
             <br>
@@ -278,7 +278,7 @@
             <p class="respectfully-text" style="margin-left:calc(59% - 45px);">Very respectfully yours,</p>
 
             <div class="signature">
-                <p><span class="signature-line" style="min-width:160px;"><strong>{{ $application->president_name }}</strong></span></p>
+                <p><span class="signature-line" style="min-width:160px;"><strong>{!! $application->president_name !!}</strong></span></p>
                 <p style = "margin-top: -4px"><span class="title-under-signature title-left-adjust"><strong>Organization President</strong></span></p>
             </div>
         </div>
@@ -332,20 +332,20 @@
         <div class="section left-align">
             <p><strong>NOTED:</strong></p>
                 <div class="signature">
-                <p><span class="signature-line" style="min-width:220px;"><strong>{{ trim((isset($application->adviser_prefix) && $application->adviser_prefix ? $application->adviser_prefix . ' ' : '') . $application->adviser_name . (isset($application->adviser_suffix) && $application->adviser_suffix ? ', ' . $application->adviser_suffix : '')) }}</strong></span></p>
+                <p><span class="signature-line" style="min-width:220px;"><strong>{!! $application->adviser_name !!}</strong></span></p>
                 <p><span class="title-under-signature title-right-adjust" style="margin-top:-4px;"><strong>Adviser/s, Student Organization</strong></span></p>
             </div>
             
                 <div class="signature">
-                <p><span class="signature-line" style="min-width:305px;"><strong>{{ trim((isset($application->dean_prefix) && $application->dean_prefix ? $application->dean_prefix . ' ' : '') . $application->dean_name . (isset($application->dean_suffix) && $application->dean_suffix ? ', ' . $application->dean_suffix : '')) }}</strong></span></p>
-                <p><span class="title-under-signature" style="margin-top:-4px;"><strong>Dean/Assoc. Dean, College of</strong> <span class="signature-line signature-line-inline" style="min-width:120px; margin-top:-4px;"><strong>{{ $application->college ?? '' }}</strong></span></span></p>
+                <p><span class="signature-line" style="min-width:305px;"><strong>{!! $application->dean_name !!}</strong></span></p>
+                <p><span class="title-under-signature" style="margin-top:-4px;"><strong>Dean/Assoc. Dean, College of</strong> <span class="signature-line signature-line-inline" style="min-width:120px; margin-top:-4px;"><strong>{!! $application->college !!}</strong></span></span></p>
             </div>
         </div>
 
         <div class="section center-align">
             <p style="margin-left:-380px;margin-top: 15px"><strong>Recommending Approval:</strong></p>
             <div class="signature">
-                <p><span class="signature-line" style="min-width:270px;"><strong>{{ $application->coordinator_name }}</strong></span></p>
+                <p><span class="signature-line" style="min-width:270px;"><strong>{!! $application->coordinator_name !!}</strong></span></p>
                 <p style = "margin-top:-4px;"><strong>Coordinator, Student Organization Unit</strong></p>
             </div>
         </div>
@@ -353,7 +353,7 @@
         <div class="section center-align">
             <p style="margin-left:-380px;"><strong>Approved / Disapproved:</strong></p>
             <div class="signature">
-                <p><span class="signature-line" style="min-width:390px;"><strong>{{ $application->director_name }}</strong></span></p>
+                <p><span class="signature-line" style="min-width:390px;"><strong>{!! $application->director_name !!}</strong></span></p>
                 <p style="margin-top:-4px;"><strong>Director/Chairperson, Office of Student Affairs and Services</strong></p>
             </div>
         </div>
