@@ -377,6 +377,20 @@ class OrganizationApplicationController extends Controller
 
         // Get saved form data for auto-fill
         $savedFormData = FormDataService::getSavedFormData();
+
+        // Always force date fields to refresh so they default to "today" for new forms
+        foreach ([
+            'form_date',
+            'application_date',
+            'certification_date',
+            'report_date',
+            'date_start',
+            'date_end',
+            'activity_date',
+            'date',
+        ] as $dateField) {
+            unset($savedFormData[$dateField]);
+        }
         
         // Ensure coordinator_name and director_name are always set from system defaults
         if (!isset($savedFormData['coordinator_name'])) {
@@ -1920,19 +1934,19 @@ class OrganizationApplicationController extends Controller
             ],
             'LSPU-OSAS-SF-003' => [
                 'application' => (object)[
-                    'organization_name' => 'Sample Data',
-                    'president_name' => 'Sample Data',
-                    'adviser_name' => 'Sample Data',
-                    'adviser_college' => 'Sample Data',
-                    'adviser_rank' => 'Sample Data',
-                    'adviser_address' => 'Sample Data',
-                    'adviser_contact' => '0917-0322',
+                    'organization_name' => '&nbsp;',
+                    'president_name' => '&nbsp;',
+                    'adviser_name' => '&nbsp;',
+                    'adviser_college' => '&nbsp;',
+                    'adviser_rank' => '&nbsp;',
+                    'adviser_address' => '&nbsp;',
+                    'adviser_contact' => '&nbsp;',
                     'form_date' => now(),
-                    'academic_year_start' => '24',
-                    'academic_year_end' => '25',
-                    'coordinator_name' => 'Sample Data',
-                    'dean_name' => 'Sample Data',
-                    'director_name' => 'Sample Data',
+                    'academic_year_start' => '&nbsp;',
+                    'academic_year_end' => '&nbsp;',
+                    'coordinator_name' => '&nbsp;',
+                    'dean_name' => '&nbsp;',
+                    'director_name' => '&nbsp;',
                     'form_type' => 'LSPU-OSAS-SF-003',
                 ],
             ],

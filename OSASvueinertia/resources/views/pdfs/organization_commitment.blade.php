@@ -449,9 +449,9 @@
         <div class="section justified">
             <p class="sir-greeting" style="margin-bottom:20px;">Sir/Madam:</p>
             <p class="indented"><span style="word-spacing:5px;">This letter is in connection with the application for recognition/renewal of</span> 
-            <span class="dynamic-text"><u><strong>{{ $application->organization_name ?? '________________' }}</strong></u></span> as a duly recognized LSPU Organization.</p>
+            <span class="dynamic-text"><u><strong>{!! $application->organization_name ?? '________________' !!}</strong></u></span> as a duly recognized LSPU Organization.</p>
             <p class="indented">I, the undersigned, have committed to serve as the organization's 
-            Adviser for the academic year 20<u><strong>{{ $application->academic_year_start ?? '__' }}</strong></u>-20<u><strong>{{ $application->academic_year_end ?? '__' }}</strong></u>, and shall therefore assume full responsibility as 
+            Adviser for the academic year 20<u><strong>{!! $application->academic_year_start ?? '__' !!}</strong></u>-20<u><strong>{!! $application->academic_year_end ?? '__' !!}</strong></u>, and shall therefore assume full responsibility as 
             provided in the guidelines for the recognition of student organizations.</p>
             <p class="indented">Furthermore, I certify to the correctness and completeness of the documents 
             attached to the organization application for recognition.</p>
@@ -463,67 +463,67 @@
             <div class="signature-field">
                 <span class="signature-label">Name:</span>
                 <span class="signature-value sig-name">
-                    <strong>{{ $firstLineAdviserName }}</strong>
+                    <strong>{!! $firstLineAdviserName !!}</strong>
                 </span>
             </div>
             @if($secondLineAdviserName)
             <div class="signature-field" style="margin-left: 0;">
                 <span class="signature-value sig-name" style="margin-left: 0; padding-left: 0;">
-                    <strong>{{ $secondLineAdviserName }}</strong>
+                    <strong>{!! $secondLineAdviserName !!}</strong>
                 </span>
             </div>
             @endif
             <div class="signature-field">
                 <span class="signature-label">Signature:</span>
-                <span class="signature-value sig-signature">{{ $adviser['adviser_signature'] ?? '' }}</span>
+                <span class="signature-value sig-signature">{!! $adviser['adviser_signature'] ?? '' !!}</span>
             </div>
             <div class="signature-field">
                 <span class="signature-label">College:</span>
                 <span class="signature-value sig-college">
-                    <strong>{{ $firstLineCollege }}</strong>
+                    <strong>{!! $firstLineCollege !!}</strong>
                 </span>
             </div>
             @if($secondLineCollege)
             <div class="signature-field" style="margin-left: 0;">
                 <span class="signature-value sig-college" style="margin-left: 0; padding-left: 0;">
-                    <strong>{{ $secondLineCollege }}</strong>
+                    <strong>{!! $secondLineCollege !!}</strong>
                 </span>
             </div>
             @endif
             @if($thirdLineCollege)
             <div class="signature-field" style="margin-left: 0;">
                 <span class="signature-value sig-college" style="margin-left: 0; padding-left: 0;">
-                    <strong>{{ $thirdLineCollege }}</strong>
+                    <strong>{!! $thirdLineCollege !!}</strong>
                 </span>
             </div>
             @endif
             <div class="signature-field">
                 <span class="signature-label">Academic Rank:</span>
-                <span class="signature-value sig-rank"><strong>{{ $adviser['adviser_rank'] ?? '' }}</strong></span>
+                <span class="signature-value sig-rank"><strong>{!! $adviser['adviser_rank'] ?? '' !!}</strong></span>
             </div>
             <div class="signature-field">
                 <span class="signature-label">Home Address:</span>
                 <span class="signature-value sig-address">
-                    <strong>{{ $firstLine }}</strong>
+                    <strong>{!! $firstLine !!}</strong>
                 </span>
             </div>
             @if($secondLine)
             <div class="signature-field" style="margin-left: 0;">
                 <span class="signature-value sig-address" style="margin-left: 0; padding-left: 0;">
-                    <strong>{{ $secondLine }}</strong>
+                    <strong>{!! $secondLine !!}</strong>
                 </span>
             </div>
             @endif
             @if($thirdLine)
             <div class="signature-field" style="margin-left: 0;">
                 <span class="signature-value sig-address" style="margin-left: 0; padding-left: 0;">
-                    <strong>{{ $thirdLine }}</strong>
+                    <strong>{!! $thirdLine !!}</strong>
                 </span>
             </div>
             @endif
             <div class="signature-field">
                 <span class="signature-label">Contact Number(s):</span>
-                <span class="signature-value sig-contact"><strong>{{ $adviser['adviser_contact'] ?? '' }}</strong></span>
+                <span class="signature-value sig-contact"><strong>{!! $adviser['adviser_contact'] ?? '' !!}</strong></span>
             </div>
             <div class="signature-field">
                 <span class="signature-label">Date:</span>
@@ -535,7 +535,7 @@
     <div class="noted-section" style="bottom: {{ ($secondLine || $thirdLine) ? '275px' : '315px' }}; left: 0;">
             <p style="margin-bottom: 20px;"><strong>Noted:</strong></p>
             <div>
-                <p style="margin-left:65px;"><span class="underline" style="min-width:180px;"><strong>{{ trim((isset($application->dean_prefix) && $application->dean_prefix ? $application->dean_prefix . ' ' : '') . ($application->dean_name ?? '') . (isset($application->dean_suffix) && $application->dean_suffix ? ', ' . $application->dean_suffix : '')) }}</strong></span></p>
+                <p style="margin-left:65px;"><span class="underline" style="min-width:180px;"><strong>{!! $application->dean_name ?? '' !!}</strong></span></p>
                 <p style="margin-left:65px;"><strong>Dean/Assoc. Dean of College</strong></p>
             </div>
         </div>
@@ -544,13 +544,13 @@
     <div class="bottom-sections" style="bottom: {{ ($secondLine || $thirdLine) ? '40px' : '80px' }};">
             <div class="approval-section" style="margin-bottom: 25px;"> <!-- Spacing between sections -->
                 <p style="margin-bottom: 20px;"><strong>Recommending Approval:</strong></p> <!-- Added 20px spacing under this text -->
-                <p><strong><span class="underline" style="min-width:270px;">{{ $application->coordinator_name ?? '_______________________________' }}</span></strong></p>
+                <p><strong><span class="underline" style="min-width:270px;">{!! $application->coordinator_name ?? '_______________________________' !!}</span></strong></p>
                 <p><strong>Coordinator, Student Organization Unit</strong></p>
             </div>
 
             <div class="approval-section">
                 <p style="margin-bottom: 20px;"><strong>Approved / Disapproved:</strong></p> <!-- Added 20px spacing under this text -->
-                <p><strong><span class="underline" style="min-width:380px;">{{ $application->director_name ?? '_______________________________' }}</span></strong></p>
+                <p><strong><span class="underline" style="min-width:380px;">{!! $application->director_name ?? '_______________________________' !!}</span></strong></p>
                 <p><strong>Director/Chairperson, Office of Student Affairs and Services</strong></p>
             </div>
         </div> <!-- End signature-section -->
