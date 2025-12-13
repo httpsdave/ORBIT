@@ -95,7 +95,26 @@ const form = useForm({
 const validationErrors = ref({
     password: '',
     password_confirmation: '',
+    email_warning: '',
 });
+
+// Email validation for institutional domain
+const checkEmailDomain = () => {
+    const email = form.email.trim();
+    
+    // Only show warning if email contains @ symbol
+    if (!email.includes('@')) {
+        validationErrors.value.email_warning = '';
+        return;
+    }
+    
+    // Check if email ends with @lspu.edu.ph
+    if (!email.endsWith('@lspu.edu.ph')) {
+        validationErrors.value.email_warning = 'Institutional email (@lspu.edu.ph) is recommended for official accounts.';
+    } else {
+        validationErrors.value.email_warning = '';
+    }
+};
 
 const editForm = useForm({
     name: '',
@@ -330,6 +349,7 @@ const cancelCreate = () => {
     // Clear client-side validation errors
     validationErrors.value.password = '';
     validationErrors.value.password_confirmation = '';
+    validationErrors.value.email_warning = '';
 };
 
 const confirmUserDeletion = (user) => {
@@ -761,11 +781,19 @@ const closeMobileActionsModal = () => {
                             type="email"
                             class="mt-1 block w-full text-sm"
                             v-model="form.email"
+                            @input="checkEmailDomain"
                             required
                             autocomplete="email"
-                            placeholder="Enter user's email"
+                            placeholder="username@lspu.edu.ph"
                         />
                         <InputError class="mt-2" :message="form.errors.email" />
+                        <!-- Email domain warning -->
+                        <div v-if="validationErrors.email_warning" class="mt-2 flex items-start gap-2 p-2 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-md">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                            <p class="text-xs text-amber-700 dark:text-amber-300">{{ validationErrors.email_warning }}</p>
+                        </div>
                     </div>
 
                     <div>
