@@ -61,6 +61,19 @@ const displayDeanName = computed(() => {
   return name;
 });
 
+// Date restrictions for target date picker
+const minDate = computed(() => {
+  const date = new Date();
+  date.setFullYear(date.getFullYear() - 1);
+  return date.toISOString().split('T')[0];
+});
+
+const maxDate = computed(() => {
+  const date = new Date();
+  date.setFullYear(date.getFullYear() + 10);
+  return date.toISOString().split('T')[0];
+});
+
 // Rich text editor state
 const showToolbar = ref(false);
 const toolbarPosition = ref({ x: 0, y: 0 });
@@ -1307,6 +1320,8 @@ onUnmounted(() => {
                 <input 
                   type="date"
                   v-model="form.activities[startIndex + idx].target_date"
+                  :min="minDate"
+                  :max="maxDate"
                   class="w-full border p-1 text-center rounded-md"
                   style="min-height:40px;"
                 >
