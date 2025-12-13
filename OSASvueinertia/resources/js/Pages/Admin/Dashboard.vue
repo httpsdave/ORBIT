@@ -265,7 +265,8 @@ const updateMembersBarChartData = () => {
                 label: 'Number of Members',
                 backgroundColor: '#e0e0e0',
                 data: [0],
-                borderRadius: 8,
+                borderRadius: 12,
+                borderSkipped: false,
                 datalabels: {
                     color: '#666666',
                     font: {
@@ -282,18 +283,25 @@ const updateMembersBarChartData = () => {
         datasets: [
             {
                 label: 'Number of Members',
-                backgroundColor: COLORS_WITH_OPACITY,
+                backgroundColor: COLORS,
+                borderWidth: 0,
                 data: orgsToDisplay.map(org => org.members_count),
-                borderRadius: 8,
+                borderRadius: 12,
+                borderSkipped: false,
+                barThickness: 'flex',
+                maxBarThickness: 40,
                 datalabels: {
                     color: '#ffffff',
                     font: {
                         weight: 'bold',
-                        size: 20
+                        size: 18
                     },
                     formatter: function(value) {
                         return value;
-                    }
+                    },
+                    anchor: 'end',
+                    align: 'start',
+                    offset: 8
                 }
             }
         ]
@@ -311,7 +319,8 @@ const allMembersBarChartData = computed(() => {
                 label: 'Number of Members',
                 backgroundColor: '#e0e0e0',
                 data: [0],
-                borderRadius: 8,
+                borderRadius: 12,
+                borderSkipped: false,
                 datalabels: {
                     color: '#666666',
                     font: {
@@ -328,18 +337,25 @@ const allMembersBarChartData = computed(() => {
         datasets: [
             {
                 label: 'Number of Members',
-                backgroundColor: COLORS_WITH_OPACITY,
+                backgroundColor: COLORS,
+                borderWidth: 0,
                 data: allOrgs.map(org => org.members_count),
-                borderRadius: 8,
+                borderRadius: 12,
+                borderSkipped: false,
+                barThickness: 'flex',
+                maxBarThickness: 35,
                 datalabels: {
                     color: '#ffffff',
                     font: {
                         weight: 'bold',
-                        size: 16
+                        size: 14
                     },
                     formatter: function(value) {
                         return value;
-                    }
+                    },
+                    anchor: 'end',
+                    align: 'start',
+                    offset: 6
                 }
             }
         ]
@@ -468,6 +484,7 @@ const sortedColleges = computed(() => {
 const pieChartOptions = ref({
     responsive: true,
     maintainAspectRatio: false,
+    cutout: '60%', // Creates donut hole (60% of radius)
     plugins: {
         legend: {
             position: 'right',
@@ -503,9 +520,8 @@ const pieChartOptions = ref({
                 return value;
             },
             textAlign: 'center',
-            anchor: 'end', // Position at the outer edge of the slice
-            align: 'end', // Align towards the outer edge
-            offset: -30, // Move inward by 30 pixels to keep it inside the slice
+            anchor: 'center', // Position at center for donut chart
+            align: 'center', // Center alignment works better for donuts
             clamp: true // Ensure labels stay within chart bounds
         }
     }
@@ -518,6 +534,10 @@ const barChartOptions = ref({
     indexAxis: 'y',
     onClick: () => {
         showAllOrganizationsModal.value = true;
+    },
+    animation: {
+        duration: 800,
+        easing: 'easeInOutQuart'
     },
     plugins: {
         legend: {
@@ -533,30 +553,46 @@ const barChartOptions = ref({
                     return context[0].label;
                 }
             },
+            backgroundColor: 'rgba(0, 0, 0, 0.85)',
             titleFont: {
                 size: 14,
-                weight: 'bold'
+                weight: 'bold',
+                family: 'Inter, sans-serif'
             },
             bodyFont: {
-                size: 13
+                size: 13,
+                family: 'Inter, sans-serif'
             },
-            padding: 12,
-            displayColors: false
+            padding: 14,
+            displayColors: false,
+            borderWidth: 1,
+            borderColor: 'rgba(255, 255, 255, 0.1)',
+            cornerRadius: 8
         },
         datalabels: {
             color: '#ffffff',
             font: {
                 weight: 'bold',
-                size: 20
+                size: 18,
+                family: 'Inter, sans-serif'
             },
             formatter: function(value) {
                 return value;
-            }
+            },
+            anchor: 'end',
+            align: 'start',
+            offset: 8
         }
     },
     scales: {
         x: {
+            beginAtZero: true,
             grid: {
+                display: true,
+                color: 'rgba(0, 0, 0, 0.05)',
+                drawBorder: false
+            },
+            border: {
                 display: false
             },
             title: {
@@ -564,20 +600,34 @@ const barChartOptions = ref({
                 text: 'Number of Members',
                 font: {
                     family: 'Inter, sans-serif',
-                    size: 12
-                }
-            }
-        },
-        y: {
-            grid: {
-                display: false
+                    size: 13,
+                    weight: '600'
+                },
+                padding: { top: 10 }
             },
             ticks: {
                 font: {
                     family: 'Inter, sans-serif',
                     size: 11
                 },
+                padding: 8
+            }
+        },
+        y: {
+            grid: {
+                display: false
+            },
+            border: {
+                display: false
+            },
+            ticks: {
+                font: {
+                    family: 'Inter, sans-serif',
+                    size: 11,
+                    weight: '500'
+                },
                 autoSkip: false,
+                padding: 12,
                 callback: function(value, index, ticks) {
                     const label = this.getLabelForValue ? this.getLabelForValue(value) : value;
                     if (typeof label === 'string') {
@@ -603,6 +653,14 @@ const barChartOptions = ref({
                 }
             }
         }
+    },
+    layout: {
+        padding: {
+            left: 10,
+            right: 20,
+            top: 10,
+            bottom: 10
+        }
     }
 });
 
@@ -611,6 +669,10 @@ const allOrgsBarChartOptions = ref({
     responsive: true,
     maintainAspectRatio: false,
     indexAxis: 'y',
+    animation: {
+        duration: 800,
+        easing: 'easeInOutQuart'
+    },
     plugins: {
         legend: {
             display: false
@@ -625,30 +687,46 @@ const allOrgsBarChartOptions = ref({
                     return context[0].label;
                 }
             },
+            backgroundColor: 'rgba(0, 0, 0, 0.85)',
             titleFont: {
                 size: 14,
-                weight: 'bold'
+                weight: 'bold',
+                family: 'Inter, sans-serif'
             },
             bodyFont: {
-                size: 13
+                size: 13,
+                family: 'Inter, sans-serif'
             },
-            padding: 12,
-            displayColors: false
+            padding: 14,
+            displayColors: false,
+            borderWidth: 1,
+            borderColor: 'rgba(255, 255, 255, 0.1)',
+            cornerRadius: 8
         },
         datalabels: {
             color: '#ffffff',
             font: {
                 weight: 'bold',
-                size: 14
+                size: 14,
+                family: 'Inter, sans-serif'
             },
             formatter: function(value) {
                 return value;
-            }
+            },
+            anchor: 'end',
+            align: 'start',
+            offset: 6
         }
     },
     scales: {
         x: {
+            beginAtZero: true,
             grid: {
+                display: true,
+                color: 'rgba(0, 0, 0, 0.05)',
+                drawBorder: false
+            },
+            border: {
                 display: false
             },
             title: {
@@ -656,20 +734,34 @@ const allOrgsBarChartOptions = ref({
                 text: 'Number of Members',
                 font: {
                     family: 'Inter, sans-serif',
-                    size: 12
-                }
+                    size: 13,
+                    weight: '600'
+                },
+                padding: { top: 10 }
+            },
+            ticks: {
+                font: {
+                    family: 'Inter, sans-serif',
+                    size: 11
+                },
+                padding: 8
             }
         },
         y: {
             grid: {
                 display: false
             },
+            border: {
+                display: false
+            },
             ticks: {
                 font: {
                     family: 'Inter, sans-serif',
-                    size: 10
+                    size: 10,
+                    weight: '500'
                 },
                 autoSkip: false,
+                padding: 10,
                 callback: function(value, index, ticks) {
                     const label = this.getLabelForValue ? this.getLabelForValue(value) : value;
                     if (typeof label === 'string') {
@@ -692,6 +784,14 @@ const allOrgsBarChartOptions = ref({
                     return label;
                 }
             }
+        }
+    },
+    layout: {
+        padding: {
+            left: 10,
+            right: 20,
+            top: 10,
+            bottom: 10
         }
     }
 });
@@ -1242,8 +1342,8 @@ const stopMobileCarousel = () => {
                                         </div>
                                         <!-- Organization Chart Icon -->
                                         <div v-else-if="card.icon === 'organization-chart'" class="w-10 h-10 rounded-full flex items-center justify-center bg-green-100 dark:bg-green-900/50">
-                                            <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="currentColor" viewBox="0 0 24 24">
-                                                <path d="M20 7h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v3H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2zM10 4h4v3h-4V4zm10 16H4V9h5v1c0 .55.45 1 1 1h4c.55 0 1-.45 1-1V9h5v11z"/>
+                                            <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                                             </svg>
                                         </div>
                                         <!-- Academic Cap Icon -->
@@ -1366,8 +1466,8 @@ const stopMobileCarousel = () => {
                             </div>
                             <!-- Custom Icon for Sub-Organizations (uses currentColor) -->
                             <div v-else-if="card.icon === 'organization-chart'" class="w-12 h-12 rounded-full flex items-center justify-center bg-green-100 dark:bg-green-900/50">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-500 dark:text-green-400" viewBox="0 -960 960 960" fill="currentColor" width="24px" height="24px">
-                                    <path d="M600-120v-120H440v-400h-80v120H80v-320h280v120h240v-120h280v320H600v-120h-80v320h80v-120h280v320H600ZM160-760v160-160Zm520 400v160-160Zm0-400v160-160Zm0 160h120v-160H680v160Zm0 400h120v-160H680v160ZM160-600h120v-160H160v160Z" />
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-500 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                                 </svg>
                             </div>
                             <!-- Academic Cap Icon for College Affiliated Orgs -->
