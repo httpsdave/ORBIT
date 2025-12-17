@@ -168,6 +168,81 @@ const applicationToDelete = ref(null);
 const showClearDataModal = ref(false);
 const isClearingData = ref(false);
 
+// Required Forms panel state (for users only)
+const showRequiredFormsPopup = ref(false);
+const neverShowRequiredForms = ref(false);
+
+// Check if never show again preference exists
+if (typeof window !== 'undefined' && !props.isAdmin) {
+  neverShowRequiredForms.value = localStorage.getItem('neverShowRequiredForms') === 'true';
+  // Show popup on mobile if not dismissed
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  if (isMobile && !neverShowRequiredForms.value) {
+    showRequiredFormsPopup.value = true;
+  }
+}
+
+// Determine if user is new org (no approved Recognition form) or existing
+const hasApprovedRecognition = computed(() => {
+  return props.applications.some(app => 
+    app.form_type === 'LSPU-OSAS-SF-001' && 
+    app.status?.toLowerCase() === 'approved'
+  );
+});
+
+const isNewOrg = computed(() => !hasApprovedRecognition.value);
+
+// Define required forms for new and existing organizations
+const requiredForms = computed(() => {
+  if (isNewOrg.value) {
+    return [
+      { type: 'LSPU-OSAS-SF-001', label: 'Organization Recognition', required: true },
+      { type: 'LSPU-OSAS-SF-003', label: 'Commitment Form', required: true },
+      { type: 'LSPU-OSAS-SF-007', label: 'List of Officers', required: true },
+      { type: 'LSPU-OSAS-SF-005', label: 'List of Members', required: true },
+      { type: 'LSPU-OSAS-SF-006', label: 'Student Certification', required: true },
+    ];
+  } else {
+    return [
+      { type: 'LSPU-OSAS-SF-002', label: 'Renewal Form', required: true },
+      { type: 'LSPU-OSAS-SF-003', label: 'Commitment Form', required: true },
+      { type: 'LSPU-OSAS-SF-004', label: 'Plan of Activities', required: true },
+      { type: 'LSPU-OSAS-SF-005', label: 'List of Members', required: true },
+      { type: 'LSPU-OSAS-SF-007', label: 'List of Officers', required: true },
+      { type: 'LSPU-OSAS-SF-006', label: 'Student Certification', required: true },
+    ];
+  }
+});
+
+// Check which forms have been submitted
+const formSubmissionStatus = computed(() => {
+  return requiredForms.value.map(form => {
+    const submitted = props.applications.some(app => app.form_type === form.type);
+    const approved = props.applications.some(app => 
+      app.form_type === form.type && app.status?.toLowerCase() === 'approved'
+    );
+    return {
+      ...form,
+      submitted,
+      approved
+    };
+  });
+});
+
+// Close required forms popup
+const closeRequiredFormsPopup = () => {
+  showRequiredFormsPopup.value = false;
+};
+
+// Never show again handler
+const handleNeverShowAgain = () => {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('neverShowRequiredForms', 'true');
+    neverShowRequiredForms.value = true;
+    showRequiredFormsPopup.value = false;
+  }
+};
+
 // Get unique values for filter options from server-provided data
 const statusOptions = computed(() => {
   const statuses = props.allStatuses && props.allStatuses.length > 0 
@@ -1107,10 +1182,13 @@ const confirmClearData = () => {
       </div>
     </div>
 
-    <!-- Applications Table -->
-    <div class="relative">
-      <!-- Content Layer -->
-      <div class="relative z-10">
+    <!-- Applications Table with Required Forms Sidebar (Desktop Only, Users Only) -->
+    <div class="relative flex gap-6 max-w-7xl mx-auto px-3 sm:px-6">
+      <!-- Main Applications Table -->
+      <div class="flex-1 min-w-0">
+        <div class="relative">
+          <!-- Content Layer -->
+          <div class="relative z-10">
         <ApplicationsTable 
           v-if="filteredApplications.length > 0" 
           :applications="filteredApplications" 
@@ -1146,8 +1224,152 @@ const confirmClearData = () => {
             <span class="text-sm font-medium">Loading more applications...</span>
           </div>
         </div>
+        </div>
+      </div>
+      </div>
+
+      <!-- Required Forms Sidebar (Desktop Only, Users Only) -->
+      <div v-if="!isAdmin" class="hidden xl:block w-80 flex-shrink-0">
+        <div class="sticky top-6 bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 p-5 space-y-4">
+          <div class="flex items-center gap-2 pb-3 border-b border-gray-200 dark:border-gray-700">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Required Forms</h3>
+          </div>
+          
+          <div class="space-y-1">
+            <p class="text-xs text-gray-600 dark:text-gray-400 font-medium">
+              {{ isNewOrg ? 'New Organization' : 'Existing Organization' }}
+            </p>
+          </div>
+
+          <div class="space-y-2">
+            <div 
+              v-for="form in formSubmissionStatus" 
+              :key="form.type"
+              class="flex items-start gap-2 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+            >
+              <!-- Status Icon -->
+              <div class="flex-shrink-0 mt-0.5">
+                <svg v-if="form.approved" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+                <svg v-else-if="form.submitted" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
+                </svg>
+                <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 dark:text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              
+              <!-- Form Info -->
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ form.label }}</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                  <span v-if="form.approved" class="text-green-600 dark:text-green-400">✓ Approved</span>
+                  <span v-else-if="form.submitted" class="text-yellow-600 dark:text-yellow-400">⏱ Pending</span>
+                  <span v-else class="text-gray-500 dark:text-gray-400">Not submitted</span>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-3 border-t border-gray-200 dark:border-gray-700">
+            <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+              Submit all required forms to complete your {{ isNewOrg ? 'organization recognition' : 'renewal process' }}.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
+
+    <!-- Required Forms Popup (Mobile Only, Users Only) -->
+    <transition name="fade">
+      <div v-if="!isAdmin && showRequiredFormsPopup" class="xl:hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black bg-opacity-50" @click="closeRequiredFormsPopup">
+        <div 
+          class="bg-white dark:bg-gray-800 rounded-t-2xl sm:rounded-2xl shadow-2xl w-full sm:w-auto sm:max-w-md max-h-[80vh] overflow-y-auto"
+          @click.stop
+        >
+          <!-- Header -->
+          <div class="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-4 flex items-center justify-between rounded-t-2xl">
+            <div class="flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Required Forms</h3>
+            </div>
+            <button @click="closeRequiredFormsPopup" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          <!-- Content -->
+          <div class="p-4 space-y-4">
+            <div class="space-y-1">
+              <p class="text-sm text-gray-600 dark:text-gray-400 font-medium">
+                {{ isNewOrg ? 'New Organization' : 'Existing Organization' }}
+              </p>
+            </div>
+
+            <div class="space-y-2">
+              <div 
+                v-for="form in formSubmissionStatus" 
+                :key="form.type"
+                class="flex items-start gap-2 p-3 rounded-lg bg-gray-50 dark:bg-gray-700/50"
+              >
+                <!-- Status Icon -->
+                <div class="flex-shrink-0 mt-0.5">
+                  <svg v-if="form.approved" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                  </svg>
+                  <svg v-else-if="form.submitted" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
+                  </svg>
+                  <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 dark:text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
+                  </svg>
+                </div>
+                
+                <!-- Form Info -->
+                <div class="flex-1 min-w-0">
+                  <p class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ form.label }}</p>
+                  <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                    <span v-if="form.approved" class="text-green-600 dark:text-green-400">✓ Approved</span>
+                    <span v-else-if="form.submitted" class="text-yellow-600 dark:text-yellow-400">⏱ Pending</span>
+                    <span v-else class="text-gray-500 dark:text-gray-400">Not submitted</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3">
+              <p class="text-xs text-gray-600 dark:text-gray-300 leading-relaxed">
+                Submit all required forms to complete your {{ isNewOrg ? 'organization recognition' : 'renewal process' }}.
+              </p>
+            </div>
+          </div>
+
+          <!-- Footer -->
+          <div class="sticky bottom-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4 flex flex-col gap-2 rounded-b-2xl">
+            <button
+              @click="handleNeverShowAgain"
+              class="w-full px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+            >
+              Don't show this again
+            </button>
+            <button
+              @click="closeRequiredFormsPopup"
+              class="w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Got it
+            </button>
+          </div>
+        </div>
+      </div>
+    </transition>
 
     <!-- Status Update Modal -->
     <StatusModal
