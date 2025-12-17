@@ -567,41 +567,66 @@
         <div class="w-1/4 h-0.5 sm:h-1 bg-red-500"></div>
       </div>
       
-      <div class="space-y-3 sm:space-y-4 md:space-y-5">
-        <div class="flex space-x-3 sm:space-x-4 items-start">
-          <div class="flex-shrink-0 bg-blue-50 dark:bg-blue-900 rounded-lg p-2.5 sm:p-3 md:p-4 text-center border-l-3 sm:border-l-4 border-blue-500 min-w-[60px] sm:min-w-[70px] md:min-w-[80px]">
-            <span class="text-xs sm:text-sm font-medium text-blue-500 dark:text-blue-200 block mb-0.5 sm:mb-1">{{ formatDate(selectedEvent.start_date, 'MMM') }}</span>
-            <p class="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-100">{{ formatDate(selectedEvent.start_date, 'DD') }}</p>
+      <div class="space-y-4">
+        <!-- Date & Time Section -->
+        <div class="flex space-x-3 items-start">
+          <div class="flex-shrink-0 bg-blue-500 rounded-lg p-3 text-center min-w-[70px] shadow-sm">
+            <span class="text-xs font-medium text-blue-100 block">{{ formatDate(selectedEvent.start_date, 'MMM') }}</span>
+            <p class="text-2xl font-bold text-white">{{ formatDate(selectedEvent.start_date, 'DD') }}</p>
           </div>
-          <div class="flex-1">
-            <p class="font-medium text-sm sm:text-base text-gray-700 dark:text-gray-100 leading-relaxed">
+          <div class="flex-1 pt-1">
+            <p class="font-medium text-sm text-gray-700 dark:text-gray-100 leading-relaxed">
               <template v-if="selectedEvent.end_date && formatDate(selectedEvent.start_date, 'YYYY-MM-DD') !== formatDate(selectedEvent.end_date, 'YYYY-MM-DD')">
                 {{ formatDate(selectedEvent.start_date, 'dddd, MMMM D, YYYY') }}<br>
-                <span class="text-xs sm:text-sm text-gray-600 dark:text-gray-300">{{ formatDate(selectedEvent.start_date, 'h:mm A') }} - </span>
+                <span class="text-xs text-gray-600 dark:text-gray-300">{{ formatDate(selectedEvent.start_date, 'h:mm A') }} - </span>
                 <br>
                 {{ formatDate(selectedEvent.end_date, 'dddd, MMMM D, YYYY') }}<br>
-                <span class="text-xs sm:text-sm text-gray-600 dark:text-gray-300">{{ formatDate(selectedEvent.end_date, 'h:mm A') }}</span>
+                <span class="text-xs text-gray-600 dark:text-gray-300">{{ formatDate(selectedEvent.end_date, 'h:mm A') }}</span>
               </template>
               <template v-else>
                 {{ formatDate(selectedEvent.start_date, 'dddd, MMMM D, YYYY') }}<br>
-                <span class="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mt-1 block">{{ formatDate(selectedEvent.start_date, 'h:mm A') }} - {{ formatDate(selectedEvent.end_date || selectedEvent.start_date, 'h:mm A') }}</span>
+                <span class="text-xs text-gray-600 dark:text-gray-300 mt-1 block">{{ formatDate(selectedEvent.start_date, 'h:mm A') }} - {{ formatDate(selectedEvent.end_date || selectedEvent.start_date, 'h:mm A') }}</span>
               </template>
             </p>
           </div>
         </div>
-        <div v-if="selectedEvent.description" class="bg-gray-50 dark:bg-gray-700 p-3 sm:p-4 md:p-5 rounded-lg max-h-40 sm:max-h-48 overflow-y-auto">
-          <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-300 font-semibold mb-2 sm:mb-3">Description:</p>
-          <p class="text-sm sm:text-base text-gray-700 dark:text-gray-100 whitespace-pre-line break-words overflow-wrap-anywhere leading-relaxed">{{selectedEvent.description}}</p>
+
+        <!-- Event Details -->
+        <div class="space-y-3 pt-2">
+          <div v-if="selectedEvent.description">
+            <div class="flex items-center gap-2 mb-1.5">
+              <svg class="w-4 h-4 text-gray-500 dark:text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+              </svg>
+              <p class="text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wide">Description</p>
+            </div>
+            <p class="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-line break-words leading-relaxed pl-6">{{selectedEvent.description}}</p>
+          </div>
+          
+          <div v-if="selectedEvent.location">
+            <div class="flex items-center gap-2 mb-1.5">
+              <svg class="w-4 h-4 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              <p class="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide">Location</p>
+            </div>
+            <p class="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-line break-words leading-relaxed pl-6">{{selectedEvent.location}}</p>
+          </div>
+          
+          <div v-if="selectedEvent.organization">
+            <div class="flex items-center gap-2 mb-1.5">
+              <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+              <p class="text-xs font-semibold text-green-600 dark:text-green-400 uppercase tracking-wide">Organization</p>
+            </div>
+            <p class="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-line break-words leading-relaxed pl-6">{{selectedEvent.organization}}</p>
+          </div>
         </div>
-        <div v-if="selectedEvent.location" class="bg-blue-50 dark:bg-blue-900 p-3 sm:p-4 md:p-5 rounded-lg">
-          <p class="text-xs sm:text-sm text-blue-600 dark:text-blue-200 font-semibold mb-2 sm:mb-3">Location:</p>
-          <p class="text-sm sm:text-base text-gray-700 dark:text-gray-100 whitespace-pre-line break-words overflow-wrap-anywhere leading-relaxed">{{selectedEvent.location}}</p>
-        </div>
-        <div v-if="selectedEvent.organization" class="bg-green-50 dark:bg-green-900 p-3 sm:p-4 md:p-5 rounded-lg">
-          <p class="text-xs sm:text-sm text-green-600 dark:text-green-200 font-semibold mb-2 sm:mb-3">Organization:</p>
-          <p class="text-sm sm:text-base text-gray-700 dark:text-gray-100 whitespace-pre-line break-words overflow-wrap-anywhere leading-relaxed">{{selectedEvent.organization}}</p>
-        </div>
-        <div v-if="isAdmin" class="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 pt-3 sm:pt-4 border-t border-gray-200 dark:border-gray-600">
+
+        <!-- Action Buttons -->
+        <div v-if="isAdmin" class="flex flex-col sm:flex-row justify-end gap-2 pt-4 border-t border-gray-200 dark:border-gray-700">
           <button @click="editEvent(selectedEvent)" class="inline-flex items-center justify-center px-3 py-2 sm:px-4 sm:py-2.5 md:px-5 md:py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-xs sm:text-sm font-medium text-white rounded-lg sm:rounded-xl shadow-md hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group">
             <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
             <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
