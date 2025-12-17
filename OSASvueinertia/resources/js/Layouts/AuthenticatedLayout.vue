@@ -4,7 +4,7 @@ import { usePage } from '@inertiajs/vue3';
 import SidebarLayout from '@/Components/Layout/Sidebar/SidebarLayout.vue';
 
 const user = computed(() => usePage().props.auth.user);
-const isAdmin = computed(() => user.value?.role?.slug === 'admin');
+const isAdmin = computed(() => user.value?.role?.slug === 'admin' || user.value?.role?.slug === 'super_admin');
 const showMobileMenu = ref(false);
 const windowWidth = ref(window.innerWidth);
 
