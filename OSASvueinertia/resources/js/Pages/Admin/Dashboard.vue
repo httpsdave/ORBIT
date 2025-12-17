@@ -104,6 +104,9 @@ const showTutorial = ref(false);
 // Modal state for viewing all organizations
 const showAllOrganizationsModal = ref(false);
 
+// Modal state for viewing colleges pie chart
+const showCollegesPieModal = ref(false);
+
 // Colors for the charts - using our primary color scheme
 const COLORS = ['#3B82F6', '#10B981', '#FBBF24', '#EF4444', '#8B5CF6', '#EC4899', '#06B6D4', '#6366F1', '#D946EF', '#A855F7'];
 const COLORS_WITH_OPACITY = COLORS.map(color => `${color}CC`);
@@ -1586,7 +1589,7 @@ const stopMobileCarousel = () => {
                         </div>
                     </div>
                     
-                    <div v-if="activeChart === 'pie'" class="h-64 sm:h-80">
+                    <div v-if="activeChart === 'pie'" class="h-64 sm:h-80 cursor-pointer" @click="showCollegesPieModal = true">
                         <Pie 
                             :data="pieChartData" 
                             :options="pieChartOptions" 
@@ -1987,6 +1990,52 @@ const stopMobileCarousel = () => {
                         <span>Total Organizations: <strong class="text-gray-900 dark:text-gray-100">{{ sortedOrgsWithMembers.length }}</strong></span>
                         <button 
                             @click="showAllOrganizationsModal = false"
+                            class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors font-medium">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Colleges Pie Chart Modal -->
+        <div v-if="showCollegesPieModal" 
+             @click="showCollegesPieModal = false"
+             class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 p-4">
+            <div @click.stop 
+                 class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+                <!-- Modal Header -->
+                <div class="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700">
+                    <h3 class="text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100">
+                        Student Organizations by College
+                    </h3>
+                    <button 
+                        @click="showCollegesPieModal = false"
+                        class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+                        aria-label="Close modal">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- Modal Content - Large Pie Chart -->
+                <div class="flex-1 overflow-y-auto p-4 sm:p-6">
+                    <div v-if="pieChartData.labels.length === 0" 
+                         class="text-center text-gray-500 dark:text-gray-400 py-12">
+                        <p class="text-lg">No organizations data available.</p>
+                    </div>
+                    <div v-else class="h-[500px]">
+                        <Pie :data="pieChartData" :options="pieChartOptions" />
+                    </div>
+                </div>
+                
+                <!-- Modal Footer -->
+                <div class="p-4 sm:p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+                    <div class="flex justify-between items-center text-sm text-gray-600 dark:text-gray-400">
+                        <span>Total Colleges: <strong class="text-gray-900 dark:text-gray-100">{{ pieChartData.labels.length }}</strong></span>
+                        <button 
+                            @click="showCollegesPieModal = false"
                             class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors font-medium">
                             Close
                         </button>
