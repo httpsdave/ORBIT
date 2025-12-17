@@ -76,7 +76,12 @@ defineProps({
               {{ $page.props.auth.user.name.charAt(0).toUpperCase() }}
             </div>
           </div>
-          <div v-if="isAdmin" class="hidden sm:block">
+          <div v-if="$page.props.auth.user.role?.slug === 'super_admin'" class="hidden sm:block">
+            <span class="px-2 py-0.5 text-xs font-medium bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 rounded-full border border-purple-200 dark:border-purple-700 shadow-inner">
+              Super Admin
+            </span>
+          </div>
+          <div v-else-if="isAdmin" class="hidden sm:block">
             <span class="px-2 py-0.5 text-xs font-medium bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 rounded-full border border-indigo-200 dark:border-indigo-700 shadow-inner">
               Admin
             </span>

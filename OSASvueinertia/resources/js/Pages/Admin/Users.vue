@@ -643,7 +643,7 @@ const closeMobileActionsModal = () => {
                                         </div>
                                     </div>
                                     <span class="px-2 py-1 text-xs font-semibold rounded-full flex-shrink-0"
-                                          :class="user.role.slug === 'admin' ? 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200' : 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'">
+                                          :class="user.role.slug === 'super_admin' ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200' : user.role.slug === 'admin' ? 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200' : 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'">
                                         {{ user.role.name }}
                                     </span>
                                 </div>
@@ -708,7 +708,7 @@ const closeMobileActionsModal = () => {
                                         </td>
                                         <td class="px-3 lg:px-6 py-4 whitespace-nowrap">
                                             <span class="px-2 lg:px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
-                                                  :class="user.role.slug === 'admin' ? 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200' : 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'">
+                                                  :class="user.role.slug === 'super_admin' ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200' : user.role.slug === 'admin' ? 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200' : 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'">
                                                 {{ user.role.name }}
                                             </span>
                                         </td>

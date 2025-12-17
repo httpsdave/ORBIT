@@ -508,7 +508,10 @@ onUnmounted(() => {
                     {{ user?.name || 'User' }}
                   </span>
                 </div>
-                <div v-if="isAdmin" class="text-xs font-medium text-indigo-700 dark:text-indigo-300 bg-indigo-100 dark:bg-indigo-900/50 px-2 py-0.5 rounded-full border border-indigo-200 dark:border-indigo-700">
+                <div v-if="user?.role?.slug === 'super_admin'" class="text-xs font-medium text-purple-700 dark:text-purple-300 bg-purple-100 dark:bg-purple-900/50 px-2 py-0.5 rounded-full border border-purple-200 dark:border-purple-700">
+                  Super Admin
+                </div>
+                <div v-else-if="isAdmin" class="text-xs font-medium text-indigo-700 dark:text-indigo-300 bg-indigo-100 dark:bg-indigo-900/50 px-2 py-0.5 rounded-full border border-indigo-200 dark:border-indigo-700">
                   Admin
                 </div>
               </div>
