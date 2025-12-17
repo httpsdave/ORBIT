@@ -1,5 +1,5 @@
 <script setup>
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
 import InputError from '@/Components/InputError.vue';
@@ -171,23 +171,37 @@ const isAdminRole = (roleId) => {
 };
 
 // Check if current user is super admin
+const page = usePage();
+const currentUserId = computed(() => page.props.auth?.user?.id);
 const isSuperAdmin = computed(() => {
-    return props.users.find(u => u.id === props.$page?.props?.auth?.user?.id)?.role?.slug === 'super_admin';
+    const currentUser = props.users.find(u => u.id === currentUserId.value);
+    return currentUser?.role?.slug === 'super_admin';
 });
 
 // Helper function to check if user can edit/delete another user
 const canModifyUser = (targetUser) => {
-    // Super admins can modify anyone
+    // Super admins can modify anyone including themselves
     if (isSuperAdmin.value) return true;
     
-    // Can't modify yourself
-    if (targetUser.id === props.$page?.props?.auth?.user?.id) return false;
+    // Admins can't modify themselves
+    if (targetUser.id === currentUserId.value) return false;
     
     // Admins can't modify other admins or super admins
     if (targetUser.role.slug === 'admin' || targetUser.role.slug === 'super_admin') return false;
     
     return true;
 };
+
+// Computed property to filter roles based on current user permissions
+const availableRoles = computed(() => {
+    if (isSuperAdmin.value) {
+        // Super admins can assign any role
+        return props.roles;
+    } else {
+        // Regular admins can only assign 'user' role
+        return props.roles.filter(role => role.slug === 'user');
+    }
+});
 
 // Watch for role changes and clear student_org_id if admin is selected
 const watchRoleChange = () => {
@@ -885,7 +899,7 @@ const closeMobileActionsModal = () => {
                             required
                         >
                             <option value="">Select Role</option>
-                            <option v-for="role in roles" :key="role.id" :value="role.id">{{ role.name }}</option>
+                            <option v-for="role in availableRoles" :key="role.id" :value="role.id">{{ role.name }}</option>
                         </select>
                         <InputError class="mt-2" :message="form.errors.role_id" />
                     </div>
@@ -952,7 +966,7 @@ const closeMobileActionsModal = () => {
                             required
                         >
                             <option value="">Select Role</option>
-                            <option v-for="role in roles" :key="role.id" :value="role.id">{{ role.name }}</option>
+                            <option v-for="role in availableRoles" :key="role.id" :value="role.id">{{ role.name }}</option>
                         </select>
                         <InputError class="mt-2" :message="editForm.errors.role_id" />
                     </div>
