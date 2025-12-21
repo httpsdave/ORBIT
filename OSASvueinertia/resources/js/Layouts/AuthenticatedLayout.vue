@@ -53,7 +53,7 @@ onUnmounted(() => {
     @close-mobile-menu="handleCloseMobileMenu"
   >
     <!-- Page Heading -->
-    <header v-if="$slots.header" class="bg-white dark:bg-gray-900 w-full">
+    <header v-if="$slots.header" class="bg-gray-50 dark:bg-gray-900 w-full">
       <div class="w-full px-4 py-4 sm:px-6 lg:px-8">
         <slot name="header" />
       </div>
