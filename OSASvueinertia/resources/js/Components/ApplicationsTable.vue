@@ -10,9 +10,26 @@ const props = defineProps({
   applications: Array,
   isAdmin: Boolean,
   isPreviewModalOpen: Boolean,
+  // Bulk selection props (admin only)
+  selectedApplications: {
+    type: Array,
+    default: () => []
+  },
+  isAllSelected: {
+    type: Boolean,
+    default: false
+  },
+  isSomeSelected: {
+    type: Boolean,
+    default: false
+  },
+  isBulkModeActive: {
+    type: Boolean,
+    default: false
+  }
 });
 
-const emit = defineEmits(['openStatusModal', 'deleteApplication', 'uploadDocument', 'submitLink', 'refreshData', 'confirmDeleteDocument']);
+const emit = defineEmits(['openStatusModal', 'deleteApplication', 'uploadDocument', 'submitLink', 'refreshData', 'confirmDeleteDocument', 'toggleSelectAll', 'toggleApplicationSelection']);
 
 // Helper function to check if an application is read-only for current user
 const isReadOnly = (app) => {
@@ -757,7 +774,18 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
         class="relative bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-100 dark:border-gray-700 p-4 flex flex-col gap-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition"
         @click="viewPdf(app)">
         
-        <div class="flex items-center justify-between">
+        <!-- Checkbox for admin (top-left corner on mobile - only show when bulk mode is active) -->
+        <div v-if="isAdmin && isBulkModeActive" class="absolute top-2 left-2" @click.stop>
+          <input
+            type="checkbox"
+            :checked="selectedApplications.includes(app.id)"
+            @change="emit('toggleApplicationSelection', app.id)"
+            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer"
+            :aria-label="'Select ' + formTypeToName(app.form_type)"
+          />
+        </div>
+        
+        <div class="flex items-center justify-between" :class="{ 'ml-6': isAdmin && isBulkModeActive }">
           <div class="flex items-center gap-2">
             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#2563eb"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h168q13-36 43.5-58t68.5-22q38 0 68.5 22t43.5 58h168q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm80-80h280v-80H280v80Zm0-160h400v-80H280v80Zm0-160h400v-80H280v80Zm200-190q13 0 21.5-8.5T510-820q0-13-8.5-21.5T480-850q-13 0-21.5 8.5T450-820q0 13 8.5 21.5T480-790ZM200-200v-560 560Z"/></svg>
             <div class="text-base font-semibold text-gray-800 dark:text-gray-200">{{ formTypeToName(app.form_type) }}</div>
@@ -844,6 +872,17 @@ watch(() => props.isPreviewModalOpen, (newVal) => {
       >
         
         <div class="flex items-center gap-4 p-5 flex-1 min-w-0">
+          <!-- Checkbox for bulk selection (admin only - only show when bulk mode is active) -->
+          <div v-if="isAdmin && isBulkModeActive" class="flex-shrink-0" @click.stop>
+            <input
+              type="checkbox"
+              :checked="selectedApplications.includes(app.id)"
+              @change="emit('toggleApplicationSelection', app.id)"
+              class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer"
+              :aria-label="'Select ' + formTypeToName(app.form_type)"
+            />
+          </div>
+          
           <div class="flex-shrink-0">
             <div class="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full p-3">
               <svg xmlns="http://www.w3.org/2000/svg" height="28px" viewBox="0 -960 960 960" width="28px" fill="#2563eb"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h168q13-36 43.5-58t68.5-22q38 0 68.5 22t43.5 58h168q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm80-80h280v-80H280v80Zm0-160h400v-80H280v80Zm0-160h400v-80H280v80Zm200-190q13 0 21.5-8.5T510-820q0-13-8.5-21.5T480-850q-13 0-21.5 8.5T450-820q0 13 8.5 21.5T480-790ZM200-200v-560 560Z"/></svg>

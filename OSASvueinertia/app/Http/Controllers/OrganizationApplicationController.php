@@ -1288,6 +1288,48 @@ class OrganizationApplicationController extends Controller
     }
     
     /**
+     * Bulk delete applications (admin/superadmin only)
+     */
+    public function bulkDestroy(Request $request)
+    {
+        // Only allow admin/superadmin to bulk delete
+        if (!auth()->user()->isAdmin()) {
+            abort(403, 'Only administrators can bulk delete applications.');
+        }
+        
+        $request->validate([
+            'application_ids' => 'required|array|min:1',
+            'application_ids.*' => 'required|integer|exists:organization_applications,id'
+        ]);
+        
+        $applicationIds = $request->input('application_ids');
+        
+        try {
+            // Fetch all applications to be deleted
+            $applications = OrganizationApplication::whereIn('id', $applicationIds)->get();
+            
+            // Log and delete each application
+            foreach ($applications as $application) {
+                // Log the application deletion activity before deleting
+                $this->logApplicationDeleted($application);
+                
+                // Delete the signed document if it exists
+                if ($application->signed_document_path) {
+                    Storage::disk('public')->delete($application->signed_document_path);
+                }
+                
+                $application->delete();
+            }
+            
+            $count = count($applications);
+            return redirect()->route('applications.index')->with('successMessage', "Successfully deleted {$count} application" . ($count > 1 ? 's' : '') . '.');
+        } catch (\Exception $e) {
+            \Log::error('Bulk delete failed: ' . $e->getMessage());
+            return redirect()->route('applications.index')->with('errorMessage', 'Failed to delete applications. Please try again.');
+        }
+    }
+    
+    /**
      * Log when a user views an application (for activity tracking)
      */
     public function logView(OrganizationApplication $application)

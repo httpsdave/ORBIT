@@ -164,6 +164,26 @@ const endYearForm = ref({
 const showDeleteConfirmation = ref(false);
 const applicationToDelete = ref(null);
 
+// Bulk delete state (admin/superadmin only)
+const showBulkDeleteModal = ref(false);
+const selectedApplications = ref([]);
+const isBulkModeActive = ref(false);
+
+// Computed properties for bulk operations (admin only)
+const isAllSelected = computed(() => {
+  return props.isAdmin && filteredApplications.value.length > 0 && 
+         selectedApplications.value.length === filteredApplications.value.length;
+});
+
+const isSomeSelected = computed(() => {
+  return props.isAdmin && selectedApplications.value.length > 0 && 
+         selectedApplications.value.length < filteredApplications.value.length;
+});
+
+const hasSelectedApplications = computed(() => {
+  return props.isAdmin && selectedApplications.value.length > 0;
+});
+
 // Clear saved data modal state
 const showClearDataModal = ref(false);
 const isClearingData = ref(false);
@@ -471,6 +491,31 @@ watch(showMessage, (val) => {
   }
 });
 
+// Handle clicks outside to exit bulk mode
+const handleClickOutside = (event) => {
+  if (!isBulkModeActive.value || !props.isAdmin) return;
+  
+  // Check if click is outside the applications table, filter bar, bulk button, and selection banner
+  const applicationsTable = document.querySelector('.applications-table-container');
+  const filterBar = document.querySelector('.filter-bar-container');
+  const bulkButton = document.querySelector('.bulk-delete-button');
+  const selectionBanner = document.querySelector('.bulk-selection-banner');
+  const bulkDeleteModal = document.querySelector('.bulk-delete-modal');
+  
+  // Don't close if clicking inside these elements
+  const isInsideAllowedArea = 
+    (applicationsTable && applicationsTable.contains(event.target)) ||
+    (filterBar && filterBar.contains(event.target)) ||
+    (bulkButton && bulkButton.contains(event.target)) ||
+    (selectionBanner && selectionBanner.contains(event.target)) ||
+    (bulkDeleteModal && bulkDeleteModal.contains(event.target));
+  
+  if (!isInsideAllowedArea) {
+    isBulkModeActive.value = false;
+    selectedApplications.value = [];
+  }
+};
+
 onMounted(() => {
   filteredApplications.value = [...allApplications.value];
   if (showMessage.value) {
@@ -490,11 +535,14 @@ onMounted(() => {
   window.addEventListener('scroll', onScroll, { passive: true });
   // register infinite scroll listener
   window.addEventListener('scroll', handleScroll, { passive: true });
+  // register click outside handler for bulk mode
+  document.addEventListener('click', handleClickOutside);
   
   onUnmounted(() => {
     window.removeEventListener('inertia:navigate', handler);
     window.removeEventListener('scroll', onScroll);
     window.removeEventListener('scroll', handleScroll);
+    document.removeEventListener('click', handleClickOutside);
   });
 });
 
@@ -509,6 +557,10 @@ watch([searchQuery, statusFilter, formTypeFilter, organizationFilter], ([newSear
   
   if (filtersChanged) {
     resetPagination();
+    // Clear selections when filters change (admin only)
+    if (props.isAdmin) {
+      selectedApplications.value = [];
+    }
   }
   
   // Debounce filter changes to avoid excessive API calls
@@ -869,6 +921,72 @@ const confirmClearData = () => {
     }
   });
 };
+
+// Bulk delete functions (admin only)
+const toggleBulkMode = () => {
+  if (!props.isAdmin) return;
+  
+  isBulkModeActive.value = !isBulkModeActive.value;
+  // Clear selections when exiting bulk mode
+  if (!isBulkModeActive.value) {
+    selectedApplications.value = [];
+  }
+};
+
+const toggleSelectAll = () => {
+  if (!props.isAdmin) return;
+  
+  if (isAllSelected.value) {
+    selectedApplications.value = [];
+  } else {
+    selectedApplications.value = filteredApplications.value.map(app => app.id);
+  }
+};
+
+const toggleApplicationSelection = (applicationId) => {
+  if (!props.isAdmin) return;
+  
+  const index = selectedApplications.value.indexOf(applicationId);
+  if (index > -1) {
+    selectedApplications.value.splice(index, 1);
+  } else {
+    selectedApplications.value.push(applicationId);
+  }
+};
+
+const confirmBulkDelete = () => {
+  if (!props.isAdmin || selectedApplications.value.length === 0) return;
+  showBulkDeleteModal.value = true;
+};
+
+const bulkDeleteApplications = () => {
+  if (!props.isAdmin || selectedApplications.value.length === 0) return;
+  
+  router.delete('/applications/bulk-destroy', {
+    data: {
+      application_ids: selectedApplications.value
+    },
+    preserveScroll: true,
+    onSuccess: () => {
+      showBulkDeleteModal.value = false;
+      selectedApplications.value = [];
+      isBulkModeActive.value = false; // Exit bulk mode after successful deletion
+      localMessage.value = 'Applications deleted successfully!';
+      statusType.value = 'delete';
+      showMessage.value = true;
+      setTimeout(() => {
+        showMessage.value = false;
+      }, 5000);
+      // Refresh applications list
+      refreshApplications();
+    },
+    onError: () => {
+      localMessage.value = 'Failed to delete applications.';
+      statusType.value = 'error';
+      showMessage.value = true;
+    }
+  });
+};
 </script>
 
 <template>
@@ -1100,7 +1218,7 @@ const confirmClearData = () => {
       </div>
 
       <!-- Filter Bar (Admin Only) - Responsive Grid Layout -->
-      <div v-if="isAdmin" class="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2">
+      <div v-if="isAdmin" class="filter-bar-container grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2">
         <!-- Status Filter -->
         <div class="col-span-1">
           <select 
@@ -1150,6 +1268,29 @@ const confirmClearData = () => {
           </select>
         </div>
 
+        <!-- Bulk Delete Toggle Button -->
+        <button
+          @click="toggleBulkMode"
+          :class="[
+            'bulk-delete-button relative p-2 rounded-full transition-all duration-200 flex items-center justify-center group',
+            isBulkModeActive 
+              ? 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 shadow-md' 
+              : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 shadow-sm'
+          ]"
+          :title="isBulkModeActive ? 'Exit Bulk Delete Mode' : 'Bulk Delete Mode'"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7" rx="1" />
+            <rect x="14" y="3" width="7" height="7" rx="1" />
+            <rect x="14" y="14" width="7" height="7" rx="1" />
+            <rect x="3" y="14" width="7" height="7" rx="1" />
+          </svg>
+          <!-- Tooltip -->
+          <span class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-800 dark:bg-gray-700 text-white dark:text-gray-200 text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-50 pointer-events-none">
+            {{ isBulkModeActive ? 'Exit Bulk Delete' : 'Bulk Delete' }}
+          </span>
+        </button>
+
         <!-- Clear All Filters Button -->
         <button
           v-if="hasActiveFilters"
@@ -1186,7 +1327,36 @@ const confirmClearData = () => {
     <div class="relative flex gap-6 max-w-7xl mx-auto px-3 sm:px-6">
       <!-- Main Applications Table -->
       <div class="flex-1 min-w-0">
-        <div class="relative">
+        <!-- Bulk selection info and actions (Admin only - only show when bulk mode is active) -->
+        <div v-if="isBulkModeActive && hasSelectedApplications" class="bulk-selection-banner mb-4 flex flex-col xs:flex-row xs:items-center gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800 max-w-4xl mx-auto">
+          <div class="flex items-center gap-2 flex-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600 dark:text-blue-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span class="text-sm font-medium text-blue-800 dark:text-blue-200">
+              {{ selectedApplications.length }} application{{ selectedApplications.length !== 1 ? 's' : '' }} selected
+            </span>
+          </div>
+          <div class="flex gap-2">
+            <button
+              @click="selectedApplications = []"
+              class="inline-flex items-center justify-center px-3 py-1.5 bg-gray-200 dark:bg-gray-700 border border-transparent rounded-md font-medium text-xs text-gray-700 dark:text-gray-300 uppercase tracking-wider hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition duration-150 ease-in-out"
+            >
+              Clear Selection
+            </button>
+            <button
+              @click="confirmBulkDelete"
+              class="relative inline-flex items-center justify-center p-2 bg-red-500 border border-transparent rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition duration-150 ease-in-out group"
+              :title="`Delete ${selectedApplications.length} selected application${selectedApplications.length !== 1 ? 's' : ''}`"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+          </div>
+        </div>
+        
+        <div class="applications-table-container relative">
           <!-- Content Layer -->
           <div class="relative z-10">
         <ApplicationsTable 
@@ -1194,12 +1364,18 @@ const confirmClearData = () => {
           :applications="filteredApplications" 
           :isAdmin="isAdmin"
           :isPreviewModalOpen="showPreviewModal"
+          :selectedApplications="selectedApplications"
+          :isAllSelected="isAllSelected"
+          :isSomeSelected="isSomeSelected"
+          :isBulkModeActive="isBulkModeActive"
           @openStatusModal="openStatusModal"
           @deleteApplication="deleteApplication"
           @uploadDocument="handleDocumentUpload"
           @submitLink="handleSubmitLink"
           @refreshData="refreshApplications"
           @confirmDeleteDocument="handleConfirmDeleteDocument"
+          @toggleSelectAll="toggleSelectAll"
+          @toggleApplicationSelection="toggleApplicationSelection"
         />
         <NoApplicationsMessage v-else />
         
@@ -1539,6 +1715,52 @@ const confirmClearData = () => {
       @close="closeClearDataModal"
       @confirm="confirmClearData"
     />
+
+    <!-- Bulk Delete Confirmation Modal (Admin Only) -->
+    <Modal :show="showBulkDeleteModal" @close="showBulkDeleteModal = false">
+      <div class="bulk-delete-modal p-6 bg-white dark:bg-gray-800">
+        <div class="flex items-center mb-5">
+          <div class="flex-shrink-0 bg-red-100 dark:bg-red-900/20 rounded-full p-2 mr-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Delete Multiple Applications</h3>
+        </div>
+        <div class="mb-6">
+          <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+            Are you sure you want to delete {{ selectedApplications.length }} application{{ selectedApplications.length !== 1 ? 's' : '' }}?
+          </p>
+          <div class="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-3">
+            <div class="flex items-start">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+              </svg>
+              <div class="ml-3">
+                <p class="text-sm font-medium text-amber-800 dark:text-amber-200">Warning</p>
+                <p class="text-sm text-amber-700 dark:text-amber-300 mt-1">
+                  This action cannot be undone. All selected applications and their associated data will be permanently deleted.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="flex justify-end space-x-3">
+          <button
+            @click="showBulkDeleteModal = false"
+            class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition duration-150 ease-in-out"
+          >
+            Cancel
+          </button>
+          <button
+            @click="bulkDeleteApplications"
+            class="px-4 py-2 text-sm font-medium text-white bg-red-500 border border-transparent rounded-md shadow-sm hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition duration-150 ease-in-out"
+          >
+            Delete {{ selectedApplications.length }} Application{{ selectedApplications.length !== 1 ? 's' : '' }}
+          </button>
+        </div>
+      </div>
+    </Modal>
 
   </AuthenticatedLayout>
 </template>

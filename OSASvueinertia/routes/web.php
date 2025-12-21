@@ -175,6 +175,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/applications/select-form', [OrganizationApplicationController::class, 'selectForm'])->name('applications.select-form');
     Route::get('/applications/create', [OrganizationApplicationController::class, 'create'])->name('applications.create');
     Route::post('/applications', [OrganizationApplicationController::class, 'store'])->name('applications.store');
+    // Bulk delete must come BEFORE parameterized routes
+    Route::delete('/applications/bulk-destroy', [OrganizationApplicationController::class, 'bulkDestroy'])->name('applications.bulk-destroy');
     Route::get('/applications/{application}/edit', [OrganizationApplicationController::class, 'edit'])->name('applications.edit');
     Route::put('/applications/{application}', [OrganizationApplicationController::class, 'update'])->name('applications.update');
     Route::delete('/applications/{application}', [OrganizationApplicationController::class, 'destroy'])->name('applications.destroy');
