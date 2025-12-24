@@ -933,36 +933,38 @@ const bulkDeleteApplications = () => {
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-100 leading-tight">
           {{ isAdmin ? 'Manage Submissions' : 'Your Submissions' }}
         </h2>
-        <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto items-stretch sm:items-center relative">
+        <div class="flex flex-row sm:flex-row gap-1.5 sm:gap-2 w-full sm:w-auto items-center relative">
           <Link
             href="/applications/select-form"
-            class="inline-flex items-center justify-center px-3 py-2 sm:px-4 sm:py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-xs sm:text-sm font-medium text-white rounded-lg sm:rounded-xl shadow-md hover:shadow-blue-300/30 hover:from-blue-400 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 active:from-blue-600 active:to-blue-700 transition-all duration-300 relative overflow-hidden group w-full sm:w-auto"
+            class="inline-flex items-center justify-center px-2 py-1.5 sm:px-4 sm:py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-xs sm:text-sm font-medium text-white rounded-md sm:rounded-xl shadow-md hover:shadow-blue-300/30 hover:from-blue-400 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 active:from-blue-600 active:to-blue-700 transition-all duration-300 relative overflow-hidden group flex-1 sm:flex-none"
           >
             <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white dark:bg-gray-800 rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" viewBox="0 0 20 20" fill="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 sm:mr-2" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
             </svg>
-            Create New
+            <span class="hidden xs:inline">Create</span>
+            <span class="xs:hidden">New</span>
           </Link>
           <!-- Preview Forms Dropdown (Users and Admins) -->
-          <div class="relative w-full sm:w-auto">
+          <div class="relative flex-1 sm:flex-none">
             <button
               @click="showPreviewDropdown = !showPreviewDropdown"
-              class="inline-flex items-center justify-center px-3 py-2 sm:px-4 sm:py-2 bg-white dark:bg-gray-800 border border-blue-500 dark:border-blue-400 text-blue-700 dark:text-blue-300 text-xs sm:text-sm font-medium rounded-lg sm:rounded-xl shadow-md hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-800 dark:hover:text-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-all duration-300 relative overflow-hidden group w-full sm:w-auto"
+              class="inline-flex items-center justify-center px-2 py-1.5 sm:px-4 sm:py-2 bg-white dark:bg-gray-800 border border-blue-500 dark:border-blue-400 text-blue-700 dark:text-blue-300 text-xs sm:text-sm font-medium rounded-md sm:rounded-xl shadow-md hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-800 dark:hover:text-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-all duration-300 relative overflow-hidden group w-full sm:w-auto"
               type="button"
             >
               <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-blue-500 rounded-full group-hover:w-96 group-hover:h-96 opacity-5"></span>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" viewBox="0 0 20 20" fill="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 sm:mr-2" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M15 10a1 1 0 01-1 1H6a1 1 0 110-2h8a1 1 0 011 1z" clip-rule="evenodd" />
               </svg>
-              Preview Forms
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 sm:h-4 sm:w-4 ml-1" viewBox="0 0 20 20" fill="currentColor">
+              <span class="hidden xs:inline">Preview</span>
+              <span class="xs:hidden">Forms</span>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:h-4 sm:w-4 ml-0.5 sm:ml-1" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
               </svg>
             </button>
             <div
               v-if="showPreviewDropdown"
-              class="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg z-50"
+              class="absolute left-0 sm:right-0 sm:left-auto mt-2 w-64 sm:w-56 max-w-[calc(100vw-2rem)] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg z-50 max-h-[70vh] overflow-y-auto"
             >
               <ul class="py-1">
                 <li v-for="form in formTemplates" :key="form.type">
@@ -978,33 +980,31 @@ const bulkDeleteApplications = () => {
             <!-- Click outside to close -->
             <div v-if="showPreviewDropdown" class="fixed inset-0 z-40" @click="showPreviewDropdown = false"></div>
           </div>
-          <div class="flex flex-row items-center gap-2 w-full sm:w-auto">
-            <button
-              v-if="isAdmin"
-              @click="openEndYearModal"
-              class="inline-flex items-center justify-center px-3 py-2 sm:px-4 sm:py-2 bg-gradient-to-r from-red-500 to-red-600 text-xs sm:text-sm font-medium text-white rounded-lg sm:rounded-xl shadow-md hover:from-red-600 hover:to-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-all duration-300 relative overflow-hidden group flex-1 sm:flex-none"
-            >
-              <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-              </svg>
-              <span class="hidden sm:inline">End the Year</span>
-              <span class="sm:hidden">End Year</span>
-            </button>
-            <button
-              @click="openClearDataModal"
-              class="inline-flex items-center justify-center p-2 bg-transparent hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 rounded-lg shadow-sm transition duration-200 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2 dark:focus:ring-offset-gray-900 group relative flex-shrink-0"
-              aria-label="Clear Saved Form Data"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px" fill="currentColor" class="sm:h-[26px] sm:w-[26px]">
-                <path d="M280-720v520-520Zm170 600H280q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v172q-17-5-39.5-8.5T680-560v-160H280v520h132q6 21 16 41.5t22 38.5Zm-90-160h40q0-63 20-103.5l20-40.5v-216h-80v360Zm160-230q17-11 38.5-22t41.5-16v-92h-80v130ZM680-80q-83 0-141.5-58.5T480-280q0-83 58.5-141.5T680-480q83 0 141.5 58.5T880-280q0 83-58.5 141.5T680-80Zm66-106 28-28-74-74v-112h-40v128l86 86Z"/>
-              </svg>
-              <!-- Tooltip: move above button, increase z-index for responsiveness -->
-              <span class="absolute top-full mt-2 left-1/2 transform -translate-x-1/2 bg-gray-800 dark:bg-gray-700 text-white dark:text-gray-200 text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-30 shadow-lg pointer-events-none">
-                Clear saved form data
-              </span>
-            </button>
-          </div>
+          <button
+            v-if="isAdmin"
+            @click="openEndYearModal"
+            class="inline-flex items-center justify-center px-2 py-1.5 sm:px-4 sm:py-2 bg-gradient-to-r from-red-500 to-red-600 text-xs sm:text-sm font-medium text-white rounded-md sm:rounded-xl shadow-md hover:from-red-600 hover:to-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-all duration-300 relative overflow-hidden group flex-1 sm:flex-none"
+          >
+            <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 sm:mr-2" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+            </svg>
+            <span class="hidden xs:inline">End Year</span>
+            <span class="xs:hidden">End</span>
+          </button>
+          <button
+            @click="openClearDataModal"
+            class="inline-flex items-center justify-center p-1.5 sm:p-2 bg-transparent hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 rounded-md sm:rounded-lg shadow-sm transition duration-200 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2 dark:focus:ring-offset-gray-900 group relative flex-shrink-0"
+            aria-label="Clear Saved Form Data"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor" class="sm:h-[26px] sm:w-[26px]">
+              <path d="M280-720v520-520Zm170 600H280q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v172q-17-5-39.5-8.5T680-560v-160H280v520h132q6 21 16 41.5t22 38.5Zm-90-160h40q0-63 20-103.5l20-40.5v-216h-80v360Zm160-230q17-11 38.5-22t41.5-16v-92h-80v130ZM680-80q-83 0-141.5-58.5T480-280q0-83 58.5-141.5T680-480q83 0 141.5 58.5T880-280q0 83-58.5 141.5T680-80Zm66-106 28-28-74-74v-112h-40v128l86 86Z"/>
+            </svg>
+            <!-- Tooltip: move above button, increase z-index for responsiveness -->
+            <span class="absolute top-full mt-2 left-1/2 transform -translate-x-1/2 bg-gray-800 dark:bg-gray-700 text-white dark:text-gray-200 text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-30 shadow-lg pointer-events-none">
+              Clear saved form data
+            </span>
+          </button>
         </div>
       </div>
     </template>
@@ -1096,9 +1096,9 @@ const bulkDeleteApplications = () => {
       <!-- Status pill buttons and Form Type Filter - Non-Admin Users -->
       <div v-if="!isAdmin" class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
         <!-- Filters Row - Left side on larger screens -->
-        <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+        <div class="flex flex-row sm:flex-row gap-2 w-full sm:w-auto">
           <!-- Organization Filter (only show if user has parent/sub orgs) -->
-          <div v-if="hasMultipleViewableOrgs" class="w-full sm:w-auto">
+          <div v-if="hasMultipleViewableOrgs" class="flex-1 sm:flex-none sm:w-auto">
             <select 
               v-model="organizationFilter"
               class="w-full pl-2.5 pr-7 py-1.5 sm:pl-3 sm:pr-8 sm:py-2 border border-gray-300 dark:border-gray-600 rounded-full text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm"
@@ -1110,7 +1110,7 @@ const bulkDeleteApplications = () => {
           </div>
           
           <!-- Form Type Filter -->
-          <div class="w-full sm:w-auto">
+          <div class="flex-1 sm:flex-none sm:w-auto">
             <select 
               v-model="formTypeFilter"
               class="w-full pl-2.5 pr-7 py-1.5 sm:pl-3 sm:pr-8 sm:py-2 border border-gray-300 dark:border-gray-600 rounded-full text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm"
