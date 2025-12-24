@@ -1096,7 +1096,7 @@ const bulkDeleteApplications = () => {
       <!-- Status pill buttons and Form Type Filter - Non-Admin Users -->
       <div v-if="!isAdmin" class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
         <!-- Filters Row - Left side on larger screens -->
-        <div class="flex flex-row sm:flex-row gap-2 w-full sm:w-auto">
+        <div class="flex flex-row sm:flex-row gap-2 w-full sm:w-auto items-center">
           <!-- Organization Filter (only show if user has parent/sub orgs) -->
           <div v-if="hasMultipleViewableOrgs" class="flex-1 sm:flex-none sm:w-auto">
             <select 
@@ -1126,6 +1126,18 @@ const bulkDeleteApplications = () => {
               </option>
             </select>
           </div>
+
+          <!-- Clear Filters Button -->
+          <button 
+            v-if="hasActiveFilters"
+            @click="clearAllFilters"
+            class="flex-shrink-0 p-1.5 sm:p-2 text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+            title="Clear all filters"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+          </button>
         </div>
         
         <!-- Status pill buttons - Right side on larger screens -->
