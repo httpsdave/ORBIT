@@ -43,18 +43,13 @@ const currentSize = sizeClasses[props.size];
 
 // Handle theme toggle
 const handleToggle = () => {
-  if (props.variant === 'dropdown') {
-    cycleTheme();
-  } else {
-    toggleTheme();
-  }
+  toggleTheme();
 };
 
 // Theme options for dropdown variant
 const themeOptions = [
   { key: THEMES.LIGHT, label: 'Light', icon: 'sun' },
-  { key: THEMES.DARK, label: 'Dark', icon: 'moon' },
-  { key: THEMES.SYSTEM, label: 'System', icon: 'desktop' }
+  { key: THEMES.DARK, label: 'Dark', icon: 'moon' }
 ];
 </script>
 
@@ -123,9 +118,7 @@ const themeOptions = [
         @click="handleToggle"
         :class="[
           'relative inline-flex items-center rounded-full transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800',
-          currentTheme === THEMES.LIGHT ? 'bg-amber-200 hover:bg-amber-300' : 
-          currentTheme === THEMES.DARK ? 'bg-slate-600 hover:bg-slate-700' : 
-          'bg-purple-200 hover:bg-purple-300',
+          currentTheme === THEMES.LIGHT ? 'bg-amber-200 hover:bg-amber-300' : 'bg-slate-600 hover:bg-slate-700',
           currentSize.button === 'p-1.5' ? 'h-6 w-11' : 
           currentSize.button === 'p-2' ? 'h-7 w-12' : 'h-8 w-14'
         ]"
@@ -135,9 +128,7 @@ const themeOptions = [
         <span
           :class="[
             'inline-block rounded-full shadow-sm transform transition-all duration-300 ease-in-out',
-            currentTheme === THEMES.LIGHT ? 'translate-x-0 bg-amber-500' : 
-            currentTheme === THEMES.DARK ? 'translate-x-5 bg-slate-900' : 
-            'translate-x-2.5 bg-purple-600',
+            currentTheme === THEMES.LIGHT ? 'translate-x-0 bg-amber-500' : 'translate-x-5 bg-slate-900',
             currentSize.button === 'p-1.5' ? 'h-4 w-4' : 
             currentSize.button === 'p-2' ? 'h-5 w-5' : 'h-6 w-6'
           ]"
@@ -156,22 +147,12 @@ const themeOptions = [
             
             <!-- Moon Icon for Dark -->
             <svg
-              v-else-if="currentTheme === THEMES.DARK"
-              :class="currentSize.button === 'p-1.5' ? 'h-2.5 w-2.5' : currentSize.button === 'p-2' ? 'h-3 w-3' : 'h-3.5 w-3.5'"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
-            </svg>
-            
-            <!-- Auto/System Icon -->
-            <svg
               v-else
               :class="currentSize.button === 'p-1.5' ? 'h-2.5 w-2.5' : currentSize.button === 'p-2' ? 'h-3 w-3' : 'h-3.5 w-3.5'"
               fill="currentColor"
               viewBox="0 0 20 20"
             >
-              <path fill-rule="evenodd" d="M3 5a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2h-2.22l.123.489.804.804A1 1 0 0113 18H7a1 1 0 01-.707-1.707l.804-.804L7.22 15H5a2 2 0 01-2-2V5zm5.771 7H5V5h10v7H8.771z" clip-rule="evenodd" />
+              <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
             </svg>
           </span>
         </span>
