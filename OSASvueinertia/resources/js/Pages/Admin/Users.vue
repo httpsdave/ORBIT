@@ -512,7 +512,7 @@ const closeMobileActionsModal = () => {
 </script>
 
 <template>
-    <Head title="User Management" />
+    <Head title="Users" />
 
     <AuthenticatedLayout>
         <!-- Custom Notification -->

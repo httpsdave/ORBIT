@@ -432,7 +432,7 @@ watch(showPreviewModal, (val) => {
 </script>
 
 <template>
-    <Head title="My Archived Applications" />
+    <Head title="Archive" />
 
     <AuthenticatedLayout>
         <!-- Header Section -->

@@ -1,6 +1,6 @@
 <template>
     <AuthenticatedLayout :user="auth.user">
-        <Head title="Student Organizations" />
+        <Head title="Organizations" />
 
         <div class="py-8 min-h-screen" :class="isDarkMode ? 'bg-gray-900' : 'bg-gray-50'">
             <!-- Animated colored banner -->

@@ -1,5 +1,6 @@
 <template>
   <div>
+    <Head title="Organizations" />
     <AuthenticatedLayout title="Student Organizations">
       
         <!-- Colored Banner -->
@@ -1187,14 +1188,15 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Modal from '@/Components/Modal.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
-import { useForm } from '@inertiajs/vue3';
+import { useForm, Head } from '@inertiajs/vue3';
 import axios from 'axios';
 
 export default {
   components: {
     AuthenticatedLayout,
     Modal,
-    SecondaryButton
+    SecondaryButton,
+    Head
   },
   props: {
     colleges: Array,

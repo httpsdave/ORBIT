@@ -614,7 +614,7 @@ watch(() => props.currentPage, (newValue) => {
 </script>
 
 <template>
-    <Head title="Archive Management" />
+    <Head title="Archive" />
 
     <AuthenticatedLayout>
         <!-- Header Section -->

@@ -1,6 +1,6 @@
 <template>
   <AuthenticatedLayout>
-    <Head title="Manage Colleges" />
+    <Head title="Colleges" />
     
     <div class="py-4 sm:py-6 lg:py-8 bg-gray-50 dark:bg-gray-900 min-h-screen">
       <div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 xl:px-8">

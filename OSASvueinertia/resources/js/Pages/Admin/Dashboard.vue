@@ -1249,7 +1249,7 @@ const stopMobileCarousel = () => {
 </script>
 
 <template>
-    <Head title="Admin Dashboard"></Head>
+    <Head title="Dashboard"></Head>
 
     <AuthenticatedLayout>
         <!-- Tutorial Modal -->
