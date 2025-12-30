@@ -339,16 +339,16 @@
             <p class="office-title" style="font-size:11pt; font-weight:bold; margin-bottom:10px; margin-top:5px;">OFFICE OF STUDENT AFFAIRS AND SERVICES</p>
             <div class="subtitle" style="margin-top:15px; font-size:13pt;">PLAN OF ACTIVITIES</div>
             <div style="margin-top: 15px; text-align: center;">
-                <div class="signature-line" style="margin-bottom:0px; min-width:330px;"><strong>{{ $application->organization_name }}</strong></div>
+                <div class="signature-line" style="margin-bottom:0px; min-width:330px;"><strong>{!! $application->organization_name ?: '&nbsp;' !!}</strong></div>
                 <div class="title-under-signature" style="margin-top:2px;">Name of Organization</div>
             </div>
             <div style="text-align:center; margin-top:10px;">
                 <span class="signature-line" style="min-width:20px; margin-bottom:-2px; line-height:10px; padding:0 0 0 0;">
-                    <span style="position:relative; top:0px;"><strong>{{ $application->semester ?? '1st' }}</strong></span>
+                    <span style="position:relative; top:0px;"><strong>{!! (isset($application->semester) ? $application->semester : '&nbsp;') !!}</strong></span>
                 </span> Semester AY 20<span class="signature-line" style="min-width:20px; margin-bottom:-2px; margin-top:-1px; line-height:10px; padding:0 0 0 0;">
-                    <span style="position:relative; top:1px;"><strong>{{ $application->academic_year_start ?? '24' }}</strong></span>
+                    <span style="position:relative; top:1px;"><strong>{!! (isset($application->academic_year_start) ? $application->academic_year_start : '&nbsp;') !!}</strong></span>
                 </span>-20<span class="signature-line" style="min-width:20px; margin-bottom:-2px; margin-top:-1px; line-height:10px; padding:0 0 0 0;">
-                    <span style="position:relative; top:1px;"><strong>{{ $application->academic_year_end ?? '25' }}</strong></span>
+                    <span style="position:relative; top:1px;"><strong>{!! (isset($application->academic_year_end) ? $application->academic_year_end : '&nbsp;') !!}</strong></span>
                 </span>
             </div>
                 <!-- Removed Activity (number current ac) of (number of activity) -->
@@ -379,11 +379,11 @@
             <!-- First signature row with President and Secretary -->
             <div class="signature-container clearfix">
                 <div class="signature-left">
-                    <div class="signature-line" style="margin-bottom:0px;"><strong>{{ $application->president_name }}</strong></div>
+                    <div class="signature-line" style="margin-bottom:0px;"><strong>{!! $application->president_name ?: '&nbsp;' !!}</strong></div>
                     <p style="margin-top:2px;">Organization President</p>
                 </div>
                 <div class="signature-right">
-                    <div class="signature-line" style="margin-bottom:0px;"><strong>{{ $application->secretary_name ?? 'N/A' }}</strong></div>
+                    <div class="signature-line" style="margin-bottom:0px;"><strong>{!! $application->secretary_name ?: '&nbsp;' !!}</strong></div>
                     <p style="margin-top:2px;">Organization Secretary</p>
                 </div>
             </div>
@@ -395,7 +395,7 @@
             <!-- Second signature row with Faculty Adviser -->
             <div class="signature-container clearfix">
                 <div style="width: 100%; text-align: left;">
-                    <div class="signature-line" style="margin-bottom:0px; white-space:nowrap; min-width:200px; display:inline-block; text-align: center;margin-left: 35px; font-size: {{ strlen(trim((isset($application->adviser_prefix) && $application->adviser_prefix ? $application->adviser_prefix . ' ' : '') . ($application->adviser_name ?? '') . (isset($application->adviser_suffix) && $application->adviser_suffix ? ', ' . $application->adviser_suffix : ''))) > 25 ? '10pt' : '11pt' }}; word-wrap: break-word; overflow-wrap: break-word;"><strong>{{ trim((isset($application->adviser_prefix) && $application->adviser_prefix ? $application->adviser_prefix . ' ' : '') . ($application->adviser_name ?? 'N/A') . (isset($application->adviser_suffix) && $application->adviser_suffix ? ', ' . $application->adviser_suffix : '')) }}</strong></div>
+                    <div class="signature-line" style="margin-bottom:0px; white-space:nowrap; min-width:200px; display:inline-block; text-align: center;margin-left: 35px; font-size: {{ strlen(trim((isset($application->adviser_prefix) && $application->adviser_prefix ? $application->adviser_prefix . ' ' : '') . ($application->adviser_name ?? '') . (isset($application->adviser_suffix) && $application->adviser_suffix ? ', ' . $application->adviser_suffix : ''))) > 25 ? '10pt' : '11pt' }}; word-wrap: break-word; overflow-wrap: break-word;"><strong>{!! trim((isset($application->adviser_prefix) && $application->adviser_prefix ? $application->adviser_prefix . ' ' : '') . ($application->adviser_name ?? '') . (isset($application->adviser_suffix) && $application->adviser_suffix ? ', ' . $application->adviser_suffix : '')) ?: '&nbsp;' !!}</strong></div>
                     <p style="margin-top:2px; text-align: left; width: 180px;margin-left:75px">Organization Adviser(s)</p>
                 </div>
             </div>
@@ -410,13 +410,13 @@
             
             <div class="recommendation" style="margin-top:10px;">
                 <p style="margin-bottom: 25px;"><strong>Recommending Approval:</strong></p>
-                <div class="signature-line" style="min-width:290px; margin-bottom:0px; margin-top: 5px;"><strong>{{ $application->coordinator_name ?? 'N/A' }}</strong></div>
+                <div class="signature-line" style="min-width:290px; margin-bottom:0px; margin-top: 5px;"><strong>{!! $application->coordinator_name ?: '&nbsp;' !!}</strong></div>
                 <p style="margin-top:2px; margin-bottom:20px;">Coordinator, Student Organization Unit</p>
             </div>
             
             <div class="signature-block" style="margin-top:-20px;">
                 <p style="margin-bottom: 25px;"><strong>Approved/Disapproved:</strong></p>
-                <div class="signature-line" style="min-width:415px; margin-bottom:0px; margin-top: 5px;"><strong>{{ $application->director_name ?? 'N/A' }}</strong></div>
+                <div class="signature-line" style="min-width:415px; margin-bottom:0px; margin-top: 5px;"><strong>{!! $application->director_name ?: '&nbsp;' !!}</strong></div>
                 <p style="margin-top:2px;">Director/Chairperson, Office of Student Affairs and Services</p>
             </div>
         </div>
