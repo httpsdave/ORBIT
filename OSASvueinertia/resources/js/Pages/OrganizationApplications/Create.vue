@@ -410,7 +410,18 @@ const handleDirectUploadSubmit = () => {
             style="height: 650px;"
           ></iframe>
         </div>
-        <div class="flex justify-center mt-8">
+        <div class="flex justify-center items-center gap-3 mt-8">
+          <a
+            href="/applications/select-form"
+            class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-sm font-medium text-white rounded-xl shadow-md hover:shadow-blue-300/30 hover:from-blue-400 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:from-blue-600 active:to-blue-700 transition-all duration-300 relative overflow-hidden group"
+            style="font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Liberation Sans', sans-serif;"
+          >
+            <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
+            <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#ffffff" class="mr-2" aria-hidden="true">
+              <path d="m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z"/>
+            </svg>
+            <span>Back</span>
+          </a>
           <button
             @click="handleDirectUploadClick"
             :disabled="uploadProgress > 0 && uploadProgress < 100"
