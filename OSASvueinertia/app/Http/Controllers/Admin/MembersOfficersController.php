@@ -13,7 +13,7 @@ class MembersOfficersController extends Controller
     {
         try {
             $user = auth()->user();
-            $isAdmin = $user->role && $user->role->slug === 'admin';
+            $isAdmin = $user->role && in_array($user->role->slug, ['admin', 'super_admin']);
 
             // Build base query for List of Members applications (LSPU-OSAS-SF-005)
             $membersQuery = OrganizationApplication::where('form_type', 'LSPU-OSAS-SF-005')
@@ -100,7 +100,7 @@ class MembersOfficersController extends Controller
                 'officers' => [],
                 'totalMembers' => 0,
                 'totalOfficers' => 0,
-                'isAdmin' => auth()->user()->role && auth()->user()->role->slug === 'admin',
+                'isAdmin' => auth()->user()->role && in_array(auth()->user()->role->slug, ['admin', 'super_admin']),
             ]);
         }
     }
