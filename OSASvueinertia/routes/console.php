@@ -11,3 +11,7 @@ Artisan::command('inspire', function () {
 // Schedule activity log pruning to run daily at 2:00 AM
 Schedule::command('activity:prune')->daily()->at('02:00');
 
+// Schedule database backups to run daily at 3:00 AM
+Schedule::command('backup:clean')->daily()->at('03:00');
+Schedule::command('backup:run')->daily()->at('03:30');
+

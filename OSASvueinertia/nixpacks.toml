@@ -5,7 +5,7 @@ PHP_MEMORY_LIMIT = '256M'
 COMPOSER_ALLOW_SUPERUSER = '1'
 
 [phases.setup]
-nixPkgs = ['...', 'nodejs_18', 'tesseract']
+nixPkgs = ['...', 'nodejs_18', 'tesseract', 'mysql80']
 cmds = [
     # PHP upload limits
     'UPLOAD_INI_PATH=$(find /nix/store/*-php-*/lib -name php.ini -print0 | head -z -n 1 | rev | cut -c 9- | rev)/upload.ini; echo "upload_max_filesize=${UPLOAD_MAX_FILESIZE};" >> $UPLOAD_INI_PATH; echo "post_max_size=${POST_MAX_SIZE};" >> $UPLOAD_INI_PATH',
