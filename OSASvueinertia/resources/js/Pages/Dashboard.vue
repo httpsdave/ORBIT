@@ -236,6 +236,9 @@ onMounted(() => {
     currentDateTime.value = new Date();
   }, 1000);
   
+  // Start mobile carousel
+  startMobileCarousel();
+  
   // Show tutorial if user hasn't seen it yet
   if (!props.hasSeenTutorial) {
     setTimeout(() => {
@@ -248,6 +251,7 @@ onUnmounted(() => {
   if (clockTimer.value) {
     clearInterval(clockTimer.value);
   }
+  stopMobileCarousel();
 });
 
 const closeTutorial = () => {
@@ -380,6 +384,128 @@ const reportsCardData = computed(() => {
   ];
   return states[reportsCardState.value];
 });
+
+// Stats cards array for easier management
+const statsCards = computed(() => [
+  {
+    title: 'Submitted Documents',
+    value: props.myApplications.length,
+    icon: 'document',
+    bgColor: 'bg-blue-100 dark:bg-blue-900/50',
+    textColor: 'text-blue-600 dark:text-blue-400',
+    borderColor: 'border-blue-500',
+    flippable: false
+  },
+  {
+    title: 'Conducted Events',
+    value: props.conductedEventsCount,
+    icon: 'calendar',
+    bgColor: 'bg-green-100 dark:bg-green-900/50',
+    textColor: 'text-green-600 dark:text-green-400',
+    borderColor: 'border-green-500',
+    flippable: false
+  },
+  {
+    title: reportsCardData.value.title,
+    value: reportsCardData.value.value,
+    icon: reportsCardData.value.icon,
+    bgColor: reportsCardData.value.bgColor,
+    textColor: reportsCardData.value.textColor,
+    borderColor: reportsCardData.value.borderColor,
+    flippable: true
+  }
+]);
+
+// Mobile stats cards with custom ordering
+// Page 1: Submitted Documents + Reports (flippable)
+// Page 2: Conducted Events (will show 1 card, but that's ok)
+const mobileStatsCards = computed(() => [
+  statsCards.value[0], // Submitted Documents
+  statsCards.value[2], // Reports (flippable)
+  statsCards.value[1]  // Conducted Events
+]);
+
+// Mobile stats carousel state
+const currentMobileStatIndex = ref(0);
+const mobileStatsPerView = 2;
+const mobileCarouselPaused = ref(false);
+const mobileCarouselTimer = ref(null);
+
+const nextMobileStats = () => {
+  if (currentMobileStatIndex.value < mobileStatsCards.value.length - mobileStatsPerView) {
+    currentMobileStatIndex.value += mobileStatsPerView;
+  } else {
+    currentMobileStatIndex.value = 0;
+  }
+};
+
+const prevMobileStats = () => {
+  if (currentMobileStatIndex.value > 0) {
+    currentMobileStatIndex.value -= mobileStatsPerView;
+  } else {
+    currentMobileStatIndex.value = Math.floor((mobileStatsCards.value.length - 1) / mobileStatsPerView) * mobileStatsPerView;
+  }
+};
+
+const goToMobileStatPage = (pageIndex) => {
+  currentMobileStatIndex.value = pageIndex * mobileStatsPerView;
+};
+
+const handleMobileStatNext = () => {
+  mobileCarouselPaused.value = true;
+  stopMobileCarousel();
+  nextMobileStats();
+};
+
+const handleMobileStatPrev = () => {
+  mobileCarouselPaused.value = true;
+  stopMobileCarousel();
+  prevMobileStats();
+};
+
+const handleMobileStatPageClick = (pageIndex) => {
+  mobileCarouselPaused.value = true;
+  stopMobileCarousel();
+  goToMobileStatPage(pageIndex);
+};
+
+const handleMobileCardClick = (card) => {
+  mobileCarouselPaused.value = true;
+  stopMobileCarousel();
+  if (card.flippable) {
+    cycleReportsCard();
+  }
+};
+
+const totalMobilePages = computed(() => {
+  return Math.ceil(mobileStatsCards.value.length / mobileStatsPerView);
+});
+
+const currentMobilePage = computed(() => {
+  return Math.floor(currentMobileStatIndex.value / mobileStatsPerView);
+});
+
+const visibleMobileStats = computed(() => {
+  return mobileStatsCards.value.slice(
+    currentMobileStatIndex.value,
+    currentMobileStatIndex.value + mobileStatsPerView
+  );
+});
+
+const startMobileCarousel = () => {
+  if (!mobileCarouselPaused.value) {
+    mobileCarouselTimer.value = setInterval(() => {
+      nextMobileStats();
+    }, 5000);
+  }
+};
+
+const stopMobileCarousel = () => {
+  if (mobileCarouselTimer.value) {
+    clearInterval(mobileCarouselTimer.value);
+    mobileCarouselTimer.value = null;
+  }
+};
 </script>
 
 <template>
@@ -435,72 +561,143 @@ const reportsCardData = computed(() => {
             </div>
           </div>
 
-          <!-- Stats Cards Row (separate from greeting) -->
-          <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-3 gap-4 sm:gap-6 mb-4 sm:mb-6">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg border-l-4 border-blue-500 transition hover:shadow-md">
-              <div class="p-4 sm:p-5">
-                <div class="flex items-center">
-                  <div class="flex-shrink-0">
-                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-blue-100 dark:bg-blue-900/50">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                      </svg>
-                    </div>
-                  </div>
-                  <div class="ml-3 sm:ml-4 select-none">
-                    <p class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Submitted Documents</p>
-                    <p class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">{{ props.myApplications.length }}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg border-l-4 border-green-500 transition hover:shadow-md">
-              <div class="p-4 sm:p-5">
-                <div class="flex items-center">
-                  <div class="flex-shrink-0">
-                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-green-100 dark:bg-green-900/50">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 text-green-500 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                    </div>
-                  </div>
-                  <div class="ml-3 sm:ml-4 select-none">
-                    <p class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Conducted Events</p>
-                    <p class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">{{ props.conductedEventsCount }}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div 
-              class="bg-white dark:bg-gray-800 overflow-visible shadow-sm rounded-lg transition hover:shadow-md cursor-pointer"
-              :class="`border-l-4 ${reportsCardData.borderColor}`"
-              @click="cycleReportsCard"
-            >
-              <div class="p-4 sm:p-5">
-                <div class="flex items-center">
-                  <div class="flex-shrink-0">
-                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center" :class="reportsCardData.bgColor">
-                      <div :class="reportsCardData.textColor" v-html="reportsCardData.icon"></div>
-                    </div>
-                  </div>
-                  <div class="ml-3 sm:ml-4 select-none flex-grow">
-                    <div class="flex items-center gap-2">
-                      <p class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">{{ reportsCardData.title }}</p>
-                      <!-- Flip indicator icon -->
-                      <div class="flex-shrink-0 relative group/tooltip">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 dark:text-gray-500 animate-spin-slow" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                        </svg>
-                        <!-- Tooltip -->
-                        <div class="absolute left-full top-1/2 -translate-y-1/2 ml-2 hidden group-hover/tooltip:block z-50 pointer-events-none">
-                          <div class="bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-lg py-2 px-3 whitespace-nowrap shadow-lg">
-                            Click to flip card
-                            <div class="absolute right-full top-1/2 -translate-y-1/2 w-0 h-0 border-t-4 border-b-4 border-r-4 border-t-transparent border-b-transparent border-r-gray-900 dark:border-r-gray-700"></div>
+          <!-- Stats Cards - Mobile Carousel (< md screens) -->
+          <div class="md:hidden mb-6">
+            <div class="relative">
+              <!-- Carousel Container -->
+              <div class="overflow-hidden">
+                <div class="grid grid-cols-2 gap-3 px-1 transition-all duration-300">
+                  <div v-for="(card, index) in visibleMobileStats" :key="currentMobileStatIndex + index" 
+                    :class="[
+                      'bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg border-l-4 transition-all duration-300',
+                      card.borderColor,
+                      card.flippable ? 'cursor-pointer active:scale-95' : ''
+                    ]"
+                    @click="handleMobileCardClick(card)">
+                    <div class="p-3">
+                      <div class="flex flex-col space-y-2">
+                        <!-- Icon -->
+                        <div class="flex items-center justify-between">
+                          <div class="flex-shrink-0">
+                            <!-- Document Icon -->
+                            <div v-if="card.icon === 'document'" class="w-10 h-10 rounded-full flex items-center justify-center" :class="card.bgColor">
+                              <svg class="w-5 h-5" :class="card.textColor" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                              </svg>
+                            </div>
+                            <!-- Calendar Icon -->
+                            <div v-else-if="card.icon === 'calendar'" class="w-10 h-10 rounded-full flex items-center justify-center" :class="card.bgColor">
+                              <svg class="w-5 h-5" :class="card.textColor" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                              </svg>
+                            </div>
+                            <!-- Dynamic Icon for reports card -->
+                            <div v-else class="w-10 h-10 rounded-full flex items-center justify-center" :class="card.bgColor">
+                              <div :class="card.textColor" v-html="card.icon"></div>
+                            </div>
                           </div>
+                          <!-- Flip indicator -->
+                          <div v-if="card.flippable" class="flex-shrink-0">
+                            <svg class="w-4 h-4 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
+                          </div>
+                        </div>
+                        <!-- Title and Value -->
+                        <div class="select-none">
+                          <h3 class="text-xs font-medium text-gray-500 dark:text-gray-400 line-clamp-2 min-h-[2rem]">{{ card.title }}</h3>
+                          <p class="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">{{ card.value }}</p>
                         </div>
                       </div>
                     </div>
-                    <p class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">{{ reportsCardData.value }}</p>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Navigation Dots -->
+              <div class="flex justify-center items-center space-x-2 mt-4">
+                <button 
+                  @click="handleMobileStatPrev"
+                  class="p-1.5 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-all"
+                >
+                  <svg class="w-4 h-4 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+                
+                <div class="flex space-x-1.5">
+                  <button
+                    v-for="pageIndex in totalMobilePages"
+                    :key="pageIndex"
+                    @click="handleMobileStatPageClick(pageIndex - 1)"
+                    :class="[
+                      'transition-all duration-300',
+                      currentMobilePage === pageIndex - 1
+                        ? 'w-6 h-2 bg-blue-600 dark:bg-blue-500 rounded-full'
+                        : 'w-2 h-2 bg-gray-300 dark:bg-gray-600 rounded-full hover:bg-gray-400 dark:hover:bg-gray-500'
+                    ]"
+                  />
+                </div>
+                
+                <button 
+                  @click="handleMobileStatNext"
+                  class="p-1.5 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-all"
+                >
+                  <svg class="w-4 h-4 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stats Cards - Desktop Grid (md+ screens) -->
+          <div class="hidden md:grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-3 gap-4 sm:gap-6 mb-4 sm:mb-6">
+            <div v-for="(card, index) in statsCards" :key="index"
+              :class="[
+                'bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg border-l-4 transition-all duration-300',
+                card.borderColor,
+                card.flippable ? 'cursor-pointer hover:shadow-lg hover:scale-105' : 'hover:shadow-md'
+              ]"
+              @click="card.flippable ? cycleReportsCard() : null">
+              <div class="p-4 sm:p-5">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center flex-1">
+                    <div class="flex-shrink-0">
+                      <!-- Document Icon -->
+                      <div v-if="card.icon === 'document'" class="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center" :class="card.bgColor">
+                        <svg class="h-5 w-5 sm:h-6 sm:w-6" :class="card.textColor" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                      </div>
+                      <!-- Calendar Icon -->
+                      <div v-else-if="card.icon === 'calendar'" class="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center" :class="card.bgColor">
+                        <svg class="h-5 w-5 sm:h-6 sm:w-6" :class="card.textColor" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                      </div>
+                      <!-- Dynamic Icon for reports card -->
+                      <div v-else class="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center" :class="card.bgColor">
+                        <div :class="card.textColor" v-html="card.icon"></div>
+                      </div>
+                    </div>
+                    <div class="ml-3 sm:ml-4 select-none flex-1">
+                      <p class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">{{ card.title }}</p>
+                      <p class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">{{ card.value }}</p>
+                    </div>
+                  </div>
+                  <!-- Flip indicator icon (only for flippable cards) -->
+                  <div v-if="card.flippable" class="flex-shrink-0 ml-2 relative group/tooltip">
+                    <svg class="h-5 w-5 text-gray-400 dark:text-gray-500 animate-spin-slow" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    <!-- Tooltip -->
+                    <div class="absolute bottom-full right-0 mb-2 hidden group-hover/tooltip:block z-10 pointer-events-none">
+                      <div class="bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-lg py-2 px-3 whitespace-nowrap shadow-lg">
+                        Click to flip card
+                        <div class="absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-gray-900 dark:border-t-gray-700"></div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
