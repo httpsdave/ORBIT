@@ -278,6 +278,24 @@ Route::middleware(['auth'])->group(function () {
         // Use DashboardController for dashboard
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
         
+        // Manual backup trigger (admin only)
+        Route::get('/trigger-backup', function () {
+            try {
+                \Artisan::call('backup:run');
+                $output = \Artisan::output();
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Backup completed successfully!',
+                    'output' => $output
+                ]);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Backup failed: ' . $e->getMessage()
+                ], 500);
+            }
+        })->name('admin.trigger-backup');
+        
         // Admin User Management Routes
         Route::get('/users', [UserController::class, 'index'])->name('admin.users');
         Route::post('/users', [UserController::class, 'store'])->name('admin.users.store');
