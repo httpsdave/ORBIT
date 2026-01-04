@@ -155,6 +155,10 @@ php artisan config:show app.url
 echo "⚠️  RUNNING WITHOUT CONFIG CACHE TO PREVENT REDIRECT LOOPS"
 echo "Application setup completed!"
 
+# Start Laravel scheduler in background for automated backups and tasks
+echo "Starting Laravel scheduler for automated backups..."
+php artisan schedule:work > /dev/null 2>&1 &
+
 # Start the application with custom router for cache headers
 echo "Starting web server with cache headers on port ${PORT:-8000}..."
 exec php -S 0.0.0.0:${PORT:-8000} -t public router.php
