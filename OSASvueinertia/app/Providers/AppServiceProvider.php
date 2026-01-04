@@ -1,10 +1,17 @@
 <?php
 
 namespace App\Providers;
+
+use App\Models\Role;
+use Google\Client as GoogleClient;
+use Google\Service\Drive as GoogleDriveService;
+use Illuminate\Filesystem\FilesystemAdapter;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
-use App\Models\Role; // Add this import
+use League\Flysystem\Filesystem;
+use Masbug\Flysystem\GoogleDriveAdapter;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -27,9 +34,30 @@ class AppServiceProvider extends ServiceProvider
          $this->app->bind('role', function ($app) {
             return new Role();
         });
+
+        $this->registerGoogleDriveDisk();
         
         // Railway SSL detection and forcing
         $this->handleRailwaySSL();
+    }
+
+    private function registerGoogleDriveDisk(): void
+    {
+        Storage::extend('google', function ($app, $config) {
+            $client = new GoogleClient();
+            $client->setClientId($config['clientId']);
+            $client->setClientSecret($config['clientSecret']);
+            $client->refreshToken($config['refreshToken']);
+
+            $service = new GoogleDriveService($client);
+            $adapter = new GoogleDriveAdapter($service, $config['folder'] ?? '/');
+
+            return new FilesystemAdapter(
+                new Filesystem($adapter, ['case_sensitive' => false]),
+                $adapter,
+                $config
+            );
+        });
     }
     
     /**
