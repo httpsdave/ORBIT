@@ -131,10 +131,10 @@ defineProps({
                         </div>
 
                         <!-- System Backup Section - Admin Only -->
-                        <div v-if="isAdmin" class="bg-white dark:bg-gray-800 p-6 shadow-md rounded-lg border-l-4 border-purple-500 transition-all duration-300 hover:shadow-xl h-fit">
+                        <div v-if="isAdmin" class="bg-white dark:bg-gray-800 p-6 shadow-md rounded-lg border-l-4 border-amber-500 transition-all duration-300 hover:shadow-xl h-fit">
                             <div class="mb-4">
                                 <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 flex items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                     </svg>
                                     System Backup
@@ -145,7 +145,7 @@ defineProps({
                                 <button
                                     @click="downloadBackup"
                                     :disabled="isDownloadingBackup"
-                                    class="inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 text-white font-semibold rounded-md shadow-sm transition-colors duration-200 disabled:cursor-not-allowed"
+                                    class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-700 border border-transparent rounded-lg font-semibold text-sm text-white hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     <svg v-if="!isDownloadingBackup" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
@@ -154,7 +154,7 @@ defineProps({
                                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                     </svg>
-                                    {{ isDownloadingBackup ? 'Preparing Backup...' : 'Download Complete Backup' }}
+                                    {{ isDownloadingBackup ? 'Preparing Backup...' : 'Complete Backup' }}
                                 </button>
                                 <p class="mt-3 text-xs text-gray-500 dark:text-gray-400">
                                     <strong>Note:</strong> This creates a complete backup including ALL database tables and ALL uploaded files regardless of size. The download may take several minutes depending on your data size.
