@@ -285,6 +285,13 @@ onMounted(async () => {
 onUnmounted(() => {
   stopAutoSave();
 });
+
+// Auto-resize textarea function
+const autoResize = (event) => {
+  const textarea = event.target;
+  textarea.style.height = 'auto';
+  textarea.style.height = textarea.scrollHeight + 'px';
+};
 </script>
 
 <template>
@@ -369,31 +376,31 @@ onUnmounted(() => {
       <tbody>
         <tr v-for="(activity, index) in form.approved_activities" :key="'approved-' + index">
           <td class="border border-black text-left" style="padding: 2px 4px;">
-            <input v-model="activity.title" class="w-full p-1 text-sm" type="text">
+            <textarea v-model="activity.title" class="w-full p-1 text-sm resize-none" rows="1" @input="autoResize"></textarea>
           </td>
           <td class="border border-black text-center" style="padding: 2px 4px;">
-            <input v-model="activity.planned_date" class="w-full p-1 text-sm text-center" type="text">
+            <textarea v-model="activity.planned_date" class="w-full p-1 text-sm text-center resize-none" rows="1" @input="autoResize"></textarea>
           </td>
           <td class="border border-black text-center" style="padding: 2px 4px;">
-            <input v-model="activity.actual_date" class="w-full p-1 text-sm text-center" type="text">
+            <textarea v-model="activity.actual_date" class="w-full p-1 text-sm text-center resize-none" rows="1" @input="autoResize"></textarea>
           </td>
           <td class="border border-black text-center" style="padding: 2px 4px;">
-            <input v-model="activity.proposed_budget" class="w-full p-1 text-sm text-center" type="text">
+            <textarea v-model="activity.proposed_budget" class="w-full p-1 text-sm text-center resize-none" rows="1" @input="autoResize"></textarea>
           </td>
           <td class="border border-black text-center" style="padding: 2px 4px;">
-            <input v-model="activity.actual_expenditure" class="w-full p-1 text-sm text-center" type="text">
+            <textarea v-model="activity.actual_expenditure" class="w-full p-1 text-sm text-center resize-none" rows="1" @input="autoResize"></textarea>
           </td>
           <td class="border border-black text-center" style="padding: 2px 4px;">
-            <input v-model="activity.target_participants" class="w-full p-1 text-sm text-center" type="text">
+            <textarea v-model="activity.target_participants" class="w-full p-1 text-sm text-center resize-none" rows="1" @input="autoResize"></textarea>
           </td>
           <td class="border border-black text-center" style="padding: 2px 4px;">
-            <input v-model="activity.actual_participants" class="w-full p-1 text-sm text-center" type="text">
+            <textarea v-model="activity.actual_participants" class="w-full p-1 text-sm text-center resize-none" rows="1" @input="autoResize"></textarea>
           </td>
           <td class="border border-black text-center" style="padding: 2px 4px;">
-            <input v-model="activity.status" class="w-full p-1 text-sm text-center" type="text">
+            <textarea v-model="activity.status" class="w-full p-1 text-sm text-center resize-none" rows="1" @input="autoResize"></textarea>
           </td>
           <td class="border border-black text-left" style="padding: 2px 4px;">
-            <input v-model="activity.justification" class="w-full p-1 text-sm" type="text">
+            <textarea v-model="activity.justification" class="w-full p-1 text-sm resize-none" rows="1" @input="autoResize"></textarea>
           </td>
         </tr>
       </tbody>
@@ -420,31 +427,31 @@ onUnmounted(() => {
       <tbody>
         <tr v-for="(activity, index) in form.unapproved_activities" :key="'unapproved-' + index">
           <td class="border border-black text-left" style="padding: 2px 4px;">
-            <input v-model="activity.title" class="w-full p-1 text-sm" type="text">
+            <textarea v-model="activity.title" class="w-full p-1 text-sm resize-none" rows="1" @input="autoResize"></textarea>
           </td>
           <td class="border border-black text-center" style="padding: 2px 4px;">
-            <input v-model="activity.planned_date" class="w-full p-1 text-sm text-center" type="text">
+            <textarea v-model="activity.planned_date" class="w-full p-1 text-sm text-center resize-none" rows="1" @input="autoResize"></textarea>
           </td>
           <td class="border border-black text-center" style="padding: 2px 4px;">
-            <input v-model="activity.actual_date" class="w-full p-1 text-sm text-center" type="text">
+            <textarea v-model="activity.actual_date" class="w-full p-1 text-sm text-center resize-none" rows="1" @input="autoResize"></textarea>
           </td>
           <td class="border border-black text-center" style="padding: 2px 4px;">
-            <input v-model="activity.proposed_budget" class="w-full p-1 text-sm text-center" type="text">
+            <textarea v-model="activity.proposed_budget" class="w-full p-1 text-sm text-center resize-none" rows="1" @input="autoResize"></textarea>
           </td>
           <td class="border border-black text-center" style="padding: 2px 4px;">
-            <input v-model="activity.actual_expenditure" class="w-full p-1 text-sm text-center" type="text">
+            <textarea v-model="activity.actual_expenditure" class="w-full p-1 text-sm text-center resize-none" rows="1" @input="autoResize"></textarea>
           </td>
           <td class="border border-black text-center" style="padding: 2px 4px;">
-            <input v-model="activity.target_participants" class="w-full p-1 text-sm text-center" type="text">
+            <textarea v-model="activity.target_participants" class="w-full p-1 text-sm text-center resize-none" rows="1" @input="autoResize"></textarea>
           </td>
           <td class="border border-black text-center" style="padding: 2px 4px;">
-            <input v-model="activity.actual_participants" class="w-full p-1 text-sm text-center" type="text">
+            <textarea v-model="activity.actual_participants" class="w-full p-1 text-sm text-center resize-none" rows="1" @input="autoResize"></textarea>
           </td>
           <td class="border border-black text-center" style="padding: 2px 4px;">
-            <input v-model="activity.status" class="w-full p-1 text-sm text-center" type="text">
+            <textarea v-model="activity.status" class="w-full p-1 text-sm text-center resize-none" rows="1" @input="autoResize"></textarea>
           </td>
           <td class="border border-black text-left" style="padding: 2px 4px;">
-            <input v-model="activity.justification" class="w-full p-1 text-sm" type="text">
+            <textarea v-model="activity.justification" class="w-full p-1 text-sm resize-none" rows="1" @input="autoResize"></textarea>
           </td>
         </tr>
       </tbody>
@@ -723,7 +730,6 @@ table td {
   line-height: 1.1; /* Slightly tighter line height */
   overflow-wrap: anywhere; /* Break anywhere if needed */
   max-width: 0; /* Force table-layout: fixed to respect column widths */
-  overflow: hidden; /* Prevent content overflow */
 }
 
 table input {
@@ -733,6 +739,22 @@ table input {
 }
 
 table input:focus {
+  background: #f3f4f6;
+  border-radius: 2px;
+}
+
+table textarea {
+  border: none;
+  outline: none;
+  background: transparent;
+  overflow: hidden;
+  resize: none;
+  min-height: 20px;
+  line-height: 1.2;
+  font-family: 'Times New Roman', serif;
+}
+
+table textarea:focus {
   background: #f3f4f6;
   border-radius: 2px;
 }
