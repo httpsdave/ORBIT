@@ -27,7 +27,6 @@ const formTemplates = [
   { type: 'LSPU-OSAS-SF-EVAL', label: 'Evaluation Form' },
   { type: 'LSPU-OSAS-SF-EVALSHEET', label: 'Evaluation Sheet' },
   { type: 'LSPU-OSAS-SF-STATUS', label: 'Activity Status Report' },
-  { type: 'LSPU-OSAS-SF-STATUS-REPORT', label: 'Activity Status Report' },
 ];
 const openPreview = (formType) => {
   // Device detection for mobile
