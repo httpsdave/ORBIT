@@ -630,15 +630,18 @@ const viewUnsignedDocument = (app) => {
   showMobileActionsModal.value = false;
   selectedMobileApp.value = null;
   
+  const url = getUnsignedViewUrl(app);
+  
   // On mobile screens (< 640px), open in new window
   if (window.innerWidth < 640) {
-    const url = getUnsignedViewUrl(app);
     if (url && url !== '#') {
       window.open(url, '_blank');
     }
   } else {
-    // On desktop/larger screens, navigate to the SPA document view with unsigned parameter
-    router.visit(`/applications/${app.id}/document?view=unsigned`);
+    // On desktop/larger screens, use the proper form-specific URL
+    if (url && url !== '#') {
+      router.visit(url);
+    }
   }
 };
 
