@@ -22,6 +22,7 @@ use App\Http\Controllers\ArchiveController;
 use App\Http\Controllers\Auth\FirebasePasswordController;
 use App\Http\Controllers\FormAutosaveController;
 use App\Http\Controllers\TwoFactorController;
+use App\Http\Controllers\BackupController;
 
 // API endpoint to check if email exists in database (for password reset validation)
 // Rate limited to 5 attempts per minute per IP to prevent abuse
@@ -295,6 +296,9 @@ Route::middleware(['auth'])->group(function () {
                 ], 500);
             }
         })->name('admin.trigger-backup');
+        
+        // Download complete backup (database + files)
+        Route::get('/download-backup', [BackupController::class, 'downloadBackup'])->name('admin.download-backup');
         
         // Admin User Management Routes
         Route::get('/users', [UserController::class, 'index'])->name('admin.users');
