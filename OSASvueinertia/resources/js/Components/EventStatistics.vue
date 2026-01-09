@@ -1,5 +1,5 @@
 <template>
-  <div class="p-2 sm:p-4 lg:p-6 w-full max-w-full overflow-x-hidden pb-12 sm:pb-16">
+  <div class="p-2 sm:p-4 lg:p-6 w-full max-w-full overflow-x-hidden pb-12 sm:pb-16 fade-in">
     <!-- Loading State -->
     <div v-if="isLoading" class="flex items-center justify-center py-12">
       <div class="text-center">
@@ -690,6 +690,20 @@ export default {
 .overflow-y-auto::-webkit-scrollbar-thumb:hover,
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
+}
+
+/* Fade-in animation matching calendar transition */
+.fade-in {
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* Dropdown transition styles */
