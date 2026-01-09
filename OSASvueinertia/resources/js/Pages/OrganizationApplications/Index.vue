@@ -936,14 +936,13 @@ const bulkDeleteApplications = () => {
         <div class="flex flex-row sm:flex-row gap-1.5 sm:gap-2 w-full sm:w-auto items-center relative">
           <Link
             href="/applications/select-form"
-            class="inline-flex items-center justify-center px-2 py-1.5 sm:px-4 sm:py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-xs sm:text-sm font-medium text-white rounded-md sm:rounded-xl shadow-md hover:shadow-blue-300/30 hover:from-blue-400 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 active:from-blue-600 active:to-blue-700 transition-all duration-300 relative overflow-hidden group flex-1 sm:flex-none"
+            class="hidden sm:inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-sm font-medium text-white rounded-xl shadow-md hover:shadow-blue-300/30 hover:from-blue-400 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 active:from-blue-600 active:to-blue-700 transition-all duration-300 relative overflow-hidden group"
           >
             <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white dark:bg-gray-800 rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 sm:mr-2" viewBox="0 0 20 20" fill="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
             </svg>
-            <span class="hidden xs:inline">Create</span>
-            <span class="xs:hidden">New</span>
+            Create
           </Link>
           <!-- Preview Forms Dropdown (Users and Admins) -->
           <div class="relative flex-1 sm:flex-none">
@@ -1568,6 +1567,17 @@ const bulkDeleteApplications = () => {
         </div>
       </div>
     </Modal>
+
+    <!-- Floating Action Button (Mobile Only) -->
+    <Link
+      href="/applications/select-form"
+      class="sm:hidden fixed bottom-6 right-6 z-50 flex items-center justify-center w-14 h-14 bg-blue-600 text-white rounded-full shadow-lg hover:shadow-xl hover:bg-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500 focus:ring-offset-2 active:bg-blue-700 transition-all duration-300"
+      aria-label="Create new application"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+      </svg>
+    </Link>
 
   </AuthenticatedLayout>
 </template>
