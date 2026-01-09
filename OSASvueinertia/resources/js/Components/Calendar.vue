@@ -118,24 +118,16 @@
   </div>
 </div>
 
-  <!-- Main Content Container with 3D Flip Animation - Mobile Optimized -->
-  <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden min-h-96 mx-1 sm:mx-0 w-full" style="perspective: 1000px;">
+  <!-- Main Content Container - Mobile Optimized -->
+  <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden min-h-96 mx-1 sm:mx-0 w-full">
     <!-- Calendar View -->
-    <div 
-      :class="[
-        'transition-transform duration-300 ease-out transform-style-preserve-3d',
-        currentView === 'statistics' ? 'rotate-y-180' : 'rotate-y-0'
-      ]"
-      style="transform-style: preserve-3d; will-change: transform;"
-    >
-             <!-- Front Side - Calendar -->
-       <div 
-         :class="[
-           'w-full backface-hidden',
-           currentView === 'statistics' ? 'opacity-0 pointer-events-none hidden' : 'opacity-100'
-         ]"
-         style="backface-visibility: hidden; will-change: opacity;"
-       >
+    <Transition name="fade" mode="out-in">
+      <!-- Calendar -->
+      <div 
+        v-if="currentView === 'calendar'"
+        key="calendar"
+        class="w-full"
+      >
         <div class="p-2 sm:p-5 w-full" style="box-sizing: border-box;">
           <!-- Custom calendar header with your color scheme -->
           <div class="mb-4 sm:mb-6">
@@ -217,21 +209,19 @@
         </div>
       </div>
       
-             <!-- Back Side - Statistics -->
-       <div 
-         :class="[
-           'w-full backface-hidden rotate-y-180',
-           currentView === 'calendar' ? 'opacity-0 pointer-events-none hidden' : 'opacity-100'
-         ]"
-         style="backface-visibility: hidden; transform: rotateY(180deg); will-change: opacity;"
-       >
+      <!-- Statistics -->
+      <div 
+        v-else
+        key="statistics"
+        class="w-full"
+      >
         <EventStatistics 
           :events="events" 
           :is-admin="isAdmin"
           :key="'statistics-' + events.length"
         />
       </div>
-    </div>
+    </Transition>
   </div>
   
   <!-- Event Form Modal -->
@@ -2918,30 +2908,15 @@ function exportPastEventsCsv(pastEvents) {
 </script>
 
 <style scoped>
-/* Optimized 3D Flip Animation Styles */
-.transform-style-preserve-3d {
-  transform-style: preserve-3d;
+/* Fade transition for view switching */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
 }
 
-.backface-hidden {
-  backface-visibility: hidden;
-}
-
-.rotate-y-0 {
-  transform: rotateY(0deg);
-}
-
-.rotate-y-180 {
-  transform: rotateY(180deg);
-}
-
-/* Performance optimizations */
-.duration-300 {
-  transition-duration: 0.3s;
-}
-
-.ease-out {
-  transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 
 /* Smooth transitions for view toggle */

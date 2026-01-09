@@ -692,37 +692,9 @@ export default {
   background: #94a3b8;
 }
 
-/* Animation for cards */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.bg-gradient-to-r {
-  animation: fadeInUp 0.6s ease-out;
-}
-
-.bg-gradient-to-r:nth-child(2) {
-  animation-delay: 0.1s;
-}
-
-.bg-gradient-to-r:nth-child(3) {
-  animation-delay: 0.2s;
-}
-
-.bg-gradient-to-r:nth-child(4) {
-  animation-delay: 0.3s;
-}
-
 /* Dropdown transition styles */
 .dropdown-enter-active, .dropdown-leave-active {
-  transition: opacity 0.05s ease;
+  transition: opacity 0.15s ease;
 }
 
 .dropdown-enter-from, .dropdown-leave-to {
