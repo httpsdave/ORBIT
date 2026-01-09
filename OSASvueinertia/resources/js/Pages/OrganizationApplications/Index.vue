@@ -1228,6 +1228,48 @@ const bulkDeleteApplications = () => {
           </span>
         </button>
 
+        <!-- Bulk Selection Controls (appears next to Bulk Delete button when active) -->
+        <div v-if="isAdmin && isBulkModeActive" class="flex items-center gap-1.5">
+          <!-- Select All -->
+          <div class="flex items-center gap-1.5 px-2 py-1.5 bg-gray-50 dark:bg-gray-800 rounded-full border border-gray-200 dark:border-gray-700">
+            <input
+              type="checkbox"
+              :checked="isAllSelected"
+              :indeterminate="isSomeSelected"
+              @change="toggleSelectAll"
+              class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer"
+              aria-label="Select all applications"
+            />
+            <label class="text-xs font-medium text-gray-700 dark:text-gray-300 cursor-pointer select-none" @click="toggleSelectAll">
+              All
+            </label>
+          </div>
+          
+          <!-- Clear Selection Button (only show when items are selected) -->
+          <button
+            v-if="hasSelectedApplications"
+            @click="selectedApplications = []"
+            class="p-1.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-full transition-colors duration-150"
+            title="Clear selection"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+          
+          <!-- Delete Button (only show when items are selected) -->
+          <button
+            v-if="hasSelectedApplications"
+            @click="confirmBulkDelete"
+            class="p-1.5 bg-red-500 hover:bg-red-600 rounded-full transition-colors duration-150"
+            :title="`Delete ${selectedApplications.length} selected`"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+          </button>
+        </div>
+
         <!-- Clear All Filters Button -->
         <button
           v-if="hasActiveFilters"
@@ -1263,35 +1305,6 @@ const bulkDeleteApplications = () => {
     <!-- Applications Table -->
     <div class="relative max-w-7xl mx-auto px-3 sm:px-6">
       <div class="max-w-4xl mx-auto">
-        <!-- Bulk selection info and actions (Admin only - only show when bulk mode is active) -->
-        <div v-if="isBulkModeActive && hasSelectedApplications" class="bulk-selection-banner mb-4 flex flex-col xs:flex-row xs:items-center gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800 max-w-4xl mx-auto">
-          <div class="flex items-center gap-2 flex-1">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600 dark:text-blue-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span class="text-sm font-medium text-blue-800 dark:text-blue-200">
-              {{ selectedApplications.length }} application{{ selectedApplications.length !== 1 ? 's' : '' }} selected
-            </span>
-          </div>
-          <div class="flex gap-2">
-            <button
-              @click="selectedApplications = []"
-              class="inline-flex items-center justify-center px-3 py-1.5 bg-gray-200 dark:bg-gray-700 border border-transparent rounded-md font-medium text-xs text-gray-700 dark:text-gray-300 uppercase tracking-wider hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition duration-150 ease-in-out"
-            >
-              Clear Selection
-            </button>
-            <button
-              @click="confirmBulkDelete"
-              class="relative inline-flex items-center justify-center p-2 bg-red-500 border border-transparent rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition duration-150 ease-in-out group"
-              :title="`Delete ${selectedApplications.length} selected application${selectedApplications.length !== 1 ? 's' : ''}`"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
-            </button>
-          </div>
-        </div>
-        
         <div class="applications-table-container relative">
           <!-- Content Layer -->
           <div class="relative z-10">
