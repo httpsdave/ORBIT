@@ -89,50 +89,67 @@
         </div>
         
         <!-- Right side - Main content area -->
-        <div class="flex-1 relative z-20 flex items-center justify-center px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
+        <div class="flex-1 relative z-20 flex items-center justify-center px-3 sm:px-6 md:px-8 lg:px-12 xl:px-16 py-4">
             <div 
                 ref="formElement"
-                class="w-full max-w-xs sm:max-w-sm md:max-w-md opacity-0 transition-opacity duration-1000 ease-out"
+                class="w-full max-w-[280px] sm:max-w-xs md:max-w-sm lg:max-w-md opacity-0 transition-opacity duration-1000 ease-out"
             >
-                <div class="bg-gray-800/90 backdrop-blur-md shadow-2xl rounded-2xl overflow-hidden border border-gray-700">
+                <div class="bg-gray-800/90 backdrop-blur-md shadow-2xl rounded-xl sm:rounded-2xl overflow-hidden border border-gray-700">
                     <!-- Header -->
-                    <div class="px-4 sm:px-6 py-6 sm:py-8 text-center border-b border-gray-700">
-                        <div class="flex justify-center mb-3 sm:mb-4">
-                            <div class="bg-blue-500/20 rounded-full p-3 sm:p-4 backdrop-blur-sm">
-                                <svg class="h-10 w-10 sm:h-12 sm:w-12 text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div class="px-3 sm:px-6 py-4 sm:py-6 md:py-8 text-center border-b border-gray-700">
+                        <div class="flex justify-center mb-2 sm:mb-3 md:mb-4">
+                            <div class="bg-blue-500/20 rounded-full p-2 sm:p-3 md:p-4 backdrop-blur-sm transition-all duration-500"
+                                 :class="{ 'bg-green-500/20': isUnlocked }">
+                                <!-- Locked Icon -->
+                                <svg v-if="!isUnlocked" class="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-blue-400 transition-all duration-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                </svg>
+                                <!-- Unlocked Icon -->
+                                <svg v-else class="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-green-400 transition-all duration-500 animate-unlock" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
                                 </svg>
                             </div>
                         </div>
-                        <h2 class="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-2">Two-Factor Authentication</h2>
-                        <p class="text-xs sm:text-sm md:text-base text-gray-300">
+                        <h2 class="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-white mb-1 sm:mb-2">Two-Factor Authentication</h2>
+                        <p class="text-xs sm:text-sm md:text-base text-gray-300 px-2">
                             {{ useRecoveryCode ? 'Enter one of your recovery codes' : 'Enter the code from your authenticator app' }}
                         </p>
                     </div>
 
                     <!-- Form -->
-                    <div class="px-4 sm:px-6 py-6 sm:py-8">
+                    <div class="px-3 sm:px-6 py-4 sm:py-6 md:py-8">
                         <form @submit.prevent="submit">
                             <!-- TOTP Code Input -->
-                            <div v-if="!useRecoveryCode" class="space-y-4">
+                            <div v-if="!useRecoveryCode" class="space-y-3 sm:space-y-4">
                                 <div>
-                                    <label for="code" class="block text-sm font-medium text-gray-300 mb-2">
+                                    <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-2 sm:mb-3 text-center">
                                         Authentication Code
                                     </label>
-                                    <input
-                                        id="code"
-                                        v-model="form.code"
-                                        type="text"
-                                        inputmode="numeric"
-                                        pattern="[0-9]*"
-                                        maxlength="6"
-                                        placeholder="000000"
-                                        autofocus
-                                        autocomplete="one-time-code"
-                                        class="block w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-600 bg-gray-900/50 text-white rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent text-center text-xl sm:text-2xl tracking-widest font-mono backdrop-blur-sm transition-all duration-300"
-                                        :class="{ 'border-red-500 focus:ring-red-500': form.errors.code }"
-                                    />
-                                    <p v-if="form.errors.code" class="mt-2 text-sm text-red-400">
+                                    
+                                    <!-- Individual digit inputs -->
+                                    <div class="flex justify-center gap-1.5 sm:gap-2 md:gap-3">
+                                        <input
+                                            v-for="(digit, index) in 6"
+                                            :key="index"
+                                            :ref="el => digitRefs[index] = el"
+                                            v-model="digits[index]"
+                                            type="text"
+                                            inputmode="numeric"
+                                            pattern="[0-9]"
+                                            maxlength="1"
+                                            autocomplete="off"
+                                            @input="handleDigitInput(index, $event)"
+                                            @keydown="handleKeyDown(index, $event)"
+                                            @paste="handlePaste"
+                                            class="w-9 h-11 sm:w-11 sm:h-13 md:w-12 md:h-14 lg:w-14 lg:h-16 border-2 border-gray-600 bg-gray-900/50 text-white rounded-md sm:rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-center text-xl sm:text-2xl md:text-2xl lg:text-3xl font-mono backdrop-blur-sm transition-all duration-300 font-bold leading-none flex items-center justify-center p-0"
+                                            :class="{
+                                                'border-red-500 focus:ring-red-500 animate-shake': form.errors.code,
+                                                'border-blue-500': digits[index] && !form.errors.code
+                                            }"
+                                        />
+                                    </div>
+                                    
+                                    <p v-if="form.errors.code" class="mt-3 text-sm text-red-400 text-center animate-fadeIn">
                                         {{ form.errors.code }}
                                     </p>
                                 </div>
@@ -168,43 +185,43 @@
                                         <strong>Warning:</strong> Each recovery code can only be used once. Make sure to generate new codes after using this one.
                                     </p>
                                 </div>
-                            </div>
-
-                            <!-- Submit Button -->
-                            <div class="mt-5 sm:mt-6">
-                                <button
-                                    type="submit"
-                                    class="w-full inline-flex justify-center items-center px-4 py-2.5 sm:py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-sm font-medium text-white rounded-xl shadow-md hover:shadow-blue-300/30 hover:from-blue-400 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:from-blue-600 active:to-blue-700 transition-all duration-300 relative overflow-hidden group"
-                                    :class="{ 'opacity-50 cursor-not-allowed': form.processing }"
-                                    :disabled="form.processing"
-                                >
-                                    <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
-                                    <svg v-if="form.processing" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
-                                    {{ form.processing ? 'Verifying...' : 'Verify' }}
-                                </button>
+                                
+                                <!-- Submit Button for Recovery Code -->
+                                <div>
+                                    <button
+                                        type="submit"
+                                        class="w-full inline-flex justify-center items-center px-4 py-2.5 sm:py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-sm font-medium text-white rounded-xl shadow-md hover:shadow-blue-300/30 hover:from-blue-400 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:from-blue-600 active:to-blue-700 transition-all duration-300 relative overflow-hidden group"
+                                        :class="{ 'opacity-50 cursor-not-allowed': form.processing }"
+                                        :disabled="form.processing"
+                                    >
+                                        <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
+                                        <svg v-if="form.processing" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        {{ form.processing ? 'Verifying...' : 'Verify Recovery Code' }}
+                                    </button>
+                                </div>
                             </div>
 
                             <!-- Toggle Recovery Code -->
-                            <div class="mt-4 text-center">
+                            <div class="mt-3 sm:mt-4 text-center">
                                 <button
                                     type="button"
                                     @click="toggleRecoveryCode"
-                                    class="text-sm text-blue-400 hover:text-blue-300 font-medium transition-colors duration-200"
+                                    class="text-xs sm:text-sm text-blue-400 hover:text-blue-300 font-medium transition-colors duration-200"
                                 >
                                     {{ useRecoveryCode ? 'Use authenticator code instead' : 'Use a recovery code' }}
                                 </button>
                             </div>
 
                             <!-- Back to Login -->
-                            <div class="mt-6 text-center">
+                            <div class="mt-4 sm:mt-6 text-center">
                                 <Link
                                     :href="route('login')"
-                                    class="inline-flex items-center text-sm text-gray-400 hover:text-gray-200 transition-colors duration-200"
+                                    class="inline-flex items-center text-xs sm:text-sm text-gray-400 hover:text-gray-200 transition-colors duration-200"
                                 >
-                                    <svg class="w-4 h-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                                     </svg>
                                     Back to login
@@ -215,8 +232,8 @@
                 </div>
 
                 <!-- Additional Info -->
-                <div class="mt-4 sm:mt-6 text-center px-2">
-                    <p class="text-xs text-gray-400">
+                <div class="mt-3 sm:mt-4 md:mt-6 text-center px-2">
+                    <p class="text-[10px] sm:text-xs text-gray-400">
                         Having trouble? Contact your system administrator for help.
                     </p>
                 </div>
@@ -245,7 +262,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { ref, onMounted, onBeforeUnmount, watch, nextTick } from 'vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 
 const props = defineProps({
@@ -265,6 +282,11 @@ const activeSlide = ref(0);
 const slideInterval = ref(null);
 const gradientIndex = ref(0);
 const gradientInterval = ref(null);
+const isUnlocked = ref(false);
+
+// Individual digit refs and values
+const digits = ref(['', '', '', '', '', '']);
+const digitRefs = ref([]);
 
 const form = useForm({
     code: '',
@@ -377,19 +399,111 @@ const heroImageSizes = '(max-width: 640px) 100vw, (max-width: 768px) 100vw, (max
 const logoWebpSrcset = '/images/optimized/lspu_logo_better-96.webp 96w, /images/optimized/lspu_logo_better-192.webp 192w';
 const logoSizes = '(max-width: 640px) 4rem, (max-width: 768px) 5rem, (max-width: 1024px) 6rem, (max-width: 1280px) 7rem, 8rem';
 
+// Handle individual digit input
+const handleDigitInput = (index, event) => {
+    const value = event.target.value;
+    
+    // Only allow numeric values
+    if (value && !/^\d$/.test(value)) {
+        digits.value[index] = '';
+        return;
+    }
+    
+    // Update the digit
+    digits.value[index] = value;
+    
+    // Move to next input if value is entered
+    if (value && index < 5) {
+        nextTick(() => {
+            digitRefs.value[index + 1]?.focus();
+        });
+    }
+    
+    // Auto-submit when all 6 digits are filled
+    if (value && index === 5 && digits.value.every(d => d !== '')) {
+        const code = digits.value.join('');
+        form.code = code;
+        nextTick(() => {
+            submit();
+        });
+    }
+};
+
+// Handle keydown events (backspace, arrow keys)
+const handleKeyDown = (index, event) => {
+    if (event.key === 'Backspace') {
+        if (!digits.value[index] && index > 0) {
+            // Move to previous input if current is empty
+            nextTick(() => {
+                digitRefs.value[index - 1]?.focus();
+            });
+        } else {
+            digits.value[index] = '';
+        }
+    } else if (event.key === 'ArrowLeft' && index > 0) {
+        event.preventDefault();
+        digitRefs.value[index - 1]?.focus();
+    } else if (event.key === 'ArrowRight' && index < 5) {
+        event.preventDefault();
+        digitRefs.value[index + 1]?.focus();
+    }
+};
+
+// Handle paste event
+const handlePaste = (event) => {
+    event.preventDefault();
+    const pastedData = event.clipboardData.getData('text').trim();
+    
+    // Only accept 6-digit numeric codes
+    if (/^\d{6}$/.test(pastedData)) {
+        const pastedDigits = pastedData.split('');
+        pastedDigits.forEach((digit, index) => {
+            if (index < 6) {
+                digits.value[index] = digit;
+            }
+        });
+        
+        // Focus last input and auto-submit
+        nextTick(() => {
+            digitRefs.value[5]?.focus();
+            form.code = pastedData;
+            submit();
+        });
+    }
+};
+
+// Watch for errors and clear digits
+watch(() => form.errors.code, (newError) => {
+    if (newError) {
+        // Clear all digits on error
+        setTimeout(() => {
+            digits.value = ['', '', '', '', '', ''];
+            form.code = '';
+            nextTick(() => {
+                digitRefs.value[0]?.focus();
+            });
+        }, 1000);
+    }
+});
+
 const toggleRecoveryCode = () => {
     useRecoveryCode.value = !useRecoveryCode.value;
     form.code = '';
     form.errors = {};
+    digits.value = ['', '', '', '', '', ''];
 };
 
 const submit = () => {
     form.post(route('two-factor.verify'), {
         preserveScroll: true,
-        onFinish: () => {
-            if (form.hasErrors) {
-                form.code = '';
-            }
+        onSuccess: () => {
+            // Show unlocked icon only when verification succeeds
+            isUnlocked.value = true;
+        },
+        onError: () => {
+            // Keep locked on error
+            isUnlocked.value = false;
+            form.code = '';
         },
     });
 };
@@ -418,6 +532,13 @@ onMounted(() => {
         formElement.value.classList.add('opacity-100');
     }
     
+    // Focus first digit input
+    nextTick(() => {
+        if (!useRecoveryCode.value) {
+            digitRefs.value[0]?.focus();
+        }
+    });
+    
     // Start animations
     startSlideshow();
     startGradientAnimation();
@@ -442,8 +563,30 @@ onBeforeUnmount(() => {
     to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
 .animate-fadeIn {
     animation: fadeIn 0.6s ease-out forwards;
+}
+
+.animate-shake {
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes unlock {
+    0% { transform: scale(1) rotate(0deg); }
+    25% { transform: scale(1.1) rotate(-5deg); }
+    50% { transform: scale(1.2) rotate(5deg); }
+    75% { transform: scale(1.1) rotate(-5deg); }
+    100% { transform: scale(1) rotate(0deg); }
+}
+
+.animate-unlock {
+    animation: unlock 0.6s ease-in-out;
 }
 
 /* Slideshow transition - smooth crossfade */
