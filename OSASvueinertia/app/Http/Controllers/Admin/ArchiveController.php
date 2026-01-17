@@ -18,6 +18,18 @@ class ArchiveController extends Controller
     {
         $query = OrganizationApplication::archived()->with(['user', 'archivedBy']);
         
+        // Apply search filter if provided
+        if ($request->filled('search')) {
+            $searchTerm = $request->search;
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('form_type', 'like', "%{$searchTerm}%")
+                  ->orWhere('status', 'like', "%{$searchTerm}%")
+                  ->orWhereHas('user', function($userQuery) use ($searchTerm) {
+                      $userQuery->where('name', 'like', "%{$searchTerm}%");
+                  });
+            });
+        }
+        
         // Apply user filter if provided
         if ($request->filled('user_filter')) {
             $query->where('user_id', $request->user_filter);
@@ -68,6 +80,18 @@ class ArchiveController extends Controller
         $query = OrganizationApplication::archived()->with(['user', 'archivedBy']);
         $perPage = $request->get('per_page', 20);
         $page = $request->get('page', 1);
+        
+        // Apply search filter if provided
+        if ($request->filled('search')) {
+            $searchTerm = $request->search;
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('form_type', 'like', "%{$searchTerm}%")
+                  ->orWhere('status', 'like', "%{$searchTerm}%")
+                  ->orWhereHas('user', function($userQuery) use ($searchTerm) {
+                      $userQuery->where('name', 'like', "%{$searchTerm}%");
+                  });
+            });
+        }
         
         // Apply user filter if provided
         if ($request->filled('user_filter')) {

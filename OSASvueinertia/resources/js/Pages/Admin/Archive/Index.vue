@@ -77,14 +77,15 @@ const isFiltering = ref(false);
 const currentPage = ref(props.currentPage);
 const hasMorePages = ref(props.hasMorePages);
 
+const searchQuery = ref('');
 const filterForm = ref({
-    user_filter: props.currentUserFilter,
-    academic_year_filter: props.currentAcademicYearFilter,
+    user_filter: props.currentUserFilter || '',
+    academic_year_filter: props.currentAcademicYearFilter || '',
 });
 
 // Check if any filters are active
 const hasActiveFilters = computed(() => {
-    return filterForm.value.user_filter || filterForm.value.academic_year_filter;
+    return searchQuery.value || filterForm.value.user_filter || filterForm.value.academic_year_filter;
 });
 
 // Computed properties for bulk operations
@@ -107,7 +108,20 @@ const applyFilters = () => {
     currentPage.value = 1;
     hasMorePages.value = props.hasMorePages;
     
-    router.get(route('admin.archive.index'), filterForm.value, {
+    const params = {};
+    
+    // Only add filters if they have values
+    if (filterForm.value.user_filter) {
+        params.user_filter = filterForm.value.user_filter;
+    }
+    if (filterForm.value.academic_year_filter) {
+        params.academic_year_filter = filterForm.value.academic_year_filter;
+    }
+    if (searchQuery.value.trim()) {
+        params.search = searchQuery.value.trim();
+    }
+    
+    router.get(route('admin.archive.index'), params, {
         preserveState: true,
         preserveScroll: true,
         onSuccess: () => {
@@ -117,13 +131,26 @@ const applyFilters = () => {
 };
 
 const clearFilters = () => {
+    searchQuery.value = '';
     filterForm.value = {
         user_filter: '',
         academic_year_filter: '',
     };
     currentPage.value = 1;
     hasMorePages.value = props.hasMorePages;
-    applyFilters();
+    
+    // Navigate without any filter params
+    router.get(route('admin.archive.index'), {}, {
+        preserveState: true,
+        preserveScroll: true,
+        onSuccess: () => {
+            allArchivedApplications.value = [...props.archivedApplications];
+        }
+    });
+};
+
+const clearSearch = () => {
+    searchQuery.value = '';
 };
 
 // Infinite scroll functionality
@@ -676,6 +703,24 @@ watch(() => props.hasMorePages, (newValue) => {
 watch(() => props.currentPage, (newValue) => {
     currentPage.value = newValue;
 });
+
+// Watch for search changes with debouncing
+let searchTimeout = null;
+watch(searchQuery, () => {
+    if (searchTimeout) clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+        applyFilters();
+    }, 300);
+});
+
+// Watch for filter changes
+watch(() => filterForm.value.user_filter, () => {
+    applyFilters();
+});
+
+watch(() => filterForm.value.academic_year_filter, () => {
+    applyFilters();
+});
 </script>
 
 <template>
@@ -704,114 +749,152 @@ watch(() => props.currentPage, (newValue) => {
             {{ errorMessage }}
         </div>
 
-        <!-- Filters -->
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 mb-6">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
-                <div class="p-4 sm:p-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-medium text-gray-800 dark:text-gray-200">Filters</h3>
-                        <!-- Bulk Mode Toggle and Controls -->
-                        <div class="flex items-center gap-2">
-                            <!-- Bulk Restore Toggle Button -->
-                            <button
-                                @click="toggleBulkMode"
-                                :class="[
-                                    'relative p-2 rounded-full transition-all duration-200 flex items-center justify-center group',
-                                    isBulkModeActive 
-                                        ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 shadow-md' 
-                                        : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 shadow-sm'
-                                ]"
-                                :title="isBulkModeActive ? 'Exit Bulk Restore Mode' : 'Bulk Restore Mode'"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <rect x="3" y="3" width="7" height="7" rx="1" />
-                                    <rect x="14" y="3" width="7" height="7" rx="1" />
-                                    <rect x="14" y="14" width="7" height="7" rx="1" />
-                                    <rect x="3" y="14" width="7" height="7" rx="1" />
-                                </svg>
-                                <span class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-800 dark:bg-gray-700 text-white dark:text-gray-200 text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-50 pointer-events-none">
-                                    {{ isBulkModeActive ? 'Exit Bulk Restore' : 'Bulk Restore' }}
-                                </span>
-                            </button>
-
-                            <!-- Bulk Selection Controls -->
-                            <div v-if="isBulkModeActive" class="flex items-center gap-1.5">
-                                <!-- Select All -->
-                                <div class="flex items-center gap-1.5 px-2 py-1.5 bg-gray-50 dark:bg-gray-800 rounded-full border border-gray-200 dark:border-gray-700">
-                                    <input
-                                        type="checkbox"
-                                        :checked="isAllSelected"
-                                        :indeterminate="isSomeSelected"
-                                        @change="toggleSelectAll"
-                                        class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer"
-                                        aria-label="Select all applications"
-                                    />
-                                    <label class="text-xs font-medium text-gray-700 dark:text-gray-300 cursor-pointer select-none" @click="toggleSelectAll">
-                                        All
-                                    </label>
-                                </div>
-                                
-                                <!-- Clear Selection Button -->
-                                <button
-                                    v-if="hasSelectedApplications"
-                                    @click="selectedApplications = []"
-                                    class="p-1.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-full transition-colors duration-150"
-                                    title="Clear selection"
-                                >
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
-                                </button>
-                                
-                                <!-- Restore Button -->
-                                <button
-                                    v-if="hasSelectedApplications"
-                                    @click="confirmBulkRestore"
-                                    class="p-1.5 bg-green-500 hover:bg-green-600 rounded-full transition-colors duration-150"
-                                    :title="`Restore ${selectedApplications.length} selected`"
-                                >
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <div class="flex flex-col gap-1">
-                            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Organization</label>
-                            <SelectInput
-                                v-model="filterForm.user_filter"
-                                :options="[
-                                    { value: '', label: 'All Organizations' },
-                                    ...users.map(user => ({ value: user.id.toString(), label: user.name }))
-                                ]"
-                                class="w-full"
-                            />
-                        </div>
-                        <div class="flex flex-col gap-1">
-                            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Academic Year</label>
-                            <SelectInput
-                                v-model="filterForm.academic_year_filter"
-                                :options="[
-                                    { value: '', label: 'All Years' },
-                                    ...academicYears.map(year => ({ value: year, label: year }))
-                                ]"
-                                class="w-full"
-                            />
-                        </div>
-                        <div class="flex flex-col justify-end sm:col-span-2 lg:col-span-2">
-                            <div class="flex flex-col sm:flex-row gap-2">
-                                <PrimaryButton @click="applyFilters" class="flex-1 justify-center">
-                                    Apply Filters
-                                </PrimaryButton>
-                                <SecondaryButton @click="clearFilters" class="flex-1 justify-center">
-                                    Clear
-                                </SecondaryButton>
-                            </div>
-                        </div>
-                    </div>
+        <!-- Unified Search and Filter Section -->
+        <div class="max-w-4xl mx-auto px-3 sm:px-6 mb-6 space-y-3">
+            <!-- Search Bar -->
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
                 </div>
+                <input
+                    type="text"
+                    v-model="searchQuery"
+                    class="block w-full pl-9 sm:pl-12 pr-9 sm:pr-12 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 transition duration-150 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+                    placeholder="Search archived applications..."
+                />
+                <div v-if="searchQuery" class="absolute inset-y-0 right-0 pr-3 sm:pr-4 flex items-center">
+                    <button @click="clearSearch" class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filter Bar - Responsive Grid Layout -->
+            <div class="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2">
+                <!-- Organization Filter -->
+                <div class="col-span-1">
+                    <select 
+                        v-model="filterForm.user_filter"
+                        class="w-full pl-2.5 pr-7 py-1.5 sm:pl-3 sm:pr-8 sm:py-2 border border-gray-300 dark:border-gray-600 rounded-full text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm"
+                    >
+                        <option value="">All Organizations</option>
+                        <option 
+                            v-for="user in users" 
+                            :key="user.id" 
+                            :value="user.id.toString()"
+                            :title="user.name.length > 15 ? user.name : undefined"
+                        >
+                            {{ user.name.length > 15 ? user.name.substring(0, 15) + '...' : user.name }}
+                        </option>
+                    </select>
+                </div>
+
+                <!-- Academic Year Filter -->
+                <div class="col-span-1">
+                    <select 
+                        v-model="filterForm.academic_year_filter"
+                        class="w-full pl-2.5 pr-7 py-1.5 sm:pl-3 sm:pr-8 sm:py-2 border border-gray-300 dark:border-gray-600 rounded-full text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm"
+                    >
+                        <option value="">All Years</option>
+                        <option v-for="year in academicYears" :key="year" :value="year">
+                            {{ year }}
+                        </option>
+                    </select>
+                </div>
+
+                <!-- Bulk Restore Toggle Button -->
+                <button
+                    @click="toggleBulkMode"
+                    :class="[
+                        'relative p-2 rounded-full transition-all duration-200 flex items-center justify-center group',
+                        isBulkModeActive 
+                            ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 shadow-md' 
+                            : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 shadow-sm'
+                    ]"
+                    :title="isBulkModeActive ? 'Exit Bulk Restore Mode' : 'Bulk Restore Mode'"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7" rx="1" />
+                        <rect x="14" y="3" width="7" height="7" rx="1" />
+                        <rect x="14" y="14" width="7" height="7" rx="1" />
+                        <rect x="3" y="14" width="7" height="7" rx="1" />
+                    </svg>
+                    <span class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-800 dark:bg-gray-700 text-white dark:text-gray-200 text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-50 pointer-events-none">
+                        {{ isBulkModeActive ? 'Exit Bulk Restore' : 'Bulk Restore' }}
+                    </span>
+                </button>
+
+                <!-- Bulk Selection Controls -->
+                <div v-if="isBulkModeActive" class="flex items-center gap-1.5">
+                    <!-- Select All -->
+                    <div class="flex items-center gap-1.5 px-2 py-1.5 bg-gray-50 dark:bg-gray-800 rounded-full border border-gray-200 dark:border-gray-700">
+                        <input
+                            type="checkbox"
+                            :checked="isAllSelected"
+                            :indeterminate="isSomeSelected"
+                            @change="toggleSelectAll"
+                            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer"
+                            aria-label="Select all applications"
+                        />
+                        <label class="text-xs font-medium text-gray-700 dark:text-gray-300 cursor-pointer select-none" @click="toggleSelectAll">
+                            All ({{ selectedApplications.length }})
+                        </label>
+                    </div>
+                    
+                    <!-- Clear Selection Button -->
+                    <button
+                        v-if="hasSelectedApplications"
+                        @click="selectedApplications = []"
+                        class="p-1.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-full transition-colors duration-150"
+                        title="Clear selection"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                    
+                    <!-- Restore Button -->
+                    <button
+                        v-if="hasSelectedApplications"
+                        @click="confirmBulkRestore"
+                        class="p-1.5 bg-blue-500 hover:bg-blue-600 rounded-full transition-colors duration-150"
+                        :title="`Restore ${selectedApplications.length} selected`"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Clear All Filters Button -->
+                <button
+                    v-if="hasActiveFilters"
+                    @click="clearFilters"
+                    class="col-span-2 sm:col-span-1 px-3 py-1.5 sm:py-2 text-xs sm:text-sm text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition duration-200 flex items-center justify-center gap-1.5 border border-gray-300 dark:border-gray-600 shadow-sm"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    <span>Clear Filters</span>
+                </button>
+            </div>
+
+            <!-- Active Filters Display -->
+            <div v-if="hasActiveFilters" class="flex flex-wrap gap-1.5 sm:gap-2 items-center text-xs sm:text-sm">
+                <span class="text-gray-600 dark:text-gray-400 font-medium text-xs sm:text-sm">Active:</span>
+                <span v-if="searchQuery" class="px-1.5 py-0.5 sm:px-2 sm:py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-md text-xs">
+                    "{{ searchQuery.length > 15 ? searchQuery.substring(0, 15) + '...' : searchQuery }}"
+                </span>
+                <span v-if="filterForm.user_filter" class="px-1.5 py-0.5 sm:px-2 sm:py-1 bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 rounded-md text-xs truncate max-w-[120px] sm:max-w-xs" :title="users.find(u => u.id.toString() === filterForm.user_filter)?.name">
+                    {{ users.find(u => u.id.toString() === filterForm.user_filter)?.name }}
+                </span>
+                <span v-if="filterForm.academic_year_filter" class="px-1.5 py-0.5 sm:px-2 sm:py-1 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 rounded-md text-xs">
+                    {{ filterForm.academic_year_filter }}
+                </span>
             </div>
         </div>
 
@@ -846,7 +929,7 @@ watch(() => props.currentPage, (newValue) => {
                   type="checkbox"
                   :checked="selectedApplications.includes(application.id)"
                   @change="toggleApplicationSelection(application.id)"
-                  class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded cursor-pointer"
+                  class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer"
                   :aria-label="'Select ' + formTypeToName(application.form_type)"
               />
           </div>
@@ -922,7 +1005,7 @@ watch(() => props.currentPage, (newValue) => {
                                     type="checkbox"
                                     :checked="selectedApplications.includes(application.id)"
                                     @change="toggleApplicationSelection(application.id)"
-                                    class="h-5 w-5 text-green-600 focus:ring-green-500 border-gray-300 rounded cursor-pointer"
+                                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer"
                                     :aria-label="'Select ' + formTypeToName(application.form_type)"
                                 />
                             </div>
@@ -1042,8 +1125,8 @@ watch(() => props.currentPage, (newValue) => {
         <Modal :show="showBulkRestoreModal" @close="showBulkRestoreModal = false">
             <div class="p-6 bg-white dark:bg-gray-800">
                 <div class="flex items-center mb-5">
-                    <div class="flex-shrink-0 bg-green-100 dark:bg-green-900/20 rounded-full p-2 mr-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-500 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div class="flex-shrink-0 bg-blue-100 dark:bg-blue-900/20 rounded-full p-2 mr-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                         </svg>
                     </div>
@@ -1076,7 +1159,7 @@ watch(() => props.currentPage, (newValue) => {
                     </button>
                     <button
                         @click="bulkRestoreApplications"
-                        class="px-4 py-2 text-sm font-medium text-white bg-green-500 border border-transparent rounded-md shadow-sm hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition duration-150 ease-in-out"
+                        class="px-4 py-2 text-sm font-medium text-white bg-blue-500 border border-transparent rounded-md shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition duration-150 ease-in-out"
                     >
                         Restore {{ selectedApplications.length }} Application{{ selectedApplications.length !== 1 ? 's' : '' }}
                     </button>
