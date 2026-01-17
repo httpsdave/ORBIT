@@ -1180,6 +1180,78 @@
           </div>
         </div>
       </Modal>
+
+      <!-- Validation Modal -->
+      <Modal :show="showValidationModal" @close="closeValidationModal" maxWidth="sm">
+        <div class="p-4 sm:p-6">
+          <div class="flex items-center mb-4">
+            <div class="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
+              <svg class="h-5 w-5 sm:h-6 sm:w-6 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <div class="ml-3 sm:ml-4">
+              <h3 class="text-base sm:text-lg font-medium text-gray-900 dark:text-gray-100">Validation Required</h3>
+            </div>
+          </div>
+          <p class="text-sm text-gray-600 dark:text-gray-400 mb-4 sm:mb-6">{{ validationMessage }}</p>
+          <div class="flex justify-end">
+            <button
+              @click="closeValidationModal"
+              class="inline-flex items-center justify-center px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow-md transition-colors duration-200 text-sm"
+              type="button"
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      </Modal>
+
+      <!-- Remove Parent Confirmation Modal -->
+      <Modal :show="showRemoveParentModal" @close="closeRemoveParentModal" maxWidth="sm">
+        <div class="p-4 sm:p-6">
+          <div class="flex items-center mb-4">
+            <div class="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+              <svg class="h-5 w-5 sm:h-6 sm:w-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <div class="ml-3 sm:ml-4">
+              <h3 class="text-base sm:text-lg font-medium text-gray-900 dark:text-gray-100">Remove Parent Organization</h3>
+            </div>
+          </div>
+          
+          <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+            Are you sure you want to remove this organization from its parent organization?
+          </p>
+          
+          <div v-if="orgToRemoveParent" class="mb-4 sm:mb-6 p-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg">
+            <div class="flex items-center">
+              <div v-if="orgToRemoveParent.profile_photo_url" class="flex-shrink-0 h-10 w-10 mr-3">
+                <img class="h-10 w-10 rounded-full object-cover border border-gray-200 dark:border-gray-600" :src="orgToRemoveParent.profile_photo_url" alt="" />
+              </div>
+              <div v-else class="h-10 w-10 bg-gradient-to-br from-blue-500 to-green-400 rounded-full flex items-center justify-center text-white font-medium shadow-inner text-sm mr-3">
+                {{ orgToRemoveParent.name ? orgToRemoveParent.name.charAt(0).toUpperCase() : 'O' }}
+              </div>
+              <div class="min-w-0 flex-1">
+                <div class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{{ orgToRemoveParent.name || 'Unknown Organization' }}</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ orgToRemoveParent.email || 'No email' }}</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3">
+            <SecondaryButton @click="closeRemoveParentModal" class="w-full sm:w-auto order-2 sm:order-1">Cancel</SecondaryButton>
+            <button
+              @click="confirmRemoveParent"
+              class="inline-flex items-center justify-center px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg shadow-md transition-colors duration-200 text-sm w-full sm:w-auto order-1 sm:order-2"
+              type="button"
+            >
+              Remove Parent
+            </button>
+          </div>
+        </div>
+      </Modal>
     </AuthenticatedLayout>
   </div>
 </template>
@@ -1215,8 +1287,12 @@ export default {
       showConfirmModal: false,
       showRemoveConfirmModal: false,
       showParentAssignModal: false,
+      showValidationModal: false,
+      showRemoveParentModal: false,
+      validationMessage: '',
       orgToRemove: null,
       orgToAssignParent: null,
+      orgToRemoveParent: null,
       selectedCollegeId: null,
       selectedCollegeName: '',
       selectedParentOrgId: null,
@@ -1369,13 +1445,15 @@ export default {
     },
     openConfirmModal() {
       if (this.selectedUsers.length === 0) {
-        alert('Please select at least one organization to add.');
+        this.validationMessage = 'Please select at least one organization to add.';
+        this.showValidationModal = true;
         return;
       }
       
-      // If no college is selected, show an alert
+      // If no college is selected, show a validation modal
       if (!this.selectedCollegeId) {
-        alert('Please select a college first.');
+        this.validationMessage = 'Please select a college first.';
+        this.showValidationModal = true;
         return;
       }
 
@@ -1409,7 +1487,8 @@ export default {
     },
     confirmAssignUsers() {
       if (!this.selectedCollegeId) {
-        alert('Please select a college first.');
+        this.validationMessage = 'Please select a college first.';
+        this.showValidationModal = true;
         return;
       }
       this.assignForm.user_ids = this.selectedUsers.map(u => u.id);
@@ -1497,7 +1576,8 @@ export default {
           user.status = previousStatus;
           // Optional: surface the error to the user
           if (error.response && error.response.data && error.response.data.message) {
-            alert(error.response.data.message);
+            this.validationMessage = error.response.data.message;
+            this.showValidationModal = true;
           }
         });
     },
@@ -1525,7 +1605,8 @@ export default {
     },
     confirmAssignParent() {
       if (!this.selectedParentOrgId || !this.orgToAssignParent) {
-        alert('Please select a parent organization.');
+        this.validationMessage = 'Please select a parent organization.';
+        this.showValidationModal = true;
         return;
       }
       
@@ -1540,15 +1621,30 @@ export default {
       });
     },
     removeParentOrganization(subOrgId) {
-      if (confirm('Are you sure you want to remove this organization from its parent organization?')) {
-        const removeForm = useForm({
-          sub_organization_id: subOrgId
-        });
-        
-        removeForm.post(route('admin.student-orgs.remove-parent'), {
-          preserveScroll: true
-        });
-      }
+      this.orgToRemoveParent = this.users.find(u => u.id === subOrgId);
+      this.showRemoveParentModal = true;
+    },
+    confirmRemoveParent() {
+      if (!this.orgToRemoveParent) return;
+      
+      const removeForm = useForm({
+        sub_organization_id: this.orgToRemoveParent.id
+      });
+      
+      removeForm.post(route('admin.student-orgs.remove-parent'), {
+        preserveScroll: true,
+        onSuccess: () => {
+          this.closeRemoveParentModal();
+        }
+      });
+    },
+    closeRemoveParentModal() {
+      this.showRemoveParentModal = false;
+      this.orgToRemoveParent = null;
+    },
+    closeValidationModal() {
+      this.showValidationModal = false;
+      this.validationMessage = '';
     },
     wouldCreateCircularRelationship(potentialParent, subOrg) {
       if (!potentialParent || !subOrg) return false;
