@@ -151,6 +151,49 @@ class ArchiveController extends Controller
     }
 
     /**
+     * Restore multiple archived applications
+     */
+    public function bulkRestore(Request $request)
+    {
+        $request->validate([
+            'application_ids' => 'required|array',
+            'application_ids.*' => 'exists:organization_applications,id'
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            $applications = OrganizationApplication::whereIn('id', $request->application_ids)
+                ->where('is_archived', true)
+                ->get();
+
+            if ($applications->isEmpty()) {
+                return back()->with('error', 'No archived applications found to restore.');
+            }
+
+            $restoredCount = 0;
+            foreach ($applications as $application) {
+                $application->update([
+                    'is_archived' => false,
+                    'archived_at' => null,
+                    'archived_by' => null,
+                    'academic_year_archived' => null
+                ]);
+                $restoredCount++;
+            }
+
+            DB::commit();
+
+            return redirect()->route('admin.archive.index')
+                ->with('success', "Successfully restored {$restoredCount} application" . ($restoredCount !== 1 ? 's' : '') . '.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Failed to restore applications. Please try again.');
+        }
+    }
+
+    /**
      * Get archive statistics for dashboard
      */
     public function getArchiveStats()

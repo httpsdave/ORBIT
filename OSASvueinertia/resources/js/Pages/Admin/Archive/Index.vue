@@ -53,6 +53,11 @@ const props = defineProps({
 const showRestoreModal = ref(false);
 const applicationToRestore = ref(null);
 
+// Bulk restore state
+const showBulkRestoreModal = ref(false);
+const selectedApplications = ref([]);
+const isBulkModeActive = ref(false);
+
 // Add dropdown state management
 const activeDropdownApp = ref(null);
 const activeMobileDropdownId = ref(null);
@@ -80,6 +85,21 @@ const filterForm = ref({
 // Check if any filters are active
 const hasActiveFilters = computed(() => {
     return filterForm.value.user_filter || filterForm.value.academic_year_filter;
+});
+
+// Computed properties for bulk operations
+const isAllSelected = computed(() => {
+    return allArchivedApplications.value.length > 0 && 
+           selectedApplications.value.length === allArchivedApplications.value.length;
+});
+
+const isSomeSelected = computed(() => {
+    return selectedApplications.value.length > 0 && 
+           selectedApplications.value.length < allArchivedApplications.value.length;
+});
+
+const hasSelectedApplications = computed(() => {
+    return selectedApplications.value.length > 0;
 });
 
 const applyFilters = () => {
@@ -180,6 +200,51 @@ const restoreApplication = () => {
             },
         });
     }
+};
+
+// Bulk restore functions
+const toggleBulkMode = () => {
+    isBulkModeActive.value = !isBulkModeActive.value;
+    if (!isBulkModeActive.value) {
+        selectedApplications.value = [];
+    }
+};
+
+const toggleSelectAll = () => {
+    if (isAllSelected.value) {
+        selectedApplications.value = [];
+    } else {
+        selectedApplications.value = allArchivedApplications.value.map(app => app.id);
+    }
+};
+
+const toggleApplicationSelection = (applicationId) => {
+    const index = selectedApplications.value.indexOf(applicationId);
+    if (index > -1) {
+        selectedApplications.value.splice(index, 1);
+    } else {
+        selectedApplications.value.push(applicationId);
+    }
+};
+
+const confirmBulkRestore = () => {
+    if (selectedApplications.value.length === 0) return;
+    showBulkRestoreModal.value = true;
+};
+
+const bulkRestoreApplications = () => {
+    if (selectedApplications.value.length === 0) return;
+    
+    router.post(route('admin.archive.bulk-restore'), {
+        application_ids: selectedApplications.value
+    }, {
+        preserveScroll: true,
+        onSuccess: () => {
+            showBulkRestoreModal.value = false;
+            selectedApplications.value = [];
+            isBulkModeActive.value = false;
+        },
+    });
 };
 
 const formatDate = (dateString) => {
@@ -643,7 +708,75 @@ watch(() => props.currentPage, (newValue) => {
         <div class="max-w-4xl mx-auto px-4 sm:px-6 mb-6">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
                 <div class="p-4 sm:p-6">
-                    <h3 class="text-lg font-medium text-gray-800 dark:text-gray-200 mb-4">Filters</h3>
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-medium text-gray-800 dark:text-gray-200">Filters</h3>
+                        <!-- Bulk Mode Toggle and Controls -->
+                        <div class="flex items-center gap-2">
+                            <!-- Bulk Restore Toggle Button -->
+                            <button
+                                @click="toggleBulkMode"
+                                :class="[
+                                    'relative p-2 rounded-full transition-all duration-200 flex items-center justify-center group',
+                                    isBulkModeActive 
+                                        ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 shadow-md' 
+                                        : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 shadow-sm'
+                                ]"
+                                :title="isBulkModeActive ? 'Exit Bulk Restore Mode' : 'Bulk Restore Mode'"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="7" height="7" rx="1" />
+                                    <rect x="14" y="3" width="7" height="7" rx="1" />
+                                    <rect x="14" y="14" width="7" height="7" rx="1" />
+                                    <rect x="3" y="14" width="7" height="7" rx="1" />
+                                </svg>
+                                <span class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-800 dark:bg-gray-700 text-white dark:text-gray-200 text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-50 pointer-events-none">
+                                    {{ isBulkModeActive ? 'Exit Bulk Restore' : 'Bulk Restore' }}
+                                </span>
+                            </button>
+
+                            <!-- Bulk Selection Controls -->
+                            <div v-if="isBulkModeActive" class="flex items-center gap-1.5">
+                                <!-- Select All -->
+                                <div class="flex items-center gap-1.5 px-2 py-1.5 bg-gray-50 dark:bg-gray-800 rounded-full border border-gray-200 dark:border-gray-700">
+                                    <input
+                                        type="checkbox"
+                                        :checked="isAllSelected"
+                                        :indeterminate="isSomeSelected"
+                                        @change="toggleSelectAll"
+                                        class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer"
+                                        aria-label="Select all applications"
+                                    />
+                                    <label class="text-xs font-medium text-gray-700 dark:text-gray-300 cursor-pointer select-none" @click="toggleSelectAll">
+                                        All
+                                    </label>
+                                </div>
+                                
+                                <!-- Clear Selection Button -->
+                                <button
+                                    v-if="hasSelectedApplications"
+                                    @click="selectedApplications = []"
+                                    class="p-1.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-full transition-colors duration-150"
+                                    title="Clear selection"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                                
+                                <!-- Restore Button -->
+                                <button
+                                    v-if="hasSelectedApplications"
+                                    @click="confirmBulkRestore"
+                                    class="p-1.5 bg-green-500 hover:bg-green-600 rounded-full transition-colors duration-150"
+                                    :title="`Restore ${selectedApplications.length} selected`"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         <div class="flex flex-col gap-1">
                             <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Organization</label>
@@ -706,7 +839,19 @@ watch(() => props.currentPage, (newValue) => {
                 <div v-for="application in allArchivedApplications" :key="application.id" 
           class="relative bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-100 dark:border-gray-700 p-4 flex flex-col gap-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition"
           @click="viewPdf(application)">
-          <div class="flex items-center justify-between">
+          
+          <!-- Checkbox for bulk mode (top-left corner) -->
+          <div v-if="isBulkModeActive" class="absolute top-2 left-2" @click.stop>
+              <input
+                  type="checkbox"
+                  :checked="selectedApplications.includes(application.id)"
+                  @change="toggleApplicationSelection(application.id)"
+                  class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded cursor-pointer"
+                  :aria-label="'Select ' + formTypeToName(application.form_type)"
+              />
+          </div>
+          
+          <div class="flex items-center justify-between" :class="{ 'ml-6': isBulkModeActive }">
             <div class="flex items-center gap-2">
               <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#2563eb"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h168q13-36 43.5-58t68.5-22q38 0 68.5 22t43.5 58h168q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm80-80h280v-80H280v80Zm0-160h400v-80H280v80Zm0-160h400v-80H280v80Zm200-190q13 0 21.5-8.5T510-820q0-13-8.5-21.5T480-850q-13 0-21.5 8.5T450-820q0 13 8.5 21.5T480-790ZM200-200v-560 560Z"/></svg>
               <div class="text-base font-semibold text-gray-800 dark:text-gray-200">{{ formTypeToName(application.form_type) }}</div>
@@ -771,7 +916,18 @@ watch(() => props.currentPage, (newValue) => {
                             class="relative bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-100 dark:border-gray-700 mb-4 flex flex-col md:flex-row md:items-center md:justify-between hover:shadow-lg transition cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
                             @click="viewPdf(application)"
                         >
-                            <div class="flex items-center gap-4 p-5 flex-1 min-w-0">
+                            <!-- Checkbox for bulk mode (left side on desktop) -->
+                            <div v-if="isBulkModeActive" class="absolute top-4 left-4 z-10" @click.stop>
+                                <input
+                                    type="checkbox"
+                                    :checked="selectedApplications.includes(application.id)"
+                                    @change="toggleApplicationSelection(application.id)"
+                                    class="h-5 w-5 text-green-600 focus:ring-green-500 border-gray-300 rounded cursor-pointer"
+                                    :aria-label="'Select ' + formTypeToName(application.form_type)"
+                                />
+                            </div>
+                            
+                            <div class="flex items-center gap-4 p-5 flex-1 min-w-0" :class="{ 'ml-6': isBulkModeActive }">
                                 <div class="flex-shrink-0">
                                     <div class="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full p-3">
                                         <svg xmlns="http://www.w3.org/2000/svg" height="28px" viewBox="0 -960 960 960" width="28px" fill="#2563eb">
@@ -881,6 +1037,52 @@ watch(() => props.currentPage, (newValue) => {
                 </button>
             </div>
         </Teleport>
+
+        <!-- Bulk Restore Confirmation Modal -->
+        <Modal :show="showBulkRestoreModal" @close="showBulkRestoreModal = false">
+            <div class="p-6 bg-white dark:bg-gray-800">
+                <div class="flex items-center mb-5">
+                    <div class="flex-shrink-0 bg-green-100 dark:bg-green-900/20 rounded-full p-2 mr-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-500 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Restore Multiple Applications</h3>
+                </div>
+                <div class="mb-6">
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                        Are you sure you want to restore {{ selectedApplications.length }} application{{ selectedApplications.length !== 1 ? 's' : '' }}?
+                    </p>
+                    <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+                        <div class="flex items-start">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                            </svg>
+                            <div class="ml-3">
+                                <p class="text-sm font-medium text-blue-800 dark:text-blue-200">Note</p>
+                                <p class="text-sm text-blue-700 dark:text-blue-300 mt-1">
+                                    These applications will become active again and will be visible to their respective organizations for editing.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button
+                        @click="showBulkRestoreModal = false"
+                        class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition duration-150 ease-in-out"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        @click="bulkRestoreApplications"
+                        class="px-4 py-2 text-sm font-medium text-white bg-green-500 border border-transparent rounded-md shadow-sm hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition duration-150 ease-in-out"
+                    >
+                        Restore {{ selectedApplications.length }} Application{{ selectedApplications.length !== 1 ? 's' : '' }}
+                    </button>
+                </div>
+            </div>
+        </Modal>
 
         <!-- Restore Confirmation Modal -->
         <Modal :show="showRestoreModal" @close="showRestoreModal = false">

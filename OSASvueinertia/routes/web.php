@@ -349,6 +349,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/archive/load-more', [\App\Http\Controllers\Admin\ArchiveController::class, 'loadMore'])->name('admin.archive.load-more');
         Route::post('/archive/end-year', [\App\Http\Controllers\Admin\ArchiveController::class, 'endYear'])->name('admin.archive.end-year');
         Route::patch('/archive/{application}/restore', [\App\Http\Controllers\Admin\ArchiveController::class, 'restore'])->name('admin.archive.restore');
+        Route::post('/archive/bulk-restore', [\App\Http\Controllers\Admin\ArchiveController::class, 'bulkRestore'])->name('admin.archive.bulk-restore');
         Route::get('/archive/stats', [\App\Http\Controllers\Admin\ArchiveController::class, 'getArchiveStats'])->name('admin.archive.stats');
 
         // Admin Application Management Routes
