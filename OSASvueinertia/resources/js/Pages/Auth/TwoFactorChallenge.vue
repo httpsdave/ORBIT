@@ -21,7 +21,7 @@
     <div class="min-h-screen flex relative overflow-hidden">
         <!-- Left side - Narrow gradient panel -->
         <div 
-            class="w-20 sm:w-24 md:w-32 lg:w-40 xl:w-48 flex-shrink-0 relative overflow-hidden transition-all duration-1000 ease-in-out"
+            class="w-12 sm:w-20 md:w-28 lg:w-36 xl:w-44 flex-shrink-0 relative overflow-hidden transition-all duration-1000 ease-in-out"
             :class="gradientIndex === 0 ? 'bg-gradient-to-b from-blue-500 via-green-500 to-blue-500' : 'bg-gradient-to-b from-green-500 via-blue-500 to-green-500'"
         >
             <!-- Animated background pattern -->
@@ -35,26 +35,26 @@
             
             <!-- Vertical logo and text -->
             <div class="absolute inset-0 flex flex-col items-center justify-center text-white p-2 sm:p-3">
-                <div class="mb-4 sm:mb-6 lg:mb-8 xl:mb-12">
+                <div class="mb-3 sm:mb-4 lg:mb-6 xl:mb-10">
                     <img
                         src="/images/optimized/lspu_logo_better-96.webp"
                         srcset="/images/optimized/lspu_logo_better-96.webp 96w, /images/optimized/lspu_logo_better-192.webp 192w, /images/optimized/lspu_logo_better-256.webp 256w"
-                        sizes="(min-width: 1280px) 96px, (min-width: 1024px) 80px, (min-width: 768px) 64px, (min-width: 640px) 48px, 40px"
+                        sizes="(min-width: 1280px) 96px, (min-width: 1024px) 80px, (min-width: 768px) 64px, (min-width: 640px) 48px, 32px"
                         alt="LSPU Logo"
                         width="96"
                         height="96"
                         decoding="async"
-                        class="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 xl:w-24 xl:h-24 object-cover filter drop-shadow-lg"
+                        class="w-8 h-8 sm:w-10 sm:h-10 md:w-14 md:h-14 lg:w-18 lg:h-18 xl:w-22 xl:h-22 object-cover filter drop-shadow-lg"
                     >
                 </div>
                 
                 <!-- Vertical text -->
                 <div class="writing-mode-vertical text-center">
-                    <div class="text-sm sm:text-base md:text-lg lg:text-xl font-bold mb-2 sm:mb-3 tracking-widest transform rotate-180" style="writing-mode: vertical-rl;">
+                    <div class="text-xs sm:text-sm md:text-base lg:text-lg font-bold mb-1.5 sm:mb-2 tracking-wide sm:tracking-widest transform rotate-180" style="writing-mode: vertical-rl;">
                         2FA
                     </div>
-                    <div class="w-0.5 h-6 sm:h-8 lg:h-10 bg-white opacity-70 mx-auto mb-2 sm:mb-3"></div>
-                    <div class="text-xs sm:text-sm md:text-base lg:text-lg font-medium tracking-widest transform rotate-180" style="writing-mode: vertical-rl;">
+                    <div class="w-0.5 h-4 sm:h-6 lg:h-8 bg-white opacity-70 mx-auto mb-1.5 sm:mb-2"></div>
+                    <div class="text-[10px] sm:text-xs md:text-sm lg:text-base font-medium tracking-wide sm:tracking-widest transform rotate-180" style="writing-mode: vertical-rl;">
                         LOGIN
                     </div>
                 </div>
@@ -71,7 +71,7 @@
         </div>
         
         <!-- Background slideshow for right side -->
-        <div class="absolute inset-0 left-20 sm:left-24 md:left-32 lg:left-40 xl:left-48 z-0 bg-gray-900">
+        <div class="absolute inset-0 left-12 sm:left-20 md:left-28 lg:left-36 xl:left-44 z-0 bg-gray-900">
             <transition-group name="slideshow-fade">
                 <div
                     v-for="(image, index) in slideshowImages"
@@ -89,45 +89,45 @@
         </div>
         
         <!-- Right side - Main content area -->
-        <div class="flex-1 relative z-20 flex items-center justify-center px-3 sm:px-6 md:px-8 lg:px-12 xl:px-16 py-4">
+        <div class="flex-1 relative z-20 flex items-center justify-center px-2 sm:px-4 md:px-6 lg:px-10 xl:px-14 py-3">
             <div 
                 ref="formElement"
-                class="w-full max-w-[280px] sm:max-w-xs md:max-w-sm lg:max-w-md opacity-0 transition-opacity duration-1000 ease-out"
+                class="w-full max-w-[260px] sm:max-w-xs md:max-w-sm lg:max-w-md opacity-0 transition-opacity duration-1000 ease-out"
             >
-                <div class="bg-gray-800/90 backdrop-blur-md shadow-2xl rounded-xl sm:rounded-2xl overflow-hidden border border-gray-700">
+                <div class="bg-gray-800/90 backdrop-blur-md shadow-2xl rounded-lg sm:rounded-xl overflow-hidden border border-gray-700">
                     <!-- Header -->
-                    <div class="px-3 sm:px-6 py-4 sm:py-6 md:py-8 text-center border-b border-gray-700">
+                    <div class="px-2.5 sm:px-5 py-3 sm:py-5 md:py-7 text-center border-b border-gray-700">
                         <div class="flex justify-center mb-2 sm:mb-3 md:mb-4">
-                            <div class="bg-blue-500/20 rounded-full p-2 sm:p-3 md:p-4 backdrop-blur-sm transition-all duration-500"
+                            <div class="bg-blue-500/20 rounded-full p-1.5 sm:p-2.5 md:p-3.5 backdrop-blur-sm transition-all duration-500"
                                  :class="{ 'bg-green-500/20': isUnlocked }">
                                 <!-- Locked Icon -->
-                                <svg v-if="!isUnlocked" class="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-blue-400 transition-all duration-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg v-if="!isUnlocked" class="h-7 w-7 sm:h-9 sm:w-9 md:h-11 md:w-11 text-blue-400 transition-all duration-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                                 </svg>
                                 <!-- Unlocked Icon -->
-                                <svg v-else class="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-green-400 transition-all duration-500 animate-unlock" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg v-else class="h-7 w-7 sm:h-9 sm:w-9 md:h-11 md:w-11 text-green-400 transition-all duration-500 animate-unlock" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
                                 </svg>
                             </div>
                         </div>
-                        <h2 class="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-white mb-1 sm:mb-2">Two-Factor Authentication</h2>
-                        <p class="text-xs sm:text-sm md:text-base text-gray-300 px-2">
+                        <h2 class="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-white mb-1 sm:mb-2">Two-Factor Authentication</h2>
+                        <p class="text-[11px] sm:text-xs md:text-sm text-gray-300 px-1">
                             {{ useRecoveryCode ? 'Enter one of your recovery codes' : 'Enter the code from your authenticator app' }}
                         </p>
                     </div>
 
                     <!-- Form -->
-                    <div class="px-3 sm:px-6 py-4 sm:py-6 md:py-8">
+                    <div class="px-2.5 sm:px-5 py-3 sm:py-5 md:py-7">
                         <form @submit.prevent="submit">
                             <!-- TOTP Code Input -->
-                            <div v-if="!useRecoveryCode" class="space-y-3 sm:space-y-4">
+                            <div v-if="!useRecoveryCode" class="space-y-2.5 sm:space-y-3.5">
                                 <div>
-                                    <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-2 sm:mb-3 text-center">
+                                    <label class="block text-[11px] sm:text-xs font-medium text-gray-300 mb-1.5 sm:mb-2.5 text-center">
                                         Authentication Code
                                     </label>
                                     
                                     <!-- Individual digit inputs -->
-                                    <div class="flex justify-center gap-1.5 sm:gap-2 md:gap-3">
+                                    <div class="flex justify-center gap-1 sm:gap-1.5 md:gap-2.5">
                                         <input
                                             v-for="(digit, index) in 6"
                                             :key="index"
@@ -141,7 +141,7 @@
                                             @input="handleDigitInput(index, $event)"
                                             @keydown="handleKeyDown(index, $event)"
                                             @paste="handlePaste"
-                                            class="w-9 h-11 sm:w-11 sm:h-13 md:w-12 md:h-14 lg:w-14 lg:h-16 border-2 border-gray-600 bg-gray-900/50 text-white rounded-md sm:rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-center text-xl sm:text-2xl md:text-2xl lg:text-3xl font-mono backdrop-blur-sm transition-all duration-300 font-bold leading-none flex items-center justify-center p-0"
+                                            class="w-8 h-10 sm:w-10 sm:h-12 md:w-11 md:h-13 lg:w-13 lg:h-15 border-2 border-gray-600 bg-gray-900/50 text-white rounded sm:rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-center text-lg sm:text-xl md:text-2xl lg:text-2xl font-mono backdrop-blur-sm transition-all duration-300 font-bold leading-none flex items-center justify-center p-0"
                                             :class="{
                                                 'border-red-500 focus:ring-red-500 animate-shake': form.errors.code,
                                                 'border-blue-500': digits[index] && !form.errors.code
@@ -149,12 +149,12 @@
                                         />
                                     </div>
                                     
-                                    <p v-if="form.errors.code" class="mt-3 text-sm text-red-400 text-center animate-fadeIn">
+                                    <p v-if="form.errors.code" class="mt-2 text-xs text-red-400 text-center animate-fadeIn">
                                         {{ form.errors.code }}
                                     </p>
                                 </div>
 
-                                <p class="text-xs text-gray-400 text-center">
+                                <p class="text-[10px] sm:text-xs text-gray-400 text-center">
                                     Enter the 6-digit code from your authenticator app
                                 </p>
                             </div>
@@ -205,23 +205,23 @@
                             </div>
 
                             <!-- Toggle Recovery Code -->
-                            <div class="mt-3 sm:mt-4 text-center">
+                            <div class="mt-2.5 sm:mt-3.5 text-center">
                                 <button
                                     type="button"
                                     @click="toggleRecoveryCode"
-                                    class="text-xs sm:text-sm text-blue-400 hover:text-blue-300 font-medium transition-colors duration-200"
+                                    class="text-[11px] sm:text-xs text-blue-400 hover:text-blue-300 font-medium transition-colors duration-200"
                                 >
                                     {{ useRecoveryCode ? 'Use authenticator code instead' : 'Use a recovery code' }}
                                 </button>
                             </div>
 
                             <!-- Back to Login -->
-                            <div class="mt-4 sm:mt-6 text-center">
+                            <div class="mt-3 sm:mt-5 text-center">
                                 <Link
                                     :href="route('login')"
-                                    class="inline-flex items-center text-xs sm:text-sm text-gray-400 hover:text-gray-200 transition-colors duration-200"
+                                    class="inline-flex items-center text-[11px] sm:text-xs text-gray-400 hover:text-gray-200 transition-colors duration-200"
                                 >
-                                    <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <svg class="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 mr-0.5 sm:mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                                     </svg>
                                     Back to login
@@ -232,8 +232,8 @@
                 </div>
 
                 <!-- Additional Info -->
-                <div class="mt-3 sm:mt-4 md:mt-6 text-center px-2">
-                    <p class="text-[10px] sm:text-xs text-gray-400">
+                <div class="mt-2 sm:mt-3 md:mt-5 text-center px-1">
+                    <p class="text-[9px] sm:text-[10px] text-gray-400">
                         Having trouble? Contact your system administrator for help.
                     </p>
                 </div>
