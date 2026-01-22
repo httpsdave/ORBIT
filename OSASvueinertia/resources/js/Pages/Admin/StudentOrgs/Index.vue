@@ -24,16 +24,65 @@
                     Manage and organize student organizations by college affiliation
                   </p>
                 </div>
-                <button
-                  type="button"
-                  @click="openUserSelectionModalForNewOrg"
-                  class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white text-sm font-semibold rounded-xl shadow-md hover:shadow-blue-300/30 transition-all duration-200 whitespace-nowrap flex-shrink-0"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
-                  </svg>
-                  <span>Add New Organization</span>
-                </button>
+                <div class="flex gap-2 flex-wrap">
+                  <!-- Export Dropdown -->
+                  <div class="relative" ref="exportDropdown">
+                    <button
+                      @click.stop="toggleExportDropdown"
+                      type="button"
+                      class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white text-sm font-semibold rounded-xl shadow-md hover:shadow-green-300/30 transition-all duration-200 whitespace-nowrap flex-shrink-0"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                      <span>Export</span>
+                      <svg class="h-4 w-4 transition-transform" :class="{'rotate-180': showExportDropdown}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                      </svg>
+                    </button>
+                    
+                    <!-- Export Dropdown Menu -->
+                    <div
+                      v-if="showExportDropdown"
+                      @click.stop
+                      class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50 animate-dropdown"
+                    >
+                      <div class="py-1">
+                        <button
+                          @click="exportPdf"
+                          type="button"
+                          class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                        >
+                          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                          </svg>
+                          Export as PDF
+                        </button>
+                        <button
+                          @click="exportDocx"
+                          type="button"
+                          class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                        >
+                          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                          Export as DOCX
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <button
+                    type="button"
+                    @click="openUserSelectionModalForNewOrg"
+                    class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white text-sm font-semibold rounded-xl shadow-md hover:shadow-blue-300/30 transition-all duration-200 whitespace-nowrap flex-shrink-0"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                    </svg>
+                    <span>Add New Organization</span>
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -1289,6 +1338,7 @@ export default {
       showParentAssignModal: false,
       showValidationModal: false,
       showRemoveParentModal: false,
+      showExportDropdown: false,
       validationMessage: '',
       orgToRemove: null,
       orgToAssignParent: null,
@@ -1364,6 +1414,13 @@ export default {
   mounted() {
     // Adding a global click handler to close dropdowns when clicking outside
     this.clickOutsideHandler = (event) => {
+      // Close export dropdown if clicking outside
+      if (this.showExportDropdown && this.$refs.exportDropdown) {
+        if (!this.$refs.exportDropdown.contains(event.target)) {
+          this.showExportDropdown = false;
+        }
+      }
+      
       // Only process if we have any open colleges
       if (this.openColleges.length > 0) {
         // Check if the click was outside of any college accordion
@@ -1720,6 +1777,53 @@ export default {
       if (event && event.target) {
         event.target.src = '/images/lspu_logo_better.webp';
       }
+    },
+    toggleExportDropdown() {
+      this.showExportDropdown = !this.showExportDropdown;
+    },
+    exportPdf() {
+      this.showExportDropdown = false;
+      
+      // Get current academic year (you can customize this logic)
+      const currentDate = new Date();
+      const currentYear = currentDate.getFullYear();
+      const currentMonth = currentDate.getMonth();
+      
+      // Academic year typically starts in August/September
+      let academicYear;
+      if (currentMonth >= 7) { // August onwards (month 7 is August, 0-indexed)
+        academicYear = `${currentYear}-${currentYear + 1}`;
+      } else {
+        academicYear = `${currentYear - 1}-${currentYear}`;
+      }
+      
+      // Open PDF in new window
+      const url = this.route('admin.student-orgs.export-pdf', {
+        academic_year: academicYear,
+        action: 'view'
+      });
+      
+      window.open(url, '_blank');
+    },
+    exportDocx() {
+      this.showExportDropdown = false;
+      
+      // Get current academic year
+      const currentDate = new Date();
+      const currentYear = currentDate.getFullYear();
+      const currentMonth = currentDate.getMonth();
+      
+      let academicYear;
+      if (currentMonth >= 7) {
+        academicYear = `${currentYear}-${currentYear + 1}`;
+      } else {
+        academicYear = `${currentYear - 1}-${currentYear}`;
+      }
+      
+      // Download DOCX file
+      window.location.href = this.route('admin.student-orgs.export-docx', {
+        academic_year: academicYear
+      });
     }
   }
 };

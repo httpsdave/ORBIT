@@ -308,13 +308,15 @@ Route::middleware(['auth'])->group(function () {
 
         // Student Organizations Management Routes
         Route::get('/student-orgs', [StudentOrgController::class, 'index'])->name('admin.student-orgs.index');
-        Route::get('/student-orgs/{user}', [StudentOrgController::class, 'show'])->name('admin.student-orgs.show');
+        Route::match(['get', 'post'], '/student-orgs/export-pdf', [StudentOrgController::class, 'exportRecognizedOrgsPdf'])->name('admin.student-orgs.export-pdf');
+        Route::match(['get', 'post'], '/student-orgs/export-docx', [StudentOrgController::class, 'exportRecognizedOrgsDocx'])->name('admin.student-orgs.export-docx');
         Route::post('/student-orgs/assign-user', [StudentOrgController::class, 'assignUserToCollege'])->name('admin.student-orgs.assign-user');
         Route::post('/student-orgs/remove-user', [StudentOrgController::class, 'removeUserFromCollege'])->name('admin.student-orgs.remove-user');
         Route::post('/student-orgs/toggle-status', [StudentOrgController::class, 'toggleStatus'])->name('admin.student-orgs.toggle-status');
         Route::post('/student-orgs/assign-parent', [StudentOrgController::class, 'assignParentOrganization'])->name('admin.student-orgs.assign-parent');
         Route::post('/student-orgs/remove-parent', [StudentOrgController::class, 'removeParentOrganization'])->name('admin.student-orgs.remove-parent');
         Route::get('/student-orgs/all', [StudentOrgController::class, 'getAll'])->name('admin.student-orgs.all');
+        Route::get('/student-orgs/{user}', [StudentOrgController::class, 'show'])->name('admin.student-orgs.show');
          
         // College Management Routes
         Route::get('/colleges', [CollegeController::class, 'index'])->name('admin.colleges.index');
