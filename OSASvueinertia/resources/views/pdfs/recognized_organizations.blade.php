@@ -319,15 +319,15 @@
     <!-- Footer -->
     <script type="text/php">
         if (isset($pdf)) {
-            $font = $fontMetrics->getFont("Times New Roman");
+            $font = $fontMetrics->getFont("times", "italic");
             $size = 10;
-            $y = $pdf->get_height() - 40;
+            $y = $pdf->get_height() - 30;
             
             // Right side - page numbering
             $text = "Page {PAGE_NUM} of {PAGE_COUNT}: Recognized Student Organization";
             $width = $fontMetrics->get_text_width($text, $font, $size);
-            $x = $pdf->get_width() - $width - 40;
-            $pdf->page_text($x, $y, $text, $font, $size, array(0, 0, 0), 0);
+            $x = $pdf->get_width() - $width - (-70);
+            $pdf->page_text($x, $y, $text, $font, $size);
         }
     </script>
     
