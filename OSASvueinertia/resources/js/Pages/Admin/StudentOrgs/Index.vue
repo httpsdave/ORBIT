@@ -24,63 +24,73 @@
                     Manage and organize student organizations by college affiliation
                   </p>
                 </div>
-                <div class="flex gap-2 flex-wrap">
+                <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                   <!-- Export Dropdown -->
-                  <div class="relative" ref="exportDropdown">
+                  <div class="relative export-dropdown-container w-full sm:w-auto">
                     <button
                       @click.stop="toggleExportDropdown"
                       type="button"
-                      class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white text-sm font-semibold rounded-xl shadow-md hover:shadow-green-300/30 transition-all duration-200 whitespace-nowrap flex-shrink-0"
+                      class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white text-xs sm:text-sm font-semibold rounded-xl shadow-md hover:shadow-blue-300/30 transition-all duration-200 whitespace-nowrap"
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
                       </svg>
-                      <span>Export</span>
-                      <svg class="h-4 w-4 transition-transform" :class="{'rotate-180': showExportDropdown}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                      <span class="hidden xs:inline">Export</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:h-4 sm:w-4 ml-0.5 sm:ml-1 transition-transform" :class="{ 'rotate-180': showExportDropdown }" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
                       </svg>
                     </button>
                     
                     <!-- Export Dropdown Menu -->
-                    <div
-                      v-if="showExportDropdown"
-                      @click.stop
-                      class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50 animate-dropdown"
+                    <transition
+                      enter-active-class="transition ease-out duration-100"
+                      enter-from-class="transform opacity-0 scale-95"
+                      enter-to-class="transform opacity-100 scale-100"
+                      leave-active-class="transition ease-in duration-75"
+                      leave-from-class="transform opacity-100 scale-100"
+                      leave-to-class="transform opacity-0 scale-95"
                     >
-                      <div class="py-1">
-                        <button
-                          @click="exportPdf"
-                          type="button"
-                          class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
-                        >
-                          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                          </svg>
-                          Export as PDF
-                        </button>
-                        <button
-                          @click="exportDocx"
-                          type="button"
-                          class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
-                        >
-                          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                          </svg>
-                          Export as DOCX
-                        </button>
+                      <div
+                        v-if="showExportDropdown"
+                        @click.stop
+                        class="absolute left-0 sm:right-0 sm:left-auto mt-2 w-56 rounded-lg shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-[60]"
+                      >
+                        <div class="py-1">
+                          <button
+                            @click="exportPdf"
+                            type="button"
+                            class="w-full text-left px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-3 transition-colors"
+                          >
+                            <!-- PDF file icon (red) -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-600 dark:text-red-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke-linecap="round" stroke-linejoin="round"></path>
+                              <polyline points="14 2 14 8 20 8" stroke-linecap="round" stroke-linejoin="round"></polyline>
+                              <rect x="7" y="12" width="3" height="2" fill="currentColor" class="opacity-90"></rect>
+                              <rect x="11.5" y="12" width="3" height="2" fill="currentColor" class="opacity-90"></rect>
+                              <rect x="16" y="12" width="1.5" height="2" fill="currentColor" class="opacity-90"></rect>
+                            </svg>
+                            <div>
+                              <div class="font-medium">Export as PDF</div>
+                              <div class="text-xs text-gray-500 dark:text-gray-400">Recognized Student Organizations</div>
+                            </div>
+                          </button>
+                        </div>
                       </div>
-                    </div>
+                    </transition>
                   </div>
                   
                   <button
                     type="button"
                     @click="openUserSelectionModalForNewOrg"
-                    class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white text-sm font-semibold rounded-xl shadow-md hover:shadow-blue-300/30 transition-all duration-200 whitespace-nowrap flex-shrink-0"
+                    class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white text-sm font-semibold rounded-xl shadow-md hover:shadow-blue-300/30 transition-all duration-200 whitespace-nowrap"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                       <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
                     </svg>
-                    <span>Add New Organization</span>
+                    <span class="hidden xs:inline">Add New Organization</span>
+                    <span class="inline xs:hidden">Add Organization</span>
                   </button>
                 </div>
               </div>
@@ -1415,8 +1425,8 @@ export default {
     // Adding a global click handler to close dropdowns when clicking outside
     this.clickOutsideHandler = (event) => {
       // Close export dropdown if clicking outside
-      if (this.showExportDropdown && this.$refs.exportDropdown) {
-        if (!this.$refs.exportDropdown.contains(event.target)) {
+      if (this.showExportDropdown) {
+        if (!event.target.closest('.export-dropdown-container')) {
           this.showExportDropdown = false;
         }
       }
