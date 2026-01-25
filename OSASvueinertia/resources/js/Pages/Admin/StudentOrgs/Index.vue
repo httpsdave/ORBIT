@@ -230,28 +230,18 @@
                                 <!-- icons removed per request: simplified knob -->
                               </span>
                             </button>
-                            <!-- Assign to College Button -->
+                            <!-- 3-dot actions button -->
                             <button
-                              v-if="canChangeCollege(user)"
-                              @click="openUserSelectionModalForAssignment(user)"
-                              class="inline-flex items-center justify-center text-blue-500 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors duration-150 p-1 sm:p-1.5 rounded-lg"
-                              title="Assign to College"
+                              v-if="canChangeCollege(user) || canBeAssignedParent(user)"
+                              @click.stop="toggleDropdown(user, $event)"
+                              class="inline-flex items-center justify-center rounded-full p-1 sm:p-1.5 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                              :data-dropdown-trigger="user.id"
+                              :aria-label="'Actions for ' + (user.name || 'organization')"
                             >
-                              <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                              </svg>
-                            </button>
-                            <!-- Assign Parent Organization Button -->
-                            <button
-                              v-if="canBeAssignedParent(user)"
-                              @click="openParentAssignModal(user)"
-                              class="inline-flex items-center justify-center text-yellow-500 dark:text-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-300 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 transition-colors duration-150 p-1 sm:p-1.5 rounded-lg"
-                              title="Assign Parent Organization"
-                            >
-                              <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 sm:h-4 sm:w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <circle cx="9" cy="8" r="3" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
-                                <circle cx="17" cy="8" r="2" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2 20c0-2 3-4 7-4s7 2 7 4" />
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <circle cx="10" cy="4" r="2"/>
+                                <circle cx="10" cy="10" r="2"/>
+                                <circle cx="10" cy="16" r="2"/>
                               </svg>
                             </button>
                           </div>
@@ -362,25 +352,18 @@
                                 <!-- knob icon intentionally removed -->
                               </span>
                             </button>
+                            <!-- 3-dot actions button -->
                             <button
-                              v-if="canBeAssignedParent(user)"
-                              @click="openParentAssignModal(user)"
-                              class="inline-flex items-center justify-center text-yellow-500 dark:text-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-300 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 transition-colors duration-150 p-1 sm:p-1.5 rounded-lg"
-                              title="Assign Parent Organization"
+                              v-if="canBeAssignedParent(user) || canChangeCollege(user)"
+                              @click.stop="toggleDropdown(user, $event)"
+                              class="inline-flex items-center justify-center rounded-full p-1 sm:p-1.5 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                              :data-dropdown-trigger="user.id"
+                              :aria-label="'Actions for ' + (user.name || 'organization')"
                             >
-                              <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 sm:h-4 sm:w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <circle cx="9" cy="8" r="3" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
-                                <circle cx="17" cy="8" r="2" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2 20c0-2 3-4 7-4s7 2 7 4" />
-                              </svg>
-                            </button>
-                            <button
-                              v-if="canChangeCollege(user)"
-                              @click="removeUserFromCollege(user.id)"
-                              class="inline-flex items-center justify-center text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-150 p-1 sm:p-1.5 rounded-lg"
-                            >
-                              <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <circle cx="10" cy="4" r="2"/>
+                                <circle cx="10" cy="10" r="2"/>
+                                <circle cx="10" cy="16" r="2"/>
                               </svg>
                             </button>
                           </div>
@@ -468,21 +451,15 @@
                             </div>
                             <div class="flex items-center space-x-1.5 sm:space-x-2 ml-2 flex-shrink-0">
                               <button
-                                @click="openParentAssignModal(subOrg)"
-                                class="inline-flex items-center justify-center text-yellow-500 dark:text-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-300 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 transition-colors duration-150 p-1 sm:p-1.5 rounded-lg"
-                                title="Change Parent Organization"
+                                @click.stop="toggleDropdown(subOrg, $event)"
+                                class="inline-flex items-center justify-center rounded-full p-1 sm:p-1.5 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                :data-dropdown-trigger="subOrg.id"
+                                :aria-label="'Actions for ' + (subOrg.name || 'sub-organization')"
                               >
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                                </svg>
-                              </button>
-                              <button
-                                @click="removeParentOrganization(subOrg.id)"
-                                class="inline-flex items-center justify-center text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-150 p-1 sm:p-1.5 rounded-lg"
-                                title="Remove from Parent"
-                              >
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                  <circle cx="10" cy="4" r="2"/>
+                                  <circle cx="10" cy="10" r="2"/>
+                                  <circle cx="10" cy="16" r="2"/>
                                 </svg>
                               </button>
                             </div>
@@ -595,28 +572,19 @@
                             </td>
                             <td v-if="nonCollegeOrganizations.some(u => canBeAssignedParent(u) || canChangeCollege(u))" class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                               <button
-                                v-if="canChangeCollege(user)"
-                                @click="openUserSelectionModalForAssignment(user)"
-                                class="inline-flex items-center text-blue-500 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors duration-150 mr-4"
-                                title="Assign to College"
+                                @click.stop="toggleDropdown(user, $event)"
+                                class="relative inline-flex items-center justify-center rounded-full p-2 transition group text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-400"
+                                :data-dropdown-trigger="user.id"
+                                :aria-label="'Actions for ' + (user.name || 'organization')"
                               >
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                  <circle cx="10" cy="4" r="2.2"/>
+                                  <circle cx="10" cy="10" r="2.2"/>
+                                  <circle cx="10" cy="16" r="2.2"/>
                                 </svg>
-                                Assign
-                              </button>
-                              <button
-                                v-if="canBeAssignedParent(user)"
-                                @click="openParentAssignModal(user)"
-                                class="inline-flex items-center text-yellow-500 dark:text-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-300 transition-colors duration-150"
-                                title="Assign Parent Organization"
-                              >
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                  <circle cx="9" cy="8" r="3" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
-                                  <circle cx="17" cy="8" r="2" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
-                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2 20c0-2 3-4 7-4s7 2 7 4" />
-                                </svg>
-                                Assign Parent
+                                <span class="absolute left-1/2 -bottom-8 transform -translate-x-1/2 bg-gray-800 dark:bg-gray-700 text-white dark:text-gray-200 text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity duration-300 whitespace-nowrap z-50">
+                                  Actions
+                                </span>
                               </button>
                             </td>
                           </tr>
@@ -762,27 +730,19 @@
                             </td>
                             <td v-if="college.users.some(u => canBeAssignedParent(u) || canChangeCollege(u))" class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                               <button
-                                v-if="canBeAssignedParent(user)"
-                                @click="openParentAssignModal(user)"
-                                class="inline-flex items-center text-yellow-500 dark:text-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-300 transition-colors duration-150 mr-4"
-                                title="Assign Parent Organization"
+                                @click.stop="toggleDropdown(user, $event)"
+                                class="relative inline-flex items-center justify-center rounded-full p-2 transition group text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-400"
+                                :data-dropdown-trigger="user.id"
+                                :aria-label="'Actions for ' + (user.name || 'organization')"
                               >
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <circle cx="9" cy="8" r="3" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
-                                  <circle cx="17" cy="8" r="2" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
-                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2 20c0-2 3-4 7-4s7 2 7 4" />
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                  <circle cx="10" cy="4" r="2.2"/>
+                                  <circle cx="10" cy="10" r="2.2"/>
+                                  <circle cx="10" cy="16" r="2.2"/>
                                 </svg>
-                                Assign Parent
-                              </button>
-                              <button
-                                v-if="canChangeCollege(user)"
-                                @click="removeUserFromCollege(user.id)"
-                                class="inline-flex items-center text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors duration-150"
-                              >
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                </svg>
-                                Remove
+                                <span class="absolute left-1/2 -bottom-8 transform -translate-x-1/2 bg-gray-800 dark:bg-gray-700 text-white dark:text-gray-200 text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity duration-300 whitespace-nowrap z-50">
+                                  Actions
+                                </span>
                               </button>
                             </td>
                           </tr>
@@ -908,24 +868,19 @@
                               </td>
                               <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <button
-                                  @click="openParentAssignModal(subOrg)"
-                                  class="inline-flex items-center text-yellow-500 dark:text-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-300 transition-colors duration-150 mr-4"
-                                  title="Change Parent Organization"
+                                  @click.stop="toggleDropdown(subOrg, $event)"
+                                  class="relative inline-flex items-center justify-center rounded-full p-2 transition group text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-400"
+                                  :data-dropdown-trigger="subOrg.id"
+                                  :aria-label="'Actions for ' + (subOrg.name || 'sub-organization')"
                                 >
-                                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <circle cx="10" cy="4" r="2.2"/>
+                                    <circle cx="10" cy="10" r="2.2"/>
+                                    <circle cx="10" cy="16" r="2.2"/>
                                   </svg>
-                                  Change Parent
-                                </button>
-                                <button
-                                  @click="removeParentOrganization(subOrg.id)"
-                                  class="inline-flex items-center text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors duration-150"
-                                  title="Remove from Parent"
-                                >
-                                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                  </svg>
-                                  Remove
+                                  <span class="absolute left-1/2 -bottom-8 transform -translate-x-1/2 bg-gray-800 dark:bg-gray-700 text-white dark:text-gray-200 text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity duration-300 whitespace-nowrap z-50">
+                                    Actions
+                                  </span>
                                 </button>
                               </td>
                             </tr>
@@ -1311,6 +1266,195 @@
           </div>
         </div>
       </Modal>
+
+      <!-- Teleported Dropdown Menu for Actions -->
+      <Teleport to="body">
+        <div
+          v-if="activeDropdownOrg"
+          :style="{ top: `${dropdownPosition.top}px`, left: `${dropdownPosition.left}px`, visibility: activeDropdownOrg ? 'visible' : 'hidden' }"
+          class="fixed z-50 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 w-48"
+          data-dropdown-menu
+          @click.stop
+        >
+          <!-- Assign to College (for non-college orgs and eligible users) -->
+          <button
+            v-if="canChangeCollege(activeDropdownOrg)"
+            @click="openUserSelectionModalForAssignment(activeDropdownOrg); closeDropdown();"
+            class="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            Assign to College
+          </button>
+
+          <!-- Assign Parent Organization -->
+          <button
+            v-if="canBeAssignedParent(activeDropdownOrg)"
+            @click="openParentAssignModal(activeDropdownOrg); closeDropdown();"
+            class="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-yellow-600 dark:text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <circle cx="9" cy="8" r="3" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
+              <circle cx="17" cy="8" r="2" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2 20c0-2 3-4 7-4s7 2 7 4" />
+            </svg>
+            Assign Parent
+          </button>
+
+          <!-- Change Parent (for sub-organizations) -->
+          <button
+            v-if="activeDropdownOrg?.parent_organization_id"
+            @click="openParentAssignModal(activeDropdownOrg); closeDropdown();"
+            class="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-yellow-600 dark:text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+            </svg>
+            Change Parent
+          </button>
+
+          <!-- Remove from Parent -->
+          <button
+            v-if="activeDropdownOrg?.parent_organization_id"
+            @click="removeParentOrganization(activeDropdownOrg.id); closeDropdown();"
+            class="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+            Remove from Parent
+          </button>
+
+          <!-- Remove from College -->
+          <button
+            v-if="canChangeCollege(activeDropdownOrg) && activeDropdownOrg?.college_id"
+            @click="removeUserFromCollege(activeDropdownOrg.id); closeDropdown();"
+            class="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2 transition duration-200"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+            Remove from College
+          </button>
+        </div>
+      </Teleport>
+
+      <!-- Mobile Actions Modal -->
+      <Teleport to="body">
+        <transition
+          enter-active-class="transition-opacity ease-out duration-200"
+          enter-from-class="opacity-0"
+          enter-to-class="opacity-100"
+          leave-active-class="transition-opacity ease-in duration-150"
+          leave-from-class="opacity-100"
+          leave-to-class="opacity-0"
+        >
+          <div v-if="showMobileActionsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-end justify-center z-50" @click="closeMobileActionsModal">
+            <transition
+              enter-active-class="transition-transform ease-out duration-250"
+              enter-from-class="translate-y-full"
+              enter-to-class="translate-y-0"
+              leave-active-class="transition-transform ease-in duration-200"
+              leave-from-class="translate-y-0"
+              leave-to-class="translate-y-full"
+            >
+              <div v-if="showMobileActionsModal" class="bg-white dark:bg-gray-800 w-full max-w-sm rounded-t-lg shadow-xl" @click.stop>
+                <!-- Modal Header -->
+                <div class="px-3 py-2 border-b border-gray-200 dark:border-gray-700">
+                  <div class="flex items-center space-x-2">
+                    <template v-if="selectedMobileOrg && selectedMobileOrg.profile_photo_url">
+                      <img
+                        :src="selectedMobileOrg.profile_photo_url"
+                        alt="Avatar"
+                        class="w-8 h-8 rounded-full object-cover border border-blue-200 shadow-sm"
+                      />
+                    </template>
+                    <template v-else-if="selectedMobileOrg">
+                      <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-green-400 flex items-center justify-center text-white font-medium shadow-inner text-xs">
+                        {{ selectedMobileOrg.name.charAt(0).toUpperCase() }}
+                      </div>
+                    </template>
+                    <div class="flex-1 min-w-0">
+                      <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                        {{ selectedMobileOrg ? selectedMobileOrg.name : '' }}
+                      </h3>
+                      <p class="text-xs text-gray-500 dark:text-gray-400 truncate">
+                        {{ selectedMobileOrg ? selectedMobileOrg.email : '' }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Modal Actions -->
+                <div class="py-1">
+                  <!-- Assign to College (for non-college orgs and eligible users) -->
+                  <button
+                    v-if="selectedMobileOrg && canChangeCollege(selectedMobileOrg)"
+                    @click="handleMobileAction('assign')"
+                    class="w-full flex items-center px-3 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-150 active:scale-[0.98]"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600 dark:text-blue-400 mr-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    <span class="text-sm text-gray-900 dark:text-gray-100">Assign to College</span>
+                  </button>
+
+                  <!-- Assign Parent Organization -->
+                  <button
+                    v-if="selectedMobileOrg && canBeAssignedParent(selectedMobileOrg)"
+                    @click="handleMobileAction('assignParent')"
+                    class="w-full flex items-center px-3 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-150 active:scale-[0.98]"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-yellow-600 dark:text-yellow-400 mr-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <circle cx="9" cy="8" r="3" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
+                      <circle cx="17" cy="8" r="2" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2 20c0-2 3-4 7-4s7 2 7 4" />
+                    </svg>
+                    <span class="text-sm text-gray-900 dark:text-gray-100">
+                      {{ selectedMobileOrg?.parent_organization_id ? 'Change Parent' : 'Assign Parent' }}
+                    </span>
+                  </button>
+
+                  <!-- Remove from Parent -->
+                  <button
+                    v-if="selectedMobileOrg?.parent_organization_id"
+                    @click="handleMobileAction('removeParent')"
+                    class="w-full flex items-center px-3 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-150 active:scale-[0.98]"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-600 dark:text-red-400 mr-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    <span class="text-sm text-red-600 dark:text-red-400">Remove from Parent</span>
+                  </button>
+
+                  <!-- Remove from College -->
+                  <button
+                    v-if="selectedMobileOrg && canChangeCollege(selectedMobileOrg) && selectedMobileOrg?.college_id"
+                    @click="handleMobileAction('removeFromCollege')"
+                    class="w-full flex items-center px-3 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-150 active:scale-[0.98]"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-600 dark:text-red-400 mr-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    <span class="text-sm text-red-600 dark:text-red-400">Remove from College</span>
+                  </button>
+                </div>
+                
+                <!-- Cancel Button -->
+                <div class="px-3 py-2 border-t border-gray-200 dark:border-gray-700">
+                  <button 
+                    @click="closeMobileActionsModal"
+                    class="w-full py-1.5 text-center text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors duration-200"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </transition>
+          </div>
+        </transition>
+      </Teleport>
     </AuthenticatedLayout>
   </div>
 </template>
@@ -1320,6 +1464,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Modal from '@/Components/Modal.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import { useForm, Head } from '@inertiajs/vue3';
+import { Teleport } from 'vue';
 import axios from 'axios';
 
 export default {
@@ -1327,7 +1472,8 @@ export default {
     AuthenticatedLayout,
     Modal,
     SecondaryButton,
-    Head
+    Head,
+    Teleport
   },
   props: {
     colleges: Array,
@@ -1358,6 +1504,14 @@ export default {
       selectedParentOrgId: null,
       selectedUsers: [],
       clickOutsideHandler: null,
+      // Dropdown state for 3-dot actions menu
+      activeDropdownOrg: null,
+      dropdownPosition: { top: 0, left: 0 },
+      dropdownButtonEl: null,
+      dropdownDirection: 'down',
+      // Mobile modal state
+      showMobileActionsModal: false,
+      selectedMobileOrg: null,
       assignForm: useForm({
         user_ids: [],
         college_id: null
@@ -1424,6 +1578,11 @@ export default {
   mounted() {
     // Adding a global click handler to close dropdowns when clicking outside
     this.clickOutsideHandler = (event) => {
+      // Close actions dropdown if clicking outside
+      if (this.activeDropdownOrg && !event.target.closest('[data-dropdown-trigger]') && !event.target.closest('[data-dropdown-menu]')) {
+        this.closeDropdown();
+      }
+      
       // Close export dropdown if clicking outside
       if (this.showExportDropdown) {
         if (!event.target.closest('.export-dropdown-container')) {
@@ -1834,6 +1993,91 @@ export default {
       window.location.href = this.route('admin.student-orgs.export-docx', {
         academic_year: academicYear
       });
+    },
+    // 3-dot dropdown methods
+    toggleDropdown(org, event) {
+      event?.stopPropagation();
+      
+      // Mobile: show modal popup
+      if (window.innerWidth < 640) { // sm breakpoint - true mobile only
+        this.selectedMobileOrg = org;
+        this.showMobileActionsModal = true;
+        return;
+      }
+      
+      // Desktop: floating dropdown
+      if (this.activeDropdownOrg && this.activeDropdownOrg.id === org.id) {
+        this.closeDropdown();
+      } else {
+        this.activeDropdownOrg = org;
+        this.dropdownButtonEl = event.currentTarget;
+        this.$nextTick(() => {
+          this.updateDropdownPosition();
+        });
+      }
+    },
+    closeDropdown() {
+      this.activeDropdownOrg = null;
+      this.dropdownButtonEl = null;
+    },
+    updateDropdownPosition() {
+      if (!this.dropdownButtonEl) return;
+      
+      const rect = this.dropdownButtonEl.getBoundingClientRect();
+      const dropdownWidth = 192; // w-48
+      let left = rect.right - dropdownWidth + 8;
+      
+      if (left + dropdownWidth > window.innerWidth) {
+        left = window.innerWidth - dropdownWidth - 16;
+      }
+      if (left < 16) left = 16;
+      
+      const dropdownHeight = 200; // Approximate height
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const spaceAbove = rect.top;
+      
+      let top;
+      if (spaceBelow >= dropdownHeight + 16) {
+        top = rect.bottom + 2;
+        this.dropdownDirection = 'down';
+      } else if (spaceAbove >= dropdownHeight + 16) {
+        top = rect.top - dropdownHeight - 2;
+        this.dropdownDirection = 'up';
+      } else {
+        top = rect.bottom + 2;
+        this.dropdownDirection = 'down';
+      }
+      
+      this.dropdownPosition = { top, left };
+    },
+    // Mobile modal handlers
+    handleMobileAction(action) {
+      const org = this.selectedMobileOrg;
+      if (!org) return;
+      
+      // Close mobile modal
+      this.showMobileActionsModal = false;
+      this.selectedMobileOrg = null;
+      
+      // Handle specific actions
+      switch(action) {
+        case 'assign':
+          this.openUserSelectionModalForAssignment(org);
+          break;
+        case 'assignParent':
+          this.openParentAssignModal(org);
+          break;
+        case 'removeFromCollege':
+          this.confirmRemovalFromCollege(org);
+          break;
+        case 'removeParent':
+          this.confirmParentRemoval(org);
+          break;
+      }
+    },
+    closeMobileActionsModal() {
+      this.showMobileActionsModal = false;
+      this.selectedMobileOrg = null;
     }
   }
 };
