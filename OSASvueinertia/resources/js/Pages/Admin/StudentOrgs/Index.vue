@@ -129,7 +129,7 @@
 
           <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
             <div class="p-3 sm:p-4 lg:p-6 bg-white dark:bg-gray-800">
-              <div class="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-gray-100 dark:border-gray-700">
+              <div class="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-gray-100 dark:border-gray-700 select-none">
                 <div>
                   <h3 class="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100">
                     Organizations Overview
@@ -139,7 +139,7 @@
               </div>
 
               <!-- Tabs: College Affiliated | Non-College Affiliated | Sub-Organizations -->
-              <div class="mb-4">
+              <div class="mb-4 select-none">
                 <div class="flex items-center text-sm font-medium">
                   <button
                     :class="['transition-colors', activeTab === 'college' ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200']"
@@ -172,7 +172,7 @@
                 <Transition name="tab-content" mode="out-in">
                   <div :key="activeTab" class="space-y-2 sm:space-y-3">
                 <!-- Non-College Affiliated Organizations Section -->
-                <div v-if="activeTab === 'non-college' && nonCollegeOrganizations.length > 0" class="bg-gray-50 dark:bg-gray-700 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-gray-200 dark:border-gray-600 shadow-sm">
+                <div v-if="activeTab === 'non-college' && nonCollegeOrganizations.length > 0" class="bg-gray-50 dark:bg-gray-700 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-gray-200 dark:border-gray-600 shadow-sm select-none">
                   <div class="flex justify-between items-center">
                     <div class="flex items-center flex-1 min-w-0">
                       <div class="min-w-0 flex-1">
@@ -251,7 +251,7 @@
                   </div>
                 </div>
 
-                <div v-if="activeTab === 'college'" v-for="college in colleges" :key="`mobile-${college.id}`" class="bg-gray-50 dark:bg-gray-700 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-gray-200 dark:border-gray-600 shadow-sm hover:shadow-md transition-all duration-200">
+                <div v-if="activeTab === 'college'" v-for="college in colleges" :key="`mobile-${college.id}`" class="bg-gray-50 dark:bg-gray-700 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-gray-200 dark:border-gray-600 shadow-sm hover:shadow-md transition-all duration-200 select-none">
                   <div 
                     @click="toggleCollege(college.id, $event)"
                     class="flex justify-between items-center cursor-pointer"
@@ -385,7 +385,7 @@
                     <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Organizations with sub-organizations will appear here.</p>
                   </div>
 
-                  <div v-for="parentOrg in parentOrganizations" :key="`mobile-parent-${parentOrg.id}`" class="bg-gray-50 dark:bg-gray-700 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-gray-200 dark:border-gray-600 shadow-sm hover:shadow-md transition-all duration-200">
+                  <div v-for="parentOrg in parentOrganizations" :key="`mobile-parent-${parentOrg.id}`" class="bg-gray-50 dark:bg-gray-700 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-gray-200 dark:border-gray-600 shadow-sm hover:shadow-md transition-all duration-200 select-none">
                     <div 
                       @click="toggleSubOrganization(parentOrg.id, $event)"
                       class="flex justify-between items-center cursor-pointer"
@@ -487,7 +487,7 @@
                   <div :key="activeTab" class="space-y-3">
                 <!-- Non-College Affiliated Organizations Section -->
                 <div v-if="activeTab === 'non-college' && nonCollegeOrganizations.length > 0" class="border border-gray-200 dark:border-gray-700 rounded-md overflow-hidden shadow-sm" data-college-accordion>
-                  <div class="flex justify-between items-center p-4 bg-gray-50 dark:bg-gray-700">
+                  <div class="flex justify-between items-center p-4 bg-gray-50 dark:bg-gray-700 select-none">
                     <div class="flex items-center">
                       <div>
                         <span class="text-lg font-medium text-gray-900 dark:text-gray-100">Non-College Affiliated Organizations</span>
@@ -597,7 +597,7 @@
                 <div v-if="activeTab === 'college'" v-for="college in colleges" :key="college.id" class="border border-gray-200 dark:border-gray-700 rounded-md overflow-hidden shadow-sm hover:shadow transition-shadow duration-200" data-college-accordion>
                   <div 
                     @click="toggleCollege(college.id, $event)"
-                    class="flex justify-between items-center p-4 cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-150"
+                    class="flex justify-between items-center p-4 cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-150 select-none"
                   >
                     <div class="flex items-center">
                       <img 
@@ -767,7 +767,7 @@
                   <div v-for="parentOrg in parentOrganizations" :key="`desktop-parent-${parentOrg.id}`" class="border border-gray-200 dark:border-gray-700 rounded-md overflow-hidden shadow-sm hover:shadow transition-shadow duration-200" data-college-accordion>
                     <div 
                       @click="toggleSubOrganization(parentOrg.id, $event)"
-                      class="flex justify-between items-center p-4 cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-150"
+                      class="flex justify-between items-center p-4 cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-150 select-none"
                     >
                       <div class="flex items-center">
                         <div v-if="parentOrg.profile_photo_url" class="flex-shrink-0 h-12 w-12 mr-4">
@@ -1606,6 +1606,7 @@ export default {
   beforeUnmount() {
     // Clean up the event listener when component is destroyed
     document.removeEventListener('click', this.clickOutsideHandler);
+    this.removeDropdownListeners();
   },
   
   methods: {
@@ -2013,12 +2014,22 @@ export default {
         this.dropdownButtonEl = event.currentTarget;
         this.$nextTick(() => {
           this.updateDropdownPosition();
+          this.addDropdownListeners();
         });
       }
     },
     closeDropdown() {
       this.activeDropdownOrg = null;
       this.dropdownButtonEl = null;
+      this.removeDropdownListeners();
+    },
+    addDropdownListeners() {
+      window.addEventListener('scroll', this.updateDropdownPosition, true);
+      window.addEventListener('resize', this.updateDropdownPosition);
+    },
+    removeDropdownListeners() {
+      window.removeEventListener('scroll', this.updateDropdownPosition, true);
+      window.removeEventListener('resize', this.updateDropdownPosition);
     },
     updateDropdownPosition() {
       if (!this.dropdownButtonEl) return;
