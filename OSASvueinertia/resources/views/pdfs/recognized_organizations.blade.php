@@ -156,7 +156,7 @@
         }
 
         .footer-left img {
-            height: 60px;
+            height: 45px;
             width: auto;
         }
 

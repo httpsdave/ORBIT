@@ -1455,6 +1455,62 @@
           </div>
         </transition>
       </Teleport>
+
+      <!-- PDF Preview Modal -->
+      <Teleport to="body">
+        <transition name="fade">
+          <div v-if="showPdfPreviewModal" class="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-60" @click="closePdfPreviewModal">
+            <div
+              class="relative bg-transparent shadow-2xl flex flex-col w-[95vw] max-w-4xl md:w-[70vw] md:max-w-3xl lg:w-[60vw] lg:max-w-4xl xl:w-[50vw] xl:max-w-5xl h-[75vh] md:h-[85vh] lg:h-[90vh] xl:h-[95vh] max-h-[95vh] overflow-hidden border border-transparent"
+              @click.stop
+            >
+              <!-- Close Button: floating at top-right, outside header -->
+              <button
+                @click="closePdfPreviewModal"
+                class="absolute top-4 right-4 flex items-center justify-center text-white hover:text-gray-200 focus:outline-none transition z-20 opacity-90"
+                title="Close Preview"
+                aria-label="Close Preview"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+              
+              <!-- Header -->
+              <div class="flex items-center justify-between px-4 py-3 pr-16 bg-transparent relative">
+                <div class="font-semibold text-gray-200 text-base truncate opacity-90">
+                  Recognized Student Organizations Report
+                </div>
+                <div class="flex items-center gap-2">
+                  <button
+                    @click="downloadPdfFromPreview"
+                    class="inline-flex items-center justify-center px-4 py-2 bg-blue-500 text-sm font-medium text-white rounded-xl shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 relative overflow-hidden group"
+                    title="Download PDF"
+                    aria-label="Download PDF"
+                  >
+                    <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    Download
+                  </button>
+                </div>
+              </div>
+              
+              <!-- PDF Iframe -->
+              <div class="flex-1 w-full h-full flex items-center justify-center bg-gray-100">
+                <iframe
+                  v-if="pdfPreviewUrl"
+                  :src="pdfPreviewUrl"
+                  class="w-full h-full border-0 bg-white"
+                  style="min-height: 300px;"
+                  allowfullscreen
+                ></iframe>
+              </div>
+            </div>
+          </div>
+        </transition>
+      </Teleport>
     </AuthenticatedLayout>
   </div>
 </template>
@@ -1512,6 +1568,9 @@ export default {
       // Mobile modal state
       showMobileActionsModal: false,
       selectedMobileOrg: null,
+      // PDF Preview modal state
+      showPdfPreviewModal: false,
+      pdfPreviewUrl: null,
       assignForm: useForm({
         user_ids: [],
         college_id: null
@@ -1967,13 +2026,36 @@ export default {
         academicYear = `${currentYear - 1}-${currentYear}`;
       }
       
-      // Open PDF in new window
+      // Build PDF URL
       const url = this.route('admin.student-orgs.export-pdf', {
         academic_year: academicYear,
         action: 'view'
       });
       
-      window.open(url, '_blank');
+      // For mobile devices (< 768px), open in new window instead of modal
+      if (window.innerWidth < 768) {
+        window.open(url, '_blank', 'noopener,noreferrer');
+      } else {
+        // Desktop: show modal with PDF preview
+        this.pdfPreviewUrl = url;
+        this.showPdfPreviewModal = true;
+      }
+    },
+    closePdfPreviewModal() {
+      this.showPdfPreviewModal = false;
+      this.pdfPreviewUrl = null;
+    },
+    downloadPdfFromPreview() {
+      if (this.pdfPreviewUrl) {
+        // Remove action=view parameter for download
+        const downloadUrl = this.pdfPreviewUrl.replace('action=view&', '').replace('&action=view', '').replace('action=view', '');
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+        link.download = `recognized-student-organizations-${new Date().toISOString().split('T')[0]}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
     },
     exportDocx() {
       this.showExportDropdown = false;
@@ -2139,5 +2221,16 @@ export default {
 .tab-content-enter-active,
 .tab-content-leave-active {
   will-change: transform, opacity;
+}
+
+/* Fade transition for PDF modal */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
