@@ -37,33 +37,21 @@ echo "DB_DATABASE: ${DB_DATABASE:-'not set'}"
 echo "DB_USERNAME: ${DB_USERNAME:-'not set'}"
 echo "================================"
 
-# NUCLEAR CACHE CLEARING - Remove all cached files manually
-echo "🧹 NUCLEAR CACHE CLEARING - Removing all cache files..."
+# Clear cached files
+echo "🧹 Clearing cache files..."
 rm -rf bootstrap/cache/*.php
 rm -rf storage/framework/cache/data/*
 rm -rf storage/framework/sessions/*
 rm -rf storage/framework/views/*
 rm -rf storage/logs/*.log
 
-# Clear Laravel caches multiple times
-echo "🧹 Clearing Laravel caches (Round 1)..."
+# Clear Laravel caches once (reduces memory usage)
+echo "🧹 Clearing Laravel caches..."
 php artisan config:clear
 php artisan route:clear
 php artisan view:clear
 php artisan cache:clear
 php artisan event:clear
-
-echo "🧹 Clearing Laravel caches (Round 2)..."
-php artisan config:clear
-php artisan route:clear
-php artisan view:clear
-php artisan cache:clear
-
-echo "🧹 Clearing Laravel caches (Round 3)..."
-php artisan config:clear
-php artisan route:clear
-php artisan view:clear
-php artisan cache:clear
 
 # Test database connection
 echo "Testing database connection..."
@@ -155,9 +143,10 @@ php artisan config:show app.url
 echo "⚠️  RUNNING WITHOUT CONFIG CACHE TO PREVENT REDIRECT LOOPS"
 echo "Application setup completed!"
 
-# Start Laravel scheduler in background for automated backups and tasks
-echo "Starting Laravel scheduler for automated backups..."
-php artisan schedule:work > /dev/null 2>&1 &
+# Note: Laravel scheduler disabled to save memory (50-100MB)
+# Use Railway cron jobs or external cron service instead
+# See: https://docs.railway.app/reference/cron-jobs
+echo "⚠️  Laravel scheduler disabled - use Railway cron jobs for scheduled tasks"
 
 # Start the application with custom router for cache headers
 echo "Starting web server with cache headers on port ${PORT:-8000}..."

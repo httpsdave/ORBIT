@@ -29,6 +29,14 @@ return Application::configure(basePath: dirname(__DIR__))
                     \Log::error('Activity log pruning failed');
                 });
         }
+        
+        // Clean up expired sessions and cache daily at 3:00 AM to save memory
+        $schedule->command('cleanup:sessions-cache')
+            ->dailyAt('03:00')
+            ->description('Clean up expired sessions and cache entries')
+            ->onFailure(function () {
+                \Log::error('Session/cache cleanup failed');
+            });
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

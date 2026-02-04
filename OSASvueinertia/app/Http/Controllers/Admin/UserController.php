@@ -20,19 +20,25 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::with(['role'])->get()->map(function ($user) {
-            return [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'role' => $user->role,
-                'profile_photo_url' => $user->profile_photo_url,
-            ];
-        });
+        // Only select needed columns to reduce memory usage
+        $users = User::with(['role:id,name,slug'])
+            ->select('id', 'name', 'email', 'role_id', 'profile_photo_path')
+            ->get()
+            ->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role' => $user->role,
+                    'profile_photo_url' => $user->profile_photo_url,
+                ];
+            });
         return Inertia::render('Admin/Users', [
             'users' => $users,
-            'roles' => Role::all(),
-            'studentOrgs' => StudentOrg::with('college')->get()
+            'roles' => Role::select('id', 'name', 'slug')->get(),
+            'studentOrgs' => StudentOrg::with('college:id,name')
+                ->select('id', 'name', 'college_id')
+                ->get()
         ]);
     }
 

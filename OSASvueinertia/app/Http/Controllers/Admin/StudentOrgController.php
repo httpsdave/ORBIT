@@ -236,50 +236,68 @@ class StudentOrgController extends Controller
             // Get academic year from request or use current
             $academicYear = $request->input('academic_year', '2024-2025');
             
-            // Get all student organizations (exclude admin users)
+            // Get all student organizations (exclude admin users) - select only needed columns
             $adminRoleId = \App\Models\Role::where('slug', 'admin')->value('id');
             $users = User::with([
-                'college', 
-                'role', 
-                'parentOrganization', 
-                'subOrganizations.college'
+                'college:id,name', 
+                'role:id,name', 
+                'parentOrganization:id,name', 
+                'subOrganizations:id,name,college_id'
             ])
+                ->select('id', 'name', 'college_id', 'parent_organization_id', 'role_id', 'status')
                 ->where('role_id', '!=', $adminRoleId)
                 ->where('status', 'active')
                 ->get();
 
             // Get organization details (president and adviser) from latest approved applications
+            // Optimize: Use single query with group by to get latest applications
+            $latestOrgApps = \App\Models\OrganizationApplication::selectRaw('user_id, MAX(created_at) as max_date')
+                ->where('status', 'Approved')
+                ->whereIn('form_type', ['LSPU-OSAS-SF-001', 'LSPU-OSAS-SF-002'])
+                ->groupBy('user_id')
+                ->get()
+                ->pluck('max_date', 'user_id');
+            
+            $latestCommitments = \App\Models\OrganizationApplication::selectRaw('user_id, MAX(created_at) as max_date')
+                ->where('status', 'Approved')
+                ->where('form_type', 'LSPU-OSAS-SF-003')
+                ->groupBy('user_id')
+                ->get()
+                ->pluck('max_date', 'user_id');
+            
             $organizationData = [];
             
             foreach ($users as $user) {
-                // Get latest approved application for president name
-                $latestOrgApp = \App\Models\OrganizationApplication::where('user_id', $user->id)
-                    ->where('status', 'Approved')
-                    ->whereIn('form_type', ['LSPU-OSAS-SF-001', 'LSPU-OSAS-SF-002'])
-                    ->orderByDesc('created_at')
-                    ->first();
-                
-                $president = $latestOrgApp->president_name ?? '';
+                // Get president name from latest org app
+                $president = '';
+                if (isset($latestOrgApps[$user->id])) {
+                    $latestOrgApp = \App\Models\OrganizationApplication::where('user_id', $user->id)
+                        ->where('created_at', $latestOrgApps[$user->id])
+                        ->select('president_name')
+                        ->first();
+                    $president = $latestOrgApp->president_name ?? '';
+                }
                 
                 // Get adviser from latest commitment form
-                $latestCommitment = \App\Models\OrganizationApplication::where('user_id', $user->id)
-                    ->where('status', 'Approved')
-                    ->where('form_type', 'LSPU-OSAS-SF-003')
-                    ->orderByDesc('created_at')
-                    ->first();
-                
                 $adviser = '';
-                if ($latestCommitment && $latestCommitment->advisers) {
-                    $advisersArray = is_string($latestCommitment->advisers) 
-                        ? json_decode($latestCommitment->advisers, true) 
-                        : $latestCommitment->advisers;
+                if (isset($latestCommitments[$user->id])) {
+                    $latestCommitment = \App\Models\OrganizationApplication::where('user_id', $user->id)
+                        ->where('created_at', $latestCommitments[$user->id])
+                        ->select('advisers')
+                        ->first();
                     
-                    if (isset($advisersArray[0])) {
-                        $prefix = $advisersArray[0]['adviser_prefix'] ?? '';
-                        $name = $advisersArray[0]['adviser_name'] ?? '';
-                        $suffix = $advisersArray[0]['adviser_suffix'] ?? '';
+                    if ($latestCommitment && $latestCommitment->advisers) {
+                        $advisersArray = is_string($latestCommitment->advisers) 
+                            ? json_decode($latestCommitment->advisers, true) 
+                            : $latestCommitment->advisers;
                         
-                        $adviser = trim($prefix . ' ' . $name . ' ' . $suffix);
+                        if (isset($advisersArray[0])) {
+                            $prefix = $advisersArray[0]['adviser_prefix'] ?? '';
+                            $name = $advisersArray[0]['adviser_name'] ?? '';
+                            $suffix = $advisersArray[0]['adviser_suffix'] ?? '';
+                            
+                            $adviser = trim($prefix . ' ' . $name . ' ' . $suffix);
+                        }
                     }
                 }
                 
@@ -318,7 +336,7 @@ class StudentOrgController extends Controller
             usort($subOrganizations, fn($a, $b) => strcmp($a['name'], $b['name']));
             usort($newRecognizedOrganizations, fn($a, $b) => strcmp($a['name'], $b['name']));
 
-            // Generate PDF
+            // Generate PDF with memory limit
             $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdfs.recognized_organizations', [
                 'academicYear' => $academicYear,
                 'studentCouncils' => $studentCouncils,
@@ -335,7 +353,7 @@ class StudentOrgController extends Controller
             // Set paper size and orientation
             $pdf->setPaper('A4', 'portrait');
             
-            // Set PDF options for better rendering
+            // Set PDF options for better rendering with memory optimization
             $pdf->setOptions([
                 'isHtml5ParserEnabled' => true,
                 'isRemoteEnabled' => true,

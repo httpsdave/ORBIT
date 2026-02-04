@@ -1,7 +1,7 @@
 [variables]
 UPLOAD_MAX_FILESIZE = '50M'
 POST_MAX_SIZE = '50M'
-PHP_MEMORY_LIMIT = '256M'
+PHP_MEMORY_LIMIT = '128M'
 COMPOSER_ALLOW_SUPERUSER = '1'
 
 [phases.setup]
@@ -9,8 +9,8 @@ nixPkgs = ['...', 'nodejs_18', 'tesseract', 'mysql80']
 cmds = [
     # PHP upload limits
     'UPLOAD_INI_PATH=$(find /nix/store/*-php-*/lib -name php.ini -print0 | head -z -n 1 | rev | cut -c 9- | rev)/upload.ini; echo "upload_max_filesize=${UPLOAD_MAX_FILESIZE};" >> $UPLOAD_INI_PATH; echo "post_max_size=${POST_MAX_SIZE};" >> $UPLOAD_INI_PATH',
-    # OPcache configuration for TTFB optimization
-    'OPCACHE_INI_PATH=$(find /nix/store/*-php-*/lib -name php.ini -print0 | head -z -n 1 | rev | cut -c 9- | rev)/opcache.ini; echo "opcache.enable=1" >> $OPCACHE_INI_PATH; echo "opcache.enable_cli=0" >> $OPCACHE_INI_PATH; echo "opcache.memory_consumption=256" >> $OPCACHE_INI_PATH; echo "opcache.interned_strings_buffer=16" >> $OPCACHE_INI_PATH; echo "opcache.max_accelerated_files=20000" >> $OPCACHE_INI_PATH; echo "opcache.validate_timestamps=0" >> $OPCACHE_INI_PATH; echo "opcache.revalidate_freq=0" >> $OPCACHE_INI_PATH; echo "opcache.fast_shutdown=1" >> $OPCACHE_INI_PATH',
+    # OPcache configuration for TTFB optimization (reduced memory from 256MB to 128MB)
+    'OPCACHE_INI_PATH=$(find /nix/store/*-php-*/lib -name php.ini -print0 | head -z -n 1 | rev | cut -c 9- | rev)/opcache.ini; echo "opcache.enable=1" >> $OPCACHE_INI_PATH; echo "opcache.enable_cli=0" >> $OPCACHE_INI_PATH; echo "opcache.memory_consumption=128" >> $OPCACHE_INI_PATH; echo "opcache.interned_strings_buffer=16" >> $OPCACHE_INI_PATH; echo "opcache.max_accelerated_files=20000" >> $OPCACHE_INI_PATH; echo "opcache.validate_timestamps=0" >> $OPCACHE_INI_PATH; echo "opcache.revalidate_freq=0" >> $OPCACHE_INI_PATH; echo "opcache.fast_shutdown=1" >> $OPCACHE_INI_PATH',
 ]
 
 # Let Nixpacks auto-detect and handle PHP/Node install

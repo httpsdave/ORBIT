@@ -14,7 +14,10 @@ class CollegeController extends Controller
      */
     public function index()
     {
-        $colleges = College::withCount('users')->get();
+        // Select only needed columns to reduce memory usage
+        $colleges = College::withCount('users')
+            ->select('id', 'name', 'acronym', 'description', 'logo_path', 'created_at', 'updated_at')
+            ->get();
         
         return Inertia::render('Admin/Colleges/Index', [
             'colleges' => $colleges

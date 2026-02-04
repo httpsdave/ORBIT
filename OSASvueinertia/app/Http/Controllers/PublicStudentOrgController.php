@@ -102,7 +102,12 @@ class PublicStudentOrgController extends Controller
      */
     public function getAll()
     {
-        $colleges = College::with('users')->get();
+        // Select only needed columns to reduce memory usage
+        $colleges = College::with([
+            'users:id,name,college_id,email,status,profile_photo_path,parent_organization_id'
+        ])
+        ->select('id', 'name', 'acronym', 'logo_path')
+        ->get();
         
         return response()->json($colleges);
     }
