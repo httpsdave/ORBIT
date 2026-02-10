@@ -188,7 +188,8 @@ const form = useForm({
   form_type: 'LSPU-OSAS-SF-003',
   organization_name: props.initialFormData.organization_name?.toUpperCase() || '',
   // president_name removed for Commitment Form
-  application_date: props.initialFormData.application_date || '',
+  // Default application_date to today to satisfy required validation
+  application_date: props.initialFormData.application_date || today,
   advisers: (props.initialFormData.advisers || []).map(adviser => ({
     adviser_name: adviser.adviser_name?.toUpperCase() || '',
     adviser_prefix: adviser.adviser_prefix || '',
@@ -921,7 +922,7 @@ const submit = () => {
                 required 
                 maxlength="15"
                 @input="e => { e.target.value = e.target.value.replace(/[^0-9+()\-]/g, ''); currentAdviser.adviser_contact = e.target.value.slice(0, 15); }"
-                pattern="[0-9+()\-]*"
+                pattern="[0-9+\(\)\-]*"
               >
               <p v-if="errors[`adviser_${currentPage - 1}_contact`]" class="text-red-500 text-sm mt-1">{{ errors[`adviser_${currentPage - 1}_contact`] }}</p>
             </div>

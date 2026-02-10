@@ -351,7 +351,8 @@ const form = useForm({
   form_type: 'LSPU-OSAS-SF-006',
   organization_name: props.initialFormData.organization_name?.toUpperCase() || '',
   // president_name removed for Student Certification Form
-  application_date: props.initialFormData.application_date || '',
+  // Default application_date to today to satisfy required validation
+  application_date: props.initialFormData.application_date || new Date().toISOString().slice(0, 10),
   adviser_name: props.initialFormData.adviser_name?.toUpperCase() || '',
   adviser_prefix: props.initialFormData.adviser_prefix || '',
   adviser_suffix: props.initialFormData.adviser_suffix || '',
@@ -482,6 +483,10 @@ const submit = async () => {
   
   // Stop autosave before submission
   stopAutoSave();
+  // Ensure application_date is present to satisfy backend validation
+  if (!form.application_date) {
+    form.application_date = new Date().toISOString().slice(0, 10);
+  }
   
   // Only send student fields that exist, and ensure organization_name is included in each student
   const data = {
