@@ -58,6 +58,32 @@ const expandedViaToggle = ref(true);
 // Sign out confirmation modal state
 const showSignOutModal = ref(false);
 
+// Feedback banner state
+const showFeedbackBanner = ref(false);
+
+const initFeedbackBanner = () => {
+  try {
+    const lastDismissed = localStorage.getItem('feedback_banner_dismissed');
+    if (!lastDismissed) {
+      showFeedbackBanner.value = true;
+      return;
+    }
+    const daysSince = (Date.now() - parseInt(lastDismissed, 10)) / (1000 * 60 * 60 * 24);
+    if (daysSince >= 3) {
+      showFeedbackBanner.value = true;
+    }
+  } catch {
+    showFeedbackBanner.value = false;
+  }
+};
+
+const dismissFeedbackBanner = () => {
+  showFeedbackBanner.value = false;
+  try {
+    localStorage.setItem('feedback_banner_dismissed', Date.now().toString());
+  } catch { /* ignore */ }
+};
+
 // User profile dropdown state
 const isDropdownOpen = ref(false);
 const dropdownRef = ref(null);
@@ -341,6 +367,9 @@ onMounted(() => {
   // Check for upcoming events
   checkUpcomingEvents();
   
+  // Initialize feedback banner (shows once every 3 days)
+  initFeedbackBanner();
+  
   // Set up periodic checking for expired events (every 5 minutes)
   eventCheckTimer.value = setInterval(() => {
     checkUpcomingEvents();
@@ -420,6 +449,37 @@ onUnmounted(() => {
           </Link>
         </div>
         
+        <!-- Feedback / Contact banner - shown occasionally, hidden on small screens -->
+        <Transition
+          enter-active-class="transition-all duration-500 ease-out"
+          enter-from-class="opacity-0 translate-y-2 scale-95"
+          enter-to-class="opacity-100 translate-y-0 scale-100"
+          leave-active-class="transition-all duration-300 ease-in"
+          leave-from-class="opacity-100 translate-y-0 scale-100"
+          leave-to-class="opacity-0 -translate-y-1 scale-95"
+        >
+          <div 
+            v-if="showFeedbackBanner"
+            class="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/30 border border-blue-200/60 dark:border-blue-700/40 max-w-md"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 flex-shrink-0 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+            </svg>
+            <span class="text-xs text-blue-700 dark:text-blue-300 whitespace-nowrap truncate">
+              Have feedback or suggestions? <Link :href="route('contact.index')" class="underline hover:text-blue-900 dark:hover:text-blue-100 font-medium">Contact us</Link> for concerns.
+            </span>
+            <button 
+              @click.stop="dismissFeedbackBanner" 
+              class="flex-shrink-0 p-0.5 rounded-full text-blue-400 dark:text-blue-500 hover:text-blue-600 dark:hover:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-800/40 transition-colors duration-200"
+              aria-label="Dismiss"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </Transition>
+
         <!-- Right side - user profile & actions -->
         <div class="flex items-center space-x-2 sm:space-x-3 md:space-x-4">
           <!-- Calendar link -->
