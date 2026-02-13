@@ -511,24 +511,37 @@ const submit = () => {
               <!-- Right Column -->
               <div class="flex items-end space-x-2">
                 <div>
-                  <label class="block font-bold">Academic Year</label>
+                  <label class="block font-bold">
+                    Academic Year
+                    <span v-if="props.isAdmin" class="text-sm text-blue-600 font-normal ml-2">(Admin editable)</span>
+                  </label>
                   <div class="flex items-center space-x-2">
                     <input 
                       v-model="form.academic_year_start" 
-                      class="border p-2 w-16 bg-gray-200 text-gray-500 select-none pointer-events-none text-center rounded-md" 
+                      :class="[
+                        'border p-2 w-16 text-center rounded-md',
+                        props.isAdmin 
+                          ? 'bg-white text-gray-900 cursor-pointer' 
+                          : 'bg-gray-200 text-gray-500 select-none pointer-events-none'
+                      ]"
                       :placeholder="currentYear" 
-                      readonly 
-                      tabindex="-1" 
-                      style="user-select: none; -webkit-user-select: none;" 
+                      :readonly="!props.isAdmin" 
+                      :tabindex="props.isAdmin ? 0 : -1" 
+                      :style="props.isAdmin ? '' : 'user-select: none; -webkit-user-select: none;'" 
                     >
                     <span class="mx-1">-</span>
                     <input 
                       v-model="form.academic_year_end" 
-                      class="border p-2 w-16 bg-gray-200 text-gray-500 select-none pointer-events-none text-center rounded-md" 
+                      :class="[
+                        'border p-2 w-16 text-center rounded-md',
+                        props.isAdmin 
+                          ? 'bg-white text-gray-900 cursor-pointer' 
+                          : 'bg-gray-200 text-gray-500 select-none pointer-events-none'
+                      ]"
                       :placeholder="nextYear" 
-                      readonly 
-                      tabindex="-1" 
-                      style="user-select: none; -webkit-user-select: none;" 
+                      :readonly="!props.isAdmin" 
+                      :tabindex="props.isAdmin ? 0 : -1" 
+                      :style="props.isAdmin ? '' : 'user-select: none; -webkit-user-select: none;'" 
                     >
                   </div>
                   <div class="flex space-x-2">

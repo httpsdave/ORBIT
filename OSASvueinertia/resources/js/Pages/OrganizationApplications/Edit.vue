@@ -20,7 +20,7 @@ const props = defineProps({
 });
 
 const user = usePage().props.auth.user;
-const isAdmin = user && (user.role?.slug === 'admin' || user.is_admin || (typeof user.role === 'object' && user.role.id === 1));
+const isAdmin = user && (user.role?.slug === 'admin' || user.role?.slug === 'super_admin' || user.is_admin || (typeof user.role === 'object' && (user.role.id === 1 || user.role.id === 3)));
 
 // Initialize form data based on the application type
 const formData = computed(() => {
@@ -470,6 +470,7 @@ const handleSpecialFormSubmit = () => {
         v-else-if="props.application.form_type === 'LSPU-OSAS-SF-004'" 
         :initialFormData="formData"
         :isEdit="true"
+        :isAdmin="isAdmin"
         @submitted="handleFormSubmitted"
       />
       
@@ -505,6 +506,7 @@ const handleSpecialFormSubmit = () => {
         v-else-if="props.application.form_type === 'LSPU-OSAS-SF-009'" 
         :initialFormData="formData"
         :isEdit="true"
+        :isAdmin="isAdmin"
         @submitted="handleFormSubmitted"
       />
       
@@ -513,6 +515,7 @@ const handleSpecialFormSubmit = () => {
         v-else-if="props.application.form_type === 'LSPU-OSAS-SF-EVAL'"
         :initialFormData="formData"
         :isEdit="true"
+        :isAdmin="isAdmin"
         @submitted="handleFormSubmitted"
       />
       

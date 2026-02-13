@@ -35,6 +35,10 @@ const props = defineProps({
   isEdit: {
     type: Boolean,
     default: false
+  },
+  isAdmin: {
+    type: Boolean,
+    default: false
   }
 });
 
