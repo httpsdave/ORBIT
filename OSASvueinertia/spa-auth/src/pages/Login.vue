@@ -1,30 +1,161 @@
 <script setup>
+import { ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import Checkbox from '@/components/Checkbox.vue';
+import InputError from '@/components/InputError.vue';
+import ApplicationLogo from '@/components/ApplicationLogo.vue';
 import TextInput from '@/components/TextInput.vue';
-import { ref, onMounted, onBeforeUnmount } from 'vue';
 
-const email = ref('');
-const password = ref('');
-const remember = ref(false);
+const form = ref({
+    email: '',
+    password: '',
+    remember: false,
+});
+
 const passwordVisible = ref(false);
 const isLoading = ref(false);
-const statusMessage = ref('');
 const formElement = ref(null);
-const isDarkMode = ref(true);
+const isDarkMode = true;
 const activeSlide = ref(0);
 const slideInterval = ref(null);
 const gradientIndex = ref(0);
 const gradientInterval = ref(null);
+const windowWidth = ref(0);
+
+const showError = ref(false);
+const errorMessage = ref('');
+const capsLockOn = ref(false);
+const clientErrors = ref({});
+const emailAutofilled = ref(false);
+const passwordAutofilled = ref(false);
+const statusMessage = ref('');
 const submitTimer = ref(null);
 
+const checkAutofill = () => {
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+
+    if (emailInput) {
+        try {
+            const emailFilled = emailInput.matches(':-webkit-autofill') || emailInput.value.length > 0;
+            emailAutofilled.value = emailFilled;
+        } catch (e) {
+            emailAutofilled.value = emailInput.value.length > 0;
+        }
+    }
+
+    if (passwordInput) {
+        try {
+            const passwordFilled = passwordInput.matches(':-webkit-autofill') || passwordInput.value.length > 0;
+            passwordAutofilled.value = passwordFilled;
+        } catch (e) {
+            passwordAutofilled.value = passwordInput.value.length > 0;
+        }
+    }
+};
+
+const validateEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+
+const validateForm = () => {
+    const errors = {};
+    if (!form.value.email) {
+        errors.email = 'Email is required';
+    } else if (!validateEmail(form.value.email)) {
+        errors.email = 'Please enter a valid email address';
+    }
+
+    if (!form.value.password) {
+        errors.password = 'Password is required';
+    } else if (form.value.password.length < 8) {
+        errors.password = 'Password must be at least 8 characters';
+    }
+
+    return errors;
+};
+
+let resizeTimeout;
+const updateWindowWidth = () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+        windowWidth.value = window.innerWidth;
+    }, 100);
+};
+
 const slideshowImages = [
-    '/images/LSPU1.jpg',
-    '/images/LSPU2.jpg',
-    '/images/LSPU3.jpg',
-    '/images/LSPU6.jpg',
-    '/images/LSPU5.jpg',
-    '/images/LSPU7.jpg',
+    {
+        id: 'campus-1',
+        src: '/images/optimized/LSPU9.webp',
+        mobileSrc: '/images/optimized/LSPU9-mobile.webp',
+        alt: 'LSPU Campus aerial view',
+    },
+    {
+        id: 'campus-2',
+        src: '/images/optimized/LSPU2.webp',
+        mobileSrc: '/images/optimized/LSPU2-mobile.webp',
+        alt: 'LSPU Campus student plaza',
+    },
+    {
+        id: 'campus-3',
+        src: '/images/optimized/LSPU3.webp',
+        mobileSrc: '/images/optimized/LSPU3-mobile.webp',
+        alt: 'LSPU campus courtyard',
+    },
+    {
+        id: 'campus-4',
+        src: '/images/optimized/LSPU6.webp',
+        mobileSrc: '/images/optimized/LSPU6-mobile.webp',
+        alt: 'Students at LSPU grounds',
+    },
+    {
+        id: 'campus-5',
+        src: '/images/optimized/LSPU5.webp',
+        mobileSrc: '/images/optimized/LSPU5-mobile.webp',
+        alt: 'LSPU campus facade',
+    },
+    {
+        id: 'campus-6',
+        src: '/images/optimized/LSPU7.webp',
+        mobileSrc: '/images/optimized/LSPU7-mobile.webp',
+        alt: 'LSPU campus skyline',
+    },
 ];
+
+const slideshowSizes = '(max-width: 1024px) 100vw, 55vw';
+
+const heroImageUrl = computed(() => {
+    const firstImage = slideshowImages[0];
+    if (!firstImage) {
+        return '';
+    }
+    if (windowWidth.value <= 1024 && firstImage.mobileSrc) {
+        return firstImage.mobileSrc;
+    }
+    return firstImage.src;
+});
+
+const getSlideBackground = (image) => {
+    if (!image) {
+        return {};
+    }
+    const source = windowWidth.value <= 1024 && image.mobileSrc ? image.mobileSrc : image.src;
+    return {
+        backgroundImage: `url('${source}')`,
+    };
+};
+
+const getSrcSet = (image) => {
+    if (!image || !image.mobileSrc) {
+        return undefined;
+    }
+    return `${image.mobileSrc} 640w, ${image.src} 1920w`;
+};
+
+const preloadFirstImage = () => {
+    const firstImage = slideshowImages[0];
+    if (!firstImage) return;
+
+    const img = new Image();
+    img.src = firstImage.src;
+};
 
 const togglePasswordVisibility = () => {
     passwordVisible.value = !passwordVisible.value;
@@ -33,13 +164,36 @@ const togglePasswordVisibility = () => {
 const submit = () => {
     if (isLoading.value) return;
 
+    clientErrors.value = {};
+    showError.value = false;
     statusMessage.value = '';
-    isLoading.value = true;
 
+    const errors = validateForm();
+    if (Object.keys(errors).length > 0) {
+        clientErrors.value = errors;
+        return;
+    }
+
+    isLoading.value = true;
     submitTimer.value = setTimeout(() => {
         isLoading.value = false;
-        statusMessage.value = 'Mock sign-in only. No backend is connected.';
+        statusMessage.value = 'Mock login only. No backend is connected.';
     }, 600);
+};
+
+const detectCapsLock = (event) => {
+    if (event && typeof event.getModifierState === 'function') {
+        capsLockOn.value = event.getModifierState('CapsLock');
+    }
+};
+
+const clearClientError = (field) => {
+    if (clientErrors.value[field]) {
+        delete clientErrors.value[field];
+    }
+    if (showError.value) {
+        showError.value = false;
+    }
 };
 
 const startSlideshow = () => {
@@ -55,15 +209,57 @@ const startGradientAnimation = () => {
 };
 
 onMounted(() => {
+    preloadFirstImage();
+    updateWindowWidth();
+    window.addEventListener('resize', updateWindowWidth);
+
     if (formElement.value) {
         formElement.value.classList.add('opacity-100');
     }
 
-    startSlideshow();
-    startGradientAnimation();
+    nextTick(() => {
+        checkAutofill();
+        setTimeout(checkAutofill, 100);
+        setTimeout(checkAutofill, 300);
+        setTimeout(checkAutofill, 500);
+    });
+
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+
+    if (emailInput) {
+        emailInput.addEventListener('animationstart', (event) => {
+            if (event.animationName === 'onAutoFillStart') {
+                emailAutofilled.value = true;
+            }
+        });
+        emailInput.addEventListener('input', () => {
+            emailAutofilled.value = emailInput.value.length > 0;
+        });
+    }
+
+    if (passwordInput) {
+        passwordInput.addEventListener('animationstart', (event) => {
+            if (event.animationName === 'onAutoFillStart') {
+                passwordAutofilled.value = true;
+            }
+        });
+        passwordInput.addEventListener('input', () => {
+            passwordAutofilled.value = passwordInput.value.length > 0;
+        });
+        passwordInput.addEventListener('keydown', detectCapsLock);
+        passwordInput.addEventListener('keyup', detectCapsLock);
+    }
+
+    nextTick(() => {
+        startSlideshow();
+        startGradientAnimation();
+    });
 });
 
 onBeforeUnmount(() => {
+    window.removeEventListener('resize', updateWindowWidth);
+
     if (slideInterval.value) {
         clearInterval(slideInterval.value);
     }
@@ -80,181 +276,278 @@ onBeforeUnmount(() => {
 
 <template>
     <div class="min-h-screen flex relative overflow-hidden">
-        <div class="absolute inset-0 right-24 md:right-36 lg:right-48 z-0">
-            <transition-group name="fade">
+        <div class="absolute inset-0 right-20 sm:right-24 md:right-32 lg:right-40 xl:right-48 z-0 bg-gray-900">
+            <div
+                v-show="activeSlide === 0"
+                class="absolute inset-0 slideshow-image"
+                :style="getSlideBackground(slideshowImages[0])"
+            ></div>
+
+            <transition-group name="slideshow-fade">
                 <div
-                    v-for="(image, index) in slideshowImages"
-                    :key="index"
-                    v-show="activeSlide === index"
-                    class="absolute inset-0 bg-cover bg-center transition-opacity duration-1000"
-                    :style="{ backgroundImage: `url(${image})`, filter: isDarkMode ? 'brightness(0.3) contrast(1.2)' : 'brightness(0.4) contrast(1.1)' }"
+                    v-for="(image, index) in slideshowImages.slice(1)"
+                    :key="image.id"
+                    v-show="activeSlide === index + 1"
+                    class="absolute inset-0 slideshow-image"
+                    :style="getSlideBackground(image)"
                 ></div>
             </transition-group>
-            <div class="absolute inset-0" :class="isDarkMode ? 'bg-gray-900 bg-opacity-40' : 'bg-white bg-opacity-20'"></div>
+            <div class="absolute inset-0 bg-gray-900 bg-opacity-40"></div>
         </div>
 
-        <div class="flex-1 relative z-20 flex items-center pr-8 md:pr-16 lg:pr-24 pl-8 md:pl-16">
-            <div
-                ref="formElement"
-                class="w-full max-w-lg opacity-0 transition-all duration-700"
-                :class="isDarkMode ? 'text-white' : 'text-gray-100'"
-            >
-                <div class="mb-8 md:mb-12">
-                    <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-3" :class="isDarkMode ? 'text-white' : 'text-white'">
-                        Welcome to
-                        <span class="block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-green-400">
-                            LSPU ORBIT
-                        </span>
-                    </h1>
+        <div class="flex-1 relative z-20 flex items-center justify-center lg:justify-between xl:justify-between px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
+            <div v-show="windowWidth > 1240" class="lg:max-w-md xl:max-w-lg mr-8 xl:mr-12">
+                <div class="opacity-90 text-white">
+                    <h2 class="text-3xl xl:text-4xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-green-400">
+                        What is ORBIT?
+                    </h2>
 
-                    <div class="flex mb-4 w-32">
+                    <div class="flex mb-6 w-32">
                         <div class="w-1/4 h-1 bg-blue-500"></div>
                         <div class="w-1/4 h-1 bg-green-500"></div>
                         <div class="w-1/4 h-1 bg-blue-500"></div>
                         <div class="w-1/4 h-1 bg-green-500"></div>
                     </div>
 
-                    <p class="text-base md:text-lg leading-relaxed" :class="isDarkMode ? 'text-gray-300' : 'text-gray-200'">
-                        Sign in to access your account and manage your organization activities.
+                    <div class="space-y-4 text-sm xl:text-base leading-relaxed text-gray-300">
+                        <p class="font-semibold text-lg xl:text-xl text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-green-300">
+                            Organized Records for Better Institutional Tracking
+                        </p>
+
+                        <p>
+                            ORBIT is an Information System developed for Student Organizations aimed at simplifying the process of preparation, submission, and approval of required documents under the Office of Student Affairs and Services.
+                        </p>
+
+                        <div class="space-y-2 mt-6">
+                            <div class="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-3 text-green-400 flex-shrink-0">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                    <polyline points="22,4 12,14.01 9,11.01"></polyline>
+                                </svg>
+                                <span class="text-sm xl:text-base">Streamlined document preparation</span>
+                            </div>
+                            <div class="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-3 text-blue-400 flex-shrink-0">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                    <polyline points="22,4 12,14.01 9,11.01"></polyline>
+                                </svg>
+                                <span class="text-sm xl:text-base">Simplified submission process</span>
+                            </div>
+                            <div class="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-3 text-green-400 flex-shrink-0">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                    <polyline points="22,4 12,14.01 9,11.01"></polyline>
+                                </svg>
+                                <span class="text-sm xl:text-base">Efficient approval workflow</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                ref="formElement"
+                class="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg opacity-0 transition-all duration-700 sm:ml-auto text-white"
+            >
+                <div class="mb-6 sm:mb-8 md:mb-10 lg:mb-12 text-center sm:text-left relative">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:space-x-4">
+                        <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-1 text-white">
+                            Welcome to
+                            <span class="block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-green-400">
+                                LSPU ORBIT
+                            </span>
+                        </h1>
+                        <div class="hidden sm:flex absolute inset-y-0 right-0 items-center justify-center pointer-events-none z-50" style="transform: translate(12px, -36px);">
+                            <ApplicationLogo class="w-44 h-44 md:w-52 md:h-52 lg:w-64 lg:h-64" />
+                        </div>
+                    </div>
+
+                    <div class="flex mb-4 w-24 sm:w-32 mx-auto sm:mx-0">
+                        <div class="w-1/4 h-1 bg-blue-500"></div>
+                        <div class="w-1/4 h-1 bg-green-500"></div>
+                        <div class="w-1/4 h-1 bg-blue-500"></div>
+                        <div class="w-1/4 h-1 bg-green-500"></div>
+                    </div>
+
+                    <p class="text-sm sm:text-base md:text-lg leading-relaxed text-gray-300">
+                        Sign in to access your account and manage your organizational records and activities.
                     </p>
                 </div>
 
-                <div v-if="statusMessage" class="mb-6 p-4 bg-blue-500 bg-opacity-20 border-l-4 border-blue-500 text-blue-300 text-sm font-medium animate-fadeIn backdrop-blur-sm rounded-r-lg">
+                <div v-if="showError" class="mb-4 sm:mb-6 p-3 sm:p-4 bg-red-500 bg-opacity-20 border-l-4 border-red-500 text-red-400 text-xs sm:text-sm font-medium animate-fadeIn backdrop-blur-sm rounded-r-lg">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 sm:mr-3 flex-shrink-0">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                            </svg>
+                            {{ errorMessage }}
+                        </div>
+                        <button @click="showError = false" class="ml-2 text-red-400 hover:text-red-300">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div v-if="statusMessage" class="mb-4 sm:mb-6 p-3 sm:p-4 bg-green-500 bg-opacity-20 border-l-4 border-green-500 text-green-400 text-xs sm:text-sm font-medium animate-fadeIn backdrop-blur-sm rounded-r-lg">
                     <div class="flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-3 flex-shrink-0">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <line x1="12" y1="8" x2="12" y2="12"></line>
-                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 sm:mr-3 flex-shrink-0">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22,4 12,14.01 9,11.01"></polyline>
                         </svg>
                         {{ statusMessage }}
                     </div>
                 </div>
 
-                <form @submit.prevent="submit" class="space-y-6" novalidate>
+                <div v-if="capsLockOn" class="mb-4 p-3 bg-yellow-500 bg-opacity-20 border-l-4 border-yellow-500 text-yellow-400 text-xs sm:text-sm font-medium animate-fadeIn backdrop-blur-sm rounded-r-lg">
+                    <div class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 sm:mr-3 flex-shrink-0">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                        </svg>
+                        Caps Lock is on
+                    </div>
+                </div>
+
+                <form @submit.prevent="submit" class="space-y-4 sm:space-y-6" novalidate>
                     <div>
-                        <label for="email" class="block text-sm font-medium mb-3" :class="isDarkMode ? 'text-gray-300' : 'text-gray-200'">
-                            Email Address
-                        </label>
                         <div class="relative group">
-                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-focus-within:text-blue-400 transition-colors duration-300" :class="isDarkMode ? 'text-gray-500' : 'text-gray-400'">
-                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                    <circle cx="12" cy="7" r="4"></circle>
-                                </svg>
-                            </div>
                             <TextInput
                                 id="email"
                                 type="email"
-                                class="pl-12 pr-4 py-4 text-base rounded-lg w-full border-0 focus:border-blue-400 focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 transition-all duration-300 bg-white bg-opacity-10 backdrop-blur-sm text-white placeholder-gray-300"
-                                v-model="email"
-                                placeholder="Enter your email address"
+                                class="peer pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 text-sm sm:text-base rounded-lg w-full border-0 focus:border-blue-400 focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 transition-all duration-300 bg-white bg-opacity-10 backdrop-blur-sm text-white placeholder-transparent"
+                                v-model="form.email"
+                                @input="clearClientError('email'); emailAutofilled = true"
+                                placeholder=""
                                 required
                                 autofocus
                                 autocomplete="username"
                                 aria-label="Email address"
+                                :aria-describedby="clientErrors.email ? 'email-error' : null"
+                                :aria-invalid="clientErrors.email ? 'true' : 'false'"
                             />
+                            <label
+                                for="email"
+                                class="floating-label absolute left-10 sm:left-12 top-3 sm:top-4 text-sm sm:text-base text-gray-300 pointer-events-none"
+                                :class="[
+                                    (form.email || emailAutofilled) ? 'floating-label-active' : '',
+                                ]"
+                            >
+                                Email Address
+                            </label>
+                            <div class="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-focus-within:text-blue-400 transition-colors duration-300 text-gray-500">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                            </div>
                         </div>
+                        <InputError id="email-error" class="mt-2 text-red-400 text-sm" :message="clientErrors.email" />
                     </div>
 
                     <div>
-                        <label for="password" class="block text-sm font-medium mb-3" :class="isDarkMode ? 'text-gray-300' : 'text-gray-200'">
-                            Password
-                        </label>
                         <div class="relative group">
-                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-focus-within:text-blue-400 transition-colors duration-300" :class="isDarkMode ? 'text-gray-500' : 'text-gray-400'">
+                            <TextInput
+                                id="password"
+                                :type="passwordVisible ? 'text' : 'password'"
+                                class="peer pl-10 sm:pl-12 pr-10 sm:pr-12 py-3 sm:py-4 text-sm sm:text-base rounded-lg w-full border-0 focus:border-blue-400 focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 transition-all duration-300 backdrop-blur-sm placeholder-transparent bg-white bg-opacity-10 text-white"
+                                v-model="form.password"
+                                @input="clearClientError('password'); passwordAutofilled = true"
+                                @keydown="detectCapsLock"
+                                @keyup="detectCapsLock"
+                                placeholder=""
+                                required
+                                autocomplete="current-password"
+                                aria-label="Password"
+                                :aria-describedby="clientErrors.password ? 'password-error' : capsLockOn ? 'caps-lock-warning' : null"
+                                :aria-invalid="clientErrors.password ? 'true' : 'false'"
+                            />
+                            <label
+                                for="password"
+                                class="floating-label absolute left-10 sm:left-12 top-3 sm:top-4 text-sm sm:text-base text-gray-300 pointer-events-none"
+                                :class="[
+                                    (form.password || passwordAutofilled) ? 'floating-label-active' : '',
+                                ]"
+                            >
+                                Password
+                            </label>
+                            <div class="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-focus-within:text-blue-400 transition-colors duration-300 text-gray-500">
                                     <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                                     <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                                 </svg>
                             </div>
-                            <TextInput
-                                id="password"
-                                :type="passwordVisible ? 'text' : 'password'"
-                                :class="[
-                                    'pl-12 pr-12 py-4 text-base rounded-lg w-full border-0 focus:border-blue-400 focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 transition-all duration-300 backdrop-blur-sm',
-                                    isDarkMode
-                                        ? 'bg-white bg-opacity-10 text-white placeholder-gray-300'
-                                        : 'bg-gray-800 bg-opacity-80 text-white placeholder-gray-400'
-                                ]"
-                                v-model="password"
-                                placeholder="Enter your password"
-                                required
-                                autocomplete="current-password"
-                                aria-label="Password"
-                            />
                             <button
                                 type="button"
                                 @click="togglePasswordVisibility"
-                                class="absolute inset-y-0 right-0 pr-4 flex items-center hover:text-blue-400 transition-colors duration-300"
-                                :class="isDarkMode ? 'text-gray-500' : 'text-gray-400'"
+                                class="absolute inset-y-0 right-0 pr-3 sm:pr-4 flex items-center hover:text-blue-400 transition-colors duration-300 text-gray-500"
                                 aria-label="Toggle password visibility"
                             >
-                                <svg v-if="!passwordVisible" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <svg v-if="!passwordVisible" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                                     <circle cx="12" cy="12" r="3"></circle>
                                 </svg>
-                                <svg v-else xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <svg v-else xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
                                     <line x1="1" y1="1" x2="23" y2="23"></line>
                                 </svg>
                             </button>
                         </div>
+                        <InputError id="password-error" class="mt-2 text-red-400 text-sm" :message="clientErrors.password" />
                     </div>
 
-                    <div class="flex items-center justify-between">
-                        <label class="flex items-center group cursor-pointer">
-                            <Checkbox name="remember" v-model:checked="remember" class="text-blue-500 rounded focus:ring-blue-500 border-gray-400" />
-                            <span class="ml-3 text-sm group-hover:text-gray-200 transition-colors duration-300" :class="isDarkMode ? 'text-gray-400' : 'text-gray-300'">
+                    <div class="flex flex-row items-center justify-between space-x-3 sm:space-x-4 min-h-[2.5rem]">
+                        <label class="flex items-center group cursor-pointer flex-shrink-0">
+                            <Checkbox
+                                name="remember"
+                                v-model:checked="form.remember"
+                                class="text-blue-500 rounded focus:ring-blue-500 border-gray-400"
+                            />
+                            <span class="ml-2 sm:ml-3 text-xs sm:text-sm group-hover:text-gray-200 transition-colors duration-300 text-gray-400">
                                 Remember me
                             </span>
                         </label>
 
                         <router-link
                             to="/forgot-password"
-                            class="text-sm hover:text-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 rounded-md transition duration-300"
-                            :class="isDarkMode ? 'text-gray-400' : 'text-gray-300'"
+                            class="text-xs sm:text-sm hover:text-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 rounded-md transition duration-300 whitespace-nowrap flex-shrink-0 text-gray-400"
                         >
                             Forgot Password?
                         </router-link>
                     </div>
 
-                    <div class="space-y-4">
+                    <div class="space-y-3 sm:space-y-4">
                         <button
                             type="submit"
-                            class="w-full text-white font-semibold py-4 px-6 rounded-lg transition-all duration-300 flex items-center justify-center relative overflow-hidden group shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 transform hover:scale-105"
-                            :class="[
-                                isDarkMode
-                                    ? 'bg-gradient-to-r from-blue-500 to-green-600 hover:from-blue-400 hover:to-green-500'
-                                    : 'bg-gradient-to-r from-blue-500 to-green-600 hover:from-blue-400 hover:to-green-500',
-                                { 'opacity-80 cursor-not-allowed transform-none': isLoading }
-                            ]"
+                            class="w-full text-white font-semibold py-3 sm:py-4 px-4 sm:px-6 rounded-full transition-all duration-300 flex items-center justify-center relative overflow-hidden group shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 active:scale-95 bg-gradient-to-r from-blue-500 to-green-600 hover:from-blue-400 hover:to-green-500"
+                            :class="{ 'opacity-80 cursor-not-allowed': isLoading }"
                             :disabled="isLoading"
-                            aria-label="Sign In"
+                            aria-label="Login"
                         >
-                            <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
+                            <span class="absolute inset-0 w-full h-full transition-all duration-700 ease-out bg-white rounded-full opacity-0 group-hover:opacity-10 scale-0 group-hover:scale-100"></span>
                             <span v-if="isLoading" class="absolute inset-0 flex items-center justify-center">
-                                <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <svg class="animate-spin h-4 w-4 sm:h-5 sm:w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                 </svg>
                             </span>
-                            <span :class="{ 'opacity-0': isLoading }" class="flex items-center relative z-10">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-3">
+                            <span :class="{ 'opacity-0': isLoading }" class="flex items-center relative z-10 text-sm sm:text-base">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 sm:mr-3">
                                     <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
                                     <polyline points="10 17 15 12 10 7"></polyline>
                                     <line x1="15" y1="12" x2="3" y2="12"></line>
                                 </svg>
-                                Sign In to ORBIT
+                                Login
                             </span>
                         </button>
                     </div>
                 </form>
 
-                <div class="mt-12 pt-6 border-t border-white border-opacity-20">
-                    <p class="text-xs" :class="isDarkMode ? 'text-gray-400' : 'text-gray-300'">
+                <div class="mt-8 sm:mt-12 pt-4 sm:pt-6 border-t border-white border-opacity-20 text-center sm:text-left">
+                    <p class="text-xs text-gray-400">
                         Account access is managed by administrators. Contact your administrator for assistance.
                     </p>
-                    <p class="text-xs mt-2" :class="isDarkMode ? 'text-gray-500' : 'text-gray-400'">
+                    <p class="text-xs mt-2 text-gray-500">
                         © 2025 Laguna State Polytechnic University
                     </p>
                 </div>
@@ -262,16 +555,8 @@ onBeforeUnmount(() => {
         </div>
 
         <div
-            class="w-24 md:w-36 lg:w-48 flex-shrink-0 relative overflow-hidden transition-all duration-1000 ease-in-out"
-            :class="[
-                isDarkMode
-                    ? gradientIndex === 0
-                        ? 'bg-gradient-to-t from-blue-500 via-green-500 to-blue-500'
-                        : 'bg-gradient-to-t from-green-500 via-blue-500 to-green-500'
-                    : gradientIndex === 0
-                        ? 'bg-gradient-to-t from-blue-400 via-green-400 to-blue-400'
-                        : 'bg-gradient-to-t from-green-400 via-blue-400 to-green-400'
-            ]"
+            class="w-20 sm:w-24 md:w-32 lg:w-40 xl:w-48 flex-shrink-0 relative overflow-hidden transition-all duration-1000 ease-in-out"
+            :class="gradientIndex === 0 ? 'bg-gradient-to-t from-blue-500 via-green-500 to-blue-500' : 'bg-gradient-to-t from-green-500 via-blue-500 to-green-500'"
         >
             <div class="absolute inset-0 overflow-hidden opacity-20">
                 <div class="absolute top-1/6 left-1/2 w-10 h-10 rounded-full bg-white transform -translate-x-1/2 animate-pulse"></div>
@@ -281,37 +566,46 @@ onBeforeUnmount(() => {
                 <div class="absolute top-5/6 left-1/2 w-7 h-7 rounded-full bg-white transform -translate-x-1/2 animate-pulse" style="animation-delay: 4s;"></div>
             </div>
 
-            <div class="absolute inset-0 flex flex-col items-center justify-center text-white p-3">
-                <div class="mb-6 lg:mb-12">
-                    <img src="/images/lspu_logo_better.webp" alt="LSPU Logo" class="w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 object-cover filter drop-shadow-lg" />
+            <div class="absolute inset-0 flex flex-col items-center justify-center text-white p-2 sm:p-3">
+                <div class="mb-4 sm:mb-6 lg:mb-8 xl:mb-12">
+                    <img
+                        src="/images/optimized/lspu_logo_better-96.webp"
+                        srcset="/images/optimized/lspu_logo_better-96.webp 96w, /images/optimized/lspu_logo_better-192.webp 192w, /images/optimized/lspu_logo_better-256.webp 256w"
+                        sizes="(min-width: 1280px) 96px, (min-width: 1024px) 80px, (min-width: 768px) 64px, (min-width: 640px) 48px, 40px"
+                        alt="LSPU Logo"
+                        width="96"
+                        height="96"
+                        decoding="async"
+                        class="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 xl:w-24 xl:h-24 object-cover filter drop-shadow-lg"
+                    >
                 </div>
 
                 <div class="writing-mode-vertical text-center">
-                    <div class="text-base md:text-lg lg:text-xl font-bold mb-3 tracking-widest transform rotate-180" style="writing-mode: vertical-rl;">
+                    <div class="text-sm sm:text-base md:text-lg lg:text-xl font-bold mb-2 sm:mb-3 tracking-widest transform rotate-180" style="writing-mode: vertical-rl;">
                         LOGIN
                     </div>
-                    <div class="w-0.5 h-10 bg-white opacity-70 mx-auto mb-3"></div>
-                    <div class="text-sm md:text-base lg:text-lg font-medium tracking-widest transform rotate-180" style="writing-mode: vertical-rl;">
+                    <div class="w-0.5 h-6 sm:h-8 lg:h-10 bg-white opacity-70 mx-auto mb-2 sm:mb-3"></div>
+                    <div class="text-xs sm:text-sm md:text-base lg:text-lg font-medium tracking-widest transform rotate-180" style="writing-mode: vertical-rl;">
                         ACCESS
                     </div>
                 </div>
             </div>
 
-            <div class="absolute top-4 left-0 right-0 flex justify-center">
-                <a href="https://www.facebook.com/SPCC.OSAS" target="_blank" rel="noopener noreferrer" class="bg-white bg-opacity-20 backdrop-blur-sm hover:bg-opacity-40 p-2 rounded-full transition-all duration-300 hover:scale-110" aria-label="Facebook">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white">
+            <div class="absolute top-3 sm:top-4 left-0 right-0 flex justify-center">
+                <a href="https://www.facebook.com/SPCC.OSAS" target="_blank" rel="noopener noreferrer" class="bg-white bg-opacity-20 backdrop-blur-sm hover:bg-opacity-40 p-1.5 sm:p-2 rounded-full transition-all duration-300 hover:scale-110" aria-label="Facebook">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white">
                         <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
                     </svg>
                 </a>
             </div>
         </div>
 
-        <div class="absolute top-6 left-6 flex space-x-2 z-30">
+        <div class="absolute top-4 sm:top-6 left-4 sm:left-6 flex space-x-1.5 sm:space-x-2 z-30">
             <button
                 v-for="(_, index) in slideshowImages"
-                :key="index"
+                :key="slideshowImages[index].id"
                 @click="activeSlide = index"
-                class="w-2 h-2 rounded-full transition-all duration-300"
+                class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full transition-all duration-300"
                 :class="[
                     activeSlide === index
                         ? 'bg-blue-400 scale-125'
@@ -321,7 +615,8 @@ onBeforeUnmount(() => {
             ></button>
         </div>
 
-        <div class="absolute bottom-6 left-6 w-4 h-4 rounded-full transition-all duration-1000 ease-in-out z-30" :class="gradientIndex === 0 ? 'bg-blue-400' : 'bg-green-400'"></div>
+        <div class="absolute bottom-4 sm:bottom-6 right-4 sm:right-6 w-3 h-3 sm:w-4 sm:h-4 rounded-full transition-all duration-1000 ease-in-out z-30"
+             :class="gradientIndex === 0 ? 'bg-blue-400' : 'bg-green-400'"></div>
     </div>
 </template>
 
@@ -335,14 +630,105 @@ onBeforeUnmount(() => {
   animation: fadeIn 0.6s ease-out forwards;
 }
 
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 1s ease;
+@keyframes onAutoFillStart {
+  from { opacity: 0.99; }
+  to { opacity: 1; }
 }
 
-.fade-enter-from,
-.fade-leave-to {
+@keyframes onAutoFillCancel {
+  from { opacity: 1; }
+  to { opacity: 0.99; }
+}
+
+.floating-label {
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transform-origin: left top;
+  will-change: transform, color, background-color;
+}
+
+.floating-label-active {
+  transform: translateY(-1.75rem) translateX(-2rem) scale(0.75) !important;
+  color: #60a5fa !important;
+  background-color: rgba(17, 24, 39, 0.9) !important;
+  padding: 0.125rem 0.25rem !important;
+  border-radius: 0.25rem !important;
+  backdrop-filter: blur(4px);
+}
+
+.peer:focus ~ .floating-label {
+  transform: translateY(-1.75rem) translateX(-2rem) scale(0.75);
+  color: #60a5fa;
+  background-color: rgba(17, 24, 39, 0.9);
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  backdrop-filter: blur(4px);
+}
+
+input:-webkit-autofill ~ .floating-label,
+input:-webkit-autofill:hover ~ .floating-label,
+input:-webkit-autofill:focus ~ .floating-label,
+input:-webkit-autofill:active ~ .floating-label {
+  transform: translateY(-1.75rem) translateX(-2rem) scale(0.75) !important;
+  color: #60a5fa !important;
+  background-color: rgba(17, 24, 39, 0.9) !important;
+  padding: 0.125rem 0.25rem !important;
+  border-radius: 0.25rem !important;
+  backdrop-filter: blur(4px);
+}
+
+input:-webkit-autofill {
+  animation: onAutoFillStart 0s forwards;
+}
+
+input:not(:-webkit-autofill) {
+  animation: onAutoFillCancel 0s forwards;
+}
+
+@media (min-width: 640px) {
+  .floating-label-active {
+    transform: translateY(-1.875rem) translateX(-2.5rem) scale(0.75) !important;
+  }
+
+  .peer:focus ~ .floating-label {
+    transform: translateY(-1.875rem) translateX(-2.5rem) scale(0.75);
+  }
+
+  input:-webkit-autofill ~ .floating-label,
+  input:-webkit-autofill:hover ~ .floating-label,
+  input:-webkit-autofill:focus ~ .floating-label,
+  input:-webkit-autofill:active ~ .floating-label {
+    transform: translateY(-1.875rem) translateX(-2.5rem) scale(0.75) !important;
+  }
+}
+
+.slideshow-fade-enter-active {
+  transition: opacity 2s ease-in-out;
+}
+
+.slideshow-fade-leave-active {
+  transition: opacity 2s ease-in-out;
+}
+
+.slideshow-fade-enter-from {
   opacity: 0;
+}
+
+.slideshow-fade-leave-to {
+  opacity: 0;
+}
+
+.slideshow-fade-enter-active,
+.slideshow-fade-leave-active {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.slideshow-image {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter: brightness(0.3) contrast(1.2);
 }
 
 a:focus, button:focus, input:focus {
@@ -358,5 +744,69 @@ button:hover:not(:disabled) {
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 300ms;
+}
+
+input:focus-visible, button:focus-visible, a:focus-visible {
+  outline: 2px solid #60a5fa;
+  outline-offset: 2px;
+  border-radius: 0.5rem;
+}
+
+input[aria-invalid="true"] {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 1px #ef4444 !important;
+}
+
+input:valid:not(:placeholder-shown) {
+  border-color: #10b981;
+}
+
+.loading-overlay {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+.error-shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: white !important;
+  background-color: transparent !important;
+  box-shadow: inset 0 0 20px 20px rgba(255, 255, 255, 0.1) !important;
+  transition: background-color 5000s ease-in-out 0s !important;
+}
+
+input:-moz-autofill {
+  background-color: transparent !important;
+  color: white !important;
+}
+
+button:focus {
+  border-radius: 9999px;
+}
+
+p, span, h1, h2, h3, h4, h5, h6, div:not(button div), label:not([for]) {
+  cursor: default;
+  user-select: none;
+}
+
+input[type="text"], input[type="email"], input[type="password"], textarea {
+  cursor: text;
+  user-select: text;
+}
+
+a, button, button *, label[for], input[type="checkbox"], input[type="radio"] {
+  cursor: pointer !important;
 }
 </style>
