@@ -177,7 +177,8 @@ const submit = () => {
     isLoading.value = true;
     submitTimer.value = setTimeout(() => {
         isLoading.value = false;
-        statusMessage.value = 'Mock login only. No backend is connected.';
+        errorMessage.value = 'Invalid email or password. Please check your credentials.';
+        showError.value = true;
     }, 600);
 };
 

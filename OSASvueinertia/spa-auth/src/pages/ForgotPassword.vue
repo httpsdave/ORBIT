@@ -152,7 +152,9 @@ const submit = () => {
     }
 
     isLoading.value = true;
-    message.value = 'If an account exists for this email, reset instructions have been sent.';
+    message.value = 'We can\'t find a user with that email address.';
+    error.value = 'We can\'t find a user with that email address.';
+    message.value = '';
     startCooldown();
     isLoading.value = false;
 };
