@@ -2,7 +2,6 @@
 import { ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import Checkbox from '@/components/Checkbox.vue';
 import InputError from '@/components/InputError.vue';
-import ApplicationLogo from '@/components/ApplicationLogo.vue';
 import TextInput from '@/components/TextInput.vue';
 
 const form = ref({
@@ -351,17 +350,12 @@ onBeforeUnmount(() => {
                 class="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg opacity-0 transition-all duration-700 sm:ml-auto text-white"
             >
                 <div class="mb-6 sm:mb-8 md:mb-10 lg:mb-12 text-center sm:text-left relative">
-                    <div class="flex flex-col sm:flex-row sm:items-center sm:space-x-4">
-                        <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-1 text-white">
-                            Welcome to
-                            <span class="block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-green-400">
-                                LSPU ORBIT
-                            </span>
-                        </h1>
-                        <div class="hidden sm:flex absolute inset-y-0 right-0 items-center justify-center pointer-events-none z-50" style="transform: translate(12px, -36px);">
-                            <ApplicationLogo class="w-44 h-44 md:w-52 md:h-52 lg:w-64 lg:h-64" />
-                        </div>
-                    </div>
+                    <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 text-white">
+                        Welcome to
+                        <span class="block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-green-400">
+                            LSPU ORBIT
+                        </span>
+                    </h1>
 
                     <div class="flex mb-4 w-24 sm:w-32 mx-auto sm:mx-0">
                         <div class="w-1/4 h-1 bg-blue-500"></div>
