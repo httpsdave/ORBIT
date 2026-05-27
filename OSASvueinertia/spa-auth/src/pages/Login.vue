@@ -1,0 +1,362 @@
+<script setup>
+import Checkbox from '@/components/Checkbox.vue';
+import TextInput from '@/components/TextInput.vue';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
+
+const email = ref('');
+const password = ref('');
+const remember = ref(false);
+const passwordVisible = ref(false);
+const isLoading = ref(false);
+const statusMessage = ref('');
+const formElement = ref(null);
+const isDarkMode = ref(true);
+const activeSlide = ref(0);
+const slideInterval = ref(null);
+const gradientIndex = ref(0);
+const gradientInterval = ref(null);
+const submitTimer = ref(null);
+
+const slideshowImages = [
+    '/images/LSPU1.jpg',
+    '/images/LSPU2.jpg',
+    '/images/LSPU3.jpg',
+    '/images/LSPU6.jpg',
+    '/images/LSPU5.jpg',
+    '/images/LSPU7.jpg',
+];
+
+const togglePasswordVisibility = () => {
+    passwordVisible.value = !passwordVisible.value;
+};
+
+const submit = () => {
+    if (isLoading.value) return;
+
+    statusMessage.value = '';
+    isLoading.value = true;
+
+    submitTimer.value = setTimeout(() => {
+        isLoading.value = false;
+        statusMessage.value = 'Mock sign-in only. No backend is connected.';
+    }, 600);
+};
+
+const startSlideshow = () => {
+    slideInterval.value = setInterval(() => {
+        activeSlide.value = (activeSlide.value + 1) % slideshowImages.length;
+    }, 10000);
+};
+
+const startGradientAnimation = () => {
+    gradientInterval.value = setInterval(() => {
+        gradientIndex.value = (gradientIndex.value + 1) % 2;
+    }, 30000);
+};
+
+onMounted(() => {
+    if (formElement.value) {
+        formElement.value.classList.add('opacity-100');
+    }
+
+    startSlideshow();
+    startGradientAnimation();
+});
+
+onBeforeUnmount(() => {
+    if (slideInterval.value) {
+        clearInterval(slideInterval.value);
+    }
+
+    if (gradientInterval.value) {
+        clearInterval(gradientInterval.value);
+    }
+
+    if (submitTimer.value) {
+        clearTimeout(submitTimer.value);
+    }
+});
+</script>
+
+<template>
+    <div class="min-h-screen flex relative overflow-hidden">
+        <div class="absolute inset-0 right-24 md:right-36 lg:right-48 z-0">
+            <transition-group name="fade">
+                <div
+                    v-for="(image, index) in slideshowImages"
+                    :key="index"
+                    v-show="activeSlide === index"
+                    class="absolute inset-0 bg-cover bg-center transition-opacity duration-1000"
+                    :style="{ backgroundImage: `url(${image})`, filter: isDarkMode ? 'brightness(0.3) contrast(1.2)' : 'brightness(0.4) contrast(1.1)' }"
+                ></div>
+            </transition-group>
+            <div class="absolute inset-0" :class="isDarkMode ? 'bg-gray-900 bg-opacity-40' : 'bg-white bg-opacity-20'"></div>
+        </div>
+
+        <div class="flex-1 relative z-20 flex items-center pr-8 md:pr-16 lg:pr-24 pl-8 md:pl-16">
+            <div
+                ref="formElement"
+                class="w-full max-w-lg opacity-0 transition-all duration-700"
+                :class="isDarkMode ? 'text-white' : 'text-gray-100'"
+            >
+                <div class="mb-8 md:mb-12">
+                    <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-3" :class="isDarkMode ? 'text-white' : 'text-white'">
+                        Welcome to
+                        <span class="block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-green-400">
+                            LSPU ORBIT
+                        </span>
+                    </h1>
+
+                    <div class="flex mb-4 w-32">
+                        <div class="w-1/4 h-1 bg-blue-500"></div>
+                        <div class="w-1/4 h-1 bg-green-500"></div>
+                        <div class="w-1/4 h-1 bg-blue-500"></div>
+                        <div class="w-1/4 h-1 bg-green-500"></div>
+                    </div>
+
+                    <p class="text-base md:text-lg leading-relaxed" :class="isDarkMode ? 'text-gray-300' : 'text-gray-200'">
+                        Sign in to access your account and manage your organization activities.
+                    </p>
+                </div>
+
+                <div v-if="statusMessage" class="mb-6 p-4 bg-blue-500 bg-opacity-20 border-l-4 border-blue-500 text-blue-300 text-sm font-medium animate-fadeIn backdrop-blur-sm rounded-r-lg">
+                    <div class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-3 flex-shrink-0">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        {{ statusMessage }}
+                    </div>
+                </div>
+
+                <form @submit.prevent="submit" class="space-y-6" novalidate>
+                    <div>
+                        <label for="email" class="block text-sm font-medium mb-3" :class="isDarkMode ? 'text-gray-300' : 'text-gray-200'">
+                            Email Address
+                        </label>
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-focus-within:text-blue-400 transition-colors duration-300" :class="isDarkMode ? 'text-gray-500' : 'text-gray-400'">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                            </div>
+                            <TextInput
+                                id="email"
+                                type="email"
+                                class="pl-12 pr-4 py-4 text-base rounded-lg w-full border-0 focus:border-blue-400 focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 transition-all duration-300 bg-white bg-opacity-10 backdrop-blur-sm text-white placeholder-gray-300"
+                                v-model="email"
+                                placeholder="Enter your email address"
+                                required
+                                autofocus
+                                autocomplete="username"
+                                aria-label="Email address"
+                            />
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="password" class="block text-sm font-medium mb-3" :class="isDarkMode ? 'text-gray-300' : 'text-gray-200'">
+                            Password
+                        </label>
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-focus-within:text-blue-400 transition-colors duration-300" :class="isDarkMode ? 'text-gray-500' : 'text-gray-400'">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                </svg>
+                            </div>
+                            <TextInput
+                                id="password"
+                                :type="passwordVisible ? 'text' : 'password'"
+                                :class="[
+                                    'pl-12 pr-12 py-4 text-base rounded-lg w-full border-0 focus:border-blue-400 focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 transition-all duration-300 backdrop-blur-sm',
+                                    isDarkMode
+                                        ? 'bg-white bg-opacity-10 text-white placeholder-gray-300'
+                                        : 'bg-gray-800 bg-opacity-80 text-white placeholder-gray-400'
+                                ]"
+                                v-model="password"
+                                placeholder="Enter your password"
+                                required
+                                autocomplete="current-password"
+                                aria-label="Password"
+                            />
+                            <button
+                                type="button"
+                                @click="togglePasswordVisibility"
+                                class="absolute inset-y-0 right-0 pr-4 flex items-center hover:text-blue-400 transition-colors duration-300"
+                                :class="isDarkMode ? 'text-gray-500' : 'text-gray-400'"
+                                aria-label="Toggle password visibility"
+                            >
+                                <svg v-if="!passwordVisible" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                                <svg v-else xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <label class="flex items-center group cursor-pointer">
+                            <Checkbox name="remember" v-model:checked="remember" class="text-blue-500 rounded focus:ring-blue-500 border-gray-400" />
+                            <span class="ml-3 text-sm group-hover:text-gray-200 transition-colors duration-300" :class="isDarkMode ? 'text-gray-400' : 'text-gray-300'">
+                                Remember me
+                            </span>
+                        </label>
+
+                        <router-link
+                            to="/forgot-password"
+                            class="text-sm hover:text-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 rounded-md transition duration-300"
+                            :class="isDarkMode ? 'text-gray-400' : 'text-gray-300'"
+                        >
+                            Forgot Password?
+                        </router-link>
+                    </div>
+
+                    <div class="space-y-4">
+                        <button
+                            type="submit"
+                            class="w-full text-white font-semibold py-4 px-6 rounded-lg transition-all duration-300 flex items-center justify-center relative overflow-hidden group shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 transform hover:scale-105"
+                            :class="[
+                                isDarkMode
+                                    ? 'bg-gradient-to-r from-blue-500 to-green-600 hover:from-blue-400 hover:to-green-500'
+                                    : 'bg-gradient-to-r from-blue-500 to-green-600 hover:from-blue-400 hover:to-green-500',
+                                { 'opacity-80 cursor-not-allowed transform-none': isLoading }
+                            ]"
+                            :disabled="isLoading"
+                            aria-label="Sign In"
+                        >
+                            <span class="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-96 group-hover:h-96 opacity-10"></span>
+                            <span v-if="isLoading" class="absolute inset-0 flex items-center justify-center">
+                                <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                            </span>
+                            <span :class="{ 'opacity-0': isLoading }" class="flex items-center relative z-10">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-3">
+                                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                                    <polyline points="10 17 15 12 10 7"></polyline>
+                                    <line x1="15" y1="12" x2="3" y2="12"></line>
+                                </svg>
+                                Sign In to ORBIT
+                            </span>
+                        </button>
+                    </div>
+                </form>
+
+                <div class="mt-12 pt-6 border-t border-white border-opacity-20">
+                    <p class="text-xs" :class="isDarkMode ? 'text-gray-400' : 'text-gray-300'">
+                        Account access is managed by administrators. Contact your administrator for assistance.
+                    </p>
+                    <p class="text-xs mt-2" :class="isDarkMode ? 'text-gray-500' : 'text-gray-400'">
+                        © 2025 Laguna State Polytechnic University
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div
+            class="w-24 md:w-36 lg:w-48 flex-shrink-0 relative overflow-hidden transition-all duration-1000 ease-in-out"
+            :class="[
+                isDarkMode
+                    ? gradientIndex === 0
+                        ? 'bg-gradient-to-t from-blue-500 via-green-500 to-blue-500'
+                        : 'bg-gradient-to-t from-green-500 via-blue-500 to-green-500'
+                    : gradientIndex === 0
+                        ? 'bg-gradient-to-t from-blue-400 via-green-400 to-blue-400'
+                        : 'bg-gradient-to-t from-green-400 via-blue-400 to-green-400'
+            ]"
+        >
+            <div class="absolute inset-0 overflow-hidden opacity-20">
+                <div class="absolute top-1/6 left-1/2 w-10 h-10 rounded-full bg-white transform -translate-x-1/2 animate-pulse"></div>
+                <div class="absolute top-1/3 left-1/2 w-8 h-8 rounded-full bg-white transform -translate-x-1/2 animate-pulse" style="animation-delay: 1s;"></div>
+                <div class="absolute top-1/2 left-1/2 w-12 h-12 rounded-full bg-white transform -translate-x-1/2 animate-pulse" style="animation-delay: 2s;"></div>
+                <div class="absolute top-2/3 left-1/2 w-9 h-9 rounded-full bg-white transform -translate-x-1/2 animate-pulse" style="animation-delay: 3s;"></div>
+                <div class="absolute top-5/6 left-1/2 w-7 h-7 rounded-full bg-white transform -translate-x-1/2 animate-pulse" style="animation-delay: 4s;"></div>
+            </div>
+
+            <div class="absolute inset-0 flex flex-col items-center justify-center text-white p-3">
+                <div class="mb-6 lg:mb-12">
+                    <img src="/images/lspu_logo_better.webp" alt="LSPU Logo" class="w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 object-cover filter drop-shadow-lg" />
+                </div>
+
+                <div class="writing-mode-vertical text-center">
+                    <div class="text-base md:text-lg lg:text-xl font-bold mb-3 tracking-widest transform rotate-180" style="writing-mode: vertical-rl;">
+                        LOGIN
+                    </div>
+                    <div class="w-0.5 h-10 bg-white opacity-70 mx-auto mb-3"></div>
+                    <div class="text-sm md:text-base lg:text-lg font-medium tracking-widest transform rotate-180" style="writing-mode: vertical-rl;">
+                        ACCESS
+                    </div>
+                </div>
+            </div>
+
+            <div class="absolute top-4 left-0 right-0 flex justify-center">
+                <a href="https://www.facebook.com/SPCC.OSAS" target="_blank" rel="noopener noreferrer" class="bg-white bg-opacity-20 backdrop-blur-sm hover:bg-opacity-40 p-2 rounded-full transition-all duration-300 hover:scale-110" aria-label="Facebook">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white">
+                        <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                    </svg>
+                </a>
+            </div>
+        </div>
+
+        <div class="absolute top-6 left-6 flex space-x-2 z-30">
+            <button
+                v-for="(_, index) in slideshowImages"
+                :key="index"
+                @click="activeSlide = index"
+                class="w-2 h-2 rounded-full transition-all duration-300"
+                :class="[
+                    activeSlide === index
+                        ? 'bg-blue-400 scale-125'
+                        : 'bg-white bg-opacity-40 hover:bg-opacity-70'
+                ]"
+                :aria-label="`Go to slide ${index + 1}`"
+            ></button>
+        </div>
+
+        <div class="absolute bottom-6 left-6 w-4 h-4 rounded-full transition-all duration-1000 ease-in-out z-30" :class="gradientIndex === 0 ? 'bg-blue-400' : 'bg-green-400'"></div>
+    </div>
+</template>
+
+<style scoped>
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 1s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+a:focus, button:focus, input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+* {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+}
+</style>

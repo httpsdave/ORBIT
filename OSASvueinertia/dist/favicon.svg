@@ -1,0 +1,400 @@
+<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Enhanced definitions for gradients and filters -->
+  <defs>
+    <!-- Easing functions for more natural animations -->
+    <animate id="easeInOutAnimation" attributeName="dummy" dur="1s" values="0;1" keyTimes="0;1" keySplines="0.42 0 0.58 1" calcMode="spline" begin="0s" />
+    
+    <!-- Animated ring gradient with smoother transitions and natural blending -->
+    <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="0%" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#3498db">
+        <animate attributeName="stop-color" values="#3498db; #2ecc71; #f1c40f; #e74c3c; #9b59b6; #3498db" dur="30s" repeatCount="indefinite" />
+      </stop>
+      <stop offset="20%" stop-color="#2ecc71">
+        <animate attributeName="stop-color" values="#2ecc71; #f1c40f; #e74c3c; #9b59b6; #3498db; #2ecc71" dur="30s" repeatCount="indefinite" />
+      </stop>
+      <stop offset="40%" stop-color="#f1c40f">
+        <animate attributeName="stop-color" values="#f1c40f; #e74c3c; #9b59b6; #3498db; #2ecc71; #f1c40f" dur="30s" repeatCount="indefinite" />
+      </stop>
+      <stop offset="60%" stop-color="#e74c3c">
+        <animate attributeName="stop-color" values="#e74c3c; #9b59b6; #3498db; #2ecc71; #f1c40f; #e74c3c" dur="30s" repeatCount="indefinite" />
+      </stop>
+      <stop offset="80%" stop-color="#9b59b6">
+        <animate attributeName="stop-color" values="#9b59b6; #3498db; #2ecc71; #f1c40f; #e74c3c; #9b59b6" dur="30s" repeatCount="indefinite" />
+      </stop>
+      <stop offset="100%" stop-color="#3498db">
+        <animate attributeName="stop-color" values="#3498db; #2ecc71; #f1c40f; #e74c3c; #9b59b6; #3498db" dur="30s" repeatCount="indefinite" />
+      </stop>
+    </linearGradient>
+    
+    <!-- Enhanced planet gradient with more realistic lighting -->
+    <radialGradient id="planetGradient" cx="40%" cy="40%" r="80%" fx="30%" fy="30%">
+      <stop offset="0%" stop-color="#7189aa" />
+      <stop offset="30%" stop-color="#5d7795" />
+      <stop offset="60%" stop-color="#34495e" />
+      <stop offset="90%" stop-color="#2c3e50" />
+      <stop offset="100%" stop-color="#1a2530" />
+    </radialGradient>
+    
+    <!-- More dramatic and realistic shadow for the planet -->
+    <filter id="planetShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="15" />
+      <feOffset dx="5" dy="8" result="offsetblur" />
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.5" />
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+    
+    <!-- Enhanced glow effect for the ring with atmospheric scattering simulation -->
+    <filter id="ringGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="glow" />
+      <feComposite in="SourceGraphic" in2="glow" operator="over" />
+    </filter>
+    
+    <!-- More detailed planet texture with added noise -->
+    <pattern id="planetTexture" width="100" height="100" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <!-- Base texture -->
+      <rect width="100" height="100" fill="#34495e" />
+      
+      <!-- Cloud-like formations -->
+      <rect x="0" y="0" width="50" height="50" fill="#2c3e50" opacity="0.3" />
+      <rect x="50" y="50" width="50" height="50" fill="#2c3e50" opacity="0.3" />
+      
+      <!-- Finer noise patterns -->
+      <rect x="0" y="0" width="10" height="10" fill="#5d7795" opacity="0.1" />
+      <rect x="20" y="20" width="8" height="8" fill="#5d7795" opacity="0.1" />
+      <rect x="40" y="70" width="15" height="15" fill="#5d7795" opacity="0.1" />
+      <rect x="70" y="40" width="12" height="12" fill="#5d7795" opacity="0.1" />
+      <rect x="25" y="85" width="7" height="7" fill="#5d7795" opacity="0.1" />
+      <rect x="85" y="25" width="9" height="9" fill="#5d7795" opacity="0.1" />
+      
+      <!-- Animate the texture subtly -->
+      <animateTransform attributeName="patternTransform" type="rotate" from="45" to="47" dur="120s" repeatCount="indefinite" additive="sum" />
+    </pattern>
+    
+    <!-- Dynamic rotating shadow overlay for more realistic spinning illusion -->
+    <radialGradient id="spinningShadow" cx="50%" cy="50%" r="85%" fx="50%" fy="50%">
+      <stop offset="0%" stop-color="transparent" />
+      <stop offset="70%" stop-color="black" stop-opacity="0" />
+      <stop offset="85%" stop-color="black" stop-opacity="0.1" />
+      <stop offset="100%" stop-color="black" stop-opacity="0.2" />
+      <animate attributeName="fx" values="30%;70%;30%" dur="50s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1" />
+      <animate attributeName="fy" values="30%;70%;30%" dur="50s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1" />
+    </radialGradient>
+    
+    <!-- Atmospheric haze for more realistic look -->
+    <radialGradient id="atmosphereGlow" cx="50%" cy="50%" r="100%" fx="50%" fy="50%">
+      <stop offset="85%" stop-color="#5d7795" stop-opacity="0" />
+      <stop offset="90%" stop-color="#5d7795" stop-opacity="0.1" />
+      <stop offset="95%" stop-color="#7189aa" stop-opacity="0.2" />
+      <stop offset="100%" stop-color="#7189aa" stop-opacity="0.3" />
+      <!-- Subtle pulsing effect for atmosphere -->
+      <animate attributeName="r" values="100%;102%;100%" dur="15s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1" />
+    </radialGradient>
+    
+    <!-- Ring dust particle system -->
+    <filter id="dustParticle">
+      <feGaussianBlur stdDeviation="0.3" />
+    </filter>
+    
+    <!-- Light source simulation for more realistic lighting -->
+    <radialGradient id="lightSource" cx="30%" cy="30%" r="120%" fx="20%" fy="20%">
+      <stop offset="0%" stop-color="white" stop-opacity="0.1" />
+      <stop offset="100%" stop-color="white" stop-opacity="0" />
+    </radialGradient>
+    
+    <!-- Ring section mask for more realistic ring dynamics -->
+    <mask id="ringMask">
+      <rect x="0" y="0" width="400" height="400" fill="white" />
+      <!-- Create density waves in rings -->
+      <ellipse cx="200" cy="200" rx="150" ry="35" transform="rotate(-20, 200, 200)" fill="black" opacity="0.2">
+        <animate attributeName="rx" values="150;155;150" dur="30s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1" />
+      </ellipse>
+      <ellipse cx="200" cy="200" rx="120" ry="28" transform="rotate(-20, 200, 200)" fill="black" opacity="0.15">
+        <animate attributeName="rx" values="120;125;120" dur="25s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1" />
+      </ellipse>
+    </mask>
+    
+    <!-- Improved star field background -->
+    <pattern id="starField" width="400" height="400" patternUnits="userSpaceOnUse">
+      <!-- Small stars -->
+      <circle cx="20" cy="30" r="0.5" fill="white" opacity="0.6" />
+      <circle cx="60" cy="90" r="0.3" fill="white" opacity="0.5" />
+      <circle cx="120" cy="40" r="0.4" fill="white" opacity="0.7" />
+      <circle cx="180" cy="70" r="0.6" fill="white" opacity="0.8" />
+      <circle cx="230" cy="120" r="0.3" fill="white" opacity="0.6" />
+      <circle cx="280" cy="60" r="0.5" fill="white" opacity="0.7" />
+      <circle cx="330" cy="150" r="0.4" fill="white" opacity="0.5" />
+      <circle cx="370" cy="100" r="0.3" fill="white" opacity="0.6" />
+      <circle cx="40" cy="170" r="0.5" fill="white" opacity="0.7" />
+      <circle cx="100" cy="210" r="0.4" fill="white" opacity="0.6" />
+      <circle cx="150" cy="180" r="0.3" fill="white" opacity="0.5" />
+      <circle cx="200" cy="250" r="0.6" fill="white" opacity="0.8" />
+      <circle cx="260" cy="190" r="0.4" fill="white" opacity="0.6" />
+      <circle cx="310" cy="240" r="0.5" fill="white" opacity="0.7" />
+      <circle cx="360" cy="200" r="0.3" fill="white" opacity="0.5" />
+      <circle cx="50" cy="280" r="0.4" fill="white" opacity="0.6" />
+      <circle cx="110" cy="320" r="0.6" fill="white" opacity="0.8" />
+      <circle cx="170" cy="270" r="0.3" fill="white" opacity="0.5" />
+      <circle cx="220" cy="330" r="0.5" fill="white" opacity="0.7" />
+      <circle cx="290" cy="290" r="0.4" fill="white" opacity="0.6" />
+      <circle cx="340" cy="350" r="0.3" fill="white" opacity="0.5" />
+      <circle cx="380" cy="310" r="0.5" fill="white" opacity="0.7" />
+      
+      <!-- Twinkling animation for some stars -->
+      <circle cx="80" cy="50" r="0.5" fill="white" opacity="0.6">
+        <animate attributeName="opacity" values="0.6;0.9;0.6" dur="3s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1" />
+      </circle>
+      <circle cx="140" cy="110" r="0.7" fill="white" opacity="0.8">
+        <animate attributeName="opacity" values="0.8;0.4;0.8" dur="4s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1" />
+      </circle>
+      <circle cx="250" cy="30" r="0.6" fill="white" opacity="0.7">
+        <animate attributeName="opacity" values="0.7;1;0.7" dur="5s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1" />
+      </circle>
+      <circle cx="300" cy="130" r="0.4" fill="white" opacity="0.5">
+        <animate attributeName="opacity" values="0.5;0.8;0.5" dur="3.5s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1" />
+      </circle>
+      <circle cx="70" cy="230" r="0.5" fill="white" opacity="0.6">
+        <animate attributeName="opacity" values="0.6;0.3;0.6" dur="4.5s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1" />
+      </circle>
+      <circle cx="130" cy="300" r="0.7" fill="white" opacity="0.8">
+        <animate attributeName="opacity" values="0.8;1;0.8" dur="3.8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1" />
+      </circle>
+      <circle cx="320" cy="220" r="0.6" fill="white" opacity="0.7">
+        <animate attributeName="opacity" values="0.7;0.2;0.7" dur="4.2s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1" />
+      </circle>
+      <circle cx="350" cy="370" r="0.5" fill="white" opacity="0.6">
+        <animate attributeName="opacity" values="0.6;0.9;0.6" dur="3.2s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1" />
+      </circle>
+    </pattern>
+  </defs>
+  
+
+  
+ 
+  
+  <!-- Ring - back part with density waves -->
+  <g transform="rotate(-20, 200, 200)">
+    <!-- Ring sections with different rotational velocities - Kepler's laws approximation -->
+    <ellipse cx="200" cy="200" rx="160" ry="40" fill="none" stroke="url(#ringGradient)" stroke-width="12" stroke-opacity="0.5" mask="url(#ringMask)">
+      <!-- Subtle rotation animation simulating orbital mechanics -->
+      <animateTransform attributeName="transform" type="rotate" from="0" to="2" dur="120s" repeatCount="indefinite" additive="sum" />
+    </ellipse>
+    
+    <!-- Secondary rings with different densities -->
+    <ellipse cx="200" cy="200" rx="145" ry="36" fill="none" stroke="url(#ringGradient)" stroke-width="4" stroke-opacity="0.4" mask="url(#ringMask)">
+      <animateTransform attributeName="transform" type="rotate" from="0" to="3" dur="100s" repeatCount="indefinite" additive="sum" />
+    </ellipse>
+    
+    <ellipse cx="200" cy="200" rx="170" ry="43" fill="none" stroke="url(#ringGradient)" stroke-width="2" stroke-opacity="0.3" mask="url(#ringMask)">
+      <animateTransform attributeName="transform" type="rotate" from="0" to="1.5" dur="140s" repeatCount="indefinite" additive="sum" />
+    </ellipse>
+  </g>
+  
+  <!-- Planet body with enhanced lighting -->
+  <circle cx="200" cy="200" r="85" fill="url(#planetGradient)" filter="url(#planetShadow)" />
+  
+  <!-- Light reflection on planet surface -->
+  <circle cx="180" cy="180" r="70" fill="url(#lightSource)" />
+  
+  <!-- Dynamic spinning shadow overlay -->
+  <circle cx="200" cy="200" r="85" fill="url(#spinningShadow)" />
+  
+  <!-- Enhanced planet texture -->
+  <circle cx="200" cy="200" r="85" fill="url(#planetTexture)" opacity="0.2" />
+  
+  <!-- Atmospheric effects -->
+  <circle cx="200" cy="200" r="86" fill="none" stroke="url(#atmosphereGlow)" stroke-width="6" opacity="0.3" />
+  <circle cx="200" cy="200" r="90" fill="none" stroke="#7189aa" stroke-width="1" opacity="0.1" />
+  
+  <!-- Enhanced craters with realistic lighting -->
+  <g>
+    <!-- Main craters with improved shadow and highlight -->
+    <circle cx="170" cy="170" r="15" fill="#1a2530" opacity="0.7" />
+    <circle cx="170" cy="170" r="13" fill="#1a2530" opacity="0.8" />
+    <circle cx="168" cy="168" r="1.5" fill="white" opacity="0.3" /> <!-- Specular highlight -->
+    <circle cx="170" cy="170" r="15" fill="none" stroke="#5d7795" stroke-width="1" opacity="0.3" /> <!-- Rim highlight -->
+    
+    <circle cx="230" cy="160" r="10" fill="#1a2530" opacity="0.6" />
+    <circle cx="230" cy="160" r="8" fill="#1a2530" opacity="0.7" />
+    <circle cx="228" cy="158" r="1" fill="white" opacity="0.3" /> <!-- Specular highlight -->
+    <circle cx="230" cy="160" r="10" fill="none" stroke="#5d7795" stroke-width="0.8" opacity="0.3" /> <!-- Rim highlight -->
+    
+    <circle cx="180" cy="220" r="18" fill="#1a2530" opacity="0.7" />
+    <circle cx="180" cy="220" r="16" fill="#1a2530" opacity="0.8" />
+    <circle cx="178" cy="218" r="1.8" fill="white" opacity="0.3" /> <!-- Specular highlight -->
+    <circle cx="180" cy="220" r="18" fill="none" stroke="#5d7795" stroke-width="1" opacity="0.3" /> <!-- Rim highlight -->
+    
+    <circle cx="210" cy="250" r="12" fill="#1a2530" opacity="0.6" />
+    <circle cx="210" cy="250" r="10" fill="#1a2530" opacity="0.7" />
+    <circle cx="208" cy="248" r="1.2" fill="white" opacity="0.3" /> <!-- Specular highlight -->
+    <circle cx="210" cy="250" r="12" fill="none" stroke="#5d7795" stroke-width="0.8" opacity="0.3" /> <!-- Rim highlight -->
+    
+    <circle cx="240" cy="210" r="8" fill="#1a2530" opacity="0.7" />
+    <circle cx="240" cy="210" r="6" fill="#1a2530" opacity="0.8" />
+    <circle cx="238" cy="208" r="0.8" fill="white" opacity="0.3" /> <!-- Specular highlight -->
+    <circle cx="240" cy="210" r="8" fill="none" stroke="#5d7795" stroke-width="0.7" opacity="0.3" /> <!-- Rim highlight -->
+    
+    <circle cx="150" cy="200" r="12" fill="#1a2530" opacity="0.6" />
+    <circle cx="150" cy="200" r="10" fill="#1a2530" opacity="0.7" />
+    <circle cx="148" cy="198" r="1.2" fill="white" opacity="0.3" /> <!-- Specular highlight -->
+    <circle cx="150" cy="200" r="12" fill="none" stroke="#5d7795" stroke-width="0.8" opacity="0.3" /> <!-- Rim highlight -->
+    
+    <circle cx="190" cy="160" r="7" fill="#1a2530" opacity="0.5" />
+    <circle cx="190" cy="160" r="5" fill="#1a2530" opacity="0.6" />
+    <circle cx="188" cy="158" r="0.7" fill="white" opacity="0.3" /> <!-- Specular highlight -->
+    <circle cx="190" cy="160" r="7" fill="none" stroke="#5d7795" stroke-width="0.6" opacity="0.3" /> <!-- Rim highlight -->
+  </g>
+  
+  <!-- Realistic planet rotation effect with enhanced moving highlights -->
+  <circle cx="175" cy="175" r="70" fill="white" opacity="0.05">
+    <animate attributeName="cx" values="175;225;175" dur="50s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1" />
+    <animate attributeName="cy" values="175;225;175" dur="50s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1" />
+  </circle>
+  
+  <!-- Second highlight with independent movement -->
+  <circle cx="165" cy="165" r="50" fill="white" opacity="0.04">
+    <animate attributeName="cx" values="165;235;165" dur="60s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1" />
+    <animate attributeName="cy" values="165;235;165" dur="60s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1" />
+  </circle>
+  
+  <!-- Ring shadow on planet with more accurate physics -->
+  <path d="M 120 200 L 280 200" stroke="rgba(0,0,0,0.2)" stroke-width="8" transform="rotate(-18, 200, 200)">
+    <animate attributeName="stroke-opacity" values="0.2;0.3;0.2" dur="60s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1" />
+    <animateTransform attributeName="transform" type="rotate" from="-18, 200, 200" to="-23, 200, 200" dur="180s" repeatCount="indefinite" additive="replace" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1" />
+  </path>
+  
+  <!-- Front part of the ring with enhanced color animation and glow -->
+  <g transform="rotate(-20, 200, 200)">
+    <!-- Main ring arc with glow effect -->
+    <path d="M 40 216 A 160 40 0 0 0 360 184" fill="none" stroke="url(#ringGradient)" stroke-width="18" stroke-linecap="round" filter="url(#ringGlow)" />
+    
+    <!-- Dynamic ring particles with realistic orbital motion -->
+    <g>
+      <!-- Inner ring particles -->
+      <g>
+        <circle cx="120" cy="200" r="1.2" fill="white" opacity="0.8" filter="url(#dustParticle)">
+          <animateTransform attributeName="transform" type="rotate" from="0 200 200" to="360 200 200" dur="80s" repeatCount="indefinite" />
+          <animate attributeName="opacity" values="0.7;0.9;0.7" dur="10s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1" />
+        </circle>
+        
+        <circle cx="140" cy="200" r="0.9" fill="white" opacity="0.7" filter="url(#dustParticle)">
+          <animateTransform attributeName="transform" type="rotate" from="90 200 200" to="450 200 200" dur="75s" repeatCount="indefinite" />
+          <animate attributeName="opacity" values="0.6;0.8;0.6" dur="8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1" />
+        </circle>
+        
+        <circle cx="160" cy="200" r="1.0" fill="white" opacity="0.75" filter="url(#dustParticle)">
+          <animateTransform attributeName="transform" type="rotate" from="180 200 200" to="540 200 200" dur="70s" repeatCount="indefinite" />
+          <animate attributeName="opacity" values="0.65;0.85;0.65" dur="12s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1" />
+        </circle>
+      </g>
+      
+      <!-- Middle ring particles -->
+      <g>
+        <circle cx="180" cy="200" r="1.5" fill="white" opacity="0.8" filter="url(#dustParticle)">
+          <animateTransform attributeName="transform" type="rotate" from="45 200 200" to="405 200 200" dur="65s" repeatCount="indefinite" />
+          <animate attributeName="opacity" values="0.7;0.9;0.7" dur="9s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1" />
+        </circle>
+        
+        <circle cx="200" cy="200" r="1.1" fill="white" opacity="0.75" filter="url(#dustParticle)">
+          <animateTransform attributeName="transform" type="rotate" from="135 200 200" to="495 200 200" dur="60s" repeatCount="indefinite" />
+          <animate attributeName="opacity" values="0.65;0.85;0.65" dur="11s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1" />
+        </circle>
+        
+        <circle cx="220" cy="200" r="1.3" fill="white" opacity="0.7" filter="url(#dustParticle)">
+          <animateTransform attributeName="transform" type="rotate" from="225 200 200" to="585 200 200" dur="55s" repeatCount="indefinite" />
+          <animate attributeName="opacity" values="0.6;0.8;0.6" dur="13s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1" />
+        </circle>
+      </g>
+      
+      <!-- Outer ring particles -->
+      <g>
+        <circle cx="240" cy="200" r="1.4" fill="white" opacity="0.85" filter="url(#dustParticle)">
+          <animateTransform attributeName="transform" type="rotate" from="70 200 200" to="430 200 200" dur="50s" repeatCount="indefinite" />
+          <animate attributeName="opacity" values="0.75;0.95;0.75" dur="8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1" />
+        </circle>
+       <circle cx="260" cy="200" r="1.0" fill="white" opacity="0.7" filter="url(#dustParticle)">
+          <animateTransform attributeName="transform" type="rotate" from="160 200 200" to="520 200 200" dur="45s" repeatCount="indefinite" />
+          <animate attributeName="opacity" values="0.6;0.8;0.6" dur="10s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1" />
+        </circle>
+        
+        <circle cx="280" cy="200" r="1.2" fill="white" opacity="0.8" filter="url(#dustParticle)">
+          <animateTransform attributeName="transform" type="rotate" from="250 200 200" to="610 200 200" dur="40s" repeatCount="indefinite" />
+          <animate attributeName="opacity" values="0.7;0.9;0.7" dur="9s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1" />
+        </circle>
+      </g>
+    </g>
+     <!-- Secondary ring with different opacity and animation timing -->
+    <path d="M 60 212 A 140 35 0 0 0 340 188" fill="none" stroke="url(#ringGradient)" stroke-width="8" stroke-linecap="round" opacity="0.7" filter="url(#ringGlow)">
+      <animateTransform attributeName="transform" type="rotate" from="0" to="2.5" dur="110s" repeatCount="indefinite" additive="sum" />
+    </path>
+    
+    <!-- Detailed ring structure with fine lines -->
+    <path d="M 70 210 A 130 32 0 0 0 330 190" fill="none" stroke="url(#ringGradient)" stroke-width="3" stroke-linecap="round" opacity="0.5" filter="url(#ringGlow)">
+      <animateTransform attributeName="transform" type="rotate" from="0" to="3" dur="100s" repeatCount="indefinite" additive="sum" />
+    </path>
+    
+    <!-- Outermost thin ring -->
+    <path d="M 30 220 A 170 42 0 0 0 370 180" fill="none" stroke="url(#ringGradient)" stroke-width="2" stroke-linecap="round" opacity="0.4" filter="url(#ringGlow)">
+      <animateTransform attributeName="transform" type="rotate" from="0" to="1.8" dur="120s" repeatCount="indefinite" additive="sum" />
+    </path>
+  </g>
+  
+  <!-- Additional decorative moons -->
+  <circle cx="330" cy="170" r="5" fill="#d0d0d0" filter="url(#planetShadow)" opacity="0.9">
+    <animate attributeName="cx" values="330;335;330" dur="30s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1" />
+    <animate attributeName="cy" values="170;165;170" dur="30s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1" />
+  </circle>
+  
+  <circle cx="90" cy="240" r="3" fill="#c0c0c0" filter="url(#planetShadow)" opacity="0.8">
+    <animate attributeName="cx" values="90;85;90" dur="25s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1" />
+    <animate attributeName="cy" values="240;245;240" dur="25s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1" />
+  </circle>
+  
+  <!-- Smaller distant moon with slower orbit -->
+  <circle cx="340" cy="220" r="2" fill="#a0a0a0" filter="url(#planetShadow)" opacity="0.7">
+    <animate attributeName="cx" values="340;350;340" dur="45s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1" />
+    <animate attributeName="cy" values="220;210;220" dur="45s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1" />
+  </circle>
+  
+  <!-- Enhanced moon shadow on planet -->
+  <ellipse cx="190" cy="185" rx="10" ry="3" fill="rgba(0,0,0,0.1)" transform="rotate(-10, 190, 185)">
+    <animate attributeName="cx" values="190;210;190" dur="30s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1" />
+    <animate attributeName="cy" values="185;215;185" dur="30s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1" />
+    <animate attributeName="opacity" values="0.1;0;0.1" dur="30s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1" />
+  </ellipse>
+  
+  
+  <!-- Shooting star effect for added dynamism -->
+  <line x1="30" y1="30" x2="70" y2="70" stroke="white" stroke-width="1" opacity="0">
+    <animate attributeName="opacity" values="0;0.8;0" dur="5s" begin="25s" repeatCount="1" />
+    <animate attributeName="x1" values="30;10" dur="5s" begin="25s" repeatCount="1" />
+    <animate attributeName="y1" values="30;10" dur="5s" begin="25s" repeatCount="1" />
+    <animate attributeName="x2" values="70;50" dur="5s" begin="25s" repeatCount="1" />
+    <animate attributeName="y2" values="70;50" dur="5s" begin="25s" repeatCount="1" />
+  </line>
+  
+  <line x1="350" y1="100" x2="300" y2="150" stroke="white" stroke-width="1" opacity="0">
+    <animate attributeName="opacity" values="0;0.8;0" dur="4s" begin="10s" repeatCount="1" />
+    <animate attributeName="x1" values="350;370" dur="4s" begin="10s" repeatCount="1" />
+    <animate attributeName="y1" values="100;80" dur="4s" begin="10s" repeatCount="1" />
+    <animate attributeName="x2" values="300;320" dur="4s" begin="10s" repeatCount="1" />
+    <animate attributeName="y2" values="150;130" dur="4s" begin="10s" repeatCount="1" />
+  </line>
+  
+  <line x1="280" y1="320" x2="320" y2="280" stroke="white" stroke-width="1" opacity="0">
+    <animate attributeName="opacity" values="0;0.8;0" dur="3s" begin="40s" repeatCount="1" />
+    <animate attributeName="x1" values="280;260" dur="3s" begin="40s" repeatCount="1" />
+    <animate attributeName="y1" values="320;340" dur="3s" begin="40s" repeatCount="1" />
+    <animate attributeName="x2" values="320;300" dur="3s" begin="40s" repeatCount="1" />
+    <animate attributeName="y2" values="280;300" dur="3s" begin="40s" repeatCount="1" />
+  </line>
+  
+ 
+  
+ 
+</svg>
